@@ -1,85 +1,132 @@
 import re
+import time
 import asyncio
 import calendar
+import feedparser
 from core.base_monitor import BaseMonitor
 from logger import log
 from db import monitor_repo
+from clients import http_client
 from ui import generate_news_layout
 
-# Standard User-Agent to avoid being blocked by WordPress/Cloudflare
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-
 class RSSMonitor(BaseMonitor):
+    """Monitor for generic RSS/Atom feeds with automatic caching and Discord Components V2 formatting."""
+
     def __init__(self, bot, config):
         super().__init__(bot, config)
-        self.feed_url = config.get("rss_url")
+        self.feed_url = config.get("rss_url") or config.get("feed_url") or config.get("url")
 
-    def get_shared_key(self):
+    def get_shared_key(self) -> str:
         return f"rss:{self.feed_url}"
 
-    async def fetch_new_items(self):
-        """Fetch RSS entries. Filtering is handled by the manager."""
+    async def _fetch_feed(self) -> list:
+        """Fetch and parse XML feed into an entries list."""
         if not self.feed_url:
-            log.warning(f"No RSS URL for monitor: {self.name}")
+            log.warning(f"No RSS URL configured for monitor: {self.name}")
+            return []
+
+        try:
+            xml_text = await http_client.get_text(self.feed_url)
+            if not xml_text:
+                return []
+            feed = await asyncio.to_thread(feedparser.parse, xml_text)
+            if feed and hasattr(feed, 'entries') and feed.entries:
+                return list(feed.entries)
+        except Exception as e:
+            log.error(f"Failed to fetch/parse RSS feed for {self.name}: {e}")
+        return []
+
+    async def fetch_new_items(self) -> list[dict]:
+        """Fetch RSS entries for the scheduler (oldest first for chronological dispatch)."""
+        if not self.feed_url:
             return []
 
         shared_key = self.get_shared_key()
-        feed = self.bot.monitor_manager.get_shared_data(shared_key)
-        
-        if not feed:
-            try:
-                from clients import http_client
-                xml_text = await http_client.get_text(self.feed_url)
-                if xml_text:
-                    import feedparser
-                    feed = await asyncio.to_thread(feedparser.parse, xml_text)
-                    if hasattr(feed, 'entries') and feed.entries:
-                        self.bot.monitor_manager.set_shared_data(shared_key, feed)
-            except Exception as e:
-                log.error(f"Failed to fetch RSS feed for {self.name}: {e}")
-                return []
-        
-        if not feed or not hasattr(feed, 'entries'):
+        entries = None
+
+        if self.bot and hasattr(self.bot, "monitor_manager") and self.bot.monitor_manager:
+            entries = self.bot.monitor_manager.get_shared_data(shared_key)
+
+        if not entries:
+            entries = await self._fetch_feed()
+            if entries and self.bot and hasattr(self.bot, "monitor_manager") and self.bot.monitor_manager:
+                self.bot.monitor_manager.set_shared_data(shared_key, entries)
+
+        if not entries:
             return []
 
+        # Return reversed (oldest -> newest) for sequential delivery
+        return list(reversed(entries))
 
-        return list(reversed(feed.entries))
+    def _extract_author(self, entry: dict) -> str:
+        """Extract author name from entry or fallback to monitor name."""
+        author_detail = entry.get("author_detail")
+        if isinstance(author_detail, dict) and author_detail.get("name"):
+            return author_detail.get("name")
+        return entry.get("author") or self.name
 
-    async def process_item(self, entry):
-        entry_link = entry.get("link")
+    def _extract_image(self, entry: dict) -> str | None:
+        """Extract article thumbnail or embedded image from standard RSS/Atom elements."""
+        # 1. Media RSS thumbnail
+        media_thumb = entry.get("media_thumbnail")
+        if media_thumb and isinstance(media_thumb, list) and len(media_thumb) > 0:
+            thumb_url = media_thumb[0].get("url")
+            if thumb_url:
+                return thumb_url
+
+        # 2. Media content enclosure
+        media_cont = entry.get("media_content")
+        if media_cont and isinstance(media_cont, list) and len(media_cont) > 0:
+            cont_url = media_cont[0].get("url")
+            if cont_url:
+                return cont_url
+
+        # 3. Enclosures (e.g. podcasts / image enclosures)
+        enclosures = entry.get("enclosures")
+        if enclosures and isinstance(enclosures, list) and len(enclosures) > 0:
+            enc = enclosures[0]
+            if isinstance(enc, dict) and enc.get("type", "").startswith("image/"):
+                enc_href = enc.get("href") or enc.get("url")
+                if enc_href:
+                    return enc_href
+
+        # 4. Search within HTML description
+        desc = entry.get("description", "")
+        if isinstance(desc, str) and desc:
+            img_match = re.search(r'<img [^>]*src=["\']([^"\']+)["\']', desc)
+            if img_match:
+                return img_match.group(1)
+
+        # 5. Search within HTML content
+        content = entry.get("content")
+        if content and isinstance(content, list) and len(content) > 0:
+            content_val = content[0].get("value", "") if isinstance(content[0], dict) else ""
+            if content_val:
+                img_match = re.search(r'<img [^>]*src=["\']([^"\']+)["\']', content_val)
+                if img_match:
+                    return img_match.group(1)
+
+        return None
+
+    def _extract_timestamp(self, entry: dict) -> int | None:
+        """Extract unix timestamp from published or updated struct."""
+        parsed = entry.get("published_parsed") or entry.get("updated_parsed")
+        if parsed:
+            try:
+                return calendar.timegm(parsed)
+            except (ValueError, TypeError):
+                return None
+        return None
+
+    def _format_entry(self, entry: dict) -> dict:
+        """Format an RSS entry into Discord Components V2 content and layout view."""
+        entry_link = entry.get("link", "")
         entry_title = entry.get("title", self.bot.get_feedback("monitor_rss_fallback_title", guild_id=self.guild_id))
-        author_name = entry.get("author") or self.name
+        author_name = self._extract_author(entry)
+        published_ts = self._extract_timestamp(entry)
         
-        published_ts = None
-        if hasattr(entry, 'published_parsed') and entry.published_parsed:
-            published_ts = calendar.timegm(entry.published_parsed)
-        
-        # Safety check: Ignore entries older than 48 hours
-        if published_ts:
-            import time
-            now_ts = int(time.time())
-            age_hours = (now_ts - published_ts) / 3600
-            if age_hours > 48:
-                log.info(f"[RSS] Skipping old entry for '{entry_title}' - Age: {age_hours:.1f}h")
-                return
-        
-        img_url = None
-        if hasattr(entry, 'media_thumbnail') and entry.media_thumbnail:
-            img_url = entry.media_thumbnail[0]["url"]
-        elif hasattr(entry, 'media_content') and entry.media_content:
-            img_url = entry.media_content[0]["url"]
-        else:
-            if hasattr(entry, 'description') and entry.description:
-                img_match = re.search(r'<img [^>]*src="([^"]+)"', entry.description)
-                if img_match:
-                    img_url = img_match.group(1)
-            
-            if not img_url and hasattr(entry, 'content') and entry.content:
-                img_match = re.search(r'<img [^>]*src="([^"]+)"', entry.content[0].get('value', ''))
-                if img_match:
-                    img_url = img_match.group(1)
-
-        img_url = self.get_image_url(img_url)
+        raw_img = self._extract_image(entry)
+        img_url = self.get_image_url(raw_img)
 
         alert_text = self.get_alert_message({
             "name": author_name,
@@ -100,107 +147,60 @@ class RSSMonitor(BaseMonitor):
             accent_color=self.get_color(0x3d3f45)
         )
 
-        await self.send_update(content=content, view=layout)
+        return {
+            "content": content,
+            "view": layout,
+            "title": entry_title,
+            "published_ts": published_ts
+        }
 
-    def get_item_id(self, entry):
-        return entry.get("id") or entry.get("link")
+    async def process_item(self, entry: dict):
+        """Process and send Discord notification for a single new RSS item."""
+        output = self._format_entry(entry)
+        published_ts = output.get("published_ts")
 
-    async def mark_items_published(self, items):
+        # Safety check: Ignore entries older than 48 hours
+        if published_ts:
+            age_hours = (int(time.time()) - published_ts) / 3600
+            if age_hours > 48:
+                log.info(f"[RSS] Skipping old entry for '{output.get('title')}' - Age: {age_hours:.1f}h")
+                return
+
+        await self.send_update(content=output["content"], view=output["view"])
+
+    def get_item_id(self, entry: dict) -> str:
+        return str(entry.get("id") or entry.get("link") or "")
+
+    async def mark_items_published(self, items: list[dict]):
+        """Persist processed RSS items to the database in bulk."""
+        records = []
         for entry in items:
             entry_id = self.get_item_id(entry)
             if entry_id:
                 title = entry.get("title", "New RSS Update")
-                author = entry.get("author") or entry.get("author_detail", {}).get("name")
-                await monitor_repo.mark_as_published(
-                    entry_id, "rss", self.feed_url, 
-                    guild_id=self.guild_id,
-                    title=title,
-                    author_name=author
-                )
+                author = self._extract_author(entry)
+                records.append({
+                    "entry_id": str(entry_id),
+                    "platform": "rss",
+                    "feed_url": self.feed_url,
+                    "guild_id": self.guild_id,
+                    "title": title,
+                    "author_name": author
+                })
+        if records:
+            await monitor_repo.mark_as_published_bulk(records)
 
-    async def get_latest_item(self):
-        """Fetch the most recent RSS entry from the feed."""
+    async def get_latest_item(self) -> dict | None:
+        """Fetch the single most recent RSS entry from the feed."""
         items = await self.get_latest_items(1)
         return items[0] if items else None
 
-    async def get_latest_items(self, count=1):
-        """Fetch the N most recent RSS entries from the feed in chronological order."""
-        if not self.feed_url:
+    async def get_latest_items(self, count: int = 1) -> list[dict]:
+        """Fetch the N most recent RSS entries formatted for previews or reposting."""
+        entries = await self._fetch_feed()
+        if not entries:
             return []
 
-        try:
-            from clients import http_client
-            xml_text = await http_client.get_text(self.feed_url)
-            if not xml_text:
-                return []
-            import feedparser
-            feed = await asyncio.to_thread(feedparser.parse, xml_text)
-        except Exception as e:
-            log.error(f"Manual check failed for RSS {self.name}: {e}")
-            return []
-            
-        if not hasattr(feed, 'entries') or not feed.entries:
-            return []
-
-        # Get the top N entries (newest first in feed)
-        entries = feed.entries[:count]
-        
-        # Reverse them for chronological order (Oldest -> Newest)
-        entries.reverse()
-        
-        results = []
-        for entry in entries:
-            results.append(self._format_entry(entry))
-        return results
-
-    def _format_entry(self, entry):
-        """Helper to format a feed entry into standard output mapping."""
-        entry_link = entry.get("link")
-        entry_title = entry.get("title", self.bot.get_feedback("monitor_rss_fallback_title", guild_id=self.guild_id))
-        author_name = entry.get("author") or self.name
-        
-        published_ts = None
-        if hasattr(entry, 'published_parsed') and entry.published_parsed:
-            published_ts = calendar.timegm(entry.published_parsed)
-        
-        img_url = None
-        if hasattr(entry, 'media_thumbnail') and entry.media_thumbnail:
-            img_url = entry.media_thumbnail[0]["url"]
-        elif hasattr(entry, 'media_content') and entry.media_content:
-            img_url = entry.media_content[0]["url"]
-        else:
-            if hasattr(entry, 'description') and entry.description:
-                img_match = re.search(r'<img [^>]*src="([^"]+)"', entry.description)
-                if img_match:
-                    img_url = img_match.group(1)
-            
-            if not img_url and hasattr(entry, 'content') and entry.content:
-                img_match = re.search(r'<img [^>]*src="([^"]+)"', entry.content[0].get('value', ''))
-                if img_match:
-                    img_url = img_match.group(1)
-
-        img_url = self.get_image_url(img_url)
-
-        alert_text = self.get_alert_message({
-            "name": author_name,
-            "title": entry_title,
-            "url": entry_link,
-            "author": author_name
-        })
-        
-        content, layout = generate_news_layout(
-            bot=self.bot,
-            guild_id=self.guild_id,
-            alert_text=alert_text,
-            title=entry_title[:256],
-            url=entry_link,
-            image_url=img_url,
-            author=author_name,
-            published_ts=published_ts,
-            accent_color=self.get_color(0x3d3f45)
-        )
-        
-        return {
-            "content": content,
-            "view": layout
-        }
+        # Take newest entries up to count and order them oldest -> newest for sequential reposting
+        selected = list(reversed(entries[:count]))
+        return [self._format_entry(entry) for entry in selected]
