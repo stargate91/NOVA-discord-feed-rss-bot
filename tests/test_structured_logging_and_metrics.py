@@ -1,19 +1,15 @@
 import unittest
-import logging
-import time
-from unittest.mock import MagicMock
-from starlette.testclient import TestClient
 from logger import log, log_context, get_recent_logs, _ring_buffer_handler
 from services.metrics_service import MetricsService, metrics
-from core.webhook_server import app, setup_webhook_bot
+from api.routers.admin_router import (
+    get_logs_endpoint,
+    get_metrics_summary_endpoint,
+    prometheus_metrics_endpoint
+)
 
-class TestStructuredLoggingAndMetrics(unittest.TestCase):
+class TestStructuredLoggingAndMetrics(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         _ring_buffer_handler.clear()
-        self.bot = MagicMock()
-        self.bot.config = {}
-        setup_webhook_bot(self.bot)
-        self.client = TestClient(app)
 
     def test_structured_log_context(self):
         """Verify log_context attaches guild_id, platform, and other metadata to records."""
@@ -86,32 +82,27 @@ class TestStructuredLoggingAndMetrics(unittest.TestCase):
         self.assertIn('feed_items_discovered_total{platform="twitch"} 2.0', prom_text)
         self.assertIn('rate_limits_encountered_total{platform="twitch"} 1.0', prom_text)
 
-    def test_admin_api_logs_endpoint(self):
-        """Verify GET /api/admin/logs returns ring buffer logs with query filters."""
+    async def test_admin_api_logs_endpoint(self):
+        """Verify get_logs_endpoint returns ring buffer logs with query filters."""
         with log_context(guild_id=777, platform="github"):
             log.info("API Release event triggered")
 
-        res = self.client.get("/api/admin/logs?guild_id=777&platform=github")
-        self.assertEqual(res.status_code, 200)
-        data = res.json()
+        data = await get_logs_endpoint(limit=10, guild_id=777, platform="github")
         self.assertIn("logs", data)
         self.assertIn("count", data)
         self.assertGreaterEqual(data["count"], 1)
         self.assertEqual(data["logs"][0]["guild_id"], 777)
 
-    def test_admin_api_metrics_endpoints(self):
-        """Verify GET /api/admin/metrics and GET /metrics return valid telemetry."""
+    async def test_admin_api_metrics_endpoints(self):
+        """Verify get_metrics_summary_endpoint and prometheus_metrics_endpoint return valid telemetry."""
         # JSON summary
-        res_json = self.client.get("/api/admin/metrics")
-        self.assertEqual(res_json.status_code, 200)
-        data = res_json.json()
+        data = await get_metrics_summary_endpoint()
         self.assertIn("uptime_seconds", data)
         self.assertIn("counters", data)
 
         # Prometheus text
-        res_prom = self.client.get("/metrics")
-        self.assertEqual(res_prom.status_code, 200)
-        self.assertIn("process_uptime_seconds", res_prom.text)
+        prom_response = await prometheus_metrics_endpoint()
+        self.assertIn("process_uptime_seconds", prom_response.body.decode())
 
 if __name__ == "__main__":
     unittest.main()
