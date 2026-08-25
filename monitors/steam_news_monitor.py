@@ -141,10 +141,22 @@ class SteamNewsMonitor(BaseMonitor):
         return item.get("gid")
 
     async def mark_items_published(self, items):
+        records = []
         for item in items:
             gid = self.get_item_id(item)
             if gid:
-                await monitor_repo.mark_as_published(gid, "steam_news", self.api_url, guild_id=self.guild_id)
+                title = item.get("title", "Steam News")
+                author = item.get("author", "Steam")
+                records.append({
+                    "entry_id": str(gid),
+                    "platform": "steam_news",
+                    "guild_id": self.guild_id,
+                    "feed_url": self.api_url,
+                    "title": title,
+                    "author_name": author
+                })
+        if records:
+            await monitor_repo.mark_as_published_bulk(records)
 
     async def get_latest_item(self):
         """Wrapper for get_latest_items(1)"""

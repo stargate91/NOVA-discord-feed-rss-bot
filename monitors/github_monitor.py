@@ -89,17 +89,22 @@ class GitHubMonitor(BaseMonitor):
         return str(release.get("id"))
 
     async def mark_items_published(self, items):
+        records = []
         for release in items:
             release_id = self.get_item_id(release)
-            if release_id != "None":
+            if release_id and release_id != "None":
                 title = release.get("name") or release.get("tag_name") or "New Release"
-                author = release.get("author", {}).get("login", "Unknown")
-                await monitor_repo.mark_as_published(
-                    release_id, "github", self.api_url,
-                    guild_id=self.guild_id,
-                    title=f"{self.repo_path}: {title}",
-                    author_name=author
-                )
+                author = release.get("author", {}).get("login", self.name)
+                records.append({
+                    "entry_id": release_id,
+                    "platform": "github",
+                    "guild_id": self.guild_id,
+                    "feed_url": self.api_url,
+                    "title": f"{self.repo_path}: {title}",
+                    "author_name": author
+                })
+        if records:
+            await monitor_repo.mark_as_published_bulk(records)
 
     async def get_latest_item(self):
         items = await self.get_latest_items(1)
