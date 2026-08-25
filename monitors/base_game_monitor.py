@@ -68,8 +68,12 @@ class BaseGameGiveawayMonitor(BaseMonitor):
             try:
                 dt = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S")
                 expiry_ts = int(dt.timestamp())
-            except Exception:
-                pass
+            except (ValueError, TypeError):
+                try:
+                    dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+                    expiry_ts = int(dt.timestamp())
+                except Exception as e:
+                    log.debug(f"[{self.platform_name}] Could not parse end_date '{end_date}': {e}")
 
         alert_text = self.get_alert_message({
             "name": self.platform_name,
@@ -139,8 +143,12 @@ class BaseGameGiveawayMonitor(BaseMonitor):
                 try:
                     dt = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S")
                     expiry_ts = int(dt.timestamp())
-                except Exception:
-                    pass
+                except (ValueError, TypeError):
+                    try:
+                        dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+                        expiry_ts = int(dt.timestamp())
+                    except Exception as e:
+                        log.debug(f"[{self.platform_name}] Could not parse end_date '{end_date}': {e}")
 
             alert_text = self.get_alert_message({
                 "name": self.platform_name,

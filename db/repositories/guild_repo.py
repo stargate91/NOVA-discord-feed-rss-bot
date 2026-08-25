@@ -17,8 +17,8 @@ async def get_guild_settings(guild_id: int) -> dict:
         if row[2]:
             try:
                 templates = json.loads(row[2])
-            except Exception:
-                pass
+            except Exception as e:
+                log.warning(f"[GuildRepo] Failed to parse alert_templates JSON for guild {guild_id}: {e}")
         return {
             "language": row[0] or "en",
             "admin_role_id": row[1] or 0,
@@ -60,8 +60,8 @@ async def get_all_guild_settings() -> list:
         if row[3]:
             try:
                 templates = json.loads(row[3])
-            except Exception:
-                pass
+            except Exception as e:
+                log.warning(f"[GuildRepo] Failed to parse alert_templates JSON for guild {row[0]}: {e}")
         results.append({
             "guild_id": row[0],
             "language": row[1] or "en",

@@ -143,11 +143,11 @@ class GitHubMonitor(BaseMonitor):
         ts = None
         if published_at:
             try:
-                # published_at format: 2024-04-18T12:34:56Z
-                dt = datetime.strptime(published_at, "%Y-%m-%dT%H:%M:%SZ")
-                ts = int(dt.replace(tzinfo=timezone.utc).timestamp())
-            except:
-                pass
+                clean_pub = published_at.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(clean_pub)
+                ts = int(dt.timestamp())
+            except (ValueError, TypeError) as e:
+                log.debug(f"[GitHubMonitor] Could not parse published_at '{published_at}': {e}")
                 
         from ui import generate_github_layout
         content, layout = generate_github_layout(

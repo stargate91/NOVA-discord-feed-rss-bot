@@ -3,6 +3,8 @@ import json
 import re
 from logger import log
 
+_EMOJI_PATTERN = re.compile(r"(<a?:[a-zA-Z0-9_]+:[0-9]+>)")
+
 class LocalizationService:
     """Service responsible for loading, formatting, and retrieving localized messages."""
     
@@ -65,8 +67,7 @@ class LocalizationService:
         if not isinstance(text, str):
             return text, None
 
-        emoji_pattern = r"(<a?:[a-zA-Z0-9_]+:[0-9]+>)"
-        match = re.search(emoji_pattern, text)
+        match = _EMOJI_PATTERN.search(text)
         if match:
             emoji_str = match.group(1)
             clean_text = text.replace(emoji_str, "").strip()

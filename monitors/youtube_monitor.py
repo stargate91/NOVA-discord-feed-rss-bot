@@ -106,8 +106,8 @@ class YouTubeMonitor(BaseMonitor):
             async with session.head(maxres_url) as resp:
                 if resp.status == 200:
                     return maxres_url
-        except Exception:
-            pass
+        except Exception as e:
+            log.debug(f"[YouTubeMonitor] Maxres thumbnail probe failed for {video_id}: {e}")
         return fallback_thumbnail
 
     async def process_item(self, entry: dict):

@@ -114,10 +114,11 @@ class EpicGamesMonitor(BaseMonitor):
         expiry_ts = None
         if end_date_str:
             try:
-                dt = datetime.strptime(end_date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-                expiry_ts = int(dt.replace(tzinfo=timezone.utc).timestamp())
-            except Exception:
-                pass
+                clean_date = end_date_str.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(clean_date)
+                expiry_ts = int(dt.timestamp())
+            except (ValueError, TypeError) as e:
+                log.debug(f"[EpicGamesMonitor] Could not parse expiry date '{end_date_str}': {e}")
 
         alert_text = self.get_alert_message({
             "name": "Epic Games",
@@ -233,10 +234,11 @@ class EpicGamesMonitor(BaseMonitor):
             expiry_ts = None
             if end_date_str:
                 try:
-                    dt = datetime.strptime(end_date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-                    expiry_ts = int(dt.replace(tzinfo=timezone.utc).timestamp())
-                except Exception:
-                    pass
+                    clean_date = end_date_str.replace("Z", "+00:00")
+                    dt = datetime.fromisoformat(clean_date)
+                    expiry_ts = int(dt.timestamp())
+                except (ValueError, TypeError) as e:
+                    log.debug(f"[EpicGamesMonitor] Could not parse expiry date '{end_date_str}': {e}")
 
             alert_text = self.get_alert_message({"name": "Epic Games", "title": title, "url": game_url})
 

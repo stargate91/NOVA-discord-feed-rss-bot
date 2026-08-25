@@ -26,8 +26,8 @@ async def get_all_monitors() -> list:
                     nested = extra.pop("extra_settings")
                     extra.update(nested)
                 m.update(extra)
-            except Exception:
-                pass
+            except Exception as e:
+                log.warning(f"[MonitorRepo] Failed to parse extra_settings JSON for monitor {m['id']}: {e}")
 
         if "target_channels" not in m or not m["target_channels"]:
             if m["discord_channel_id"]:
@@ -67,8 +67,8 @@ async def get_monitors_for_guild(guild_id: int) -> list:
                     nested = extra.pop("extra_settings")
                     extra.update(nested)
                 m.update(extra)
-            except Exception:
-                pass
+            except Exception as e:
+                log.warning(f"[MonitorRepo] Failed to parse extra_settings JSON for monitor {m['id']}: {e}")
 
         if "target_channels" not in m or not m["target_channels"]:
             if m["discord_channel_id"]:

@@ -53,8 +53,9 @@ class StatusCog(commands.Cog, name="status"):
                 }
                 activity_type = type_map.get(s_type, discord.ActivityType.watching)
             else:
-                # Fallback to language file
-                statuses = self.bot.language_data.get("dynamic_status", ["{count} feeds"])
+                # Fallback to language file via i18n service
+                default_data = self.bot.i18n.default_language_data if hasattr(self.bot, "i18n") else {}
+                statuses = default_data.get("dynamic_status", ["{count} feeds"])
                 
                 mode = await bot_settings_repo.get_bot_setting("status_rotation_mode", "random")
                 if mode == "sequential":
