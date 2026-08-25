@@ -1,26 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import MultiSelect from './multi_select';
 import { X, ChevronRight, ChevronLeft, Info, Plus, Trash2 } from 'lucide-react';
-import { useToast } from "@/context/toast_context";
 import ColorPicker from './color_picker';
-import { useConfig } from '@/hooks/use_config';
 import { MOVIE_GENRES, LANGUAGES, getAvailableVars } from '@/lib/monitor_constants';
-import searchService from '@/services/search_service';
-import guildService from '@/services/guild_service';
-import monitorService from '@/services/monitor_service';
-
 import { PLATFORMS } from '@/constants/platforms';
-import { PlatformMetadata } from '@/types/monitor';
-import {
-  buildCreateMonitorPayload,
-  validateMonitorForm,
-  INITIAL_MONITOR_FORM_DATA,
-  CryptoPair,
-  MonitorFormData,
-} from '@/utils/monitor_form';
+import { useCreateMonitorWizard } from '@/hooks/use_create_monitor_wizard';
 import styles from './create_monitor_modal.module.css';
 
 interface CreateMonitorModalProps {
@@ -40,180 +27,44 @@ export default function CreateMonitorModal({
   tier = 0, 
   isPremium = false 
 }: CreateMonitorModalProps) {
-  const { hasFeature } = useConfig();
-
-  const isLocked = (featureName: string) => {
-    return !hasFeature(tier, isPremium, featureName);
-  };
-
-  const { addToast, showSuccess } = useToast();
-  const [step, setStep] = useState(1);
-  const [selectedPlatform, setSelectedPlatform] = useState<PlatformMetadata | null>(null);
-  const [formData, setFormData] = useState<MonitorFormData>(INITIAL_MONITOR_FORM_DATA);
-  const [cryptoPairs, setCryptoPairs] = useState<CryptoPair[]>([{ symbol: '', threshold: '' }]);
-  const [guildChannels, setGuildChannels] = useState<any[]>([]);
-  const [guildRoles, setGuildRoles] = useState<any[]>([]);
-  const [loadingContext, setLoadingContext] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [resolving, setResolving] = useState(false);
-  const [resolvedChannel, setResolvedChannel] = useState<{ id: string; title: string; thumbnail?: string } | null>(null);
-
-  // Universal Autocomplete States (Steam, Twitch, GitHub)
-  const [autoQuery, setAutoQuery] = useState('');
-  const [autoResults, setAutoResults] = useState<any[]>([]);
-  const [isAutoSearching, setIsAutoSearching] = useState(false);
-  const [showAutoDropdown, setShowAutoDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const resetState = () => {
-    setStep(1);
-    setSelectedPlatform(null);
-    setFormData(INITIAL_MONITOR_FORM_DATA);
-    setCryptoPairs([{ symbol: '', threshold: '' }]);
-    setAutoQuery('');
-    setAutoResults([]);
-    setResolvedChannel(null);
-  };
-
-  const handleClose = () => {
-    resetState();
-    onClose();
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowAutoDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Debounced Universal Search
-  useEffect(() => {
-    const supportedPlatforms = ['steam_news', 'twitch', 'github'];
-    if (!selectedPlatform || !supportedPlatforms.includes(selectedPlatform.id)) return;
-    
-    const delayDebounceFn = setTimeout(async () => {
-      if (autoQuery.trim().length >= 3) {
-        setIsAutoSearching(true);
-        try {
-          const data = await searchService.searchPlatform(selectedPlatform.id, autoQuery);
-          setAutoResults(data);
-          setShowAutoDropdown(true);
-        } catch (e) {
-          console.error(`${selectedPlatform.id} search failed:`, e);
-        }
-        setIsAutoSearching(false);
-      } else {
-        setAutoResults([]);
-        setShowAutoDropdown(false);
-      }
-    }, 400);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [autoQuery, selectedPlatform]);
-
-  const handleYouTubeResolve = async () => {
-    if (!formData.platform_input) return;
-    setResolving(true);
-    try {
-      const data = await searchService.resolveYouTube(formData.platform_input);
-      setResolvedChannel(data);
-      setFormData(prev => ({ ...prev, platform_input: data.id, name: data.title }));
-      addToast(`Found: ${data.title}`, 'success', 'YouTube Found');
-    } catch (err: any) {
-      console.error(err);
-      addToast('Could not find YouTube channel. Check the name/link.', 'error', 'Not Found');
-    }
-    setResolving(false);
-  };
-
-  useEffect(() => {
-    if (!isOpen || !guildId) return;
-    let ignore = false;
-
-    async function loadData() {
-      try {
-        const [channels, roles] = await Promise.all([
-          guildService.getChannels(guildId),
-          guildService.getRoles(guildId)
-        ]);
-        if (!ignore) {
-          setGuildChannels(channels);
-          setGuildRoles(roles);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (!ignore) {
-          setLoadingContext(false);
-        }
-      }
-    }
-
-    loadData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [isOpen, guildId]);
+  const {
+    step,
+    setStep,
+    selectedPlatform,
+    formData,
+    setFormData,
+    cryptoPairs,
+    guildChannels,
+    guildRoles,
+    loadingContext,
+    creating,
+    resolving,
+    resolvedChannel,
+    autoQuery,
+    setAutoQuery,
+    autoResults,
+    isAutoSearching,
+    showAutoDropdown,
+    setShowAutoDropdown,
+    dropdownRef,
+    isLocked,
+    handleClose,
+    handlePlatformSelect,
+    handleYouTubeResolve,
+    addCryptoPair,
+    removeCryptoPair,
+    updateCryptoPair,
+    handleSubmit,
+  } = useCreateMonitorWizard({
+    guildId,
+    isOpen,
+    onClose,
+    onSuccess,
+    tier,
+    isPremium,
+  });
 
   if (!isOpen) return null;
-
-  const handlePlatformSelect = (p: PlatformMetadata) => {
-    setSelectedPlatform(p);
-    setFormData({
-      ...INITIAL_MONITOR_FORM_DATA,
-      embed_color: p.color || '#3d3f45',
-      name: p.isGlobal ? p.name : ''
-    });
-    setStep(2);
-  };
-
-  const addCryptoPair = () => {
-    setCryptoPairs(prev => [...prev, { symbol: '', threshold: '' }]);
-  };
-
-  const removeCryptoPair = (index: number) => {
-    setCryptoPairs(prev => prev.filter((_, idx) => idx !== index));
-  };
-
-  const updateCryptoPair = (index: number, field: keyof CryptoPair, value: string) => {
-    setCryptoPairs(prev => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPlatform) return;
-
-    const validationError = validateMonitorForm(formData, selectedPlatform, cryptoPairs);
-    if (validationError) {
-      addToast(validationError, 'error', 'Validation Error');
-      return;
-    }
-
-    const payload = buildCreateMonitorPayload(formData, selectedPlatform, guildId, cryptoPairs);
-    setCreating(true);
-
-    try {
-      await monitorService.createMonitor(payload as any);
-      addToast(`Created ${formData.name || selectedPlatform.name} monitor!`, 'success', 'Success');
-      onSuccess();
-      handleClose();
-    } catch (err: any) {
-      console.error(err);
-      addToast(err?.message || 'Failed to create monitor', 'error', 'Creation Failed');
-    } finally {
-      setCreating(false);
-    }
-  };
 
   return (
     <div className={styles["modal-overlay"]}>

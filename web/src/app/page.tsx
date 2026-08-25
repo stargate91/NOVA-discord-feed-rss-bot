@@ -34,6 +34,8 @@ import PlatformCarousel from "@/components/platform_carousel";
 import LiveTicker from "@/components/live_ticker";
 import DiscordV2Preview from "@/components/discord_v2_preview";
 import AuthErrorNotification from "@/components/auth_error_notification";
+import { LANDING_FEATURES } from "@/constants/landing";
+import { getBotInviteUrl } from "@/utils";
 import styles from "./landing.module.css";
 
 export const metadata: Metadata = {
@@ -53,42 +55,18 @@ export const metadata: Metadata = {
   },
 };
 
-const FEATURES = [
-  {
-    icon: <Zap size={24} />,
-    title: "Free Game Drops",
-    desc: "Epic Games, Steam, and GOG free-to-keep promotions sent the minute they go live.",
-  },
-  {
-    icon: <Play size={24} />,
-    title: "YouTube & Twitch",
-    desc: "Instant notifications for new video uploads, premieres, and live stream broadcasts.",
-  },
-  {
-    icon: <Rss size={24} />,
-    title: "Universal RSS Feeds",
-    desc: "Track any news site, blog, podcast, or game patch notes with sub-minute accuracy.",
-  },
-  {
-    icon: <Activity size={24} />,
-    title: "Crypto & Markets",
-    desc: "Real-time price threshold alerts and market movements directly in your channels.",
-  },
-  {
-    icon: <Layout size={24} />,
-    title: "Web Dashboard V2",
-    desc: "Ultra-fast, responsive dashboard for total control over server alerts and roles.",
-  },
-  {
-    icon: <Shield size={24} />,
-    title: "Custom Branding",
-    desc: "White-label feeds with custom bot avatar, server branding, and color palettes.",
-  },
-];
+const FEATURE_ICONS = {
+  Zap: <Zap size={24} />,
+  Play: <Play size={24} />,
+  Rss: <Rss size={24} />,
+  Activity: <Activity size={24} />,
+  Layout: <Layout size={24} />,
+  Shield: <Shield size={24} />,
+};
 
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
-  const botInviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1489908793780338688'}&permissions=3387582172359760&response_type=code&redirect_uri=https%3A%2F%2Fnovafeeds.xyz%2Fapi%2Fauth%2Fcallback%2Fdiscord&integration_type=0&scope=identify+guilds+bot+applications.commands`;
+  const botInviteUrl = getBotInviteUrl();
 
   return (
     <PublicLayout session={session}>
@@ -234,11 +212,11 @@ export default async function LandingPage() {
           </div>
 
           <Grid columns={3} gap="lg">
-            {FEATURES.map((feature, idx) => (
+            {LANDING_FEATURES.map((feature, idx) => (
               <Card key={idx} variant="elevated" className={styles["feature-card"]}>
                 <CardHeader>
                   <div className={styles["feature-icon-wrapper"]}>
-                    {feature.icon}
+                    {FEATURE_ICONS[feature.iconName]}
                   </div>
                   <CardTitle>{feature.title}</CardTitle>
                 </CardHeader>

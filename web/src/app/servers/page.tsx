@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useSession, signOut } from "next-auth/react";
+import React from "react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   Server,
@@ -29,81 +29,26 @@ import {
   Stack,
   IconButton,
 } from "@/components/ui";
-import { GuildInfo } from "@/types/guild";
-import guildService from "@/services/guild_service";
-import { getGuildIconUrl } from "@/utils";
+import { getGuildIconUrl, getBotInviteUrl } from "@/utils";
+import { useServerList } from "@/hooks/use_server_list";
 import styles from "./servers.module.css";
 
 export default function ServersPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
-  const [guilds, setGuilds] = useState<Array<GuildInfo & { hasBot?: boolean }>>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-      return;
-    }
-    if (status === "authenticated") {
-      let ignore = false;
-      async function load() {
-        try {
-          const data = await guildService.getGuilds();
-          if (!ignore) {
-            setGuilds(data);
-          }
-        } catch (err: any) {
-          if (!ignore) {
-            setError(err?.message || "Failed to load Discord servers");
-            console.error("Guild fetch error:", err);
-          }
-        } finally {
-          if (!ignore) {
-            setLoading(false);
-          }
-        }
-      }
-      load();
-      return () => {
-        ignore = true;
-      };
-    }
-  }, [status, router]);
-
-  const fetchGuilds = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await guildService.getGuilds();
-      setGuilds(data);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load Discord servers");
-      console.error("Guild fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    session,
+    guilds,
+    filteredGuilds,
+    loading,
+    error,
+    searchQuery,
+    setSearchQuery,
+    fetchGuilds,
+  } = useServerList();
 
   const handleSelect = (guildId: string) => {
     router.push(`/dashboard/${guildId}`);
   };
-
-  // Filter & Sort: installed active servers first, then sorted by name
-  const filteredGuilds = useMemo(() => {
-    return guilds
-      .filter((g) =>
-        g.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
-      )
-      .sort((a, b) => {
-        const aHas = Boolean(a.hasBot || a.bot_in_guild);
-        const bHas = Boolean(b.hasBot || b.bot_in_guild);
-        if (aHas === bHas) return a.name.localeCompare(b.name);
-        return bHas ? 1 : -1;
-      });
-  }, [guilds, searchQuery]);
 
   return (
     <PublicLayout session={session}>
@@ -192,7 +137,7 @@ export default function ServersPage() {
             {filteredGuilds.map((guild) => {
               const hasBot = Boolean(guild.hasBot || guild.bot_in_guild);
               const iconUrl = getGuildIconUrl(guild.id, guild.icon, 128);
-              const botInviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || "1489908793780338688"}&permissions=3387582172359760&response_type=code&redirect_uri=https%3A%2F%2Fnovafeeds.xyz%2Fapi%2Fauth%2Fcallback%2Fdiscord&integration_type=0&scope=identify+guilds+bot+applications.commands&guild_id=${guild.id}`;
+              const botInviteUrl = getBotInviteUrl(guild.id);
 
               return (
                 <div

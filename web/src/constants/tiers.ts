@@ -106,3 +106,63 @@ export const DEV_TIER_OPTIONS = [
   { value: '2', label: 'Operator (Tier 2)' },
   { value: '3', label: 'Architect (Tier 3)' }
 ];
+
+export interface ComparisonFeature {
+  name: string;
+  values: (string | boolean)[];
+  highlight?: number[];
+}
+
+export interface ComparisonCategory {
+  name: string;
+  iconName: 'Zap' | 'Settings' | 'Shield' | 'BarChart3';
+  features: ComparisonFeature[];
+}
+
+export const COMPARISON_TIERS = ['Free', 'Starter', 'Professional', 'Ultimate'];
+
+export const COMPARISON_CATEGORIES: ComparisonCategory[] = [
+  {
+    name: 'Monitoring Capacity',
+    iconName: 'Zap',
+    features: [
+      { name: 'Max Feed Monitors', values: ['2', '10', '30', '100'] },
+      { name: 'Refresh Interval', values: ['20m', '10m', '5m', '2m'], highlight: [3] },
+      { name: 'Target Channels', values: ['1', '5', '10', '20'] },
+      { name: 'Ping Roles', values: ['1', '5', '10', '20'] },
+    ],
+  },
+  {
+    name: 'Management Tools',
+    iconName: 'Settings',
+    features: [
+      { name: 'Live Repost Tool', values: [false, false, true, true], highlight: [2, 3] },
+      { name: 'Max Purge Limit', values: ['10', '25', '50', '100'] },
+      { name: 'Manual Force Check', values: [true, true, true, true] },
+      { name: 'Bulk Basic Actions', values: [false, true, true, true] },
+      { name: 'Bulk Settings Edit', values: [false, false, true, true], highlight: [2, 3] },
+      { name: 'Bulk Import Wizard', values: [false, false, true, true], highlight: [2, 3] },
+    ],
+  },
+  {
+    name: 'Branding & Customization',
+    iconName: 'Shield',
+    features: [
+      { name: 'Remove Branding', values: [false, true, true, true], highlight: [1, 2, 3] },
+      { name: 'Custom Templates', values: [false, false, true, true] },
+      { name: 'Advanced Filters', values: [false, true, true, true] },
+      { name: 'Custom Embed Color', values: [false, true, true, true] },
+      { name: 'Native YouTube Player', values: [false, true, true, true] },
+    ],
+  },
+  {
+    name: 'Analytics & Logs',
+    iconName: 'BarChart3',
+    features: [
+      { name: 'Analytics Range', values: ['3d', '7d', '30d', '∞'] },
+      { name: 'System Logs', values: [true, true, true, true] },
+      { name: 'Export Data', values: [false, false, false, true] },
+    ],
+  },
+];
+

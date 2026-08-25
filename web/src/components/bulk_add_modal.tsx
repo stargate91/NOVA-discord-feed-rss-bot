@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useSyncExternalStore } from 'react';
+import React, { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, Zap, Check, AlertCircle, ChevronRight, ChevronLeft, RefreshCw, Shield } from "lucide-react";
 import MultiSelect from './multi_select';
-import { useToast } from '@/context/toast_context';
 import ColorPicker from './color_picker';
-import guildService from '@/services/guild_service';
-import monitorService from '@/services/monitor_service';
-
 import { BULK_PLATFORMS } from '@/constants/platforms';
-import { BulkPlatformMetadata } from '@/types/monitor';
+import { useBulkAddWizard } from '@/hooks/use_bulk_add_wizard';
 import styles from './bulk_add_modal.module.css';
 
 interface BulkAddModalProps {
@@ -35,115 +31,43 @@ export default function BulkAddModal({
   isPremium = false, 
   guildLoading = false 
 }: BulkAddModalProps) {
-  const { addToast } = useToast();
   const mounted = useSyncExternalStore(subscribe, () => true, () => false);
-  const [step, setStep] = useState(1);
-  const [selectedPlatform, setSelectedPlatform] = useState<BulkPlatformMetadata | null>(null);
-  const [inputList, setInputList] = useState('');
-  const [targetChannels, setTargetChannels] = useState<string[]>([]);
-  const [targetRoles, setTargetRoles] = useState<string[]>([]);
-  const [embedColor, setEmbedColor] = useState('#3d3f45');
-  const [channels, setChannels] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [processing, setProcessing] = useState(false);
-  const [results, setResults] = useState<{ successCount: number; errorCount: number; errors?: string[] } | null>(null);
-  const [sendInitialAlert, setSendInitialAlert] = useState(false);
-  const [useNativePlayer, setUseNativePlayer] = useState(false);
-  const [customImage, setCustomImage] = useState('');
 
-  const resetState = () => {
-    setStep(1);
-    setSelectedPlatform(null);
-    setInputList('');
-    setTargetChannels([]);
-    setTargetRoles([]);
-    setResults(null);
-    setCustomImage('');
-    setSendInitialAlert(false);
-    setUseNativePlayer(false);
-  };
+  const {
+    step,
+    selectedPlatform,
+    setSelectedPlatform,
+    inputList,
+    setInputList,
+    targetChannels,
+    setTargetChannels,
+    targetRoles,
+    setTargetRoles,
+    embedColor,
+    setEmbedColor,
+    channels,
+    roles,
+    processing,
+    results,
+    sendInitialAlert,
+    setSendInitialAlert,
+    useNativePlayer,
+    setUseNativePlayer,
+    customImage,
+    setCustomImage,
+    isTierEligible,
+    handleNext,
+    handleBack,
+    handleSubmit,
+    resetState,
+  } = useBulkAddWizard({ guildId, isOpen, onSuccess, tier, isPremium });
 
   const handleClose = () => {
     resetState();
     onClose();
   };
 
-  useEffect(() => {
-    if (!isOpen || !guildId) return;
-    let ignore = false;
-
-    async function loadGuildData() {
-      try {
-        const [chanData, roleData] = await Promise.all([
-          guildService.getChannels(guildId),
-          guildService.getRoles(guildId)
-        ]);
-        if (!ignore) {
-          setChannels(chanData);
-          setRoles(roleData);
-        }
-      } catch (err) {
-        console.error("Failed to fetch guild data:", err);
-      }
-    }
-
-    loadGuildData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [isOpen, guildId]);
-
-  const handleNext = () => {
-    if (step === 1 && !selectedPlatform) return;
-    setStep((prev) => prev + 1);
-  };
-
-  const handleBack = () => {
-    setStep((prev) => prev - 1);
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedPlatform) return;
-    const items = inputList.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-    if (items.length === 0) {
-      addToast("Please enter at least one source.", "error", "Empty List");
-      return;
-    }
-
-    if (targetChannels.length === 0) {
-      addToast("Please select at least one target channel.", "error", "Missing Channel");
-      return;
-    }
-
-    setProcessing(true);
-    try {
-      const data = await monitorService.bulkAddMonitors({
-        guildId,
-        type: selectedPlatform.id,
-        sources: items,
-        targetChannels,
-        targetRoles,
-        embedColor,
-        sendInitialAlert: ['stream', 'kick'].includes(selectedPlatform.id) ? sendInitialAlert : false,
-        use_native_player: selectedPlatform.id === 'youtube' ? useNativePlayer : undefined,
-        custom_image: customImage
-      });
-
-      setResults(data);
-      setStep(3);
-      if (onSuccess) onSuccess();
-    } catch (err: any) {
-      console.error("Bulk add error:", err);
-      addToast(err?.message || "Failed to process bulk add.", "error", "Processing Failed");
-    }
-    setProcessing(false);
-  };
-
   if (!isOpen || !mounted) return null;
-
-  const isMaster = isPremium && tier === 0;
-  const isTierEligible = isMaster || (isPremium && tier >= 2);
 
   const modalContent = (
     <div className={styles["modal-overlay"]}>

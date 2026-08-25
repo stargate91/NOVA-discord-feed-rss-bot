@@ -15,3 +15,19 @@ export function getUserAvatarUrl(userId: string, avatarHash: string | null, size
   const ext = avatarHash.startsWith('a_') ? 'gif' : 'png';
   return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.${ext}?size=${size}`;
 }
+
+/**
+ * Generates Discord Bot OAuth2 Invite URL.
+ */
+export function getBotInviteUrl(guildId?: string): string {
+  const clientId = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1489908793780338688';
+  const permissions = '3387582172359760';
+  const redirectUri = encodeURIComponent('https://novafeeds.xyz/api/auth/callback/discord');
+  const scope = encodeURIComponent('identify guilds bot applications.commands');
+
+  let url = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&response_type=code&redirect_uri=${redirectUri}&integration_type=0&scope=${scope}`;
+  if (guildId) {
+    url += `&guild_id=${guildId}`;
+  }
+  return url;
+}

@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import {
   Plus,
   Play,
@@ -15,7 +14,6 @@ import {
   CheckSquare,
   Square,
   Search,
-  RefreshCw,
   Edit3,
 } from 'lucide-react';
 import { PageHeader } from '@/components/layout';
@@ -41,25 +39,42 @@ import BulkEditModal from '@/components/bulk_edit_modal';
 import BulkAddModal from '@/components/bulk_add_modal';
 import { useToast } from '@/context/toast_context';
 import monitorService from '@/services/monitor_service';
-import guildService from '@/services/guild_service';
 import { MonitorConfig } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
 import { getPlatformLogo } from '@/utils';
+import { useMonitors } from '@/hooks/use_monitors';
 import styles from './monitors.module.css';
 
 function MonitorsContent() {
-  const { data: session } = useSession();
   const params = useParams();
   const searchParams = useSearchParams();
   const guildId = (params?.guildId as string) || searchParams?.get('guild') || '';
-  const { addToast, showSuccess } = useToast();
+  const { addToast } = useToast();
 
-  const [monitors, setMonitors] = useState<MonitorConfig[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [isPremium, setIsPremium] = useState(false);
-  const [tier, setTier] = useState(0);
+  const {
+    monitors,
+    loading,
+    search,
+    setSearch,
+    filter,
+    setFilter,
+    isPremium,
+    tier,
+    platforms,
+    filteredMonitors,
+    activeCount,
+    selectedIds,
+    setSelectedIds,
+    selectionMode,
+    setSelectionMode,
+    reloadMonitors,
+    handleToggle,
+    deleteMonitor,
+    handleBulkToggle,
+    handleBulkDelete,
+    handleSelectMonitor,
+    handleSelectAll,
+  } = useMonitors(guildId);
 
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,44 +84,6 @@ function MonitorsContent() {
   const [isBulkAddOpen, setIsBulkAddOpen] = useState(() => searchParams?.get('bulk') === 'true');
   const [monitorToDelete, setMonitorToDelete] = useState<MonitorConfig | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // Multi-Selection State
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [selectionMode, setSelectionMode] = useState(false);
-
-  const platforms = useMemo(() => {
-    return ['all', ...Array.from(new Set(monitors.map((m) => m.type)))];
-  }, [monitors]);
-
-  useEffect(() => {
-    let ignore = false;
-    async function load() {
-      if (!guildId) return;
-      try {
-        const [fetchedMonitors, guilds] = await Promise.all([
-          monitorService.getMonitors(guildId),
-          guildService.getGuilds(),
-        ]);
-        if (ignore) return;
-        setMonitors(fetchedMonitors);
-
-        const current = guilds.find((g: any) => String(g.id) === String(guildId));
-        if (current) {
-          setIsPremium(current.isPremium || current.isMaster || false);
-          setTier(current.isMaster ? 0 : current.tier || 0);
-        }
-      } catch (err: any) {
-        console.error('Failed to load monitors:', err);
-        addToast(err?.message || 'Failed to sync server data', 'error');
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      ignore = true;
-    };
-  }, [guildId, addToast]);
 
   useEffect(() => {
     const addParam = searchParams?.get('add');
@@ -118,28 +95,6 @@ function MonitorsContent() {
     }
   }, [searchParams]);
 
-  const reloadMonitors = useCallback(async () => {
-    if (!guildId) return;
-    try {
-      const fetchedMonitors = await monitorService.getMonitors(guildId);
-      setMonitors(fetchedMonitors);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [guildId]);
-
-  const handleToggle = async (id: number, enabled: boolean) => {
-    try {
-      await monitorService.toggleMonitor(id, enabled);
-      setMonitors((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, enabled } : m))
-      );
-      addToast(`Monitor ${enabled ? 'resumed' : 'paused'}`, 'info');
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to update monitor', 'error');
-    }
-  };
-
   const handleDelete = (id: number) => {
     const monitor = monitors.find((m) => m.id === id);
     if (monitor) setMonitorToDelete(monitor);
@@ -148,72 +103,12 @@ function MonitorsContent() {
   const confirmDelete = async () => {
     if (!monitorToDelete) return;
     setIsDeleting(true);
-    try {
-      await monitorService.deleteMonitor(monitorToDelete.id);
-      setMonitors((prev) => prev.filter((m) => m.id !== monitorToDelete.id));
-      addToast('Monitor deleted successfully', 'success');
+    const success = await deleteMonitor(monitorToDelete.id);
+    setIsDeleting(false);
+    if (success) {
       setMonitorToDelete(null);
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to delete monitor', 'error');
-    } finally {
-      setIsDeleting(false);
     }
   };
-
-  const handleBulkToggle = async (enable: boolean) => {
-    if (selectedIds.length === 0) return;
-    try {
-      await Promise.all(
-        selectedIds.map((id) => monitorService.toggleMonitor(id, enable))
-      );
-      addToast(
-        `${selectedIds.length} monitor(s) ${enable ? 'resumed' : 'paused'}`,
-        'success'
-      );
-      setSelectedIds([]);
-      reloadMonitors();
-    } catch (err) {
-      addToast('Failed to toggle selected monitors', 'error');
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedIds.length === 0) return;
-    try {
-      await monitorService.bulkDelete(guildId, selectedIds);
-      addToast(`Deleted ${selectedIds.length} monitor(s)`, 'success');
-      setSelectedIds([]);
-      reloadMonitors();
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to delete monitors', 'error');
-    }
-  };
-
-  const filteredMonitors = useMemo(() => {
-    return monitors.filter((m) => {
-      const matchesSearch =
-        m.name.toLowerCase().includes(search.toLowerCase()) ||
-        String(m.id).includes(search);
-      const matchesPlatform = filter === 'all' || m.type === filter;
-      return matchesSearch && matchesPlatform;
-    });
-  }, [monitors, search, filter]);
-
-  const handleSelectMonitor = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedIds.length === filteredMonitors.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(filteredMonitors.map((m) => m.id));
-    }
-  };
-
-  const activeCount = monitors.filter((m) => m.enabled).length;
 
   return (
     <div className={styles['monitors-container']}>

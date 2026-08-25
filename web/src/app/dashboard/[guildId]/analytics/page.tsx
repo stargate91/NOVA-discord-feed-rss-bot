@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   AreaChart,
@@ -25,7 +25,6 @@ import {
   Monitor,
   Lock,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { PageHeader } from "@/components/layout";
 import {
   Card,
@@ -44,8 +43,7 @@ import StatCard from "@/components/stat_card";
 import HeatmapChart from "@/components/heatmap_chart";
 import LiveTicker from "@/components/live_ticker";
 import { ANALYTICS_RANGE_LABELS, ANALYTICS_PIE_COLORS } from "@/constants/navigation";
-import analyticsService, { AnalyticsData } from "@/services/analytics_service";
-import { calculatePeriodGrowthRate, formatPlatformBreakdown } from "@/utils/analytics";
+import { useGuildAnalytics } from "@/hooks/use_guild_analytics";
 import styles from "./analytics.module.css";
 
 // Custom Chart Tooltip
@@ -68,73 +66,18 @@ function AnalyticsContent() {
   const params = useParams();
   const router = useRouter();
   const guildId = (params?.guildId as string) || "";
-  const { data: session } = useSession();
 
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [range, setRange] = useState("3");
-  const [hasSetDefaultRange, setHasSetDefaultRange] = useState(false);
-
-  const isRangeLocked = (val: string) => {
-    if ((session?.user as any)?.role === "master") return false;
-    if (!data) return true;
-    if (data.isMaster || (data.tier ?? 0) >= 3) return false;
-
-    const limit = analyticsService.getTierLimit(data.tier || 0);
-    return parseInt(val, 10) > limit;
-  };
-
-  useEffect(() => {
-    if (!guildId) {
-      router.push("/servers");
-      return;
-    }
-
-    async function fetchStats() {
-      setLoading(true);
-      try {
-        const json = await analyticsService.getStats(guildId!, range);
-        setData(json);
-
-        if (!hasSetDefaultRange && json) {
-          const limit =
-            (session?.user as any)?.role === "master" ||
-            json.isMaster ||
-            (json.tier ?? 0) >= 3
-              ? 999
-              : analyticsService.getTierLimit(json.tier || 0);
-          setRange(String(limit));
-          setHasSetDefaultRange(true);
-        }
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchStats();
-  }, [guildId, range, router, session, hasSetDefaultRange]);
-
-  const chartData = useMemo(() => {
-    if (!data || !data.history) return [];
-    return data.history.map((item) => ({
-      date: new Date(item.date).toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-      }),
-      posts: parseInt(String(item.count), 10),
-    }));
-  }, [data]);
-
-  const growthRate = useMemo(() => {
-    return calculatePeriodGrowthRate(data?.history || []);
-  }, [data]);
-
-  const formattedPlatforms = useMemo(() => {
-    return formatPlatformBreakdown(data?.platforms || [], data?.totalPosts || 0);
-  }, [data]);
+  const {
+    data,
+    loading,
+    error,
+    range,
+    setRange,
+    isRangeLocked,
+    chartData,
+    growthRate,
+    formattedPlatforms,
+  } = useGuildAnalytics(guildId);
 
   if (loading && !data) {
     return (
@@ -315,20 +258,6 @@ function AnalyticsContent() {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-
-            <div className={styles["pie-legend-grid"]}>
-              {formattedPlatforms.map((p, i) => (
-                <div key={p.id} className={styles["legend-item"]}>
-                  <div
-                    className={styles["legend-dot"]}
-                    data-color-index={i % 5}
-                  />
-                  <span>
-                    {p.name} ({p.count}) · {p.percentage}%
-                  </span>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>

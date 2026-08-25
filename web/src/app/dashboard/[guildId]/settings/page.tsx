@@ -1,15 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import React, { Suspense } from "react";
+import { useParams } from "next/navigation";
 import {
   Globe,
   Shield,
   Crown,
   Save,
-  Search,
-  ChevronDown,
   Clock,
   MessageSquare,
   Lock,
@@ -23,306 +20,49 @@ import {
   Badge,
   Input,
   Spinner,
-  Inline,
-  Stack,
-  Text,
 } from "@/components/ui";
 import SettingCard from "@/components/setting_card";
 import TemplateEditor from "@/components/template_editor";
-import { useToast } from "@/context/toast_context";
-import { useConfig } from "@/hooks/use_config";
-import settingsService from "@/services/settings_service";
-import billingService from "@/services/billing_service";
-import { DiscordRole, GuildSettings } from "@/types/guild";
+import CustomRoleSelect from "@/components/custom_role_select";
 import { BOT_LANGUAGES } from "@/constants";
+import { useGuildSettings } from "@/hooks/use_guild_settings";
 import styles from "./settings.module.css";
 
-// --- Custom Role Select Component ---
-interface CustomRoleSelectProps {
-  roles: DiscordRole[];
-  value: string;
-  onChange: (value: string) => void;
-}
-
-function CustomRoleSelect({ roles, value, onChange }: CustomRoleSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const selectedRole = roles.find((r) => r.id === value);
-  const filteredRoles = roles.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selectedColor = selectedRole?.color
-    ? `#${selectedRole.color.toString(16).padStart(6, "0")}`
-    : "var(--border-subtle)";
-
-  return (
-    <div className={styles["role-select-wrapper"]} ref={dropdownRef}>
-      <button
-        type="button"
-        className={styles["role-trigger"]}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-      >
-        <div className={styles["role-value-box"]}>
-          <svg width="10" height="10" viewBox="0 0 10 10" className={styles["role-dot"]} aria-hidden="true">
-            <circle cx="5" cy="5" r="5" fill={selectedColor} />
-          </svg>
-          <span>
-            {selectedRole ? selectedRole.name : "None (Owner & Admins only)"}
-          </span>
-        </div>
-        <ChevronDown size={16} />
-      </button>
-
-      {isOpen && (
-        <div className={styles["role-menu"]}>
-          <div className={styles["role-search-wrap"]}>
-            <Input
-              placeholder="Search roles..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              leftIcon={<Search size={14} />}
-            />
-          </div>
-
-          <button
-            type="button"
-            className={[
-              styles["role-option"],
-              (value === "0" || !value) && styles.active,
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            onClick={() => {
-              onChange("0");
-              setIsOpen(false);
-            }}
-          >
-            <div className={`${styles["role-dot"]} ${styles["role-dot-none"]}`} />
-            <span>None (Owner & Admins only)</span>
-          </button>
-
-          {filteredRoles.map((role) => {
-            const roleColor = role.color
-              ? `#${role.color.toString(16).padStart(6, "0")}`
-              : "var(--text-muted)";
-            return (
-              <button
-                type="button"
-                key={role.id}
-                className={[
-                  styles["role-option"],
-                  value === role.id && styles.active,
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={() => {
-                  onChange(role.id);
-                  setIsOpen(false);
-                }}
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" className={styles["role-dot"]} aria-hidden="true">
-                  <circle cx="5" cy="5" r="5" fill={roleColor} />
-                </svg>
-                <span>{role.name}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function SettingsContent() {
-  const { data: session } = useSession();
   const params = useParams();
-  const router = useRouter();
   const guildId = (params?.guildId as string) || "";
-  const { addToast, showSuccess } = useToast();
 
-  const { getTierConfig, hasFeature } = useConfig();
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
-  const [guildRoles, setGuildRoles] = useState<DiscordRole[]>([]);
-  const [redeemCode, setRedeemCode] = useState("");
-  const [redeeming, setRedeeming] = useState(false);
-
-  const [settings, setSettings] = useState<GuildSettings>({
-    language: "en",
-    admin_role_id: "0",
-    refresh_interval: 20,
-    alert_templates: {},
-    tier: 0,
-    isMaster: false,
-    hasStripeSubscription: false,
-    custom_branding: null,
-    premium_until: null,
-  });
-
-  useEffect(() => {
-    if (!guildId) {
-      router.push("/servers");
-      return;
-    }
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [sData, roles] = await Promise.all([
-          settingsService.getSettings(guildId),
-          settingsService.getRoles(guildId),
-        ]);
-
-        if (guildId === "1083433370815582240") {
-          sData.isMaster = true;
-        }
-
-        setSettings(sData);
-        setGuildRoles(roles);
-      } catch (error) {
-        console.error("Failed to fetch settings data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [guildId, router]);
-
-  const handleSave = async () => {
-    if (!guildId) return;
-    setSaving(true);
-    try {
-      await settingsService.updateSettings(guildId, settings);
-      showSuccess();
-      addToast("Settings updated successfully!", "success");
-    } catch (error: any) {
-      addToast(error?.message || "Failed to update settings", "error");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleLanguageChange = (lang: string) => {
-    setSettings((prev) => ({ ...prev, language: lang }));
-  };
-
-  const handleRoleChange = (roleId: string) => {
-    setSettings((prev) => ({ ...prev, admin_role_id: roleId }));
-  };
-
-  const handleIntervalChange = (val: number) => {
-    setSettings((prev) => ({ ...prev, refresh_interval: val }));
-  };
-
-  const handleTemplateUpdate = (platform: string, newTemplateValue: string) => {
-    setSettings((prev) => ({
-      ...prev,
-      alert_templates: {
-        ...(prev.alert_templates || {}),
-        [platform]: newTemplateValue,
-      },
-    }));
-  };
-
-  const parsedBranding: Record<string, any> =
-    typeof settings.custom_branding === "object" && settings.custom_branding !== null
-      ? settings.custom_branding
-      : typeof settings.custom_branding === "string"
-      ? (() => {
-          try {
-            return JSON.parse(settings.custom_branding);
-          } catch {
-            return {};
-          }
-        })()
-      : {};
-
-  const handleBrandingChange = (key: string, val: any) => {
-    const updated = {
-      ...parsedBranding,
-      [key]: val === "" ? null : val,
-    };
-    setSettings((prev) => ({
-      ...prev,
-      custom_branding: updated as any,
-    }));
-  };
-
-  const openBillingPortal = async () => {
-    if (!guildId) return;
-    setPortalLoading(true);
-    try {
-      const url = await settingsService.getBillingPortalUrl(guildId);
-      if (url) window.location.href = url;
-    } catch (e) {
-      console.error(e);
-      addToast("Failed to open billing portal", "error");
-    } finally {
-      setPortalLoading(false);
-    }
-  };
-
-  const handleRedeem = async () => {
-    if (!guildId || !redeemCode.trim()) return;
-    setRedeeming(true);
-    try {
-      const data = await billingService.redeemPromoCode(redeemCode, guildId);
-      if (data.success) {
-        addToast("Promo code activated successfully!", "success");
-        setRedeemCode("");
-
-        const sData = await settingsService.getSettings(guildId);
-        if (guildId === "1083433370815582240") {
-          sData.isMaster = true;
-        }
-        setSettings(sData);
-      } else {
-        addToast((data as any).error || "Failed to redeem code", "error");
-      }
-    } catch (err: any) {
-      addToast(err?.message || "Network error occurred", "error");
-    } finally {
-      setRedeeming(false);
-    }
-  };
-
-  const isServerPremium = settings.isMaster || (settings.tier || 0) > 0;
-  const activeTierLevel = settings.isMaster ? 3 : settings.tier || 0;
-  const currentTierConfig = getTierConfig(activeTierLevel, isServerPremium);
-  const effectiveMinInterval = currentTierConfig?.min_interval ?? 20;
-
-  const isIntervalLocked = (val: number) => {
-    if (settings.isMaster) return false;
-    return val < effectiveMinInterval;
-  };
-
-  const canUseTemplates =
-    settings.isMaster || hasFeature(activeTierLevel, isServerPremium, "custom_templates");
-  const canUseBranding =
-    settings.isMaster || hasFeature(activeTierLevel, isServerPremium, "custom_branding");
+  const {
+    settings,
+    guildRoles,
+    loading,
+    saving,
+    portalLoading,
+    redeemCode,
+    setRedeemCode,
+    redeeming,
+    parsedBranding,
+    isServerPremium,
+    activeTierLevel,
+    currentTierConfig,
+    isIntervalLocked,
+    canUseTemplates,
+    canUseBranding,
+    handleSave,
+    handleLanguageChange,
+    handleRoleChange,
+    handleIntervalChange,
+    handleTemplateUpdate,
+    handleBrandingChange,
+    openBillingPortal,
+    handleRedeem,
+  } = useGuildSettings(guildId);
 
   if (loading) {
     return (
-      <Stack align="center" justify="center" gap="lg" className={styles["loading-stack"]}>
+      <div className={styles["loading-stack"]}>
         <Spinner size="lg" label="Loading server settings..." />
-      </Stack>
+      </div>
     );
   }
 

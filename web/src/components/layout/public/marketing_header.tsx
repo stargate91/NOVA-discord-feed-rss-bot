@@ -7,6 +7,7 @@ import { Menu, ExternalLink, Bot } from 'lucide-react';
 import styles from './public.module.css';
 import { Button, IconButton, Drawer, Stack } from '@/components/ui';
 import LoginButton from '@/components/login_button';
+import { getBotInviteUrl } from '@/utils';
 
 export interface MarketingHeaderProps {
   session?: any;
@@ -24,7 +25,7 @@ export function MarketingHeader({ session }: MarketingHeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const botInviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1489908793780338688'}&permissions=3387582172359760&response_type=code&redirect_uri=https%3A%2F%2Fnovafeeds.xyz%2Fapi%2Fauth%2Fcallback%2Fdiscord&integration_type=0&scope=identify+guilds+bot+applications.commands`;
+  const botInviteUrl = getBotInviteUrl();
 
   return (
     <header className={[styles['public-header'], scrolled && styles.scrolled].filter(Boolean).join(' ')}>

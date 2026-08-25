@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
-import { useRouter, useParams, usePathname } from "next/navigation";
+import React, { useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronDown, Globe } from "lucide-react";
-import { GuildInfo } from "@/types/guild";
-import guildService from "@/services/guild_service";
 import { getGuildIconUrl } from "@/utils";
+import { useGuildSwitch } from "@/hooks/use_guild_switch";
 import styles from "./guild_switcher.module.css";
 
 interface GuildSwitcherProps {
@@ -17,51 +16,18 @@ const emptySubscribe = () => () => {};
 
 export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProps) {
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [guilds, setGuilds] = useState<Array<GuildInfo & { hasBot?: boolean }>>([]);
-  const [loading, setLoading] = useState(true);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-  const params = useParams();
-  const pathname = usePathname();
 
-  const currentGuildId = (params?.guildId as string) || "";
-
-  // Fetch guilds for the dropdown
-  useEffect(() => {
-    let ignore = false;
-    async function fetchGuilds() {
-      try {
-        const data = await guildService.getGuilds();
-        if (!ignore) {
-          setGuilds(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch guilds for switcher:", err);
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    }
-    fetchGuilds();
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const currentGuild = guilds.find(g => g.id === currentGuildId);
+  const {
+    isOpen,
+    setIsOpen,
+    dropdownRef,
+    currentGuildId,
+    currentGuild,
+    activeGuilds,
+    loading,
+    handleSelect,
+  } = useGuildSwitch();
 
   if (!mounted) {
     return (
@@ -72,25 +38,6 @@ export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProp
       </div>
     );
   }
-
-  const handleSelect = (id: string) => {
-    setIsOpen(false);
-    if (id === "global") {
-      router.push("/servers");
-      return;
-    }
-
-    // Try to preserve current subtab if applicable (e.g. /monitors, /settings)
-    if (pathname && currentGuildId) {
-      const subpath = pathname.replace(`/dashboard/${currentGuildId}`, "");
-      if (subpath && !subpath.startsWith("?")) {
-        router.push(`/dashboard/${id}${subpath}`);
-        return;
-      }
-    }
-
-    router.push(`/dashboard/${id}`);
-  };
 
   return (
     <div className={styles["switcher-wrapper"]} ref={dropdownRef}>
@@ -139,8 +86,8 @@ export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProp
           <div className={styles["items-list"]}>
             {loading ? (
               <div className={styles["empty-state"]}>Loading servers...</div>
-            ) : guilds.filter(g => g.hasBot || g.bot_in_guild).length > 0 ? (
-              guilds.filter(g => g.hasBot || g.bot_in_guild).map((guild) => (
+            ) : activeGuilds.length > 0 ? (
+              activeGuilds.map((guild) => (
                 <button
                   key={guild.id}
                   type="button"

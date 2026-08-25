@@ -3,15 +3,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HelpCircle, Book, MessageCircle, X, ExternalLink, ChevronRight, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import styles from "./floating_help.module.css";
 
 export default function FloatingHelp() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const guildId = searchParams?.get("guild");
+  const params = useParams();
+  const guildId = (params?.guildId as string) || "";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -33,11 +33,8 @@ export default function FloatingHelp() {
     setIsOpen(!isOpen);
   };
 
-  const getHref = (path: string) => {
-    if (!guildId) return path;
-    const separator = path.includes("?") ? "&" : "?";
-    return `${path}${separator}guild=${guildId}`;
-  };
+  const guideHref = guildId ? `/dashboard/${guildId}/guide` : "/premium";
+  const faqHref = guildId ? `/dashboard/${guildId}/faq` : "/premium";
 
   return (
     <div className={styles["floating-container"]} ref={menuRef}>
@@ -56,7 +53,7 @@ export default function FloatingHelp() {
           </div>
           
           <div className={styles["menu-body"]}>
-            <Link href={getHref("/guide")} onClick={() => setIsOpen(false)} className={styles["item-link"]}>
+            <Link href={guideHref} onClick={() => setIsOpen(false)} className={styles["item-link"]}>
               <div className={styles["help-item"]}>
                 <div className={styles["icon-wrap-purple"]}>
                   <Book size={18} />
@@ -69,7 +66,7 @@ export default function FloatingHelp() {
               </div>
             </Link>
 
-            <Link href={getHref("/faq")} onClick={() => setIsOpen(false)} className={styles["item-link"]}>
+            <Link href={faqHref} onClick={() => setIsOpen(false)} className={styles["item-link"]}>
               <div className={styles["help-item"]}>
                 <div className={styles["icon-wrap-blue"]}>
                   <MessageSquare size={18} />

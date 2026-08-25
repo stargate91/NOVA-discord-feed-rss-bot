@@ -4,6 +4,7 @@ export { default as BulkAddModal } from './bulk_add_modal';
 export { default as BulkEditModal } from './bulk_edit_modal';
 export { default as ColorPicker } from './color_picker';
 export { default as CreateMonitorModal } from './create_monitor_modal';
+export { default as CustomRoleSelect } from './custom_role_select';
 export { default as DiscordV2Preview } from './discord_v2_preview';
 export { default as EditMonitorModal } from './edit_monitor_modal';
 export { default as EmptyStateCard } from './empty_state_card';

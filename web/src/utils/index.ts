@@ -5,3 +5,5 @@ export * from './color';
 export * from './heatmap';
 export * from './monitor_form';
 export * from './analytics';
+export * from './date';
+export * from './log';

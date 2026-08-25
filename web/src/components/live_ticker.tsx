@@ -1,51 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { Activity } from "lucide-react";
-import statsService, { TickerItem } from "@/services/stats_service";
+import { useLiveTicker } from "@/hooks/use_live_ticker";
 import { getPlatformLogo } from "@/utils";
 import styles from "./live_ticker.module.css";
 
 export default function LiveTicker() {
-  const [items, setItems] = useState<TickerItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-    async function fetchTicker() {
-      try {
-        const data = await statsService.getGlobalTicker();
-        if (!ignore) {
-          if (data && data.length > 0) {
-            setItems(data);
-          } else {
-            // Fallback sample data if DB is empty
-            setItems([
-              { platform: 'youtube', title: 'New video from NovaFeeds Official', author_name: 'NovaFeeds' },
-              { platform: 'twitch', title: 'Stream is LIVE: Dashboard Showcase', author_name: 'NovaBot' },
-              { platform: 'rss', title: 'Update: Version 2.0 released', author_name: 'Changelog' }
-            ]);
-          }
-        }
-      } catch (err) {
-        console.error("Ticker fetch error:", err);
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchTicker();
-    const interval = setInterval(fetchTicker, 30000); // Update every 30s
-    return () => {
-      ignore = true;
-      clearInterval(interval);
-    };
-  }, []);
+  const { items, loading } = useLiveTicker(30000);
 
   if (loading) return null;
+
 
   return (
     <div className={styles["ticker-container"]}>

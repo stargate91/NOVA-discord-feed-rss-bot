@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -12,11 +12,10 @@ import {
   Check,
   AlertCircle,
 } from 'lucide-react';
-import { useConfig } from '@/hooks/use_config';
 import { MonitorConfig } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
-import { getPlatformLogo } from '@/utils';
-import monitorService from '@/services/monitor_service';
+import { getPlatformLogo, formatMonitorDate } from '@/utils';
+import { useMonitorCardActions } from '@/hooks/use_monitor_card_actions';
 import {
   Badge,
   Button,
@@ -48,76 +47,26 @@ export default function MonitorCard({
   onSelect,
   selectionMode = false,
 }: MonitorCardProps) {
-  const { getTierConfig, hasFeature } = useConfig();
-  const [toggleLoading, setToggleLoading] = useState(false);
-  const [showTools, setShowTools] = useState(false);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [actionStatus, setActionStatus] = useState<{
-    type: 'success' | 'error' | null;
-    message: string | null;
-  }>({ type: null, message: null });
-  const [repostCount, setRepostCount] = useState(1);
-  const [purgeAmount, setPurgeAmount] = useState(50);
-
-  const currentTier = getTierConfig(tier, isPremium);
-  const canRepost = hasFeature(tier, isPremium, 'repost');
-  const maxPurge = currentTier.max_purge || 10;
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return 'Never';
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return 'Never';
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const handleToggle = async () => {
-    setToggleLoading(true);
-    await onToggle(monitor.id, !monitor.enabled);
-    setToggleLoading(false);
-  };
-
-  const runAction = async (action: 'check' | 'repost' | 'purge') => {
-    setActionLoading(action);
-    setActionStatus({ type: null, message: null });
-
-    try {
-      const actionType = action === 'repost' ? 'repost_latest' : action;
-      const data = await monitorService.triggerAction(
-        monitor.id,
-        actionType as any,
-        {
-          count:
-            action === 'repost'
-              ? repostCount
-              : action === 'purge'
-              ? Math.min(purgeAmount, maxPurge)
-              : 1,
-        }
-      );
-
-      if (data.success !== false) {
-        setActionStatus({
-          type: 'success',
-          message: data.message || 'Success!',
-        });
-      } else {
-        setActionStatus({ type: 'error', message: data.error || 'Failed' });
-      }
-    } catch (err: any) {
-      setActionStatus({
-        type: 'error',
-        message: err?.message || 'Connection error',
-      });
-    } finally {
-      setActionLoading(null);
-      setTimeout(() => setActionStatus({ type: null, message: null }), 6000);
-    }
-  };
+  const {
+    toggleLoading,
+    showTools,
+    setShowTools,
+    actionLoading,
+    actionStatus,
+    repostCount,
+    setRepostCount,
+    purgeAmount,
+    setPurgeAmount,
+    canRepost,
+    maxPurge,
+    handleToggle,
+    runAction,
+  } = useMonitorCardActions({
+    monitor,
+    onToggle,
+    tier,
+    isPremium,
+  });
 
   return (
     <div
@@ -197,7 +146,7 @@ export default function MonitorCard({
           <div className={styles['meta-item']}>
             <span className={styles['meta-label']}>Last Post</span>
             <span className={styles['meta-value']}>
-              {formatDate(monitor.last_post_at)}
+              {formatMonitorDate(monitor.last_post_at)}
             </span>
           </div>
 

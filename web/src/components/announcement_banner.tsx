@@ -1,40 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { AlertTriangle, AlertCircle, X, Megaphone } from "lucide-react";
-import devService, { AnnouncementItem } from "@/services/dev_service";
+import { useAnnouncements } from "@/hooks/use_announcements";
 import { IconButton } from "@/components/ui";
 import styles from "./announcement_banner.module.css";
 
 export default function AnnouncementBanner() {
-  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
-  const [closedIds, setClosedIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    let ignore = false;
-    const fetchAnnouncements = async () => {
-      try {
-        const data = await devService.getAnnouncements();
-        if (!ignore && Array.isArray(data)) setAnnouncements(data);
-      } catch (error) {
-        // Silently catch in banner
-      }
-    };
-    fetchAnnouncements();
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  const closeAnnouncement = (id: number) => {
-    setClosedIds((prev) => [...prev, id]);
-  };
-
-  const activeAnnouncements = announcements.filter(
-    (a) => !closedIds.includes(a.id)
-  );
+  const { activeAnnouncements, closeAnnouncement } = useAnnouncements();
 
   if (activeAnnouncements.length === 0) return null;
+
 
   return (
     <div className={styles["banner-container"]}>

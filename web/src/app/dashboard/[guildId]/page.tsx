@@ -20,6 +20,7 @@ import UsageIndicator from "@/components/usage_indicator";
 import QuickActions from "@/components/quick_actions";
 import EmptyStateCard from "@/components/empty_state_card";
 import dashboardService from "@/services/dashboard_service";
+import { getDashboardTierMeta } from "@/utils/tier_limits";
 import styles from "./dashboard.module.css";
 
 interface GuildDashboardPageProps {
@@ -57,8 +58,14 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
     );
   }
 
-  const isMaster = stats?.tierName === "Master" || stats?.isLifetime;
-  const isPremium = (stats?.tier ?? 0) >= 1 || isMaster;
+  const {
+    isMaster,
+    isPremium,
+    effectiveMaxMonitors,
+    badgeVariant,
+    upgradeTitle,
+    upgradeDesc,
+  } = getDashboardTierMeta(stats);
 
   return (
     <div className={styles["dashboard-content"]}>
@@ -76,7 +83,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
               {stats?.tierName}
             </Badge>
           ) : (
-            <Badge variant="neutral" size="sm">
+            <Badge variant={badgeVariant} size="sm">
               Free Plan
             </Badge>
           )
@@ -131,7 +138,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
               <UsageIndicator
                 label="Active Feeds"
                 current={stats?.totalMonitorsCount || 0}
-                max={isMaster ? 1000 : stats?.maxMonitors || 5}
+                max={effectiveMaxMonitors}
                 unit="monitors"
               />
               <p className={styles["usage-desc"]}>
@@ -157,14 +164,10 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
                 <div className={styles["upgrade-content"]}>
                   <div className={styles["upgrade-info"]}>
                     <span className={styles["upgrade-title"]}>
-                      {stats?.tier === 0
-                        ? "Unlock Instant Delivery & Unlimited Feeds"
-                        : "Ready to scale up your server?"}
+                      {upgradeTitle}
                     </span>
                     <p className={styles["upgrade-desc"]}>
-                      {stats?.tier === 0
-                        ? "Get 2-minute refresh speeds, role mentions, and custom embed branding."
-                        : `Upgrade to higher tier for even faster intervals and massive monitor limits.`}
+                      {upgradeDesc}
                     </p>
                   </div>
                   <Link href={`/dashboard/${guildId}/billing`}>

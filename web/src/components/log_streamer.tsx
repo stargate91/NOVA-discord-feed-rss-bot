@@ -1,74 +1,33 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 import { Terminal, RefreshCw, Trash2, Maximize2, Minimize2 } from "lucide-react";
-import devService from "@/services/dev_service";
 import { IconButton, Button } from "@/components/ui";
+import { useLogStream } from "@/hooks/use_log_stream";
+import { getLogLevel } from "@/utils";
 import styles from "./log_streamer.module.css";
 
+const LOG_LEVEL_CLASSES = {
+  error: styles["log-error"],
+  warning: styles["log-warning"],
+  info: styles["log-info"],
+  default: "",
+};
+
 export default function LogStreamer() {
-  const [logs, setLogs] = useState<string[]>([]);
-  const [isLive, setIsLive] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchLogs = useCallback(async () => {
-    try {
-      const data = await devService.getLogs(100);
-      if (data.logs) {
-        setLogs(data.logs);
-        setError(null);
-      } else if (data.error) {
-        setError(data.error);
-      }
-    } catch (err: any) {
-      console.error("Failed to fetch logs:", err);
-      setError(err?.message || String(err));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    let ignore = false;
-
-    const runFetch = async () => {
-      try {
-        const data = await devService.getLogs(100);
-        if (!ignore) {
-          if (data.logs) {
-            setLogs(data.logs);
-            setError(null);
-          } else if (data.error) {
-            setError(data.error);
-          }
-        }
-      } catch (err: any) {
-        if (!ignore) {
-          console.error("Failed to fetch logs:", err);
-          setError(err?.message || String(err));
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
-    runFetch();
-
-    let interval: ReturnType<typeof setInterval> | undefined;
-    if (isLive) {
-      interval = setInterval(runFetch, 3000);
-    }
-
-    return () => {
-      ignore = true;
-      if (interval) clearInterval(interval);
-    };
-  }, [isLive]);
+  const {
+    logs,
+    isLive,
+    setIsLive,
+    isExpanded,
+    setIsExpanded,
+    loading,
+    error,
+    fetchLogs,
+    clearLogs,
+  } = useLogStream(3000);
 
   useEffect(() => {
     if (scrollRef.current && !error) {
@@ -76,18 +35,11 @@ export default function LogStreamer() {
     }
   }, [logs, error]);
 
-  const clearLogs = () => {
-    setLogs([]);
-    setError(null);
-  };
-
   const formatLog = (line: string) => {
     if (!line || !line.trim()) return null;
 
-    let lineClass = "";
-    if (line.includes("[ERROR]")) lineClass = styles["log-error"];
-    else if (line.includes("[WARNING]")) lineClass = styles["log-warning"];
-    else if (line.includes("[INFO]")) lineClass = styles["log-info"];
+    const level = getLogLevel(line);
+    const lineClass = LOG_LEVEL_CLASSES[level];
 
     return (
       <div key={line} className={[styles["log-line"], lineClass].filter(Boolean).join(" ")}>
@@ -134,26 +86,40 @@ export default function LogStreamer() {
             icon={isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             size="xs"
             variant="ghost"
-            aria-label="Toggle expand"
+            aria-label={isExpanded ? "Minimize terminal" : "Maximize terminal"}
             onClick={() => setIsExpanded(!isExpanded)}
           />
         </div>
       </div>
 
       <div className={styles["terminal-body"]} ref={scrollRef}>
-        {loading ? (
-          <p className={styles["loading-text"]}>
-            Initializing log stream...
-          </p>
-        ) : error ? (
-          <div className={styles["error-box"]}>
-            <p className={styles["error-text"]}>CONNECTION ERROR: {error}</p>
-            <Button variant="secondary" size="sm" onClick={fetchLogs}>
+        {error ? (
+          <div className={styles["terminal-error"]}>
+            <p>System log stream offline.</p>
+            <span className={styles["error-reason"]}>Error: {error}</span>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<RefreshCw size={14} />}
+              onClick={fetchLogs}
+            >
               Reconnect
             </Button>
           </div>
+        ) : loading && logs.length === 0 ? (
+          <div className={styles["terminal-loading"]}>
+            <span className={styles["log-line"]}>
+              Connecting to Nova runtime log stream...
+            </span>
+          </div>
+        ) : logs.length === 0 ? (
+          <div className={styles["terminal-empty"]}>
+            <span className={styles["log-line"]}>
+              Log buffer empty. Waiting for events...
+            </span>
+          </div>
         ) : (
-          logs.map((line, i) => <div key={i}>{formatLog(line)}</div>)
+          logs.map((line) => formatLog(line))
         )}
       </div>
     </div>

@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import MultiSelect from './multi_select';
 import { X, AlertCircle, Info } from 'lucide-react';
-import { useToast } from "@/context/toast_context";
-import { useSession } from 'next-auth/react';
 import ColorPicker from './color_picker';
-import guildService from '@/services/guild_service';
+import { useBulkEdit } from '@/hooks/use_bulk_edit';
 import styles from './bulk_edit_modal.module.css';
 
 interface BulkEditModalProps {
@@ -28,85 +26,18 @@ export default function BulkEditModal({
   tier = 0, 
   isPremium = false 
 }: BulkEditModalProps) {
-  const { addToast } = useToast();
-  const { data: session } = useSession();
-  const isMasterUser = (session?.user as any)?.role === 'master';
-  const [loading, setLoading] = useState(false);
-  const [guildChannels, setGuildChannels] = useState<any[]>([]);
-  const [guildRoles, setGuildRoles] = useState<any[]>([]);
-  const [loadingContext, setLoadingContext] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    target_channels: [] as string[],
-    target_roles: [] as string[],
-    embed_color: '#3d3f45',
-    use_channels: false,
-    use_roles: false,
-    use_color: false,
-    use_native: false,
-    use_native_player: false,
-    use_custom_image: false,
-    custom_image: ''
-  });
-
-  const isLocked = !isMasterUser && !isPremium && tier < 2;
-
-  useEffect(() => {
-    if (!isOpen || !guildId) return;
-    let ignore = false;
-
-    async function loadData() {
-      try {
-        const [channels, roles] = await Promise.all([
-          guildService.getChannels(guildId),
-          guildService.getRoles(guildId)
-        ]);
-        if (!ignore) {
-          setGuildChannels(channels);
-          setGuildRoles(roles);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (!ignore) {
-          setLoadingContext(false);
-        }
-      }
-    }
-
-    loadData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [isOpen, guildId]);
+  const {
+    formData,
+    setFormData,
+    loading,
+    loadingContext,
+    guildChannels,
+    guildRoles,
+    isLocked,
+    handleSubmit,
+  } = useBulkEdit(guildId, isOpen, tier, isPremium, onSave, onClose);
 
   if (!isOpen) return null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isLocked) {
-      addToast("Bulk editing requires Professional Tier (Tier 2) or higher.", "error", "Locked");
-      return;
-    }
-
-    const updateData: Record<string, any> = {};
-    if (formData.use_channels) updateData.target_channels = formData.target_channels;
-    if (formData.use_roles) updateData.target_roles = formData.target_roles;
-    if (formData.use_color) updateData.embed_color = formData.embed_color;
-    if (formData.use_native) updateData.use_native_player = formData.use_native_player;
-    if (formData.use_custom_image) updateData.custom_image = formData.custom_image;
-
-    if (Object.keys(updateData).length === 0) {
-      addToast("Please select at least one field to update.", "info", "No changes");
-      return;
-    }
-
-    setLoading(true);
-    await onSave(updateData);
-    setLoading(false);
-    onClose();
-  };
 
   return (
     <div className={styles["modal-overlay"]}>

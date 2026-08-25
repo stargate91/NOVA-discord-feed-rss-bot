@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { useParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { Sparkles, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { PageHeader } from '@/components/layout';
 import {
   Badge,
@@ -15,74 +14,22 @@ import {
 } from '@/components/ui';
 import { PricingCard, PremiumComparisonTable } from '@/components/pricing';
 import { TIERS } from '@/constants/tiers';
-import billingService from '@/services/billing_service';
-import settingsService from '@/services/settings_service';
-import { useToast } from '@/context/toast_context';
+import { useGuildBilling } from '@/hooks/use_guild_billing';
 import styles from './billing.module.css';
 
 function GuildBillingContent() {
   const params = useParams();
   const guildId = (params?.guildId as string) || '';
-  const { data: session } = useSession();
-  const { addToast } = useToast();
 
-  const [billingInterval, setBillingInterval] = useState<'mo' | 'yr'>('mo');
-  const [currentTier, setCurrentTier] = useState(0);
-  const [isMaster, setIsMaster] = useState(false);
-  const [stripeConfig, setStripeConfig] = useState<any>(null);
-  const [checkoutLoading, setCheckoutLoading] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (guildId) {
-      Promise.all([
-        settingsService.getSettings(guildId),
-        billingService.getConfig(),
-      ])
-        .then(([sData, bConfig]) => {
-          if (sData.tier !== undefined) setCurrentTier(sData.tier);
-          if (sData.isMaster !== undefined) setIsMaster(sData.isMaster);
-          setStripeConfig(bConfig);
-        })
-        .catch((err) => {
-          console.error('Failed to fetch billing data:', err);
-          addToast('Failed to load billing config', 'error');
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [guildId, addToast]);
-
-  const handlePurchaseClick = async (tier: number) => {
-    if (!stripeConfig?.products) {
-      addToast('Billing configuration not loaded. Please refresh.', 'error');
-      return;
-    }
-
-    const priceId = Object.keys(stripeConfig.products).find((pid) => {
-      const p = stripeConfig.products[pid];
-      return p.tier === tier && p.interval === billingInterval;
-    });
-
-    if (!priceId) {
-      addToast('No Price ID found for this plan.', 'error');
-      return;
-    }
-
-    setCheckoutLoading(tier);
-    try {
-      const data = await billingService.createCheckoutSession(priceId, guildId);
-      if (data.url) {
-        window.location.assign(data.url);
-      } else {
-        addToast('Failed to create checkout session', 'error');
-      }
-    } catch (err: any) {
-      console.error('Checkout error:', err);
-      addToast(err?.message || 'An error occurred during checkout.', 'error');
-    } finally {
-      setCheckoutLoading(null);
-    }
-  };
+  const {
+    billingInterval,
+    setBillingInterval,
+    currentTier,
+    isMaster,
+    checkoutLoading,
+    loading,
+    handlePurchaseClick,
+  } = useGuildBilling(guildId);
 
   if (loading) {
     return (

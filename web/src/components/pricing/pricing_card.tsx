@@ -5,6 +5,10 @@ import { Check, ChevronRight } from 'lucide-react';
 import styles from './pricing_card.module.css';
 import { Button, Divider } from '@/components/ui';
 import { TierFeature } from '@/lib/premium_data';
+import {
+  getPricingButtonLabel,
+  getPricingButtonVariant,
+} from '@/utils/pricing_helpers';
 
 export interface PricingCardProps {
   title: string;
@@ -38,20 +42,18 @@ export function PricingCard({
   const isUpgrade = tier > currentTier && !isMaster;
   const isDowngrade = tier < currentTier && !isMaster;
 
-  const getButtonLabel = () => {
-    if (isLoading) return 'Processing...';
-    if (isMaster) return 'Master Access';
-    if (isCurrentPlan) return 'Current Plan';
-    if (isUpgrade) return 'Upgrade Now';
-    if (isDowngrade) return 'Switch Plan';
-    if (isFree) return 'Current Plan';
-    return 'Get Started';
+  const buttonParams = {
+    isLoading,
+    isMaster,
+    isCurrentPlan,
+    isUpgrade,
+    isDowngrade,
+    isFree,
+    isPopular,
   };
 
-  const getButtonVariant = () => {
-    if (isPopular && !isCurrentPlan && !isMaster && !isFree) return 'primary';
-    return 'secondary';
-  };
+  const buttonLabel = getPricingButtonLabel(buttonParams);
+  const buttonVariant = getPricingButtonVariant(buttonParams);
 
   return (
     <div
@@ -101,7 +103,7 @@ export function PricingCard({
 
       <div className={styles['pricing-action']}>
         <Button
-          variant={getButtonVariant()}
+          variant={buttonVariant}
           size="lg"
           fullWidth
           disabled={isFree || isCurrentPlan || isMaster}
@@ -117,7 +119,7 @@ export function PricingCard({
             }
           }}
         >
-          {getButtonLabel()}
+          {buttonLabel}
         </Button>
       </div>
     </div>
