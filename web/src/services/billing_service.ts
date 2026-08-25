@@ -1,4 +1,5 @@
 import api from './api_client';
+import { extractErrorMessage } from '@/utils/toast';
 
 export interface BillingConfig {
   public_key?: string;
@@ -36,7 +37,35 @@ export const billingService = {
 
   async redeemPromoCode(code: string, guildId: string): Promise<{ success: boolean; newUntil: string }> {
     return api.post<{ success: boolean; newUntil: string }>('/api/billing/redeem', { code, guildId });
+  },
+
+  async initiateCheckoutSession(
+    params: CreateCheckoutParams,
+    options?: {
+      onSuccess?: (url: string) => void;
+      onError?: (error: string) => void;
+    }
+  ): Promise<string | null> {
+    try {
+      const data = await this.createCheckoutSession(params);
+      if (data?.url) {
+        if (options?.onSuccess) {
+          options.onSuccess(data.url);
+        } else {
+          window.location.assign(data.url);
+        }
+        return data.url;
+      }
+      const msg = 'Failed to create checkout session';
+      options?.onError?.(msg);
+      return null;
+    } catch (err: unknown) {
+      const msg = extractErrorMessage(err, 'An error occurred during checkout.');
+      options?.onError?.(msg);
+      return null;
+    }
   }
 };
 
 export default billingService;
+

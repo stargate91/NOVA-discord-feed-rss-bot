@@ -23,6 +23,7 @@ import {
   Button,
   Input,
   Avatar,
+  GuildAvatar,
   EmptyState,
   Spinner,
   Inline,
@@ -30,6 +31,7 @@ import {
   IconButton,
 } from "@/components/ui";
 import { useServerList } from "@/hooks/use_server_list";
+import { getBotInviteUrl } from "@/utils";
 import styles from "./servers.module.css";
 
 export default function ServersPage() {
@@ -50,23 +52,24 @@ export default function ServersPage() {
       <div className={["ui-container", styles["servers-container"]].join(" ")}>
         {/* ── Header ── */}
         <header className={styles["servers-header"]}>
-          <Badge variant="primary" size="md" icon={<Server size={14} />}>
-            SERVER HUB
-          </Badge>
+          <div className={styles["header-text-group"]}>
+            <Heading level={1} size="4xl" weight="black">
+              Your <span className="text-gradient">Servers</span>
+            </Heading>
+            <Text as="p" size="base" variant="secondary">
+              Select a Discord server to configure feeds, alert templates, and notification channels.
+            </Text>
+          </div>
 
-          <Heading level={1} size="5xl" weight="black">
-            Your <span className={styles["text-gradient"]}>Servers</span>
-          </Heading>
-
-          <Text
-            as="p"
-            size="lg"
-            variant="secondary"
-            className={styles["servers-lead"]}
+          <a
+            href={getBotInviteUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            Choose a Discord server to manage its feeds, monitors, and automated
-            notifications.
-          </Text>
+            <Button variant="primary" leftIcon={<Plus size={18} />}>
+              Add to Another Server
+            </Button>
+          </a>
         </header>
 
         {/* ── Search Bar ── */}
@@ -148,13 +151,10 @@ export default function ServersPage() {
                 role="button"
               >
                 <div className={styles["guild-left"]}>
-                  <Avatar
-                    src={guild.iconUrl}
-                    alt={guild.name}
+                  <GuildAvatar
+                    guild={guild}
                     shape="square"
                     size="lg"
-                    fallback={guild.initials}
-                    status={guild.hasBot ? "online" : undefined}
                   />
 
                   <div className={styles["guild-info"]}>

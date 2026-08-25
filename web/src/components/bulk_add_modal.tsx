@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { X, Zap, Check, AlertCircle, ChevronRight, ChevronLeft, RefreshCw, Shield } from "lucide-react";
-import MultiSelect from './multi_select';
-import ColorPicker from './color_picker';
+import MonitorDeliveryFields from './monitor_delivery_fields';
+import MonitorBrandingFields from './monitor_branding_fields';
+import MonitorToggleOptions from './monitor_toggle_options';
+import { Modal } from '@/components/ui';
 import { BULK_PLATFORMS } from '@/constants/platforms';
-import { supportsCustomEmbedColor, supportsLiveAlerts, supportsNativePlayer } from '@/utils';
+import { getGuildDashboardRoute } from '@/utils';
 import { useBulkAddWizard } from '@/hooks/use_bulk_add_wizard';
-import { GuildFeatures } from '@/types/guild';
+import { useGuildContext } from '@/context/guild_context';
 import styles from './bulk_add_modal.module.css';
 
 interface BulkAddModalProps {
@@ -17,26 +19,15 @@ interface BulkAddModalProps {
   onClose: () => void;
   guildId: string;
   onSuccess?: () => void;
-  tier?: number;
-  isPremium?: boolean;
-  guildLoading?: boolean;
-  features?: GuildFeatures;
 }
-
-const subscribe = () => () => {};
 
 export default function BulkAddModal({ 
   isOpen, 
   onClose, 
   guildId, 
   onSuccess, 
-  tier = 0, 
-  isPremium = false, 
-  guildLoading = false,
-  features,
 }: BulkAddModalProps) {
-  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
-
+  const { loading: guildLoading, isLocked } = useGuildContext();
   const {
     step,
     selectedPlatform,
@@ -49,8 +40,8 @@ export default function BulkAddModal({
     setTargetRoles,
     embedColor,
     setEmbedColor,
-    channels,
-    roles,
+    channelOptions,
+    roleOptions,
     processing,
     results,
     sendInitialAlert,
@@ -64,94 +55,127 @@ export default function BulkAddModal({
     handleBack,
     handleSubmit,
     resetState,
-  } = useBulkAddWizard({ guildId, isOpen, onSuccess, tier, isPremium, features });
+  } = useBulkAddWizard({
+    guildId,
+    isOpen,
+    onSuccess,
+  });
 
-  const handleClose = () => {
+  const handleModalClose = () => {
     resetState();
     onClose();
   };
 
-  if (!isOpen || !mounted) return null;
+  const isFormValid = inputList.trim().length > 0 && targetChannels.length > 0;
 
-  const modalContent = (
-    <div className={styles["modal-overlay"]}>
-      <div className={styles["modal-content"]}>
-        <div className={styles["modal-header"]}>
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleModalClose}
+      title=""
+      size="md"
+      className={styles["bulk-modal-custom"]}
+    >
+      <div className={styles["modal-shell"]}>
+        {/* Header */}
+        <div className={styles["modal-header-custom"]}>
           <div className={styles["header-left"]}>
-            <div className={styles["icon-wrapper"]}>
+            <div className={styles["header-icon"]}>
               <Zap size={20} />
             </div>
-            <div className={styles["header-text"]}>
-              <h3 className={styles["modal-title"]}>Bulk Import Wizard</h3>
-              <p className={styles["modal-subtitle"]}>
-                Step {step} of 3: {step === 1 ? 'Select Platform' : step === 2 ? 'Configure Feeds' : 'Results'}
-              </p>
+            <div>
+              <h3 className={styles["header-title"]}>Bulk Add Monitors</h3>
+              <p className={styles["header-subtitle"]}>Quickly set up multiple sources at once</p>
             </div>
           </div>
           <button 
             type="button" 
-            className={styles["modal-close-btn"]} 
-            onClick={handleClose}
+            onClick={handleModalClose}
+            className={styles["close-btn"]}
             aria-label="Close modal"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        <div className={styles["modal-body"]}>
-          {guildLoading ? (
-            <div className={styles["loading-container"]}>
-              <RefreshCw size={48} className={`animate-spin ${styles["loading-spinner"]}`} />
-              <p className={styles["loading-text"]}>Verifying permissions...</p>
+        {/* Tier Lock Gate */}
+        {!isTierEligible && !guildLoading ? (
+          <div className={styles["tier-gate"]}>
+            <div className={styles["gate-icon-wrap"]}>
+              <Shield size={36} className={styles["gate-icon"]} />
             </div>
-          ) : !isTierEligible ? (
-            <div className={styles["lock-container"]}>
-              <Shield size={48} className={styles["lock-icon"]} />
-              <h4 className={styles["lock-title"]}>Professional Feature</h4>
-              <p className={styles["lock-description"]}>
-                The Bulk Import Wizard is available exclusively for Professional and Ultimate tiers.
-              </p>
-              <a href={`/dashboard/${guildId}/billing`} className={styles["upgrade-btn"]}>
+            <h4 className={styles["gate-title"]}>Professional Tier Feature</h4>
+            <p className={styles["gate-desc"]}>
+              The Bulk Add Wizard allows you to quickly import multiple social media and streaming feeds in one go. Upgrade your server to unlock this power feature.
+            </p>
+            <div className={styles["gate-actions"]}>
+              <Link 
+                href={getGuildDashboardRoute(guildId, 'billing')}
+                className={`ui-btn ui-btn-primary ${styles["gate-upgrade-btn"]}`}
+              >
                 Upgrade to Professional
-              </a>
+              </Link>
+              <button 
+                type="button" 
+                onClick={handleModalClose}
+                className={`ui-btn ${styles["gate-cancel-btn"]}`}
+              >
+                Cancel
+              </button>
             </div>
-          ) : (
-            <>
+          </div>
+        ) : (
+          <>
+            {/* Stepper Wizard Indicator */}
+            <div className={styles["wizard-stepper"]}>
+              <div className={`${styles["step-item"]} ${step >= 1 ? styles["active"] : ''}`}>
+                <div className={styles["step-number"]}>1</div>
+                <span className={styles["step-text"]}>Select Platform</span>
+              </div>
+              <div className={styles["step-line"]} />
+              <div className={`${styles["step-item"]} ${step >= 2 ? styles["active"] : ''}`}>
+                <div className={styles["step-number"]}>2</div>
+                <span className={styles["step-text"]}>Configure</span>
+              </div>
+              <div className={styles["step-line"]} />
+              <div className={`${styles["step-item"]} ${step >= 3 ? styles["active"] : ''}`}>
+                <div className={styles["step-number"]}>3</div>
+                <span className={styles["step-text"]}>Results</span>
+              </div>
+            </div>
+
+            {/* Modal Body / Steps */}
+            <div className={styles["modal-body-custom"]}>
               {step === 1 && (
-                <div className={styles["platform-grid"]}>
+                <div className={styles["platforms-grid"]}>
                   {BULK_PLATFORMS.map((p) => (
                     <button
                       key={p.id}
                       type="button"
-                      className={`${styles["platform-card"]} ${selectedPlatform?.id === p.id ? styles["active"] : ''}`}
-                      onClick={() => setSelectedPlatform(p)}
+                      onClick={() => {
+                        setSelectedPlatform(p);
+                        setEmbedColor(p.color);
+                      }}
+                      className={`${styles["platform-card"]} ${selectedPlatform?.id === p.id ? styles["selected"] : ''}`}
                     >
-                      <div className={styles["platform-icon-wrapper"]}>
-                        <Image 
-                          src={p.logo} 
-                          alt={p.name} 
-                          width={28} 
-                          height={28} 
-                          unoptimized 
-                        />
-                      </div>
-                      <span className={styles["platform-name"]}>{p.name}</span>
-                      {selectedPlatform?.id === p.id && (
-                        <div className={styles["platform-check"]}>
-                          <Check size={12} />
+                      <div className={styles["platform-card-header"]}>
+                        <div className={styles["platform-icon-wrap"]}>
+                          <Image src={p.logo} alt={p.name} width={28} height={28} className={styles["platform-icon"]} unoptimized />
                         </div>
-                      )}
+                        <span className={styles["platform-name"]}>{p.name}</span>
+                      </div>
+                      <p className={styles["platform-desc"]}>{p.hint}</p>
                     </button>
                   ))}
                 </div>
               )}
 
               {step === 2 && selectedPlatform && (
-                <div>
+                <div className={styles["config-form"]}>
                   <div className={styles["form-group"]}>
                     <div className={styles["form-label-row"]}>
                       <label className={styles["form-label"]} htmlFor="bulk-source-input">
-                        Enter {selectedPlatform.name} sources (one per line)
+                        Sources (One per line)
                       </label>
                       <span className={styles["hint-badge"]}>
                         {selectedPlatform.hint}
@@ -166,99 +190,34 @@ export default function BulkAddModal({
                     />
                   </div>
 
-                  <div className={styles["form-grid-2"]}>
-                    <div className={styles["form-group"]}>
-                      <span className={styles["form-label"]}>Target Channels</span>
-                      <MultiSelect
-                        options={channels.map(c => ({ id: c.id, name: `#${c.name}` }))}
-                        value={targetChannels}
-                        onChange={setTargetChannels}
-                        placeholder="Select channels..."
-                      />
-                    </div>
-                    <div className={styles["form-group"]}>
-                      <span className={styles["form-label"]}>Ping Roles (Optional)</span>
-                      <MultiSelect
-                        options={roles.map(r => ({ id: r.id, name: r.name }))}
-                        value={targetRoles}
-                        onChange={setTargetRoles}
-                        placeholder="No ping roles"
-                      />
-                    </div>
-                  </div>
+                  <MonitorDeliveryFields
+                    guildChannels={channelOptions}
+                    guildRoles={roleOptions}
+                    targetChannels={targetChannels}
+                    targetRoles={targetRoles}
+                    onChangeChannels={setTargetChannels}
+                    onChangeRoles={setTargetRoles}
+                    className={styles["form-grid-2"]}
+                  />
 
-                  {supportsCustomEmbedColor(selectedPlatform?.id, useNativePlayer) && (
-                    <div className={styles["form-group"]}>
-                      <span className={styles["form-label"]}>Accent Color</span>
-                      <ColorPicker 
-                        value={embedColor} 
-                        onChange={setEmbedColor}
-                      />
-                    </div>
-                  )}
+                  <MonitorBrandingFields
+                    platformId={selectedPlatform.id}
+                    embedColor={embedColor}
+                    onChangeColor={setEmbedColor}
+                    customImage={customImage}
+                    onChangeCustomImage={setCustomImage}
+                    useNativePlayer={useNativePlayer}
+                    isLocked={isLocked}
+                  />
 
-                  <div className={styles["section-box"]}>
-                    <div className={styles["form-label-row"]}>
-                      <label className={styles["form-label"]} htmlFor="bulk-custom-image">
-                        Custom Image URL
-                      </label>
-                      <div className={styles["tag-badge"]}>
-                        Imgur, Discord, etc.
-                      </div>
-                    </div>
-                    <input
-                      id="bulk-custom-image"
-                      type="text"
-                      value={customImage}
-                      onChange={(e) => setCustomImage(e.target.value)}
-                      className="ui-input"
-                      placeholder="https://imgur.com/example.png"
-                    />
-                  </div>
-
-                  {supportsLiveAlerts(selectedPlatform?.id) && (
-                    <div className={styles["toggle-row"]}>
-                      <div className={styles["toggle-text-wrap"]}>
-                        <label className={styles["toggle-label"]} htmlFor="send-initial-alert-bulk">
-                          Send initial alert
-                        </label>
-                        <p className={styles["toggle-desc"]}>
-                          Post updates immediately for any source that is already live.
-                        </p>
-                      </div>
-                      <label className="ui-switch">
-                        <input
-                          id="send-initial-alert-bulk"
-                          type="checkbox"
-                          checked={sendInitialAlert}
-                          onChange={(e) => setSendInitialAlert(e.target.checked)}
-                        />
-                        <span className="ui-switch-slider"></span>
-                      </label>
-                    </div>
-                  )}
-
-                  {supportsNativePlayer(selectedPlatform?.id) && (
-                    <div className={styles["toggle-row"]}>
-                      <div className={styles["toggle-text-wrap"]}>
-                        <label className={styles["toggle-label"]} htmlFor="use-native-player-bulk">
-                          Use Native Discord Player
-                        </label>
-                        <p className={styles["toggle-desc"]}>
-                          Bypass the custom layout and let Discord embed the video directly.
-                        </p>
-                      </div>
-                      <label className="ui-switch">
-                        <input
-                          id="use-native-player-bulk"
-                          type="checkbox"
-                          checked={useNativePlayer}
-                          onChange={(e) => setUseNativePlayer(e.target.checked)}
-                        />
-                        <span className="ui-switch-slider"></span>
-                      </label>
-                    </div>
-                  )}
+                  <MonitorToggleOptions
+                    platformId={selectedPlatform.id}
+                    sendInitialAlert={sendInitialAlert}
+                    onChangeSendInitialAlert={setSendInitialAlert}
+                    useNativePlayer={useNativePlayer}
+                    onChangeUseNativePlayer={setUseNativePlayer}
+                    isLocked={isLocked}
+                  />
                 </div>
               )}
 
@@ -297,9 +256,9 @@ export default function BulkAddModal({
                   )}
                 </div>
               )}
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
 
         <div className={styles["modal-footer"]}>
           {!guildLoading && isTierEligible && step < 3 && (
@@ -318,7 +277,7 @@ export default function BulkAddModal({
                 <button 
                   type="button" 
                   className={`ui-btn ${styles["btn-secondary"]}`} 
-                  onClick={handleClose} 
+                  onClick={handleModalClose} 
                   disabled={processing}
                 >
                   Cancel
@@ -337,7 +296,7 @@ export default function BulkAddModal({
                     type="button" 
                     className="ui-btn ui-btn-primary" 
                     onClick={handleSubmit} 
-                    disabled={processing}
+                    disabled={processing || !isFormValid}
                   >
                     {processing ? (
                       <>
@@ -357,15 +316,13 @@ export default function BulkAddModal({
             <button 
               type="button" 
               className="ui-btn ui-btn-primary" 
-              onClick={handleClose}
+              onClick={handleModalClose}
             >
               Close
             </button>
           )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
-
-  return createPortal(modalContent, document.body);
 }

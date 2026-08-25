@@ -360,3 +360,25 @@
     display: none;
   }
 }
+
+/* ── 10. Ambient Glow & Light Orbs ── */
+.hero-glow-orb {
+  position: absolute;
+  top: -6.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 37.5rem;
+  height: 25rem;
+  background: var(--gradient-hero-orb, radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%));
+  filter: blur(var(--blur-2xl, 80px));
+  pointer-events: none;
+  z-index: var(--z-background, 0);
+}
+
+.bg-glow-orb {
+  position: absolute;
+  pointer-events: none;
+  filter: blur(var(--blur-2xl, 80px));
+  z-index: var(--z-background, 0);
+}
+

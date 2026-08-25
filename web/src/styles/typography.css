@@ -79,16 +79,25 @@
   letter-spacing: var(--tracking-tight);
 }
 
+.text-gradient,
 .text-gradient-primary {
-  background: var(--gradient-primary);
+  background: var(--gradient-primary, linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #3b82f6 100%));
   background-clip: text;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
+  display: inline-block;
 }
 
 .text-gradient-master {
   background: var(--gradient-master);
   background-clip: text;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
+  display: inline-block;
 }
 
 .text-truncate {

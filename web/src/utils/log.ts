@@ -43,18 +43,36 @@ export function normalizeLogLine(log: string | StructuredLogEntry): StructuredLo
 }
 
 /**
- * Parses a raw log line into structured display metadata (legacy fallback).
- */
-export function parseLogLine(line: string): StructuredLogEntry | null {
-  return normalizeLogLine(line);
-}
-
-/**
  * Resolves the CSS module class name for a given log modifier level.
  */
 export function getLogModifierClass(modifier: string, styles: Record<string, string> = {}): string {
   if (!modifier) return '';
   return styles[`log-${modifier}`] || '';
 }
+
+export interface LogLevelMeta {
+  color: string;
+  badgeClass: string;
+  prefix: string;
+}
+
+/**
+ * Returns UI metadata for a log level (color, badge class name, and 3-letter prefix).
+ */
+export function getLogLevelMeta(level: LogLevel): LogLevelMeta {
+  switch (level) {
+    case 'error':
+      return { color: '#ef4444', badgeClass: 'badge-error', prefix: 'ERR' };
+    case 'warning':
+      return { color: '#f59e0b', badgeClass: 'badge-warning', prefix: 'WRN' };
+    case 'info':
+      return { color: '#3b82f6', badgeClass: 'badge-info', prefix: 'INF' };
+    case 'debug':
+      return { color: '#10b981', badgeClass: 'badge-debug', prefix: 'DBG' };
+    default:
+      return { color: '#94a3b8', badgeClass: 'badge-default', prefix: 'LOG' };
+  }
+}
+
 
 

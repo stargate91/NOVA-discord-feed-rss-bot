@@ -1,41 +1,13 @@
 import api from './api_client';
-import { MonitorConfig } from '@/types/monitor';
+import {
+  MonitorConfig,
+  CreateMonitorPayload,
+  UpdateMonitorPayload,
+  BulkAddPayload,
+  BulkAddResponse,
+} from '@/types/monitor';
 
-export interface CreateMonitorPayload {
-  guild_id: string;
-  name: string;
-  type: string;
-  platform_input: string;
-  channel_id: string;
-  channel_ids?: string[];
-  role_id?: string;
-  role_ids?: string[];
-  language?: string;
-  custom_template?: string;
-  embed_color?: string;
-  [key: string]: any;
-}
-
-export interface BulkAddPayload {
-  guildId: string;
-  type: string;
-  sources: string[];
-  targetChannels: string[];
-  targetRoles?: string[];
-  embedColor?: string;
-  sendInitialAlert?: boolean;
-  use_native_player?: boolean;
-  custom_image?: string;
-  [key: string]: any;
-}
-
-export interface BulkAddResponse {
-  success: boolean;
-  successCount: number;
-  errorCount: number;
-  errors?: string[];
-}
-
+export type { CreateMonitorPayload, UpdateMonitorPayload, BulkAddPayload, BulkAddResponse };
 export type MonitorActionType = 'check' | 'pause' | 'resume' | 'reset_history' | 'repost_latest' | 'purge';
 
 export const monitorService = {
@@ -56,7 +28,7 @@ export const monitorService = {
     return api.patch(`/api/monitors/${id}`, { enabled });
   },
 
-  async updateMonitor(id: number | string, data: Partial<MonitorConfig>): Promise<any> {
+  async updateMonitor(id: number | string, data: UpdateMonitorPayload | Partial<MonitorConfig>): Promise<any> {
     return api.patch(`/api/monitors/${id}`, data);
   },
 

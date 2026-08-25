@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense } from "react";
-import { useAuthErrorNotification } from "@/hooks/use_auth_error_notification";
+import { useAuthErrorNotification } from "@/hooks/use_auth_error";
+
 
 function ErrorNotifier() {
   useAuthErrorNotification();

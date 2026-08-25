@@ -7,12 +7,9 @@ import {
   Heading,
   Text,
   Badge,
-  Grid,
-  SegmentedControl,
-  Stack,
 } from "@/components/ui";
-import { PricingCard, PremiumComparisonTable } from "@/components/pricing";
-import { usePremiumPage, BillingInterval } from "@/hooks/use_premium_page";
+import { PricingSection } from "@/components/pricing";
+import { usePricingPlanSelection } from "@/hooks/use_pricing_plan_selection";
 import styles from "./premium.module.css";
 
 export default function PublicPremiumPage() {
@@ -20,10 +17,11 @@ export default function PublicPremiumPage() {
     session,
     billingInterval,
     setBillingInterval,
+    checkoutLoading,
     handlePurchaseClick,
     getTierPrice,
     tiers,
-  } = usePremiumPage();
+  } = usePricingPlanSelection();
 
   return (
     <PublicLayout session={session}>
@@ -35,64 +33,24 @@ export default function PublicPremiumPage() {
           </Badge>
 
           <Heading level={1} size="5xl" weight="black">
-            Choose Your <span className={styles["text-gradient"]}>Plan</span>
+            Choose Your <span className="text-gradient">Plan</span>
           </Heading>
 
           <Text as="p" size="lg" variant="secondary" className={styles["premium-lead"]}>
             Supercharge your Discord server with fast update intervals,
             unlimited feeds, custom templates, and priority delivery.
           </Text>
-
-          {/* Billing Switcher */}
-          <div className={styles["switcher-wrapper"]}>
-            <SegmentedControl<BillingInterval>
-              value={billingInterval}
-              onChange={setBillingInterval}
-              options={[
-                { value: "mo", label: "Monthly Billing" },
-                {
-                  value: "yr",
-                  label: (
-                    <span className={styles["yearly-label"]}>
-                      <span>Yearly Billing</span>
-                      <Badge variant="warning" size="sm">
-                        SAVE 20%
-                      </Badge>
-                    </span>
-                  ),
-                },
-              ]}
-            />
-          </div>
         </header>
 
-        {/* ── Pricing Cards Grid ── */}
-        <Grid columns={4} gap="lg">
-          {tiers.map((t) => (
-            <PricingCard
-              key={t.tier}
-              tier={t.tier}
-              title={t.title}
-              description={t.description}
-              price={getTierPrice(t)}
-              interval={billingInterval === "mo" ? "mo" : "yr"}
-              isPopular={t.isPopular}
-              features={t.features}
-              onPurchaseClick={() => handlePurchaseClick(t.tier)}
-            />
-          ))}
-        </Grid>
-
-        {/* ── Feature Comparison Table ── */}
-        <Stack gap="md" align="center" className={styles["comparison-section"]}>
-          <Heading level={2} size="3xl" weight="bold">
-            Compare Plan Features
-          </Heading>
-          <Text as="p" size="sm" variant="muted">
-            Everything you need to know about limits and exclusive perks.
-          </Text>
-          <PremiumComparisonTable />
-        </Stack>
+        {/* ── Pricing Section (Switcher, Cards & Comparison Table) ── */}
+        <PricingSection
+          billingInterval={billingInterval}
+          onIntervalChange={setBillingInterval}
+          checkoutLoading={checkoutLoading}
+          onPurchaseClick={handlePurchaseClick}
+          getTierPrice={getTierPrice}
+          tiers={tiers}
+        />
       </div>
     </PublicLayout>
   );

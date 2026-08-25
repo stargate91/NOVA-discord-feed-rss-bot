@@ -1,6 +1,5 @@
 export * from './discord';
 export * from './platform';
-export * from './platform_detector';
 export * from './color';
 export * from './heatmap';
 export * from './monitor_form';

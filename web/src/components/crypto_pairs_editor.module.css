@@ -1,0 +1,60 @@
+.crypto-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.crypto-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.crypto-sep {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+.crypto-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.btn-add-coin {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-add-coin:hover {
+  background: var(--bg-card-hover);
+}
+
+.btn-delete-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--status-error);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-delete-coin:hover {
+  background: color-mix(in srgb, var(--status-error) 10%, transparent);
+  border-color: color-mix(in srgb, var(--status-error) 20%, transparent);
+}
+

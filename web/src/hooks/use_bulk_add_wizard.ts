@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import guildService from '@/services/guild_service';
-import monitorService from '@/services/monitor_service';
+import { useState } from 'react';
 import { BulkPlatformMetadata } from '@/types/monitor';
 import { useToast } from '@/context/toast_context';
+import { useGuildContext } from '@/context/guild_context';
+import { useGuildChannelsAndRoles } from '@/hooks/use_guild_channels_and_roles';
+import { useMonitorMutations } from '@/hooks/use_monitor_mutations';
 import {
   parseSourcesList,
   validateBulkAddInputs,
@@ -40,13 +41,11 @@ export function useBulkAddWizard(
     guildId,
     isOpen,
     onSuccess,
-    tier = 0,
-    isPremium = false,
-    features,
   } = options;
 
-  const isMaster = features?.isMaster ?? (isPremium && tier === 0);
-  const isTierEligible = features?.canBulkImport ?? (isMaster || (isPremium && tier >= 2));
+  const mutations = useMonitorMutations();
+  const { isMaster, isLocked, tierContext } = useGuildContext();
+  const isTierEligible = !isLocked('bulk_import');
   const { addToast } = useToast();
 
   const [step, setStep] = useState(1);
@@ -55,9 +54,8 @@ export function useBulkAddWizard(
   const [targetChannels, setTargetChannels] = useState<string[]>([]);
   const [targetRoles, setTargetRoles] = useState<string[]>([]);
   const [embedColor, setEmbedColor] = useState('#3d3f45');
-  const [channels, setChannels] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [processing, setProcessing] = useState(false);
+  const { channels, roles, channelOptions, roleOptions } = useGuildChannelsAndRoles(guildId, isOpen);
+
   const [results, setResults] = useState<BulkAddResult | null>(null);
   const [sendInitialAlert, setSendInitialAlert] = useState(false);
   const [useNativePlayer, setUseNativePlayer] = useState(false);
@@ -74,32 +72,6 @@ export function useBulkAddWizard(
     setSendInitialAlert(false);
     setUseNativePlayer(false);
   };
-
-  useEffect(() => {
-    if (!isOpen || !guildId) return;
-    let ignore = false;
-
-    async function loadGuildData() {
-      try {
-        const [chanData, roleData] = await Promise.all([
-          guildService.getChannels(guildId),
-          guildService.getRoles(guildId),
-        ]);
-        if (!ignore) {
-          setChannels(chanData);
-          setRoles(roleData);
-        }
-      } catch (err) {
-        console.error('Failed to fetch guild data:', err);
-      }
-    }
-
-    loadGuildData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [isOpen, guildId]);
 
   const handleNext = () => {
     if (step === 1 && !selectedPlatform) return;
@@ -120,34 +92,23 @@ export function useBulkAddWizard(
       return;
     }
 
-    setProcessing(true);
-    try {
-      const payload = buildBulkAddPayload({
-        guildId,
-        platformId: selectedPlatform.id,
-        sources: items,
-        targetChannels,
-        targetRoles,
-        embedColor,
-        sendInitialAlert,
-        useNativePlayer,
-        customImage,
-      });
+    const payload = buildBulkAddPayload({
+      guildId,
+      platformId: selectedPlatform.id,
+      sources: items,
+      targetChannels,
+      targetRoles,
+      embedColor,
+      sendInitialAlert,
+      useNativePlayer,
+      customImage,
+    });
 
-      const data = await monitorService.bulkAddMonitors(payload);
-
+    const data = await mutations.bulkAddMonitors(payload);
+    if (data) {
       setResults(data);
       setStep(3);
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      console.error('Bulk add error:', err);
-      addToast(
-        err?.message || 'Failed to process bulk add.',
-        'error',
-        'Processing Failed'
-      );
-    } finally {
-      setProcessing(false);
     }
   };
 
@@ -166,7 +127,10 @@ export function useBulkAddWizard(
     setEmbedColor,
     channels,
     roles,
-    processing,
+    channelOptions,
+    roleOptions,
+    processing: mutations.bulkProcessing,
+
     results,
     sendInitialAlert,
     setSendInitialAlert,

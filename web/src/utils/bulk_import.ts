@@ -1,3 +1,5 @@
+import { supportsLiveAlerts, supportsNativePlayer } from './platform';
+
 export function parseSourcesList(input: string): string[] {
   return input
     .split('\n')
@@ -46,11 +48,12 @@ export function buildBulkAddPayload(params: BulkAddPayloadParams) {
     targetChannels: params.targetChannels,
     targetRoles: params.targetRoles,
     embedColor: params.embedColor,
-    sendInitialAlert: ['stream', 'kick'].includes(params.platformId)
+    sendInitialAlert: supportsLiveAlerts(params.platformId)
       ? params.sendInitialAlert
       : false,
-    use_native_player:
-      params.platformId === 'youtube' ? params.useNativePlayer : undefined,
+    use_native_player: supportsNativePlayer(params.platformId)
+      ? params.useNativePlayer
+      : undefined,
     custom_image: params.customImage,
   };
 }

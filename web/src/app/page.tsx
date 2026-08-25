@@ -66,7 +66,7 @@ export default async function LandingPage() {
       <div className={["ui-container", styles["landing-container"]].join(" ")}>
         {/* ── 1. Hero Section ── */}
         <section className={styles["hero-section"]}>
-          <div className={styles["hero-glow-orb"]} aria-hidden="true" />
+          <div className="hero-glow-orb" aria-hidden="true" />
 
           <div className={styles["hero-content"]}>
             <Badge variant="primary" size="md" dot icon={<Sparkles size={14} />}>
@@ -75,7 +75,7 @@ export default async function LandingPage() {
 
             <Heading level={1} size="6xl" weight="black">
               Elevate your <br />
-              <span className={styles["text-gradient"]}>server&apos;s feeds</span>
+              <span className="text-gradient">server&apos;s feeds</span>
             </Heading>
 
             <Text

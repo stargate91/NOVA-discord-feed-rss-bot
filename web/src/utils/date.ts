@@ -37,3 +37,17 @@ export function formatExpiryDate(dateStr?: string | null): string {
     day: 'numeric',
   });
 }
+
+/**
+ * Formats a date for charts and analytics (e.g. "Apr 27").
+ */
+export function formatShortDate(dateInput?: string | number | Date | null): string {
+  if (!dateInput) return '';
+  const date = typeof dateInput === 'object' && dateInput instanceof Date ? dateInput : new Date(dateInput);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+

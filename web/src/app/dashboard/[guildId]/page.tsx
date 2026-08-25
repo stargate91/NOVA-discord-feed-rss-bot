@@ -17,8 +17,8 @@ import {
 import StatCard from "@/components/stat_card";
 import UsageIndicator from "@/components/usage_indicator";
 import QuickActions from "@/components/quick_actions";
-import EmptyStateCard from "@/components/empty_state_card";
-import { getGuildDashboardData } from "@/utils/dashboard";
+import DashboardOnboardingCard from "@/components/dashboard_onboarding_card";
+import { getGuildDashboardData } from "@/lib/server/dashboard";
 import styles from "./dashboard.module.css";
 
 interface GuildDashboardPageProps {
@@ -110,7 +110,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
       <div className={styles["main-grid"]}>
         <div className={styles["main-left"]}>
           {stats?.totalMonitorsCount === 0 && (
-            <EmptyStateCard guildId={guildId} />
+            <DashboardOnboardingCard guildId={guildId} />
           )}
 
           {/* Plan Usage & Limits Card */}

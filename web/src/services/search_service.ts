@@ -12,11 +12,15 @@ export interface PlatformSearchResult {
   id: string;
   name: string;
   icon?: string;
+  thumbnail?: string;
   banner?: string;
   description?: string;
   subtitle?: string;
   type?: string;
+  is_live?: boolean;
+  [key: string]: any;
 }
+
 
 export interface ResolvedSourceResult {
   type: string;

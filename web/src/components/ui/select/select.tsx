@@ -3,14 +3,10 @@
 import React, { useState, useRef } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { useClickOutside, useEscapeKey } from '@/hooks';
+import { SelectOption } from '@/types/ui';
 import styles from './select.module.css';
 
-export interface SelectOption<T = string> {
-  value: T;
-  label: React.ReactNode;
-  icon?: React.ReactNode;
-  disabled?: boolean;
-}
+export type { SelectOption };
 
 export interface SelectProps<T = string> {
   options: SelectOption<T>[];
@@ -36,14 +32,17 @@ export function Select<T = string>({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const selectedOption = options.find((opt) => opt.value === value);
+  const selectedOption = options.find(
+    (opt) => (opt.value !== undefined ? opt.value : opt.id) === value
+  );
 
   useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
   useEscapeKey(() => setIsOpen(false), isOpen);
 
   const handleSelect = (option: SelectOption<T>) => {
     if (option.disabled) return;
-    onChange(option.value);
+    const selectedVal = option.value !== undefined ? option.value : (option.id as unknown as T);
+    onChange(selectedVal);
     setIsOpen(false);
   };
 

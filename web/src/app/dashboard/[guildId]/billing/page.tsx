@@ -6,14 +6,10 @@ import { ShieldCheck } from 'lucide-react';
 import { PageHeader } from '@/components/layout';
 import {
   Badge,
-  SegmentedControl,
   Spinner,
   Stack,
-  Heading,
-  Text,
 } from '@/components/ui';
-import { PricingCard, PremiumComparisonTable } from '@/components/pricing';
-import { TIERS } from '@/constants/tiers';
+import { PricingSection } from '@/components/pricing';
 import { useGuildBilling } from '@/hooks/use_guild_billing';
 import styles from './billing.module.css';
 
@@ -29,6 +25,8 @@ function GuildBillingContent() {
     checkoutLoading,
     loading,
     handlePurchaseClick,
+    getTierPrice,
+    tiers,
   } = useGuildBilling(guildId);
 
   if (loading) {
@@ -62,60 +60,19 @@ function GuildBillingContent() {
         }
       />
 
-      {/* ── Billing Interval Switcher ── */}
-      <div className={styles['switcher-row']}>
-        <SegmentedControl<'mo' | 'yr'>
-          value={billingInterval}
-          onChange={setBillingInterval}
-          options={[
-            { value: 'mo', label: 'Monthly Billing' },
-            {
-              value: 'yr',
-              label: (
-                <span className={styles['yearly-badge-wrapper']}>
-                  <span>Yearly Billing</span>
-                  <Badge variant="warning" size="sm">
-                    SAVE 20%
-                  </Badge>
-                </span>
-              ),
-            },
-          ]}
-        />
-      </div>
-
-      {/* ── Pricing Cards Grid ── */}
-      <div className={styles['plans-grid']}>
-        {TIERS.map((t) => (
-          <PricingCard
-            key={t.tier}
-            tier={t.tier}
-            currentTier={currentTier}
-            isMaster={isMaster}
-            title={t.title}
-            description={t.description}
-            price={billingInterval === 'mo' ? t.price.mo : t.price.yr}
-            interval={billingInterval === 'mo' ? 'mo' : 'yr'}
-            isPopular={t.isPopular}
-            features={t.features}
-            onPurchaseClick={() => handlePurchaseClick(t.tier)}
-            isLoading={checkoutLoading === t.tier}
-          />
-        ))}
-      </div>
-
-      {/* ── Feature Comparison Table ── */}
-      <div className={styles['comparison-wrapper']}>
-        <Stack gap="md" align="center">
-          <Heading level={2} size="2xl" weight="bold">
-            Full Tier Comparison
-          </Heading>
-          <Text as="p" size="sm" variant="muted">
-            Detailed breakdown of features, rate limits, and management tools across all tiers.
-          </Text>
-          <PremiumComparisonTable />
-        </Stack>
-      </div>
+      {/* ── Shared Pricing Section ── */}
+      <PricingSection
+        billingInterval={billingInterval}
+        onIntervalChange={setBillingInterval}
+        currentTier={currentTier}
+        isMaster={isMaster}
+        checkoutLoading={checkoutLoading}
+        onPurchaseClick={handlePurchaseClick}
+        getTierPrice={getTierPrice}
+        tiers={tiers}
+        comparisonTitle="Full Tier Comparison"
+        comparisonDescription="Detailed breakdown of features, rate limits, and management tools across all tiers."
+      />
     </div>
   );
 }

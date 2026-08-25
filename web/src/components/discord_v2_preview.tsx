@@ -1,16 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
-import { useImageFallback } from '@/hooks/use_image_fallback';
 import styles from './discord_v2_preview.module.css';
 
 export default function DiscordV2Preview() {
-  const { src: avatarSrc, handleError } = useImageFallback(
-    '/nova_v2.jpg',
-    'https://cdn.discordapp.com/embed/avatars/0.png'
-  );
+  const [avatarSrc, setAvatarSrc] = useState('/nova_v2.jpg');
+  const handleError = () => setAvatarSrc('https://cdn.discordapp.com/embed/avatars/0.png');
+
 
   return (
     <div className={styles['discord-wrapper']}>

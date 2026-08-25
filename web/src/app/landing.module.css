@@ -20,32 +20,12 @@
   padding-bottom: var(--space-2xl);
 }
 
-.hero-glow-orb {
-  position: absolute;
-  top: -6.25rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 37.5rem;
-  height: 25rem;
-  background: var(--gradient-hero-orb);
-  filter: blur(var(--blur-2xl));
-  pointer-events: none;
-  z-index: var(--z-background);
-}
-
 .hero-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-lg);
   max-width: 56rem;
-}
-
-.text-gradient {
-  background: var(--gradient-primary);
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
 }
 
 .hero-lead {

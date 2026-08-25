@@ -1,18 +1,6 @@
-export type MonitorPlatform =
-  | 'youtube'
-  | 'twitch'
-  | 'kick'
-  | 'stream'
-  | 'rss'
-  | 'epic_games'
-  | 'steam_free'
-  | 'steam_news'
-  | 'gog_free'
-  | 'movie'
-  | 'tv_series'
-  | 'github'
-  | 'crypto'
-  | string;
+import type { MonitorPlatform, KnownPlatformId } from '@/constants/platforms';
+
+export type { MonitorPlatform, KnownPlatformId };
 
 export interface PlatformMetadata {
   id: MonitorPlatform;
@@ -83,41 +71,65 @@ export interface MonitorConfig {
 }
 
 export interface CreateMonitorPayload {
-  guild_id: string;
+  guildId: string;
   name: string;
   type: MonitorPlatform;
   target_channels: string[];
   target_roles?: string[];
-  ping_role?: string;
-  custom_color?: string;
   embed_color?: string;
+  custom_alert?: string;
   custom_image?: string;
-  alert_template?: string;
+  include_upcoming?: boolean;
+  send_initial_alert?: boolean;
+  use_native_player?: boolean;
+  target_genres?: string[];
+  target_languages?: string[];
+  symbols?: string;
+  source_id?: string;
   channel_id?: string;
   username?: string;
   rss_url?: string;
   app_id?: string;
   repo?: string;
-  source_id?: string;
-  include_dlc?: boolean;
-  selected_genres?: string[];
-  target_genres?: string[];
-  target_languages?: string[];
-  min_rating?: number;
   [key: string]: any;
 }
 
-export interface BulkAddMonitorPayload {
-  guild_id: string;
-  type: MonitorPlatform;
-  target_channels: string[];
+export interface UpdateMonitorPayload {
+  name?: string;
+  target_channels?: string[];
   target_roles?: string[];
-  ping_role?: string;
-  custom_color?: string;
-  alert_template?: string;
-  items?: string[];
-  sources?: string[];
+  embed_color?: string;
+  custom_alert?: string;
+  custom_image?: string;
+  include_upcoming?: boolean;
+  send_initial_alert?: boolean;
+  use_native_player?: boolean;
+  target_genres?: string[];
+  target_languages?: string[];
+  symbols?: string;
+  source_id?: string;
+  steam_patch_only?: boolean;
   [key: string]: any;
+}
+
+export interface BulkAddPayload {
+  guildId: string;
+  type: MonitorPlatform;
+  sources: string[];
+  targetChannels: string[];
+  targetRoles?: string[];
+  embedColor?: string;
+  sendInitialAlert?: boolean;
+  use_native_player?: boolean;
+  custom_image?: string;
+  [key: string]: any;
+}
+
+export interface BulkAddResponse {
+  success: boolean;
+  successCount: number;
+  errorCount: number;
+  errors?: string[];
 }
 
 export interface BulkEditMonitorPayload {
@@ -126,6 +138,7 @@ export interface BulkEditMonitorPayload {
   target_roles?: string[];
   ping_role?: string;
   enabled?: boolean;
+  embed_color?: string;
   custom_color?: string;
   [key: string]: any;
 }

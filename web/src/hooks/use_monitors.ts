@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import monitorService from '@/services/monitor_service';
-import guildService from '@/services/guild_service';
-import settingsService from '@/services/settings_service';
-import { MonitorConfig } from '@/types/monitor';
-import { GuildFeatures } from '@/types/guild';
+import { MonitorConfig, UpdateMonitorPayload } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
 import { useToast } from '@/context/toast_context';
+import { useGuildContext } from '@/context/guild_context';
+import { TOAST_MESSAGES } from '@/constants/toasts';
+import { useMonitorMutations } from './use_monitor_mutations';
 
 interface UseMonitorsOptions {
   initialAddOpen?: boolean;
@@ -13,15 +13,13 @@ interface UseMonitorsOptions {
 }
 
 export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
-  const { addToast } = useToast();
+  const toast = useToast();
+  const { isPremium, effectiveTier: tier, features, tierContext } = useGuildContext();
 
   const [monitors, setMonitors] = useState<MonitorConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-  const [isPremium, setIsPremium] = useState(false);
-  const [tier, setTier] = useState(0);
-  const [features, setFeatures] = useState<GuildFeatures | undefined>(undefined);
 
   // Multi-Selection State
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -77,28 +75,13 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     async function load() {
       if (!guildId) return;
       try {
-        const [fetchedMonitors, guilds, settingsData] = await Promise.all([
-          monitorService.getMonitors(guildId),
-          guildService.getGuilds().catch(() => []),
-          settingsService.getSettings(guildId).catch(() => null),
-        ]);
+        setLoading(true);
+        const fetchedMonitors = await monitorService.getMonitors(guildId);
         if (ignore) return;
-        setMonitors(fetchedMonitors);
-
-        if (settingsData?.features) {
-          setFeatures(settingsData.features);
-          setIsPremium(settingsData.features.isPremium);
-          setTier(settingsData.features.tier);
-        } else {
-          const current = guilds.find((g: any) => String(g.id) === String(guildId));
-          if (current) {
-            setIsPremium(Boolean(current.isPremium || current.isMaster));
-            setTier(current.isMaster ? 0 : current.tier || 0);
-          }
-        }
+        setMonitors(fetchedMonitors || []);
       } catch (err: any) {
         console.error('Failed to load monitors:', err);
-        addToast(err?.message || 'Failed to sync server data', 'error');
+        toast.error(err, TOAST_MESSAGES.MONITOR.SYNC_ERROR);
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -107,17 +90,16 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     return () => {
       ignore = true;
     };
-  }, [guildId, addToast]);
+  }, [guildId, toast]);
+
+  const mutations = useMonitorMutations();
 
   const handleToggle = async (id: number, enabled: boolean) => {
-    try {
-      await monitorService.toggleMonitor(id, enabled);
+    const success = await mutations.toggleMonitor(id, enabled);
+    if (success) {
       setMonitors((prev) =>
         prev.map((m) => (m.id === id ? { ...m, enabled } : m))
       );
-      addToast(`Monitor ${enabled ? 'resumed' : 'paused'}`, 'info');
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to update monitor', 'error');
     }
   };
 
@@ -134,14 +116,12 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     if (!monitorToDelete) return false;
     setIsDeleting(true);
     try {
-      await monitorService.deleteMonitor(monitorToDelete.id);
-      setMonitors((prev) => prev.filter((m) => m.id !== monitorToDelete.id));
-      addToast('Monitor deleted successfully', 'success');
-      setMonitorToDelete(null);
-      return true;
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to delete monitor', 'error');
-      return false;
+      const success = await mutations.deleteMonitor(monitorToDelete.id);
+      if (success) {
+        setMonitors((prev) => prev.filter((m) => m.id !== monitorToDelete.id));
+        setMonitorToDelete(null);
+      }
+      return success;
     } finally {
       setIsDeleting(false);
     }
@@ -149,63 +129,45 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
 
   const handleUpdateMonitor = async (
     id: number,
-    data: Partial<MonitorConfig> & Record<string, any>
+    data: UpdateMonitorPayload | Partial<MonitorConfig>
   ): Promise<boolean> => {
-    try {
-      await monitorService.updateMonitor(id, data);
-      addToast('Monitor updated successfully', 'success');
+    const success = await mutations.updateMonitor(id, data);
+    if (success) {
       await reloadMonitors();
       setIsEditModalOpen(false);
       setEditingMonitor(null);
-      return true;
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to update monitor', 'error');
-      return false;
     }
+    return success;
   };
 
   const handleBulkUpdateMonitors = async (data: Record<string, any>): Promise<boolean> => {
-    try {
-      const idsToUpdate = selectedIds.length ? selectedIds : monitors.map((m) => m.id);
-      await monitorService.bulkUpdate(guildId, idsToUpdate, data);
-      addToast('Monitors updated', 'success');
+    const idsToUpdate = selectedIds.length ? selectedIds : monitors.map((m) => m.id);
+    const success = await mutations.bulkUpdateMonitors(guildId, idsToUpdate, data);
+    if (success) {
       await reloadMonitors();
       setIsBulkEditOpen(false);
-      return true;
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to bulk update monitors', 'error');
-      return false;
     }
+    return success;
   };
 
   const handleBulkToggle = async (enable: boolean) => {
     if (selectedIds.length === 0) return;
-    try {
-      await Promise.all(
-        selectedIds.map((id) => monitorService.toggleMonitor(id, enable))
-      );
-      addToast(
-        `${selectedIds.length} monitor(s) ${enable ? 'resumed' : 'paused'}`,
-        'success'
-      );
+    const success = await mutations.bulkToggleMonitors(guildId, selectedIds, enable);
+    if (success) {
       setSelectedIds([]);
       await reloadMonitors();
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to toggle selected monitors', 'error');
     }
   };
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    try {
-      await monitorService.bulkDelete(guildId, selectedIds);
-      addToast(`Deleted ${selectedIds.length} monitor(s)`, 'success');
+    const success = await mutations.bulkDeleteMonitors(guildId, selectedIds);
+    if (success) {
       setSelectedIds([]);
       await reloadMonitors();
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to delete monitors', 'error');
     }
   };
+
 
   const handleOpenEdit = (monitor: MonitorConfig) => {
     setEditingMonitor(monitor);
@@ -272,6 +234,7 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     isPremium,
     tier,
     features,
+    tierContext,
     platforms,
     platformCounts,
     filteredMonitors,

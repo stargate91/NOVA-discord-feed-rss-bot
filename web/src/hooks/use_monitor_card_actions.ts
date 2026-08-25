@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
-import { useConfig } from '@/hooks/use_config';
 import { MonitorConfig } from '@/types/monitor';
 import { GuildFeatures } from '@/types/guild';
-import monitorService from '@/services/monitor_service';
+import { useGuildContext } from '@/context/guild_context';
+import { useMonitorMutations } from './use_monitor_mutations';
 
 interface UseMonitorCardActionsProps {
   monitor: MonitorConfig;
@@ -15,14 +15,9 @@ interface UseMonitorCardActionsProps {
 export function useMonitorCardActions({
   monitor,
   onToggle,
-  tier = 0,
-  isPremium = false,
-  features,
 }: UseMonitorCardActionsProps) {
-  const { getTierConfig, hasFeature } = useConfig();
   const [toggleLoading, setToggleLoading] = useState(false);
   const [showTools, setShowTools] = useState(false);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<{
     type: 'success' | 'error' | null;
     message: string | null;
@@ -30,8 +25,9 @@ export function useMonitorCardActions({
   const [repostCount, setRepostCount] = useState(1);
   const [purgeAmount, setPurgeAmount] = useState(50);
 
-  const canRepost = features ? features.canRepost : hasFeature(tier, isPremium, 'repost');
-  const maxPurge = features ? features.maxPurge : (getTierConfig(tier, isPremium).max_purge || 10);
+  const mutations = useMonitorMutations();
+  const { isLocked, maxPurge } = useGuildContext();
+  const canRepost = !isLocked('repost');
   const maxPurgeInputLimit = Math.min(100, maxPurge);
 
   const handleRepostChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,50 +61,37 @@ export function useMonitorCardActions({
 
   const runAction = useCallback(
     async (action: 'check' | 'repost' | 'purge') => {
-      setActionLoading(action);
       setActionStatus({ type: null, message: null });
 
-      try {
-        const actionType = action === 'repost' ? 'repost_latest' : action;
-        const data = await monitorService.triggerAction(
-          monitor.id,
-          actionType as any,
-          {
-            count:
-              action === 'repost'
-                ? repostCount
-                : action === 'purge'
-                ? Math.min(purgeAmount, maxPurge)
-                : 1,
-          }
-        );
+      const actionType = action === 'repost' ? 'repost_latest' : action;
+      const count =
+        action === 'repost'
+          ? repostCount
+          : action === 'purge'
+          ? Math.min(purgeAmount, maxPurge)
+          : 1;
 
-        if (data.success !== false) {
-          setActionStatus({
-            type: 'success',
-            message: data.message || 'Success!',
-          });
-        } else {
-          setActionStatus({ type: 'error', message: data.error || 'Failed' });
-        }
-      } catch (err: any) {
+      const result = await mutations.triggerAction(monitor.id, actionType as any, { count });
+
+      if (result.success) {
         setActionStatus({
-          type: 'error',
-          message: err?.message || 'Connection error',
+          type: 'success',
+          message: result.message || 'Success!',
         });
-      } finally {
-        setActionLoading(null);
-        setTimeout(() => setActionStatus({ type: null, message: null }), 6000);
+      } else {
+        setActionStatus({ type: 'error', message: result.error || 'Failed' });
       }
+
+      setTimeout(() => setActionStatus({ type: null, message: null }), 6000);
     },
-    [monitor.id, repostCount, purgeAmount, maxPurge]
+    [monitor.id, repostCount, purgeAmount, maxPurge, mutations]
   );
 
   return {
     toggleLoading,
     showTools,
     setShowTools,
-    actionLoading,
+    actionLoading: mutations.actionLoading,
     actionStatus,
     repostCount,
     setRepostCount,
@@ -124,3 +107,6 @@ export function useMonitorCardActions({
     runAction,
   };
 }
+
+export default useMonitorCardActions;
+

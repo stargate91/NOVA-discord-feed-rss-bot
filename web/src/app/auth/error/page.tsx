@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useAuthErrorRedirect } from "@/hooks/use_auth_error_redirect";
+import { useAuthErrorRedirect } from "@/hooks/use_auth_error";
 import styles from "./error.module.css";
 
 function AuthErrorContent() {

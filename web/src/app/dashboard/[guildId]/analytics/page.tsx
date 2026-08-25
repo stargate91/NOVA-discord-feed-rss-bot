@@ -42,7 +42,7 @@ import {
 import StatCard from "@/components/stat_card";
 import HeatmapChart from "@/components/heatmap_chart";
 import LiveTicker from "@/components/live_ticker";
-import { ANALYTICS_RANGE_LABELS, ANALYTICS_PIE_COLORS } from "@/constants/navigation";
+import { ANALYTICS_RANGE_LABELS, ANALYTICS_PIE_COLORS } from "@/constants/analytics";
 import { useGuildAnalytics } from "@/hooks/use_guild_analytics";
 import { formatChartTooltip } from "@/utils/analytics";
 import styles from "./analytics.module.css";

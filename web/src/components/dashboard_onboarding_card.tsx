@@ -1,18 +1,20 @@
+"use client";
+
 import React from "react";
 import { Rocket, Settings, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getDashboardOnboardingSteps } from "@/utils/dashboard";
-import styles from "./empty_state_card.module.css";
+import styles from "./dashboard_onboarding_card.module.css";
 
-interface EmptyStateCardProps {
+export interface DashboardOnboardingCardProps {
   guildId?: string;
 }
 
-export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
+export function DashboardOnboardingCard({ guildId }: DashboardOnboardingCardProps) {
   const steps = getDashboardOnboardingSteps(guildId);
 
   return (
-    <div className={styles["empty-state-card"]}>
+    <div className={styles["onboarding-card"]}>
       {/* Background decorative elements */}
       <div className={styles["blob-1"]} />
       <div className={styles["blob-2"]} />
@@ -55,3 +57,4 @@ export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
   );
 }
 
+export default DashboardOnboardingCard;

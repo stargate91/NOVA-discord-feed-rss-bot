@@ -16,13 +16,6 @@
   margin-inline: auto;
 }
 
-.text-gradient {
-  background: var(--gradient-primary);
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-}
-
 .premium-lead {
   max-width: 38rem;
   line-height: var(--leading-relaxed);

@@ -3,8 +3,12 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { GuildInfo } from '@/types/guild';
 import guildService from '@/services/guild_service';
-import { filterAndSortGuilds } from '@/utils/guild_sorter';
-import { getGuildIconUrl, getBotInviteUrl, getGuildInitials } from '@/utils';
+import {
+  filterAndSortGuilds,
+  getGuildIconUrl,
+  getBotInviteUrl,
+  getGuildInitials,
+} from '@/utils';
 
 export interface EnrichedGuildInfo extends GuildInfo {
   hasBot: boolean;
@@ -26,7 +30,7 @@ export function useServerList() {
     setError(null);
     try {
       const data = await guildService.getGuilds();
-      setGuilds(data);
+      setGuilds(data || []);
     } catch (err: any) {
       setError(err?.message || 'Failed to load Discord servers');
       console.error('Guild fetch error:', err);
@@ -41,30 +45,28 @@ export function useServerList() {
       return;
     }
     if (status === 'authenticated') {
-      let ignore = false;
-      async function load() {
-        try {
-          const data = await guildService.getGuilds();
-          if (!ignore) {
-            setGuilds(data);
-          }
-        } catch (err: any) {
-          if (!ignore) {
-            setError(err?.message || 'Failed to load Discord servers');
-            console.error('Guild fetch error:', err);
-          }
-        } finally {
-          if (!ignore) {
+      let isMounted = true;
+      guildService.getGuilds()
+        .then((data) => {
+          if (isMounted) {
+            setGuilds(data || []);
             setLoading(false);
           }
-        }
-      }
-      load();
+        })
+        .catch((err: any) => {
+          if (isMounted) {
+            setError(err?.message || 'Failed to load Discord servers');
+            setLoading(false);
+            console.error('Guild fetch error:', err);
+          }
+        });
+
       return () => {
-        ignore = true;
+        isMounted = false;
       };
     }
   }, [status, router]);
+
 
   const filteredGuilds: EnrichedGuildInfo[] = useMemo(() => {
     const sorted = filterAndSortGuilds(guilds, searchQuery);

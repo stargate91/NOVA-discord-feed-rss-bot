@@ -52,8 +52,11 @@ export interface GuildFeatures {
   canBulkImport: boolean;
   canBulkDelete: boolean;
   canRepost: boolean;
+  maxAnalyticsDays?: number;
+  maxAllowedDays?: number;
   features: string[];
 }
+
 
 export interface GuildSettings {
   guild_id?: string;

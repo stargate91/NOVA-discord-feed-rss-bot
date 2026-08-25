@@ -1,4 +1,5 @@
-import { PlatformMetadata } from '@/types/monitor';
+import { PlatformMetadata, CreateMonitorPayload, UpdateMonitorPayload } from '@/types/monitor';
+import { supportsLiveAlerts, supportsNativePlayer } from './platform';
 
 export interface CryptoPair {
   symbol: string;
@@ -36,12 +37,20 @@ export const INITIAL_MONITOR_FORM_DATA: MonitorFormData = {
 };
 
 /**
+ * Sanitizes and normalizes a cryptocurrency ticker symbol (e.g., '  btc  ' -> 'BTC').
+ */
+export function normalizeCryptoSymbol(symbol?: string | null): string {
+  if (!symbol) return '';
+  return symbol.trim().toUpperCase();
+}
+
+/**
  * Serializes crypto pairs array to comma-separated format: "BTC:50000, ETH:3000"
  */
 export function formatCryptoPairsToString(pairs: CryptoPair[]): string {
   return pairs
     .filter((p) => p.symbol.trim() && p.threshold.trim())
-    .map((p) => `${p.symbol.trim().toUpperCase()}:${p.threshold.trim()}`)
+    .map((p) => `${normalizeCryptoSymbol(p.symbol)}:${p.threshold.trim()}`)
     .join(', ');
 }
 
@@ -58,7 +67,7 @@ export function parseCryptoPairsFromString(str?: string): CryptoPair[] {
     .map((item) => {
       const [symbol, threshold] = item.trim().split(':');
       return {
-        symbol: (symbol || '').trim().toUpperCase(),
+        symbol: normalizeCryptoSymbol(symbol),
         threshold: (threshold || '').trim(),
       };
     })
@@ -66,6 +75,7 @@ export function parseCryptoPairsFromString(str?: string): CryptoPair[] {
 
   return pairs.length > 0 ? pairs : [{ symbol: '', threshold: '' }];
 }
+
 
 /**
  * Validates monitor creation/edit input
@@ -107,13 +117,13 @@ export function buildCreateMonitorPayload(
   platform: PlatformMetadata,
   guildId: string,
   cryptoPairs: CryptoPair[]
-): Record<string, any> {
+): CreateMonitorPayload {
   let platformInput = formData.platform_input.trim();
   if (platform.isCrypto) {
     platformInput = formatCryptoPairsToString(cryptoPairs);
   }
 
-  const payload: Record<string, any> = {
+  const payload: CreateMonitorPayload = {
     type: platform.id,
     name: formData.name.trim(),
     guildId: guildId,
@@ -124,11 +134,12 @@ export function buildCreateMonitorPayload(
     include_upcoming: formData.include_upcoming,
     target_genres: formData.target_genres,
     target_languages: formData.target_languages,
-    send_initial_alert: ['twitch', 'kick'].includes(platform.id)
+    send_initial_alert: supportsLiveAlerts(platform.id)
       ? formData.send_initial_alert
       : false,
-    use_native_player:
-      platform.id === 'youtube' ? formData.use_native_player : undefined,
+    use_native_player: supportsNativePlayer(platform.id)
+      ? formData.use_native_player
+      : undefined,
     custom_image: formData.custom_image.trim(),
   };
 
@@ -137,7 +148,7 @@ export function buildCreateMonitorPayload(
       platform.id === 'crypto'
         ? 'symbols'
         : platform.inputKey || 'source_id';
-    payload[key] = platformInput;
+    (payload as any)[key] = platformInput;
   }
 
   return payload;
@@ -150,7 +161,7 @@ export function buildUpdateMonitorPayload(
   formData: MonitorFormData,
   platformId: string,
   cryptoPairs: CryptoPair[]
-): Record<string, any> {
+): UpdateMonitorPayload {
   const isCrypto = platformId === 'crypto';
   let platformInput = formData.platform_input.trim();
   if (isCrypto) {
@@ -166,11 +177,12 @@ export function buildUpdateMonitorPayload(
     include_upcoming: formData.include_upcoming,
     target_genres: formData.target_genres,
     target_languages: formData.target_languages,
-    send_initial_alert: ['twitch', 'kick'].includes(platformId)
+    send_initial_alert: supportsLiveAlerts(platformId)
       ? formData.send_initial_alert
       : false,
-    use_native_player:
-      platformId === 'youtube' ? formData.use_native_player : undefined,
+    use_native_player: supportsNativePlayer(platformId)
+      ? formData.use_native_player
+      : undefined,
     custom_image: formData.custom_image.trim(),
     source_id: !isCrypto ? platformInput : undefined,
     symbols: isCrypto ? platformInput : undefined,

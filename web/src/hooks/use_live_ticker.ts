@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import statsService, { TickerItem } from '@/services/stats_service';
+import analyticsService, { TickerItem } from '@/services/analytics_service';
 
 const FALLBACK_TICKER_ITEMS: TickerItem[] = [
   { platform: 'youtube', title: 'New video from NovaFeeds Official', author_name: 'NovaFeeds' },
@@ -16,7 +16,7 @@ export function useLiveTicker(intervalMs: number = 30000) {
 
     async function fetchTicker() {
       try {
-        const data = await statsService.getGlobalTicker();
+        const data = await analyticsService.getGlobalTicker();
         if (!ignore) {
           if (data && data.length > 0) {
             setItems(data);

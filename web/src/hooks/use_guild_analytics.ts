@@ -1,29 +1,24 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import analyticsService, { AnalyticsData } from '@/services/analytics_service';
 import { calculatePeriodGrowthRate, formatPlatformBreakdown } from '@/utils/analytics';
+import { useGuildContext } from '@/context/guild_context';
+import { formatShortDate } from '@/utils/date';
+
 
 export function useGuildAnalytics(guildId: string) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { tierContext } = useGuildContext();
 
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [range, setRange] = useState('3');
+  const [range, setRange] = useState(String(tierContext.maxAnalyticsDays || 3));
   const [hasSetDefaultRange, setHasSetDefaultRange] = useState(false);
 
   const isRangeLocked = useCallback(
-    (val: string) => {
-      if ((session?.user as any)?.role === 'master') return false;
-      if (!data) return true;
-      if (data.isMaster || (data.tier ?? 0) >= 3) return false;
-
-      const limit = data.maxAllowedDays ?? analyticsService.getTierLimit(data.tier || 0);
-      return parseInt(val, 10) > limit;
-    },
-    [session, data]
+    (val: string) => tierContext.isAnalyticsRangeLocked(val),
+    [tierContext]
   );
 
   useEffect(() => {
@@ -41,44 +36,35 @@ export function useGuildAnalytics(guildId: string) {
           setData(json);
 
           if (!hasSetDefaultRange && json) {
-            const limit =
-              (session?.user as any)?.role === 'master' ||
-              json.isMaster ||
-              (json.tier ?? 0) >= 3
-                ? 999
-                : json.maxAllowedDays ?? analyticsService.getTierLimit(json.tier || 0);
-            setRange(String(limit));
+            setRange(String(tierContext.maxAnalyticsDays));
             setHasSetDefaultRange(true);
           }
         }
       } catch (err: any) {
         if (!ignore) {
-          setError(err?.message || 'Failed to fetch analytics');
+          setError(err.message || 'Failed to load analytics');
         }
       } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
+        if (!ignore) setLoading(false);
       }
     }
+
 
     fetchStats();
 
     return () => {
       ignore = true;
     };
-  }, [guildId, range, router, session, hasSetDefaultRange]);
+  }, [guildId, range, router, hasSetDefaultRange, tierContext.maxAnalyticsDays]);
 
   const chartData = useMemo(() => {
     if (!data || !data.history) return [];
     return data.history.map((item) => ({
-      date: new Date(item.date).toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-      }),
+      date: formatShortDate(item.date),
       posts: parseInt(String(item.count), 10),
     }));
   }, [data]);
+
 
   const growthRate = useMemo(() => {
     if (data?.trend) {

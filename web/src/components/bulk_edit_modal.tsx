@@ -4,6 +4,7 @@ import React from 'react';
 import MultiSelect from './multi_select';
 import { X, AlertCircle, Info } from 'lucide-react';
 import ColorPicker from './color_picker';
+import { Modal } from '@/components/ui';
 import { useBulkEdit } from '@/hooks/use_bulk_edit';
 import { GuildFeatures } from '@/types/guild';
 import styles from './bulk_edit_modal.module.css';
@@ -14,9 +15,6 @@ interface BulkEditModalProps {
   onSave: (updateData: Record<string, any>) => Promise<void | boolean>;
   monitorCount: number;
   guildId: string;
-  tier?: number;
-  isPremium?: boolean;
-  features?: GuildFeatures;
 }
 
 export default function BulkEditModal({ 
@@ -25,9 +23,6 @@ export default function BulkEditModal({
   onSave, 
   monitorCount, 
   guildId, 
-  tier = 0, 
-  isPremium = false,
-  features,
 }: BulkEditModalProps) {
   const {
     formData,
@@ -36,30 +31,33 @@ export default function BulkEditModal({
     guildChannels,
     guildRoles,
     isLocked,
+    isImageLocked,
     toggleField,
     updateField,
     handleSubmit,
-  } = useBulkEdit(guildId, isOpen, tier, isPremium, onSave, onClose, features);
-
-  if (!isOpen) return null;
+  } = useBulkEdit(guildId, isOpen, onSave, onClose);
 
   return (
-    <div className={styles["modal-overlay"]}>
-      <div className={styles["modal-content"]}>
-        <div className={styles["modal-header"]}>
-          <div>
-            <h3 className={styles["modal-title"]}>Bulk Edit Monitors</h3>
-            <p className={styles["modal-subtitle"]}>Updating {monitorCount} selected monitors</p>
-          </div>
-          <button 
-            type="button" 
-            className={styles["modal-close-btn"]} 
-            onClick={onClose}
-            aria-label="Close modal"
-          >
-            <X size={20} />
-          </button>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="lg"
+      showCloseButton={false}
+    >
+      <div className={styles["modal-header"]}>
+        <div>
+          <h3 className={styles["modal-title"]}>Bulk Edit Monitors</h3>
+          <p className={styles["modal-subtitle"]}>Updating {monitorCount} selected monitors</p>
         </div>
+        <button 
+          type="button" 
+          className={styles["modal-close-btn"]} 
+          onClick={onClose}
+          aria-label="Close modal"
+        >
+          <X size={20} />
+        </button>
+      </div>
 
         {isLocked ? (
           <div className={styles["locked-body"]}>
@@ -188,7 +186,7 @@ export default function BulkEditModal({
               </div>
             </div>
 
-            <div className={`${styles["form-section"]} ${!(isPremium || tier >= 2) ? styles["disabled-tier"] : ''}`}>
+            <div className={`${styles["form-section"]} ${isImageLocked ? styles["disabled-tier"] : ''}`}>
               <div className={styles["checkbox-header"]}>
                 <input 
                   id="bulk-edit-use-image"
@@ -230,7 +228,6 @@ export default function BulkEditModal({
             </div>
           </form>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

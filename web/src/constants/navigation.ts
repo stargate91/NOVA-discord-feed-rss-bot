@@ -1,23 +1,36 @@
-import { LayoutDashboard, Radio, BarChart3, Settings, Crown, HelpCircle, BookOpen, ShieldAlert } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Crown,
+  Monitor,
+  BarChart2,
+  Settings,
+  HelpCircle,
+  Code,
+  BookOpen,
+  LucideIcon,
+} from 'lucide-react';
 
-export interface NavItem {
-  name: string;
-  href: string;
-  icon: any;
-  exact?: boolean;
-  badge?: string;
+export interface RawNavItem {
+  id: string;
+  subpath: string;
+  label: string;
+  title: string;
+  icon: LucideIcon;
+  isPremium?: boolean;
+  isDev?: boolean;
+  requiresSession?: boolean;
   requiresMaster?: boolean;
 }
 
-export const DASHBOARD_NAV_ITEMS: NavItem[] = [
-  { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, exact: true },
-  { name: 'Monitors', href: '/monitors', icon: Radio },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Premium', href: '/premium', icon: Crown, badge: 'PRO' },
-  { name: 'Guide', href: '/guide', icon: BookOpen },
-  { name: 'FAQ', href: '/faq', icon: HelpCircle },
-  { name: 'Dev Panel', href: '/dev', icon: ShieldAlert, requiresMaster: true }
+export const RAW_NAV_ITEMS: RawNavItem[] = [
+  { id: 'overview', subpath: '', label: 'Dashboard', title: 'Overview', icon: LayoutDashboard },
+  { id: 'monitors', subpath: 'monitors', label: 'Monitors', title: 'Monitors', icon: Monitor, requiresSession: true },
+  { id: 'analytics', subpath: 'analytics', label: 'Analytics', title: 'Analytics', icon: BarChart2, requiresSession: true },
+  { id: 'settings', subpath: 'settings', label: 'Settings', title: 'Settings', icon: Settings, requiresSession: true },
+  { id: 'billing', subpath: 'billing', label: 'Billing', title: 'Billing & Plans', icon: Crown, isPremium: true, requiresSession: true },
+  { id: 'guide', subpath: 'guide', label: 'Guide', title: 'Guide', icon: BookOpen, requiresSession: true },
+  { id: 'faq', subpath: 'faq', label: 'FAQ', title: 'FAQ', icon: HelpCircle, requiresSession: true },
+  { id: 'dev', subpath: 'dev', label: 'Dev Controls', title: 'Dev Controls', icon: Code, isDev: true, requiresSession: true, requiresMaster: true },
 ];
 
 export const MARKETING_NAV_LINKS = [
@@ -26,12 +39,3 @@ export const MARKETING_NAV_LINKS = [
   { name: 'Pricing', href: '#pricing' },
   { name: 'FAQ', href: '#faq' }
 ];
-
-export const ANALYTICS_RANGE_LABELS: Record<string, string> = {
-  "3": "Last 3 Days",
-  "7": "Last 7 Days",
-  "30": "Last 30 Days",
-  "999": "∞ Lifetime"
-};
-
-export const ANALYTICS_PIE_COLORS: string[] = ['#7b2cbf', '#9d4edd', '#3c096c', '#5a189a', '#c19ee0'];

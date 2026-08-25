@@ -7,13 +7,15 @@ import Link from 'next/link';
 import { TAG_DESCRIPTIONS } from '@/constants';
 import { Button } from '@/components/ui';
 import { useTemplateEditor } from '@/hooks/use_template_editor';
+import { getGuildDashboardRoute } from '@/utils/navigation';
+import defaultStyles from './template_editor.module.css';
 
 export interface TemplateEditorProps {
   templates: Record<string, string>;
   onUpdate: (platform: string, newTemplateValue: string) => void;
   isLocked: boolean;
   guildId: string;
-  styles: Record<string, string>;
+  styles?: Record<string, string>;
 }
 
 export default function TemplateEditor({
@@ -21,8 +23,10 @@ export default function TemplateEditor({
   onUpdate,
   isLocked,
   guildId,
-  styles,
+  styles: customStyles,
 }: TemplateEditorProps) {
+  const styles = customStyles || defaultStyles;
+
   const {
     platforms,
     activePlatform,
@@ -40,7 +44,7 @@ export default function TemplateEditor({
         <p className="text-body-sm">
           Custom templates require <strong>Professional Tier</strong> or above.
         </p>
-        <Link href={`/dashboard/${guildId}/billing`}>
+        <Link href={getGuildDashboardRoute(guildId, 'billing')}>
           <Button variant="primary" size="sm">
             Upgrade Now
           </Button>
@@ -48,6 +52,7 @@ export default function TemplateEditor({
       </div>
     );
   }
+
 
   return (
     <div className={styles['template-wrapper']}>

@@ -4,7 +4,7 @@ import React from 'react';
 import { Check, ChevronRight } from 'lucide-react';
 import styles from './pricing_card.module.css';
 import { Button, Divider } from '@/components/ui';
-import { TierFeature } from '@/lib/premium_data';
+import { TierFeature } from '@/constants/tiers';
 import { calculatePricingCardState } from '@/utils/pricing_helpers';
 
 export interface PricingCardProps {

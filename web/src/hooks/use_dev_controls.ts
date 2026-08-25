@@ -5,9 +5,11 @@ import devService, {
   PremiumKeyItem,
 } from '@/services/dev_service';
 import { useToast } from '@/context/toast_context';
+import { TOAST_MESSAGES } from '@/constants/toasts';
+
 
 export function useDevControls() {
-  const { addToast } = useToast();
+  const toast = useToast();
 
   const [keys, setKeys] = useState<PremiumKeyItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,21 +102,22 @@ export function useDevControls() {
         parseInt(maxUses, 10),
         parseInt(tier, 10)
       );
-      addToast('New premium key generated!', 'success');
+      toast.success(TOAST_MESSAGES.DEV.KEY_GENERATED);
       const newKeys = await devService.getKeys();
       setKeys(newKeys);
-    } catch (err: any) {
-      addToast(err?.message || 'Failed to generate key', 'error');
+    } catch (err: unknown) {
+      toast.error(err, TOAST_MESSAGES.DEV.KEY_GENERATE_ERROR);
     } finally {
       setGenerating(false);
     }
   };
 
+
   const handleDeleteKey = async (code: string) => {
     try {
       await devService.deleteKey(code);
       setKeys((prev) => prev.filter((k) => k.code !== code));
-      addToast('Key deleted', 'info');
+      toast.info(TOAST_MESSAGES.DEV.KEY_DELETED);
     } catch (err) {
       console.error(err);
     }
@@ -126,7 +129,7 @@ export function useDevControls() {
       setKeys((prev) =>
         prev.map((k) => (k.code === code ? { ...k, is_revoked: true } : k))
       );
-      addToast('Key revoked', 'warning');
+      toast.warning(TOAST_MESSAGES.DEV.KEY_REVOKED);
     } catch (err) {
       console.error(err);
     }
@@ -135,7 +138,7 @@ export function useDevControls() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopying(text);
-    addToast('Copied to clipboard!', 'info');
+    toast.info(TOAST_MESSAGES.DEV.COPIED_CLIPBOARD);
     setTimeout(() => setCopying(null), 2000);
   };
 
@@ -148,7 +151,7 @@ export function useDevControls() {
       setNewStatusText('');
       const fetchedStatuses = await devService.getStatuses();
       setStatuses(fetchedStatuses);
-      addToast('Status pattern added', 'success');
+      toast.success(TOAST_MESSAGES.DEV.STATUS_ADDED);
     } catch (err) {
       console.error(err);
     } finally {
@@ -160,6 +163,7 @@ export function useDevControls() {
     try {
       await devService.deleteStatus(id);
       setStatuses((prev) => prev.filter((s) => s.id !== id));
+      toast.info(TOAST_MESSAGES.DEV.STATUS_DELETED);
     } catch (err) {
       console.error(err);
     }
@@ -170,11 +174,11 @@ export function useDevControls() {
     if (!newAnnounce.title || !newAnnounce.content) return;
     setAnnounceLoading(true);
     try {
-      await devService.addAnnouncement(newAnnounce);
+      await devService.createAnnouncement(newAnnounce);
       setNewAnnounce({ title: '', content: '', type: 'info' });
       const fetchedAnnouncements = await devService.getAnnouncements();
       setAnnouncements(fetchedAnnouncements);
-      addToast('Announcement broadcasted!', 'success');
+      toast.success(TOAST_MESSAGES.DEV.ANNOUNCEMENT_SENT);
     } catch (err) {
       console.error(err);
     } finally {
@@ -186,7 +190,7 @@ export function useDevControls() {
     try {
       await devService.deleteAnnouncement(id);
       setAnnouncements((prev) => prev.filter((a) => a.id !== id));
-      addToast('Announcement removed', 'info');
+      toast.info(TOAST_MESSAGES.DEV.ANNOUNCEMENT_DELETED);
     } catch (err) {
       console.error(err);
     }
@@ -198,23 +202,25 @@ export function useDevControls() {
       title: 'Nuclear History Reset',
       message: 'Are you absolutely sure? Every monitor on every server will re-broadcast its latest post.',
       action: async () => {
-        await devService.resetHistory();
-        addToast('Nuclear reset completed', 'success');
+        await devService.resetAllHistories();
+        toast.success(TOAST_MESSAGES.DEV.RESET_COMPLETED);
       },
       isProcessing: false,
     });
   };
+
 
   const handleConfirmModal = async () => {
     if (modalConfig.action) {
       try {
         setModalConfig((prev) => ({ ...prev, isProcessing: true }));
         await modalConfig.action();
-      } catch (err: any) {
-        addToast(err?.message || 'Action failed', 'error');
+      } catch (err: unknown) {
+        toast.error(err, TOAST_MESSAGES.DEV.ACTION_FAILED);
       } finally {
         setModalConfig((prev) => ({ ...prev, show: false, isProcessing: false }));
       }
+
     } else {
       setModalConfig((prev) => ({ ...prev, show: false }));
     }

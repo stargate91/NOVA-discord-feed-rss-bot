@@ -20,13 +20,6 @@
   margin-bottom: var(--space-md);
 }
 
-.text-gradient {
-  background: var(--gradient-primary);
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-}
-
 .servers-lead {
   max-width: 36rem;
   line-height: var(--leading-relaxed);

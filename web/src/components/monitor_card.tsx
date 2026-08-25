@@ -29,7 +29,7 @@ export interface MonitorCardProps {
   onToggle: (id: number, enabled: boolean) => Promise<void>;
   onDelete: (id: number) => void;
   onEdit: (monitor: MonitorConfig) => void;
-  isPremium: boolean;
+  isPremium?: boolean;
   tier?: number;
   isSelected?: boolean;
   onSelect: (id: number) => void;
@@ -41,7 +41,7 @@ export default function MonitorCard({
   onToggle,
   onDelete,
   onEdit,
-  isPremium,
+  isPremium = false,
   tier = 0,
   isSelected = false,
   onSelect,
@@ -58,6 +58,7 @@ export default function MonitorCard({
     purgeAmount,
     handlePurgeChange,
     canRepost,
+    maxPurge,
     maxPurgeInputLimit,
     handleToggle,
     handleCardKeyDown,
@@ -65,8 +66,6 @@ export default function MonitorCard({
   } = useMonitorCardActions({
     monitor,
     onToggle,
-    tier,
-    isPremium,
   });
 
   return (

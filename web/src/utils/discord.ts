@@ -1,3 +1,5 @@
+import { GuildInfo } from '@/types/guild';
+
 /**
  * Generates Discord Guild Icon URL from guild ID and icon hash.
  */
@@ -55,5 +57,53 @@ export function getGuildInitials(name?: string, maxLength = 2): string {
     .slice(0, maxLength)
     .toUpperCase();
 }
+
+/**
+ * Filters and sorts Discord guilds (guilds with bot present first, then alphabetically).
+ */
+export function filterAndSortGuilds(
+  guilds: Array<GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }>,
+  searchQuery: string
+): Array<GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }> {
+  const query = searchQuery.toLowerCase().trim();
+  return guilds
+    .filter((g) => g.name.toLowerCase().includes(query))
+    .sort((a, b) => {
+      const aHas = Boolean(a.hasBot || a.bot_in_guild);
+      const bHas = Boolean(b.hasBot || b.bot_in_guild);
+      if (aHas === bHas) return a.name.localeCompare(b.name);
+      return bHas ? 1 : -1;
+    });
+}
+
+/**
+ * Formats Discord channels into standard MultiSelect option format with '#' prefix.
+ */
+export interface DiscordSelectOption {
+  id: string;
+  name: string;
+}
+
+export function formatChannelOptions(
+  channels: Array<{ id: string; name: string }> = []
+): DiscordSelectOption[] {
+  return channels.map((c) => ({
+    id: c.id,
+    name: c.name.startsWith('#') ? c.name : `#${c.name}`,
+  }));
+}
+
+/**
+ * Formats Discord roles into standard MultiSelect option format.
+ */
+export function formatRoleOptions(
+  roles: Array<{ id: string; name: string }> = []
+): DiscordSelectOption[] {
+  return roles.map((r) => ({
+    id: r.id,
+    name: r.name,
+  }));
+}
+
 
 

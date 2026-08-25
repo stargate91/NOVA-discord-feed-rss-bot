@@ -80,9 +80,6 @@ const devService = {
   async createAnnouncement(data: { title: string; content: string; type: string; expires_at?: string | null }): Promise<any> {
     return api.post('/api/admin/announcements', data);
   },
-  async addAnnouncement(data: { title: string; content: string; type: string; expires_at?: string | null }): Promise<any> {
-    return this.createAnnouncement(data);
-  },
   async deleteAnnouncement(id?: number): Promise<any> {
     const url = id ? `/api/admin/announcements?id=${id}` : '/api/admin/announcements';
     return api.delete(url);
@@ -91,9 +88,6 @@ const devService = {
   // Maintenance
   async resetAllHistories(): Promise<any> {
     return api.post('/api/admin/reset', { action: 'reset' });
-  },
-  async resetHistory(): Promise<any> {
-    return this.resetAllHistories();
   },
   async factoryReset(): Promise<any> {
     return api.post('/api/admin/reset', { action: 'factory' });

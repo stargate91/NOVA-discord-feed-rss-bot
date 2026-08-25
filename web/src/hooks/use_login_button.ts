@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
+import { useCallback } from 'react';
 import { signIn, signOut } from 'next-auth/react';
 import { getUserDisplayName, getUserDisplayEmail } from '@/utils/user';
-import { useClickOutside } from './use_click_outside';
+import { useDropdown } from './use_dropdown';
 
 export interface UseLoginButtonOptions {
   session?: any;
@@ -14,10 +14,13 @@ export function useLoginButton({
   loginCallbackUrl = '/servers',
   logoutCallbackUrl = '/',
 }: UseLoginButtonOptions = {}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
+  const {
+    isOpen,
+    setIsOpen,
+    dropdownRef,
+    toggleDropdown,
+    closeDropdown,
+  } = useDropdown();
 
   const displayName = session?.user ? getUserDisplayName(session.user) : '';
   const displayEmail = session?.user ? getUserDisplayEmail(session.user) : '';
@@ -27,17 +30,9 @@ export function useLoginButton({
   }, [loginCallbackUrl]);
 
   const handleLogout = useCallback(() => {
-    setIsOpen(false);
+    closeDropdown();
     signOut({ callbackUrl: logoutCallbackUrl });
-  }, [logoutCallbackUrl]);
-
-  const toggleDropdown = useCallback(() => {
-    setIsOpen((prev) => !prev);
-  }, []);
-
-  const closeDropdown = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+  }, [logoutCallbackUrl, closeDropdown]);
 
   return {
     isOpen,

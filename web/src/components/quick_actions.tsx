@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Plus, Shield, MessageSquare, Zap, LucideIcon } from 'lucide-react';
 import styles from './quick_actions.module.css';
 import { Card, CardContent } from '@/components/ui';
+import { getGuildDashboardRoute } from '@/utils/navigation';
 
 interface QuickActionItemProps {
   href: string;
@@ -45,25 +46,25 @@ export default function QuickActions({ guildId }: QuickActionsProps) {
 
         <div className={styles['quick-actions-grid']}>
           <QuickActionItem
-            href={`/dashboard/${guildId}/monitors?add=true`}
+            href={getGuildDashboardRoute(guildId, 'monitors?add=true')}
             icon={Plus}
             label="Add Feed"
             description="Create a new monitor"
           />
           <QuickActionItem
-            href={`/dashboard/${guildId}/settings`}
+            href={getGuildDashboardRoute(guildId, 'settings')}
             icon={Shield}
             label="Permissions"
             description="Configure admin roles"
           />
           <QuickActionItem
-            href={`/dashboard/${guildId}/settings`}
+            href={getGuildDashboardRoute(guildId, 'settings')}
             icon={MessageSquare}
             label="Templates"
             description="Custom alert messages"
           />
           <QuickActionItem
-            href={`/dashboard/${guildId}/monitors?bulk=true`}
+            href={getGuildDashboardRoute(guildId, 'monitors?bulk=true')}
             icon={Zap}
             label="Bulk Wizard"
             description="Mass add feeds"
@@ -73,3 +74,4 @@ export default function QuickActions({ guildId }: QuickActionsProps) {
     </Card>
   );
 }
+

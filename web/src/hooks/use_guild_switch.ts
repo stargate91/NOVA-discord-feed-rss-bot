@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 import { GuildInfo } from '@/types/guild';
 import guildService from '@/services/guild_service';
+import { useDropdown } from '@/hooks/use_dropdown';
 
 export function useGuildSwitch() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen, dropdownRef, closeDropdown } = useDropdown();
   const [guilds, setGuilds] = useState<Array<GuildInfo & { hasBot?: boolean }>>([]);
   const [loading, setLoading] = useState(true);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const router = useRouter();
   const params = useParams();
@@ -35,16 +35,6 @@ export function useGuildSwitch() {
     return () => {
       ignore = true;
     };
-  }, []);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const currentGuild = useMemo(

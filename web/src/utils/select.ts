@@ -1,10 +1,6 @@
-export interface SelectOption {
-  id?: string;
-  name?: string;
-  value?: string;
-  label?: string;
-  [key: string]: any;
-}
+import { SelectOption } from '@/types/ui';
+
+export type { SelectOption };
 
 export function getOptionId(opt: SelectOption | string): string {
   if (typeof opt === 'string') return opt;

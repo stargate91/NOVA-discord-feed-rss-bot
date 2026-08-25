@@ -2,9 +2,8 @@
 
 import React, { useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { ChevronDown, Globe } from "lucide-react";
-import { getGuildIconUrl, getGuildInitials } from "@/utils";
+import { GuildAvatar } from "@/components/ui";
 import { useGuildSwitch } from "@/hooks/use_guild_switch";
 import styles from "./guild_switcher.module.css";
 
@@ -51,20 +50,7 @@ export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProp
         <div className={styles["toggle-content"]}>
           {currentGuild ? (
             <>
-              {currentGuild.icon ? (
-                <Image
-                  src={getGuildIconUrl(currentGuild.id, currentGuild.icon, 128) || ''}
-                  alt=""
-                  width={32}
-                  height={32}
-                  unoptimized
-                  className={styles["guild-icon"]}
-                />
-              ) : (
-                <div className={styles["guild-fallback"]}>
-                  {getGuildInitials(currentGuild.name, 1)}
-                </div>
-              )}
+              <GuildAvatar guild={currentGuild} size="sm" />
               <span className={styles["guild-name"]}>{currentGuild.name}</span>
             </>
           ) : loading && currentGuildId ? (
@@ -94,20 +80,7 @@ export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProp
                   className={`${styles["select-item"]} ${currentGuildId === guild.id ? styles.selected : ''}`}
                   onClick={() => handleSelect(guild.id)}
                 >
-                  {guild.icon ? (
-                    <Image
-                      src={getGuildIconUrl(guild.id, guild.icon, 128) || ''}
-                      alt=""
-                      width={32}
-                      height={32}
-                      unoptimized
-                      className={styles["guild-icon"]}
-                    />
-                  ) : (
-                    <div className={styles["guild-fallback"]}>
-                      {getGuildInitials(guild.name, 1)}
-                    </div>
-                  )}
+                  <GuildAvatar guild={guild} size="sm" />
                   <div className={styles["item-info"]}>
                     <span className={styles["item-name"]}>{guild.name}</span>
                     <span className={styles["online-tag"]}>● Online</span>

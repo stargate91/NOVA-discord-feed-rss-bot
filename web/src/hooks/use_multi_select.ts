@@ -1,5 +1,4 @@
-import { useState, useRef } from 'react';
-import { useClickOutside, useEscapeKey } from '@/hooks';
+import { useDropdown } from '@/hooks/use_dropdown';
 import {
   SelectOption,
   filterSelectOptions,
@@ -18,15 +17,18 @@ export function useMultiSelect({
   value = [],
   onChange,
 }: UseMultiSelectOptions) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const {
+    isOpen,
+    setIsOpen,
+    search,
+    setSearch,
+    dropdownRef,
+    toggleDropdown,
+    closeDropdown,
+  } = useDropdown({ clearSearchOnClose: false });
 
   const selectedItems = getSelectedOptions(options, value);
   const filteredOptions = filterSelectOptions(options, search);
-
-  useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
-  useEscapeKey(() => setIsOpen(false), isOpen);
 
   const handleToggle = (id: string) => {
     onChange(toggleSelectOption(value, id));
@@ -39,14 +41,6 @@ export function useMultiSelect({
 
   const clearAll = () => {
     onChange([]);
-  };
-
-  const toggleDropdown = () => {
-    setIsOpen((prev) => !prev);
-  };
-
-  const closeDropdown = () => {
-    setIsOpen(false);
   };
 
   const isSelected = (id: string) => value.includes(id);
@@ -67,3 +61,4 @@ export function useMultiSelect({
     isSelected,
   };
 }
+

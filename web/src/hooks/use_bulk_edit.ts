@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import guildService from '@/services/guild_service';
+import { useState } from 'react';
 import { useToast } from '@/context/toast_context';
+import { useGuildContext } from '@/context/guild_context';
 import { GuildFeatures } from '@/types/guild';
+import { TOAST_MESSAGES } from '@/constants/toasts';
+import { useGuildChannelsAndRoles } from '@/hooks/use_guild_channels_and_roles';
+
 
 export interface BulkEditFormData {
   target_channels: string[];
@@ -20,20 +22,19 @@ export interface BulkEditFormData {
 export function useBulkEdit(
   guildId: string,
   isOpen: boolean,
-  tier: number = 0,
-  isPremium: boolean = false,
   onSave?: (updateData: Record<string, any>) => Promise<void | boolean>,
   onClose?: () => void,
-  features?: GuildFeatures
 ) {
-  const { addToast } = useToast();
-  const { data: session } = useSession();
-  const isMasterUser = (session?.user as any)?.role === 'master';
+  const toast = useToast();
+  const { isLocked: checkIsLocked, tierContext } = useGuildContext();
 
   const [loading, setLoading] = useState(false);
-  const [guildChannels, setGuildChannels] = useState<any[]>([]);
-  const [guildRoles, setGuildRoles] = useState<any[]>([]);
-  const [loadingContext, setLoadingContext] = useState(false);
+  const {
+    channelOptions: guildChannels,
+    roleOptions: guildRoles,
+    loading: loadingContext,
+  } = useGuildChannelsAndRoles(guildId, isOpen);
+
 
   const [formData, setFormData] = useState<BulkEditFormData>({
     target_channels: [],
@@ -48,47 +49,15 @@ export function useBulkEdit(
     custom_image: '',
   });
 
-  const isLocked = features
-    ? !features.canBulkImport
-    : (!isMasterUser && !isPremium && tier < 2);
-
-  useEffect(() => {
-    if (!isOpen || !guildId) return;
-    let ignore = false;
-
-    async function loadData() {
-      setLoadingContext(true);
-      try {
-        const [channels, roles] = await Promise.all([
-          guildService.getChannels(guildId),
-          guildService.getRoles(guildId),
-        ]);
-        if (!ignore) {
-          setGuildChannels(channels);
-          setGuildRoles(roles);
-        }
-      } catch (err) {
-        console.error('Failed to load channels/roles:', err);
-      } finally {
-        if (!ignore) {
-          setLoadingContext(false);
-        }
-      }
-    }
-
-    loadData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [isOpen, guildId]);
+  const isLocked = checkIsLocked('bulk_import');
+  const isImageLocked = checkIsLocked('remove_branding');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLocked) {
-      addToast(
-        'Bulk editing requires Professional Tier (Tier 2) or higher.',
-        'error',
+      toast.error(
+        TOAST_MESSAGES.MONITOR.BULK_LOCKED,
+        undefined,
         'Locked'
       );
       return;
@@ -102,9 +71,10 @@ export function useBulkEdit(
     if (formData.use_custom_image) updateData.custom_image = formData.custom_image;
 
     if (Object.keys(updateData).length === 0) {
-      addToast('Please select at least one field to update.', 'info', 'No changes');
+      toast.info(TOAST_MESSAGES.MONITOR.NO_CHANGES, 'No changes');
       return;
     }
+
 
     if (onSave) {
       setLoading(true);
@@ -112,7 +82,7 @@ export function useBulkEdit(
         await onSave(updateData);
         if (onClose) onClose();
       } catch (err: any) {
-        addToast(err?.message || 'Failed to update monitors', 'error');
+        toast.error(err, TOAST_MESSAGES.MONITOR.BULK_UPDATE_ERROR);
       } finally {
         setLoading(false);
       }
@@ -147,6 +117,7 @@ export function useBulkEdit(
     guildChannels,
     guildRoles,
     isLocked,
+    isImageLocked,
     toggleField,
     updateField,
     handleSubmit,

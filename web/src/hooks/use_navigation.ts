@@ -1,51 +1,13 @@
 import { useMemo, useCallback } from 'react';
 import { usePathname, useParams, useSearchParams } from 'next/navigation';
-import {
-  LayoutDashboard,
-  Crown,
-  Monitor,
-  BarChart2,
-  Settings,
-  HelpCircle,
-  Code,
-  BookOpen,
-  LucideIcon,
-} from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
+import { RAW_NAV_ITEMS, RawNavItem } from '@/constants/navigation';
+import { getGuildDashboardRoute } from '@/utils/navigation';
 
-export interface NavLinkItem {
-  id: string;
-  subpath: string;
-  label: string;
-  title: string;
-  icon: LucideIcon;
+export interface NavLinkItem extends RawNavItem {
   href: string;
   isActive: boolean;
-  isPremium?: boolean;
-  isDev?: boolean;
-  requiresSession?: boolean;
-  requiresMaster?: boolean;
 }
-
-const RAW_NAV_ITEMS: Array<{
-  id: string;
-  subpath: string;
-  label: string;
-  title: string;
-  icon: LucideIcon;
-  isPremium?: boolean;
-  isDev?: boolean;
-  requiresSession?: boolean;
-  requiresMaster?: boolean;
-}> = [
-  { id: 'overview', subpath: '', label: 'Dashboard', title: 'Overview', icon: LayoutDashboard },
-  { id: 'monitors', subpath: 'monitors', label: 'Monitors', title: 'Monitors', icon: Monitor, requiresSession: true },
-  { id: 'analytics', subpath: 'analytics', label: 'Analytics', title: 'Analytics', icon: BarChart2, requiresSession: true },
-  { id: 'settings', subpath: 'settings', label: 'Settings', title: 'Settings', icon: Settings, requiresSession: true },
-  { id: 'billing', subpath: 'billing', label: 'Billing', title: 'Billing & Plans', icon: Crown, isPremium: true, requiresSession: true },
-  { id: 'guide', subpath: 'guide', label: 'Guide', title: 'Guide', icon: BookOpen, requiresSession: true },
-  { id: 'faq', subpath: 'faq', label: 'FAQ', title: 'FAQ', icon: HelpCircle, requiresSession: true },
-  { id: 'dev', subpath: 'dev', label: 'Dev Controls', title: 'Dev Controls', icon: Code, isDev: true, requiresSession: true, requiresMaster: true },
-];
 
 export function useNavigation(session?: any, isMaster = false) {
   const pathname = usePathname();
@@ -55,11 +17,7 @@ export function useNavigation(session?: any, isMaster = false) {
   const guildId = (params?.guildId as string) || searchParams?.get('guild') || '';
 
   const buildUrl = useCallback(
-    (subpath: string) => {
-      if (!guildId) return subpath === '' ? '/servers' : `/${subpath}`;
-      if (subpath === '') return `/dashboard/${guildId}`;
-      return `/dashboard/${guildId}/${subpath}`;
-    },
+    (subpath: string) => getGuildDashboardRoute(guildId, subpath),
     [guildId]
   );
 

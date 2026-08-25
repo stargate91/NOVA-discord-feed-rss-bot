@@ -39,3 +39,22 @@ export function getToastIconClass(type?: ToastType, styles: Record<string, strin
       return styles['toast-icon-info'] || '';
   }
 }
+
+/**
+ * Safely extracts a displayable error message from unknown error objects.
+ */
+export function extractErrorMessage(
+  err: unknown,
+  defaultMessage = 'An unexpected error occurred'
+): string {
+  if (!err) return defaultMessage;
+  if (typeof err === 'string' && err.trim()) return err;
+  if (typeof err === 'object') {
+    const e = err as Record<string, any>;
+    if (typeof e.message === 'string' && e.message.trim()) return e.message;
+    if (typeof e.error === 'string' && e.error.trim()) return e.error;
+    if (typeof e.statusText === 'string' && e.statusText.trim()) return e.statusText;
+  }
+  return defaultMessage;
+}
+

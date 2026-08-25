@@ -27,6 +27,7 @@ import {
   ModalTitle,
   ModalContent,
   ModalFooter,
+  FloatingActionBar,
   EmptyState,
   Spinner,
   Inline,
@@ -275,48 +276,45 @@ function MonitorsContent() {
       )}
 
       {/* ── Floating Action Bar for Selection ── */}
-      {selectedIds.length > 0 && (
-        <div className={styles['floating-bar']}>
-          <span className={styles['selected-count']}>
-            {selectedIds.length} Selected
-          </span>
-
-          <Inline gap="xs">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Play size={14} />}
-              onClick={() => handleBulkToggle(true)}
-            >
-              Resume
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Pause size={14} />}
-              onClick={() => handleBulkToggle(false)}
-            >
-              Pause
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Edit3 size={14} />}
-              onClick={() => setIsBulkEditOpen(true)}
-            >
-              Edit All
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              leftIcon={<Trash2 size={14} />}
-              onClick={handleBulkDelete}
-            >
-              Delete
-            </Button>
-          </Inline>
-        </div>
-      )}
+      <FloatingActionBar
+        isVisible={selectedIds.length > 0}
+        message={<span>{selectedIds.length} Selected</span>}
+      >
+        <Inline gap="xs">
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<Play size={14} />}
+            onClick={() => handleBulkToggle(true)}
+          >
+            Resume
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<Pause size={14} />}
+            onClick={() => handleBulkToggle(false)}
+          >
+            Pause
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<Edit3 size={14} />}
+            onClick={() => setIsBulkEditOpen(true)}
+          >
+            Edit All
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            leftIcon={<Trash2 size={14} />}
+            onClick={handleBulkDelete}
+          >
+            Delete
+          </Button>
+        </Inline>
+      </FloatingActionBar>
 
       {/* ── Delete Confirmation Modal ── */}
       {monitorToDelete && (
@@ -361,9 +359,6 @@ function MonitorsContent() {
           onClose={() => setIsCreateModalOpen(false)}
           guildId={guildId}
           onSuccess={reloadMonitors}
-          tier={tier}
-          isPremium={isPremium}
-          features={features}
         />
       )}
 
@@ -374,9 +369,6 @@ function MonitorsContent() {
           monitor={editingMonitor}
           guildId={guildId}
           onSave={handleUpdateMonitor}
-          tier={tier}
-          isPremium={isPremium}
-          features={features}
         />
       )}
 
@@ -386,9 +378,6 @@ function MonitorsContent() {
           onClose={() => setIsBulkAddOpen(false)}
           guildId={guildId}
           onSuccess={reloadMonitors}
-          tier={tier}
-          isPremium={isPremium}
-          features={features}
         />
       )}
 
@@ -399,9 +388,6 @@ function MonitorsContent() {
           guildId={guildId}
           monitorCount={selectedIds.length || monitors.length}
           onSave={handleBulkUpdateMonitors}
-          tier={tier}
-          isPremium={isPremium}
-          features={features}
         />
       )}
     </div>

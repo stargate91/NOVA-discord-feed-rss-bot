@@ -1,3 +1,6 @@
+import api from './api_client';
+import { resolveClientTierContext } from '@/utils/tier_limits';
+
 export interface TrendData {
   growthRate: number;
   value: number;
@@ -20,6 +23,13 @@ export interface PlatformStat {
   percentage?: number;
 }
 
+export interface TickerItem {
+  platform: string;
+  title: string;
+  author_name?: string;
+  published_at?: string;
+}
+
 export interface AnalyticsData {
   totalPosts: number;
   previousPeriodPosts?: number;
@@ -38,35 +48,31 @@ export interface AnalyticsData {
   [key: string]: any;
 }
 
-const analyticsService = {
+export const analyticsService = {
   /**
    * Fetch analytics data for a specific guild and date range.
    */
-  async getStats(guildId: string, range: string | number): Promise<AnalyticsData> {
-    const res = await fetch(`/api/stats?guild=${guildId}&days=${range}`);
-    
-    if (res.status === 403) {
-      throw new Error("Access Denied: You do not have permission to view this server's analytics.");
-    }
-    
-    if (!res.ok) {
-      throw new Error("Failed to fetch analytics data.");
-    }
+  async getStats(guildId: string, days: string | number = '14'): Promise<AnalyticsData> {
+    if (!guildId) throw new Error('Guild ID is required');
+    return api.get<AnalyticsData>('/api/stats', { guild: guildId, days });
+  },
 
-    const json = await res.json();
-    return json;
+  /**
+   * Fetch global live event ticker items.
+   */
+  async getGlobalTicker(): Promise<TickerItem[]> {
+    return api.get<TickerItem[]>('/api/stats/global');
   },
 
   /**
    * Helper to determine the tier limit for analytics range (fallback when maxAllowedDays not in response).
    */
   getTierLimit(tier: number): number {
-    if (tier >= 3) return 999;
-    if (tier >= 2) return 30;
-    if (tier >= 1) return 7;
-    return 3;
+    return resolveClientTierContext({ tier }).maxAnalyticsDays;
   }
 };
 
 export default analyticsService;
+
+
 

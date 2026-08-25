@@ -8,3 +8,4 @@ export * from './faq';
 export * from './toasts';
 export * from './terms';
 export * from './privacy';
+export * from './analytics';

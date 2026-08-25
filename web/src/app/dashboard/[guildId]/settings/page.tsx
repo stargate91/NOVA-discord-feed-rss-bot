@@ -23,6 +23,7 @@ import {
 } from "@/components/ui";
 import SettingCard from "@/components/setting_card";
 import TemplateEditor from "@/components/template_editor";
+import { getGuildDashboardRoute } from "@/utils/navigation";
 import CustomRoleSelect from "@/components/custom_role_select";
 import { BOT_LANGUAGES } from "@/constants";
 import { formatExpiryDate } from "@/utils";
@@ -174,7 +175,6 @@ function SettingsContent() {
               onUpdate={handleTemplateUpdate}
               isLocked={!canUseTemplates}
               guildId={guildId}
-              styles={styles}
             />
           </SettingCard>
 
@@ -190,11 +190,12 @@ function SettingsContent() {
                 <p className="text-body-sm">
                   White-label branding requires <strong>Ultimate Tier</strong>.
                 </p>
-                <Link href={`/dashboard/${guildId}/billing`}>
+                <Link href={getGuildDashboardRoute(guildId, 'billing')}>
                   <Button variant="primary" size="sm">
                     Upgrade Now
                   </Button>
                 </Link>
+
               </div>
             ) : (
               <div className={styles["branding-wrapper"]}>

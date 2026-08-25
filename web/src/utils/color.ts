@@ -1,16 +1,10 @@
+import { PLATFORM_REGISTRY } from '@/constants/platforms';
+
 export const PRESET_COLORS = [
-  '#FF0000', // YouTube
-  '#9146FF', // Twitch
-  '#53fc18', // Kick
-  '#ee802f', // RSS
-  '#f3ba2f', // Crypto
-  '#ffffff', // GitHub
-  '#66c0f4', // Steam
-  '#313131', // Epic Games
-  '#9a42f4', // GOG
-  '#01b4e4', // TMDB
-  '#7b2cbf', // Nova
+  ...Array.from(new Set(Object.values(PLATFORM_REGISTRY).map((p) => p.color))),
+  '#7b2cbf', // Nova Brand Accent
 ] as const;
+
 
 export interface HsvColor {
   h: number;

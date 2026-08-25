@@ -1,16 +1,9 @@
 import pool from "./db";
 import { GuildInfo, GuildPermissions } from "@/types/guild";
-
-interface CacheEntry {
-  guilds: GuildInfo[];
-  timestamp: number;
-  userId?: string;
-}
+import { MemoryCache } from "./cache";
 
 // In-memory cache for user guilds to prevent Discord rate limits (429)
-const guildCache = new Map<string, CacheEntry>();
-const inFlightRequests = new Map<string, Promise<GuildInfo[] | null>>();
-const CACHE_TTL = 30000; // 30 seconds
+const guildCache = new MemoryCache(30000); // 30 seconds
 
 /**
  * Fetches user guilds from Discord with caching, deduplication, and rate-limit handling.
@@ -20,66 +13,47 @@ export async function getUserGuilds(session: any): Promise<GuildInfo[] | null> {
 
   let userId = session.user?.id;
   const cacheKey = userId || session.accessToken;
-  
-  // 1. Check if we have a fresh cached version
-  const cached = guildCache.get(cacheKey);
-  if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
-    return cached.guilds;
-  }
 
-  // 2. Check if a request is already in progress for this user
-  if (inFlightRequests.has(cacheKey)) {
-    return inFlightRequests.get(cacheKey)!;
-  }
-
-  // 3. Start a new request and track it
-  const fetchPromise = (async (): Promise<GuildInfo[] | null> => {
-    try {
-      // --- Fallback: If userId is missing, fetch it from @me ---
-      if (!userId) {
-        try {
-          const userRes = await fetch("https://discord.com/api/users/@me", {
-            headers: { Authorization: `Bearer ${session.accessToken}` }
-          });
-          if (userRes.ok) {
-            const userData = await userRes.json();
-            userId = userData.id;
-            console.log(`[Permissions] Recovered missing user ID: ${userId}`);
+  return guildCache.getOrFetch(
+    cacheKey,
+    async (): Promise<GuildInfo[] | null> => {
+      try {
+        // --- Fallback: If userId is missing, fetch it from @me ---
+        if (!userId) {
+          try {
+            const userRes = await fetch("https://discord.com/api/users/@me", {
+              headers: { Authorization: `Bearer ${session.accessToken}` },
+            });
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              userId = userData.id;
+              console.log(`[Permissions] Recovered missing user ID: ${userId}`);
+            }
+          } catch (e) {
+            console.error("[Permissions] Failed to recover user ID:", e);
           }
-        } catch (e) {
-          console.error("[Permissions] Failed to recover user ID:", e);
         }
-      }
 
-      const discordRes = await fetch("https://discord.com/api/users/@me/guilds", {
-        headers: { Authorization: `Bearer ${session.accessToken}` },
-        cache: 'no-store'
-      });
+        const discordRes = await fetch("https://discord.com/api/users/@me/guilds", {
+          headers: { Authorization: `Bearer ${session.accessToken}` },
+          cache: "no-store",
+        });
 
-      if (discordRes.ok) {
-        const userGuilds: GuildInfo[] = await discordRes.json();
-        // Update cache with recovered ID if available
-        guildCache.set(userId || cacheKey, { guilds: userGuilds, timestamp: Date.now(), userId });
-        return userGuilds;
-      }
+        if (discordRes.ok) {
+          const userGuilds: GuildInfo[] = await discordRes.json();
+          return userGuilds;
+        }
 
-      if (discordRes.status === 429) {
-        if (cached) return cached.guilds;
+        return null;
+      } catch (error) {
+        console.error("[Permissions] Fetch Error:", error);
         return null;
       }
-
-      return cached ? cached.guilds : null;
-    } catch (error) {
-      console.error("[Permissions] Fetch Error:", error);
-      return cached ? cached.guilds : null;
-    } finally {
-      inFlightRequests.delete(cacheKey);
-    }
-  })();
-
-  inFlightRequests.set(cacheKey, fetchPromise);
-  return fetchPromise;
+    },
+    30000
+  );
 }
+
 
 /**
  * Checks if a user has permission to manage a specific guild.
@@ -136,7 +110,7 @@ export async function canManageGuild(session: any, guildId: string | number): Pr
 
   // Fallback: Check for specific Admin Role via Bot Token
   const botToken = process.env.BOT_TOKEN;
-  const effectiveUserId = session.user?.id || guildCache.get(session.accessToken)?.userId;
+  const effectiveUserId = session.user?.id;
 
   if (botToken && effectiveUserId && adminRoleId && adminRoleId !== "0") {
     try {

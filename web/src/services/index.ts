@@ -1,11 +1,9 @@
 export * from './api_client';
 export { default as api } from './api_client';
 export { default as monitorService } from './monitor_service';
-export { default as settingsService } from './settings_service';
 export { default as analyticsService } from './analytics_service';
-export { default as dashboardService } from './dashboard_service';
 export { default as devService } from './dev_service';
 export { default as billingService } from './billing_service';
 export { default as guildService } from './guild_service';
 export { default as searchService } from './search_service';
-export { default as statsService } from './stats_service';
+
