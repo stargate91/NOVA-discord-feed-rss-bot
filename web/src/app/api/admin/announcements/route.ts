@@ -13,8 +13,8 @@ export async function GET() {
     `);
     return NextResponse.json(res.rows);
   } catch (error) {
-    console.error("[API Announcements] GET Error:", error);
-    return NextResponse.json({ error: "Failed to fetch announcements" }, { status: 500 });
+    console.warn("[API Announcements] GET DB fallback:", error);
+    return NextResponse.json([]);
   }
 }
 

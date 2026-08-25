@@ -22,8 +22,11 @@ export async function GET() {
 
     return NextResponse.json(settings);
   } catch (error) {
-    console.error("Database Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.warn("[Admin Settings GET] DB fallback:", error);
+    return NextResponse.json({
+      status_rotation_mode: 'random',
+      presence_interval_seconds: '60'
+    });
   }
 }
 

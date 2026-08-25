@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { AlertTriangle, AlertCircle, X, Megaphone } from "lucide-react";
 import devService, { AnnouncementItem } from "@/services/devService";
+import { IconButton } from "@/components/ui";
 
 export default function AnnouncementBanner() {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
@@ -14,43 +15,74 @@ export default function AnnouncementBanner() {
         const data = await devService.getAnnouncements();
         if (Array.isArray(data)) setAnnouncements(data);
       } catch (error) {
-        console.error("Failed to fetch announcements:", error);
+        // Silently catch in banner
       }
     };
     fetchAnnouncements();
   }, []);
 
   const closeAnnouncement = (id: number) => {
-    setClosedIds(prev => [...prev, id]);
+    setClosedIds((prev) => [...prev, id]);
   };
 
-  const activeAnnouncements = announcements.filter(a => !closedIds.includes(a.id));
+  const activeAnnouncements = announcements.filter(
+    (a) => !closedIds.includes(a.id)
+  );
 
   if (activeAnnouncements.length === 0) return null;
 
   return (
-    <div className="ui-quick-action-list" style={{ marginBottom: '2rem' }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-sm)", marginBottom: "var(--space-lg)" }}>
       {activeAnnouncements.map((a) => (
-        <div key={a.id} className={`ui-banner ui-banner-${a.type}`}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', color: 'white' }}>
-              {a.type === 'alert' && <AlertCircle size={22} style={{ color: '#ef4444' }} />}
-              {a.type === 'warning' && <AlertTriangle size={22} style={{ color: '#f59e0b' }} />}
-              {a.type === 'info' && <Megaphone size={22} style={{ color: '#3b82f6' }} />}
-              {a.type === 'maintenance' && <AlertTriangle size={22} style={{ color: '#ec4899' }} />}
+        <div
+          key={a.id}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "var(--space-md)",
+            padding: "var(--space-md) var(--space-lg)",
+            borderRadius: "var(--radius-xl)",
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-accent)",
+            backdropFilter: "blur(var(--blur-md))",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-md)", flex: 1 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "2.5rem",
+                height: "2.5rem",
+                borderRadius: "var(--radius-lg)",
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-subtle)",
+                flexShrink: 0,
+              }}
+            >
+              {a.type === "alert" && <AlertCircle size={20} style={{ color: "var(--status-error)" }} />}
+              {a.type === "warning" && <AlertTriangle size={20} style={{ color: "var(--status-warning)" }} />}
+              {a.type === "info" && <Megaphone size={20} style={{ color: "var(--accent-light)" }} />}
+              {a.type === "maintenance" && <AlertTriangle size={20} style={{ color: "var(--status-error)" }} />}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span className="ui-form-label" style={{ margin: 0, color: 'white' }}>{a.title}</span>
-              <p style={{ margin: 0, fontSize: '0.95rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>{a.content}</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3xs)" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-bold)", color: "var(--text-primary)" }}>
+                {a.title}
+              </span>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: "var(--text-xs)", color: "var(--text-secondary)", margin: 0, lineHeight: "var(--leading-normal)" }}>
+                {a.content}
+              </p>
             </div>
           </div>
-          <button 
-            className="ui-modal-close"
-            style={{ position: 'relative', top: 'auto', right: 'auto' }}
+          <IconButton
+            icon={<X size={16} />}
+            size="xs"
+            variant="ghost"
+            aria-label="Dismiss banner"
             onClick={() => closeAnnouncement(a.id)}
-          >
-            <X size={18} />
-          </button>
+          />
         </div>
       ))}
     </div>

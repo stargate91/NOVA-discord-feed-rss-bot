@@ -27,7 +27,24 @@ export async function GET() {
 
     console.log(`[API/Guilds] Found ${userGuilds.length} guilds for user.`);
 
-    // 2. Fetch our bot's guild settings from DB
+    // 2. Fetch real-time bot installed guilds from Discord API
+    const botInstalledGuildIds = new Set<string>();
+    if (process.env.BOT_TOKEN) {
+      try {
+        const botGuildsRes = await fetch("https://discord.com/api/users/@me/guilds", {
+          headers: { Authorization: `Bot ${process.env.BOT_TOKEN}` },
+        });
+        if (botGuildsRes.ok) {
+          const botGuilds = await botGuildsRes.json();
+          botGuilds.forEach((g: any) => botInstalledGuildIds.add(String(g.id)));
+          console.log(`[API/Guilds] Bot is in ${botInstalledGuildIds.size} guilds from Discord API.`);
+        }
+      } catch (botErr) {
+        console.warn("[API/Guilds] Failed to fetch bot guilds from Discord API:", botErr);
+      }
+    }
+
+    // 3. Fetch our bot's guild settings from DB
     console.log("[API/Guilds] Fetching bot settings from DB...");
     const botGuildsMap: Record<string, { premiumUntil: string | null; isActive: boolean }> = {};
     try {
@@ -35,11 +52,10 @@ export async function GET() {
       dbRes.rows.forEach(row => {
           botGuildsMap[String(row.guild_id)] = {
               premiumUntil: row.premium_until,
-              isActive: row.is_active !== false // Treat null as true for legacy, only false is inactive
+              isActive: row.is_active !== false
           };
       });
     } catch (dbErr: any) {
-      console.warn("[API/Guilds] Primary query failed, attempting fallback:", dbErr?.message);
       try {
         const dbRes = await pool.query('SELECT guild_id, premium_until FROM guild_settings');
         dbRes.rows.forEach(row => {
@@ -49,18 +65,17 @@ export async function GET() {
             };
         });
       } catch (fallbackErr: any) {
-        console.warn("[API/Guilds] DB unavailable or table missing, using empty map:", fallbackErr?.message);
+        console.warn("[API/Guilds] DB unavailable or table missing:", fallbackErr?.message);
       }
     }
 
-    // 3. Load Master Guilds from config.json
+    // 4. Load Master Guilds from config.json
     console.log("[API/Guilds] Loading config.json...");
     let config: any = {};
     try {
       const configPath = path.resolve(process.cwd(), '../config.json');
       if (fs.existsSync(configPath)) {
         const rawData = fs.readFileSync(configPath, 'utf8');
-        // Regex to find large numbers and wrap them in quotes to prevent precision loss
         const sanitizedData = rawData.replace(/:\s*([0-9]{15,})/g, ': "$1"');
         config = JSON.parse(sanitizedData);
       }
@@ -70,20 +85,23 @@ export async function GET() {
     
     const masterGuilds = config.master_guilds || {};
 
-    // 4. Enrich & Filter
+    // 5. Enrich & Filter
     console.log("[API/Guilds] Enriching guild data...");
     const rawGuilds = (userGuilds as any[])
       .map((guild): GuildInfo | null => {
         try {
           const isOwner = Boolean(guild.owner);
-          // Check permissions safely
           const perms = BigInt(guild.permissions || "0");
           const isAdmin = (perms & BigInt(0x8)) === BigInt(0x8);
           const isManageGuild = (perms & BigInt(0x20)) === BigInt(0x20);
           
           const guildIdStr = String(guild.id);
           const botData = botGuildsMap[guildIdStr];
-          const hasBot = botData ? botData.isActive : false;
+          const hasBot = Boolean(
+            (botData && botData.isActive) ||
+            botInstalledGuildIds.has(guildIdStr) ||
+            masterGuilds.hasOwnProperty(guildIdStr)
+          );
           const premiumUntil = botData ? botData.premiumUntil : null;
           const isPremium = Boolean(premiumUntil && new Date(premiumUntil) > new Date());
           const isMaster = masterGuilds.hasOwnProperty(guildIdStr);

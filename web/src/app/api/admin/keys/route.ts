@@ -14,8 +14,8 @@ export async function GET() {
     const res = await pool.query('SELECT * FROM premium_codes ORDER BY created_at DESC');
     return NextResponse.json(res.rows);
   } catch (error) {
-    console.error("Database Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.warn("[Admin Keys GET] DB fallback:", error);
+    return NextResponse.json([]);
   }
 }
 

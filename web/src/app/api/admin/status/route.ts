@@ -13,8 +13,8 @@ export async function GET() {
     const res = await pool.query('SELECT id, type, status_text as text FROM bot_statuses ORDER BY id ASC');
     return NextResponse.json(res.rows);
   } catch (error) {
-    console.error("Database Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.warn("[Admin Status GET] DB fallback:", error);
+    return NextResponse.json([]);
   }
 }
 

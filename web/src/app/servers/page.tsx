@@ -177,18 +177,17 @@ export default function ServersPage() {
                   className={[
                     styles["guild-card"],
                     guild.isPremium && styles["premium-card"],
-                    !hasBot && styles.uninstalled,
                   ]
                     .filter(Boolean)
                     .join(" ")}
-                  onClick={() => hasBot && handleSelect(guild.id)}
-                  tabIndex={hasBot ? 0 : undefined}
+                  onClick={() => handleSelect(guild.id)}
+                  tabIndex={0}
                   onKeyDown={(e) => {
-                    if (hasBot && (e.key === "Enter" || e.key === " ")) {
+                    if (e.key === "Enter" || e.key === " ") {
                       handleSelect(guild.id);
                     }
                   }}
-                  role={hasBot ? "button" : undefined}
+                  role="button"
                 >
                   <div className={styles["guild-left"]}>
                     <Avatar
@@ -221,7 +220,11 @@ export default function ServersPage() {
                             Premium
                           </Badge>
                         )}
-                        {!hasBot && (
+                        {hasBot ? (
+                          <Badge variant="success" size="sm" dot>
+                            Active
+                          </Badge>
+                        ) : (
                           <Badge variant="neutral" size="sm">
                             Not Installed
                           </Badge>
@@ -231,30 +234,31 @@ export default function ServersPage() {
                   </div>
 
                   <div className={styles["guild-right"]}>
-                    {hasBot ? (
+                    <Inline gap="xs" align="center">
+                      {!hasBot && (
+                        <a
+                          href={botInviteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            leftIcon={<Plus size={14} />}
+                          >
+                            Invite
+                          </Button>
+                        </a>
+                      )}
                       <Button
-                        variant="ghost"
+                        variant="primary"
                         size="sm"
-                        rightIcon={<ChevronRight size={18} />}
+                        rightIcon={<ChevronRight size={16} />}
                       >
                         Manage
                       </Button>
-                    ) : (
-                      <a
-                        href={botInviteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          leftIcon={<Plus size={16} />}
-                        >
-                          Invite Bot
-                        </Button>
-                      </a>
-                    )}
+                    </Inline>
                   </div>
                 </div>
               );
