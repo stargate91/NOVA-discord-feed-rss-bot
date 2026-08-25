@@ -1,0 +1,165 @@
+/* ── 1. Layout Primitives (Stack, Inline, Grid) ── */
+
+/* ── Gaps ── */
+.gap-none {
+  gap: 0;
+}
+
+.gap-3xs {
+  gap: var(--space-3xs);
+}
+
+.gap-2xs {
+  gap: var(--space-2xs);
+}
+
+.gap-xs {
+  gap: var(--space-xs);
+}
+
+.gap-sm {
+  gap: var(--space-sm);
+}
+
+.gap-md {
+  gap: var(--space-md);
+}
+
+.gap-lg {
+  gap: var(--space-lg);
+}
+
+.gap-xl {
+  gap: var(--space-xl);
+}
+
+.gap-2xl {
+  gap: var(--space-2xl);
+}
+
+.gap-3xl {
+  gap: var(--space-3xl);
+}
+
+/* ── Align Items ── */
+.align-start {
+  align-items: flex-start;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-end {
+  align-items: flex-end;
+}
+
+.align-stretch {
+  align-items: stretch;
+}
+
+.align-baseline {
+  align-items: baseline;
+}
+
+/* ── Justify Content ── */
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+/* ── Stack (Vertical Column Layout) ── */
+.stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── Inline (Horizontal Row Layout) ── */
+.inline {
+  display: flex;
+  flex-direction: row;
+}
+
+.inline-wrap {
+  flex-wrap: wrap;
+}
+
+.inline-nowrap {
+  flex-wrap: nowrap;
+}
+
+/* ── Grid Layout ── */
+.grid {
+  display: grid;
+  width: 100%;
+}
+
+.cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.cols-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.cols-cards {
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 40rem) {
+  .cols-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 64rem) {
+  .cols-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (width >= 90rem) {
+  .cols-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

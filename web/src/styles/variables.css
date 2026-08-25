@@ -1,0 +1,246 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NovaFeeds — Enterprise Design System Tokens & Scalable Variables
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 1. Spacing Scale (Rem-based modular scale) ── */
+  --space-3xs: 0.125rem; /* 2px */
+  --space-2xs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 0.75rem;   /* 12px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.25rem;   /* 20px */
+  --space-xl: 1.5rem;    /* 24px */
+  --space-2xl: 2rem;     /* 32px */
+  --space-3xl: 2.5rem;   /* 40px */
+  --space-4xl: 3rem;     /* 48px */
+  --space-5xl: 4rem;     /* 64px */
+  --space-6xl: 5rem;     /* 80px */
+
+  /* ── 2. Border Radius Scale ── */
+  --radius-2xs: 0.125rem; /* 2px */
+  --radius-xs: 0.25rem;   /* 4px */
+  --radius-sm: 0.375rem;  /* 6px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.25rem;  /* 20px */
+  --radius-3xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+
+  /* ── 3. Typography Scale (Sizes & Line Heights) ── */
+  --text-3xs: 0.625rem;   /* 10px */
+  --text-2xs: 0.6875rem;  /* 11px */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+  --text-6xl: 3.75rem;    /* 60px */
+  --text-7xl: 4.5rem;     /* 72px */
+
+  /* Line Heights (Leading) */
+  --leading-none: 1;
+  --leading-tight: 1.2;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* Letter Spacing (Tracking) */
+  --tracking-tighter: -0.04em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Font Families */
+  --font-display: var(--font-outfit), var(--font-geist-sans), sans-serif;
+  --font-body: var(--font-geist-sans), Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+
+  /* ── 4. Surface & Background Tokens (Cyberpunk / Glassmorphism) ── */
+  --bg-primary: #07090e;
+  --bg-base: #07090e;
+  --bg-secondary: rgba(13, 20, 36, 0.6);
+  --bg-panel: rgba(18, 28, 50, 0.4);
+  --bg-card: rgba(11, 19, 35, 0.65);
+  --bg-card-hover: rgba(18, 30, 54, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-glass-hover: rgba(255, 255, 255, 0.06);
+  --bg-glass-active: rgba(255, 255, 255, 0.1);
+  --bg-modal: rgba(8, 14, 26, 0.96);
+  --bg-modal-backdrop: rgba(3, 7, 18, 0.85);
+
+  /* ── 5. Text & Foreground Colors ── */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-faint: #334155;
+  --text-inverse: #000000;
+
+  /* ── 6. Brand & Accent Shades (Elegant Cyber Blue & Sapphire) ── */
+  --accent-color: #0284c7;
+  --accent-primary: #0284c7;
+  --accent-hover: #0ea5e9;
+  --accent-active: #0369a1;
+  --accent-light: #38bdf8;
+  --accent-dark: #0c4a6e;
+  --accent-faint: rgba(14, 165, 233, 0.12);
+  --accent-glow: rgba(14, 165, 233, 0.4);
+
+  /* ── 7. Status & Semantic Colors ── */
+  --status-success: #10b981;
+  --status-success-bg: rgba(16, 185, 129, 0.12);
+  --status-success-border: rgba(16, 185, 129, 0.3);
+  --status-warning: #f59e0b;
+  --status-warning-bg: rgba(245, 158, 11, 0.12);
+  --status-warning-border: rgba(245, 158, 11, 0.3);
+  --status-error: #ef4444;
+  --status-error-bg: rgba(239, 68, 68, 0.12);
+  --status-error-border: rgba(239, 68, 68, 0.3);
+  --status-info: #0284c7;
+  --status-info-bg: rgba(2, 132, 199, 0.12);
+  --status-info-border: rgba(2, 132, 199, 0.3);
+  --status-master: #fbbf24;
+  --status-master-bg: rgba(245, 158, 11, 0.15);
+  --status-master-border: rgba(245, 158, 11, 0.4);
+
+  /* ── 8. Platform Brand Colors ── */
+  --platform-youtube: #ff0000;
+  --platform-twitch: #9146ff;
+  --platform-kick: #53fc18;
+  --platform-rss: #ee802f;
+  --platform-crypto: #f3ba2f;
+  --platform-steam: #66c0f4;
+  --platform-github: #fafafa;
+  --platform-tmdb: #01b4e4;
+
+  /* ── 9. Gradients & Neon Glows ── */
+  --gradient-primary: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #06b6d4 100%);
+  --gradient-accent-soft: linear-gradient(135deg, rgba(2, 132, 199, 0.18) 0%, rgba(6, 182, 212, 0.05) 100%);
+  --gradient-master: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-card: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+  --gradient-border: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(14, 165, 233, 0.35) 100%);
+  --gradient-shimmer: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 100%);
+
+  /* ── 10. Borders & Dividers ── */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-focus: rgba(14, 165, 233, 0.6);
+  --border-accent: rgba(14, 165, 233, 0.45);
+  --border-spinner: rgba(255, 255, 255, 0.25);
+  --bg-overlay-faint: rgba(0, 0, 0, 0.2);
+
+  /* ── 11. Backdrop Blur Scales (Glassmorphism, Rem-based) ── */
+  --blur-none: 0;
+  --blur-xs: 0.25rem;   /* 4px */
+  --blur-sm: 0.5rem;    /* 8px */
+  --blur-md: 0.75rem;   /* 12px */
+  --blur-lg: 1rem;      /* 16px */
+  --blur-xl: 1.5rem;    /* 24px */
+  --blur-2xl: 2.5rem;   /* 40px */
+
+  /* ── 12. Opacity Scale ── */
+  --opacity-0: 0;
+  --opacity-faint: 0.15;
+  --opacity-disabled: 0.45;
+  --opacity-muted: 0.65;
+  --opacity-hover: 0.85;
+  --opacity-full: 1;
+
+  /* ── 13. Transitions & Timing Curves ── */
+  --ease-base: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-linear: linear;
+  --duration-instant: 75ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-spin: 800ms;
+  --duration-shimmer: 1500ms;
+  --transition-fast: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── 14. Shadows & Glow Effects ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.65);
+  --glow-accent-sm: 0 0 12px var(--accent-glow);
+  --glow-accent: 0 0 24px var(--accent-glow);
+  --glow-accent-lg: 0 0 40px rgba(14, 165, 233, 0.55);
+  --glow-card: 0 0 30px rgba(14, 165, 233, 0.1);
+
+  /* ── 15. Component Semantic Heights & Dimensions ── */
+  --btn-height-sm: 2rem;           /* 32px */
+  --btn-height-md: 2.5rem;         /* 40px */
+  --btn-height-lg: 3rem;           /* 48px */
+  --input-height-sm: 2rem;         /* 32px */
+  --input-height-md: 2.5rem;       /* 40px */
+  --input-height-lg: 3rem;         /* 48px */
+  --badge-height-sm: 1.25rem;      /* 20px */
+  --badge-height-md: 1.625rem;     /* 26px */
+
+  /* ── 16. Layout Dimensions (Rem-based) ── */
+  --sidebar-width: 15.625rem;         /* 250px */
+  --sidebar-collapsed-width: 4.5rem;   /* 72px */
+  --navbar-height: 4rem;              /* 64px */
+  --container-max-width: 80rem;       /* 1280px */
+  --container-narrow-width: 56rem;    /* 896px */
+
+  /* ── 17. Focus Rings & Interactive Accessibility ── */
+  --focus-ring-color: rgba(14, 165, 233, 0.6);
+  --focus-ring-glow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-hover), 0 0 14px var(--accent-glow);
+  --focus-ring-danger: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--status-error), 0 0 14px var(--status-error-bg);
+
+  /* ── 18. Scrollbar Design Tokens ── */
+  --scrollbar-track: rgba(7, 9, 14, 0.6);
+  --scrollbar-thumb: rgba(14, 165, 233, 0.35);
+  --scrollbar-thumb-hover: rgba(56, 189, 248, 0.7);
+  --scrollbar-thumb-active: rgba(56, 189, 248, 0.9);
+
+  /* ── 19. Z-Index Layer Hierarchy ── */
+  --z-background: -1;
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-sidebar: 300;
+  --z-modal-backdrop: 900;
+  --z-modal: 1000;
+  --z-toast: 2000;
+  --z-tooltip: 3000;
+
+  /* ── 20. Responsive Breakpoints (Rem-based) & Container Padding ── */
+  --breakpoint-xs: 30rem;    /* 480px */
+  --breakpoint-sm: 40rem;    /* 640px */
+  --breakpoint-md: 48rem;    /* 768px */
+  --breakpoint-lg: 64rem;    /* 1024px */
+  --breakpoint-xl: 80rem;    /* 1280px */
+  --breakpoint-2xl: 96rem;   /* 1536px */
+
+  --container-padding-mobile: 1rem;     /* 16px */
+  --container-padding-tablet: 1.5rem;   /* 24px */
+  --container-padding-desktop: 2rem;    /* 32px */
+}

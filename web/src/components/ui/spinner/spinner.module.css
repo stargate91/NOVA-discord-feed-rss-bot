@@ -1,0 +1,56 @@
+.spinner {
+  display: inline-block;
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--border-spinner);
+  border-top-color: currentcolor;
+  border-radius: var(--radius-full);
+  animation-name: spin;
+  animation-duration: var(--duration-spin);
+  animation-timing-function: var(--ease-linear);
+  animation-iteration-count: infinite;
+  flex-shrink: 0;
+}
+
+/* ── Sizes ── */
+.size-xs {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1px;
+}
+
+.size-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.size-md {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.size-lg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.size-xl {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* ── Variants ── */
+.variant-primary {
+  color: var(--accent-light);
+  border-top-color: var(--accent-light);
+}
+
+.variant-white {
+  color: var(--text-primary);
+  border-top-color: var(--text-primary);
+}
+
+.variant-muted {
+  color: var(--text-muted);
+  border-top-color: var(--text-muted);
+}

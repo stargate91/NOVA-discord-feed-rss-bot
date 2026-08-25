@@ -1,0 +1,95 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+  background: var(--bg-modal-backdrop);
+  backdrop-filter: blur(var(--blur-sm));
+  animation: fade-in var(--duration-fast) var(--ease-out) forwards;
+}
+
+.drawer {
+  position: fixed;
+  z-index: var(--z-modal);
+  background: var(--bg-modal);
+  backdrop-filter: blur(var(--blur-xl));
+  box-shadow: var(--shadow-xl), var(--glow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Positions ── */
+.side-left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20rem;
+  max-width: calc(100vw - 2rem);
+  border-right: 1px solid var(--border-light);
+  animation: slide-right-enter var(--duration-normal) var(--ease-spring) forwards;
+}
+
+.side-right {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 24rem;
+  max-width: calc(100vw - 2rem);
+  border-left: 1px solid var(--border-light);
+  animation: slide-left-enter var(--duration-normal) var(--ease-spring) forwards;
+}
+
+.side-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 80vh;
+  border-top: 1px solid var(--border-light);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  animation: slide-up-enter var(--duration-normal) var(--ease-spring) forwards;
+}
+
+/* ── Keyframes for slide-left / slide-right ── */
+@keyframes slide-right-enter {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-left-enter {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.drawer-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.drawer-content {
+  padding: var(--space-xl);
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.drawer-footer {
+  padding: var(--space-md) var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-overlay-faint);
+}

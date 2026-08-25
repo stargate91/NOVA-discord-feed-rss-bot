@@ -1,0 +1,150 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  width: 100%;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.required {
+  color: var(--status-error);
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  backdrop-filter: blur(var(--blur-sm));
+  transition: var(--transition-fast);
+}
+
+.input-container:hover:not(.disabled) {
+  border-color: var(--border-strong);
+  background: var(--bg-surface-hover);
+}
+
+.input-container.focused {
+  border-color: var(--border-focus);
+  box-shadow: var(--focus-ring-glow);
+  background: var(--bg-surface-active);
+}
+
+.input-container.error {
+  border-color: var(--status-error);
+  box-shadow: var(--focus-ring-danger);
+}
+
+.input-container.disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.input-field {
+  width: 100%;
+  height: var(--input-height-md);
+  padding-inline: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+.input-field:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Sizes ── */
+.input-container.size-sm {
+  border-radius: var(--radius-md);
+}
+
+.input-container.size-sm .input-field {
+  height: var(--input-height-sm);
+  padding-inline: var(--space-sm);
+  font-size: var(--text-sm);
+}
+
+.input-container.size-lg {
+  border-radius: var(--radius-xl);
+}
+
+.input-container.size-lg .input-field {
+  height: var(--input-height-lg);
+  padding-inline: var(--space-lg);
+  font-size: var(--text-lg);
+}
+
+/* ── Icon Slots ── */
+.icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.icon-left {
+  padding-left: var(--space-sm);
+}
+
+.icon-right {
+  padding-right: var(--space-sm);
+}
+
+/* ── Textarea ── */
+.textarea-container {
+  min-height: 5rem;
+}
+
+.textarea-field {
+  width: 100%;
+  min-height: 5rem;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: vertical;
+}
+
+.textarea-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Helper Texts ── */
+.hint-text {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.error-text {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--status-error);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}

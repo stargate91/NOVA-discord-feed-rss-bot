@@ -1,0 +1,104 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background: var(--bg-modal-backdrop);
+  backdrop-filter: blur(var(--blur-sm));
+  animation: fade-in var(--duration-fast) var(--ease-out) forwards;
+}
+
+.modal-container {
+  position: relative;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - 2rem);
+  background: var(--bg-modal);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-2xl);
+  backdrop-filter: blur(var(--blur-xl));
+  box-shadow: var(--shadow-xl), var(--glow-card);
+  overflow: hidden;
+  animation: scale-in var(--duration-fast) var(--ease-spring) forwards;
+}
+
+/* ── Sizes ── */
+.size-sm {
+  max-width: 24rem;  /* 384px */
+}
+
+.size-md {
+  max-width: 32rem;  /* 512px */
+}
+
+.size-lg {
+  max-width: 44rem;  /* 704px */
+}
+
+.size-xl {
+  max-width: 56rem;  /* 896px */
+}
+
+.size-full {
+  max-width: calc(100vw - 2rem);
+  height: calc(100vh - 2rem);
+}
+
+/* ── Header ── */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.close-button:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-hover);
+}
+
+/* ── Content ── */
+.modal-content {
+  padding: var(--space-xl);
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+/* ── Footer ── */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-overlay-faint);
+}

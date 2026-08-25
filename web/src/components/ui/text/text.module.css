@@ -1,0 +1,163 @@
+.text {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+}
+
+/* ── Sizes ── */
+.size-3xs {
+  font-size: var(--text-3xs);
+}
+
+.size-2xs {
+  font-size: var(--text-2xs);
+}
+
+.size-xs {
+  font-size: var(--text-xs);
+}
+
+.size-sm {
+  font-size: var(--text-sm);
+}
+
+.size-base {
+  font-size: var(--text-base);
+}
+
+.size-lg {
+  font-size: var(--text-lg);
+}
+
+.size-xl {
+  font-size: var(--text-xl);
+}
+
+.size-2xl {
+  font-size: var(--text-2xl);
+}
+
+.size-3xl {
+  font-size: var(--text-3xl);
+}
+
+.size-4xl {
+  font-size: var(--text-4xl);
+}
+
+.size-5xl {
+  font-size: var(--text-5xl);
+}
+
+.size-6xl {
+  font-size: var(--text-6xl);
+}
+
+.size-7xl {
+  font-size: var(--text-7xl);
+}
+
+/* ── Weights ── */
+.weight-regular {
+  font-weight: var(--font-weight-regular);
+}
+
+.weight-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.weight-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.weight-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.weight-extrabold {
+  font-weight: var(--font-weight-extrabold);
+}
+
+.weight-black {
+  font-weight: var(--font-weight-black);
+}
+
+/* ── Variants / Colors ── */
+.variant-primary {
+  color: var(--text-primary);
+}
+
+.variant-secondary {
+  color: var(--text-secondary);
+}
+
+.variant-muted {
+  color: var(--text-muted);
+}
+
+.variant-faint {
+  color: var(--text-faint);
+}
+
+.variant-success {
+  color: var(--status-success);
+}
+
+.variant-warning {
+  color: var(--status-warning);
+}
+
+.variant-danger {
+  color: var(--status-error);
+}
+
+.variant-info {
+  color: var(--status-info);
+}
+
+.variant-master {
+  color: var(--status-master);
+}
+
+.variant-gradient-primary {
+  background: var(--gradient-primary);
+  background-clip: text;
+  color: transparent;
+}
+
+.variant-gradient-master {
+  background: var(--gradient-master);
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Fonts & Modifiers ── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balance {
+  text-wrap: balance;
+}

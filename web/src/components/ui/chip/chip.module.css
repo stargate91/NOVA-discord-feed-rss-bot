@@ -1,0 +1,77 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  height: var(--btn-height-sm);
+  padding-inline: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(var(--blur-sm));
+  user-select: none;
+  cursor: default;
+  transition: var(--transition-fast);
+}
+
+.chip.clickable {
+  cursor: pointer;
+}
+
+.chip.clickable:hover:not(.disabled) {
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+  transform: translateY(-0.0625rem);
+}
+
+.chip.selected {
+  background: var(--accent-faint);
+  color: var(--accent-light);
+  border-color: var(--border-accent);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.chip.disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* ── Sizes ── */
+.size-sm {
+  height: 1.5rem;
+  padding-inline: var(--space-xs);
+  font-size: var(--text-2xs);
+}
+
+.size-md {
+  height: var(--btn-height-sm);
+  padding-inline: var(--space-sm);
+  font-size: var(--text-xs);
+}
+
+/* ── Remove Button ── */
+.remove-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  margin-left: var(--space-3xs);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.remove-button:hover {
+  color: var(--status-error);
+  background: var(--status-error-bg);
+}

@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NovaFeeds — Interactive States & Accessibility Focus Rings
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Remove default browser mouse outline */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Accessible Keyboard Focus Ring */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-glow);
+  border-color: var(--border-focus);
+}
+
+/* Interactive Elements Baseline */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-glow);
+  transition: box-shadow var(--duration-fast) var(--ease-base), border-color var(--duration-fast) var(--ease-base);
+}
+
+/* Disabled Interactive Elements */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled="true"] {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Reduce Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}

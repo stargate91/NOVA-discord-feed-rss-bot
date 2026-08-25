@@ -1,0 +1,47 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NovaFeeds — Cross-Browser Scrollbar Baseline
+   Supports: Firefox (W3C), Chrome, Edge, Safari, Brave, Opera
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Firefox & Modern W3C Standard ── */
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* ── 2. WebKit & Chromium (Chrome, Edge, Safari, Brave, Opera) ── */
+::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background var(--duration-fast) var(--ease-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ── 3. Smooth Layout Stability ── */
+html {
+  scrollbar-gutter: stable;
+}

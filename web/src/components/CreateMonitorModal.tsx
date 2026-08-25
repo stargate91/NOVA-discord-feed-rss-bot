@@ -1,0 +1,700 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from 'react';
+import MultiSelect from './MultiSelect';
+import { X, ChevronRight, ChevronLeft, Info, Plus, Trash2 } from 'lucide-react';
+import { useToast } from "@/context/ToastContext";
+import ColorPicker from './ColorPicker';
+import { useConfig } from '@/hooks/useConfig';
+import { MOVIE_GENRES, LANGUAGES, getAvailableVars } from '@/lib/monitorConstants';
+import searchService from '@/services/searchService';
+import guildService from '@/services/guildService';
+import monitorService from '@/services/monitorService';
+
+export interface PlatformDef {
+  id: string;
+  name: string;
+  logo: string;
+  color: string;
+  description: string;
+  inputLabel?: string;
+  inputKey?: string;
+  placeholder?: string;
+  hint?: string;
+  isGlobal?: boolean;
+  isCrypto?: boolean;
+}
+
+const PLATFORMS: PlatformDef[] = [
+  // Content & Streaming
+  { id: 'youtube', name: 'YouTube', logo: '/brands/youtube.png', color: '#FF0000', description: 'Monitor a channel for new videos.', inputLabel: 'Channel Info', inputKey: 'channel_id', placeholder: '@handle, Link or Name', hint: 'Format: @handle, channel link, name or UCID.' },
+  { id: 'twitch', name: 'Twitch', logo: '/brands/twitch.png', color: '#9146FF', description: 'Go live alerts for Twitch streamers.', inputLabel: 'Username', inputKey: 'username', placeholder: 'twitch_user', hint: 'Format: Username or Channel Link.' },
+  { id: 'kick', name: 'Kick', logo: '/brands/kick.png', color: '#53fc18', description: 'Go live alerts for Kick streamers.', inputLabel: 'Username', inputKey: 'username', placeholder: 'kick_user', hint: 'Format: Username or Channel Link.' },
+
+  // Gaming
+  { id: 'epic_games', name: 'Epic Free', logo: '/brands/epic-games.png', color: '#ffffff', description: 'Weekly free games from Epic Store.', isGlobal: true },
+  { id: 'steam_free', name: 'Steam Free', logo: '/brands/steam.png', color: '#66c0f4', description: 'New free games discovered on Steam.', isGlobal: true },
+  { id: 'steam_news', name: 'Steam News', logo: '/brands/steam.png', color: '#66c0f4', description: 'Game updates and news from Steam.', inputLabel: 'Steam Game', inputKey: 'app_id', placeholder: 'Dota 2, 730 or Link', hint: 'Format: Game Name, App ID or Store URL.' },
+  { id: 'gog_free', name: 'GOG Free', logo: '/brands/gog.png', color: '#b237c1', description: 'Limited time free offers on GOG.com.', isGlobal: true },
+
+  // Entertainment
+  { id: 'movie', name: 'Movies', logo: '/brands/tmdb.png', color: '#00d1b2', description: 'Trending and new popular movies.', isGlobal: true },
+  { id: 'tv_series', name: 'TV Series', logo: '/brands/tmdb.png', color: '#3273dc', description: 'Daily trending and new TV shows.', isGlobal: true },
+
+  // Tech & General
+  { id: 'github', name: 'GitHub', logo: '/brands/github.png', color: '#ffffff', description: 'New releases or commits from a repo.', inputLabel: 'Repository', inputKey: 'repo', placeholder: 'owner/repo', hint: 'Format: "owner/repo" or Repository URL.' },
+  { id: 'crypto', name: 'Crypto', logo: '/brands/crypto.png', color: '#F7931A', description: 'Price alerts and coin news.', isCrypto: true },
+  { id: 'rss', name: 'RSS Feed', logo: '/brands/rss.png', color: '#ee802f', description: 'Generic RSS/Atom feed monitoring.', inputLabel: 'Feed URL', inputKey: 'rss_url', placeholder: 'https://example.com/feed', hint: 'Format: Full URL (e.g. https://site.com/feed.xml).' }
+];
+
+interface CreateMonitorModalProps {
+  guildId: string;
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  tier?: number;
+  isPremium?: boolean;
+}
+
+export default function CreateMonitorModal({ 
+  guildId, 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  tier = 0, 
+  isPremium = false 
+}: CreateMonitorModalProps) {
+  const { hasFeature } = useConfig();
+
+  const isLocked = (featureName: string) => {
+    return !hasFeature(tier, isPremium, featureName);
+  };
+
+  const { addToast, showSuccess } = useToast();
+  const [step, setStep] = useState(1);
+  const [selectedPlatform, setSelectedPlatform] = useState<PlatformDef | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    target_channels: [] as string[],
+    target_roles: [] as string[],
+    embed_color: '#3d3f45',
+    platform_input: '',
+    custom_alert: '',
+    include_upcoming: false,
+    target_genres: [] as string[],
+    target_languages: [] as string[],
+    send_initial_alert: true,
+    use_native_player: false,
+    custom_image: '',
+  });
+
+  const [cryptoPairs, setCryptoPairs] = useState<Array<{ symbol: string; threshold: string }>>([{ symbol: '', threshold: '' }]);
+  const [guildChannels, setGuildChannels] = useState<any[]>([]);
+  const [guildRoles, setGuildRoles] = useState<any[]>([]);
+  const [loadingContext, setLoadingContext] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [resolving, setResolving] = useState(false);
+  const [resolvedChannel, setResolvedChannel] = useState<{ id: string; title: string; thumbnail?: string } | null>(null);
+
+  // Universal Autocomplete States (Steam, Twitch, GitHub)
+  const [autoQuery, setAutoQuery] = useState('');
+  const [autoResults, setAutoResults] = useState<any[]>([]);
+  const [isAutoSearching, setIsAutoSearching] = useState(false);
+  const [showAutoDropdown, setShowAutoDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowAutoDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Debounced Universal Search
+  useEffect(() => {
+    const supportedPlatforms = ['steam_news', 'twitch', 'github'];
+    if (!selectedPlatform || !supportedPlatforms.includes(selectedPlatform.id)) return;
+    
+    const delayDebounceFn = setTimeout(async () => {
+      if (autoQuery.trim().length >= 3) {
+        setIsAutoSearching(true);
+        try {
+          const data = await searchService.searchPlatform(selectedPlatform.id, autoQuery);
+          setAutoResults(data);
+          setShowAutoDropdown(true);
+        } catch (e) {
+          console.error(`${selectedPlatform.id} search failed:`, e);
+        }
+        setIsAutoSearching(false);
+      } else {
+        setAutoResults([]);
+        setShowAutoDropdown(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [autoQuery, selectedPlatform]);
+
+  const handleYouTubeResolve = async () => {
+    if (!formData.platform_input) return;
+    setResolving(true);
+    try {
+      const data = await searchService.resolveYouTube(formData.platform_input);
+      setResolvedChannel(data);
+      setFormData(prev => ({ ...prev, platform_input: data.id, name: data.title }));
+      addToast(`Found: ${data.title}`, 'success', 'YouTube Found');
+    } catch (err: any) {
+      console.error(err);
+      addToast('Could not find YouTube channel. Check the name/link.', 'error', 'Not Found');
+    }
+    setResolving(false);
+  };
+
+  useEffect(() => {
+    if (isOpen && guildId) {
+      setLoadingContext(true);
+      Promise.all([
+        guildService.getChannels(guildId),
+        guildService.getRoles(guildId)
+      ]).then(([channels, roles]) => {
+        setGuildChannels(channels);
+        setGuildRoles(roles);
+        setLoadingContext(false);
+      }).catch((err) => {
+        console.error(err);
+        setLoadingContext(false);
+      });
+    }
+    if (!isOpen) {
+      setStep(1);
+      setSelectedPlatform(null);
+      setFormData({ name: '', target_channels: [], target_roles: [], embed_color: '#3d3f45', platform_input: '', custom_alert: '', include_upcoming: false, target_genres: [], target_languages: [], send_initial_alert: true, use_native_player: false, custom_image: '' });
+      setCryptoPairs([{ symbol: '', threshold: '' }]);
+      setAutoQuery('');
+      setAutoResults([]);
+      setResolvedChannel(null);
+    }
+  }, [isOpen, guildId]);
+
+  if (!isOpen) return null;
+
+  const handlePlatformSelect = (platform: PlatformDef) => {
+    setSelectedPlatform(platform);
+    setFormData(prev => ({
+      ...prev,
+      name: platform.name,
+      embed_color: '#3d3f45'
+    }));
+    setStep(2);
+  };
+
+  const addCryptoPair = () => setCryptoPairs([...cryptoPairs, { symbol: '', threshold: '' }]);
+  const removeCryptoPair = (index: number) => setCryptoPairs(cryptoPairs.filter((_, i) => i !== index));
+  const updateCryptoPair = (index: number, field: 'symbol' | 'threshold', value: string) => {
+    const next = [...cryptoPairs];
+    if (field === 'symbol') next[index][field] = value.toUpperCase();
+    else next[index][field] = value;
+    setCryptoPairs(next);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPlatform) return;
+
+    if (!formData.target_channels || formData.target_channels.length === 0) {
+      addToast('You must select at least one target channel.', 'error', 'Missing Channel');
+      return;
+    }
+
+    setCreating(true);
+
+    let platformInput = formData.platform_input;
+    if (selectedPlatform.isCrypto) {
+      platformInput = cryptoPairs
+        .filter(p => p.symbol && p.threshold)
+        .map(p => `${p.symbol}:${p.threshold}`)
+        .join(', ');
+    }
+
+    const payload: Record<string, any> = {
+      type: selectedPlatform.id,
+      name: formData.name,
+      guildId: guildId,
+      target_channels: formData.target_channels,
+      target_roles: formData.target_roles,
+      embed_color: formData.embed_color,
+      custom_alert: formData.custom_alert,
+      include_upcoming: formData.include_upcoming,
+      target_genres: formData.target_genres,
+      target_languages: formData.target_languages,
+      send_initial_alert: ['twitch', 'kick'].includes(selectedPlatform.id) ? formData.send_initial_alert : false,
+      use_native_player: selectedPlatform.id === 'youtube' ? formData.use_native_player : undefined,
+      custom_image: formData.custom_image,
+    };
+
+    if (!selectedPlatform.isGlobal) {
+      payload[selectedPlatform.id === 'crypto' ? 'symbols' : (selectedPlatform.inputKey || 'source_id')] = platformInput;
+    }
+
+    try {
+      await monitorService.createMonitor(payload as any);
+      showSuccess();
+      addToast(`Monitor '${formData.name}' has been created and is now active.`, 'success', 'Monitor Created');
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      addToast(err?.message || 'Failed to create monitor', 'error', 'Error');
+    }
+    setCreating(false);
+  };
+
+  return (
+    <div className="ui-modal-overlay">
+      <div className="ui-modal-content">
+        <div className="ui-modal-header">
+          <div>
+            <h3 className="ui-modal-title">Add New Monitor</h3>
+            <p className="ui-modal-subtitle">Choose a platform to start</p>
+          </div>
+          <button className="ui-modal-close" onClick={onClose}><X size={20} /></button>
+        </div>
+
+        {step === 1 ? (
+          <div className="ui-platform-grid">
+            {PLATFORMS.map(p => (
+              <div
+                key={p.id}
+                className="ui-platform-card"
+                onClick={() => handlePlatformSelect(p)}
+                style={{ "--platform-color": p.color } as React.CSSProperties}
+              >
+                <div className="ui-platform-icon-wrapper">
+                  <img src={p.logo} alt={p.name} style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                  <div className="ui-platform-icon-glow"></div>
+                </div>
+                <div className="ui-platform-info">
+                  <span className="ui-monitor-name" style={{ fontSize: '1rem' }}>{p.name}</span>
+                  <span className="ui-platform-desc">{p.description}</span>
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }}>
+                  <ChevronRight size={18} />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="ui-modal-body" style={{ padding: 0 }}>
+            <div style={{ padding: '2.5rem' }}>
+              <h4 className="ui-platform-label" style={{ marginBottom: '1.5rem', color: 'var(--accent-hover)' }}>Essential Config</h4>
+              <div className="ui-form-group">
+                <label className="ui-form-label">Monitor Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  className="ui-input"
+                  placeholder="e.g. My Favorite Streamer"
+                />
+              </div>
+
+              {selectedPlatform?.isCrypto ? (
+                <div className="form-group highlighted-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <label>Price Alert Targets</label>
+                    <div className="hint-pill"><Info size={12} /> Set coin and threshold</div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {cryptoPairs.map((pair, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          placeholder="BTC"
+                          value={pair.symbol}
+                          onChange={(e) => updateCryptoPair(idx, 'symbol', e.target.value)}
+                          className="ui-input ui-input-mono"
+                          style={{ flex: 1, padding: '0.6rem 0.8rem' }}
+                          required
+                        />
+                        <span style={{ opacity: 0.3 }}>:</span>
+                        <input
+                          type="number"
+                          placeholder="50000"
+                          value={pair.threshold}
+                          onChange={(e) => updateCryptoPair(idx, 'threshold', e.target.value)}
+                          className="ui-input ui-input-mono"
+                          style={{ flex: 2, padding: '0.6rem 0.8rem' }}
+                          required
+                        />
+                        {cryptoPairs.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeCryptoPair(idx)}
+                            className="delete-icon-btn"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={addCryptoPair}
+                      className="add-pair-btn"
+                    >
+                      <Plus size={14} /> Add Another Coin
+                    </button>
+                  </div>
+                </div>
+              ) : selectedPlatform && !selectedPlatform.isGlobal && (
+                <div className="form-group highlighted-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label>{selectedPlatform.inputLabel}</label>
+                    <div className="hint-pill"><Info size={12} /> {selectedPlatform.hint}</div>
+                  </div>
+                  <div className="input-with-action">
+                    {['steam_news', 'twitch', 'github'].includes(selectedPlatform.id) ? (
+                      <div className="autocomplete-wrapper" style={{ flex: 1 }} ref={dropdownRef}>
+                        <input
+                          type="text"
+                          value={autoQuery || formData.platform_input}
+                          onChange={(e) => {
+                            setAutoQuery(e.target.value);
+                            setFormData({ ...formData, platform_input: e.target.value });
+                          }}
+                          onFocus={() => autoResults.length > 0 && setShowAutoDropdown(true)}
+                          required
+                          className="ui-input"
+                          style={{ width: '100%' }}
+                          placeholder={selectedPlatform.placeholder}
+                        />
+                        {isAutoSearching && (
+                          <div className="search-loader"></div>
+                        )}
+                        {showAutoDropdown && autoResults.length > 0 && (
+                          <div className="ui-autocomplete-dropdown">
+                            {autoResults.map(item => (
+                              <div 
+                                key={item.id} 
+                                className="ui-autocomplete-item"
+                                onClick={() => {
+                                  setFormData({ ...formData, platform_input: item.id, name: item.name });
+                                  setAutoQuery(item.id); 
+                                  setShowAutoDropdown(false);
+                                }}
+                              >
+                                <img src={item.thumbnail || "/nova_thumbnail.jpg"} alt={item.name} style={{ width: '40px', height: '40px', borderRadius: selectedPlatform.id === 'twitch' ? '50%' : '8px', objectFit: 'cover' }} />
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'white' }}>
+                                    {item.name} {item.is_live && <span style={{ background: '#ef4444', color: 'white', fontSize: '0.6rem', padding: '2px 6px', borderRadius: '4px', marginLeft: '6px' }}>LIVE</span>}
+                                  </span>
+                                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>
+                                    {selectedPlatform.id === 'github' ? `⭐ ${item.stars} - ${item.id}` : `ID: ${item.id}`}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={formData.platform_input}
+                        onChange={(e) => setFormData({ ...formData, platform_input: e.target.value })}
+                        required
+                        className="ui-input"
+                        style={{ flex: 1 }}
+                        placeholder={selectedPlatform.placeholder}
+                      />
+                    )}
+
+                    {selectedPlatform.id === 'youtube' && (
+                      <button
+                        type="button"
+                        onClick={handleYouTubeResolve}
+                        className={`action-link-btn ${resolving ? 'loading' : ''}`}
+                        disabled={resolving || !formData.platform_input}
+                      >
+                        {resolving ? 'Checking...' : (resolvedChannel ? 'Change' : 'Verify')}
+                      </button>
+                    )}
+                  </div>
+                  
+                  {selectedPlatform.id === 'youtube' && resolvedChannel && (
+                    <div className="validation-chip">
+                      <div className="chip-avatar">
+                        <img src={resolvedChannel.thumbnail} alt="" />
+                        <div className="check-mark">✓</div>
+                      </div>
+                      <div className="chip-content">
+                        <span className="chip-title">{resolvedChannel.title}</span>
+                        <span className="chip-subtitle">Channel Verified</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {selectedPlatform?.id === 'epic_games' && (
+                <div className="checkbox-card">
+                  <div className="checkbox-wrapper">
+                    <input
+                      type="checkbox"
+                      id="include_upcoming"
+                      checked={formData.include_upcoming}
+                      onChange={(e) => setFormData({ ...formData, include_upcoming: e.target.checked })}
+                    />
+                    <div className="checkbox-text">
+                      <label htmlFor="include_upcoming">Include Upcoming Games</label>
+                      <span>Also notify about the free games coming next week.</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {(selectedPlatform?.id === 'movie' || selectedPlatform?.id === 'tv_series') && (
+              <div style={{ padding: '0 2.5rem 2.5rem 2.5rem' }}>
+                <h4 className="ui-platform-label" style={{ marginBottom: '1.5rem', color: 'var(--accent-hover)' }}>Advanced Filters</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', position: 'relative' }}>
+                  <div className="ui-form-group" style={{ opacity: isLocked("genre_filter") ? 0.5 : 1 }}>
+                    <label className="ui-form-label">Target Genres</label>
+                    <MultiSelect
+                      options={MOVIE_GENRES}
+                      value={formData.target_genres}
+                      onChange={(val) => setFormData({ ...formData, target_genres: val })}
+                      placeholder={isLocked("genre_filter") ? "Unlock Starter Tier" : "Select genres"}
+                    />
+                  </div>
+                  <div className="ui-form-group" style={{ opacity: isLocked("tmdb_language_filter") ? 0.5 : 1 }}>
+                    <label className="ui-form-label">Languages</label>
+                    <MultiSelect
+                      options={LANGUAGES}
+                      value={formData.target_languages}
+                      onChange={(val) => setFormData({ ...formData, target_languages: val })}
+                      placeholder={isLocked("tmdb_language_filter") ? "Unlock Starter Tier" : "Select languages"}
+                    />
+                  </div>
+                  {(isLocked("genre_filter") || isLocked("tmdb_language_filter")) && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+                      <span style={{ background: 'var(--accent-color)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', boxShadow: '0 5px 15px var(--accent-glow)' }}>Starter Tier+</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div style={{ padding: '0 2.5rem 2.5rem 2.5rem' }}>
+              <h4 className="ui-platform-label" style={{ marginBottom: '1.5rem', color: 'var(--accent-hover)' }}>Notification Settings</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                <div className="ui-form-group">
+                  <label className="ui-form-label">Target Channels</label>
+                  <MultiSelect
+                    options={guildChannels}
+                    value={formData.target_channels}
+                    onChange={(val) => setFormData({ ...formData, target_channels: val })}
+                    placeholder={loadingContext ? "Loading..." : "Select channels"}
+                  />
+                </div>
+                <div className="ui-form-group">
+                  <label className="ui-form-label">Ping Roles</label>
+                  <MultiSelect
+                    options={guildRoles}
+                    value={formData.target_roles}
+                    onChange={(val) => setFormData({ ...formData, target_roles: val })}
+                    placeholder={loadingContext ? "Loading..." : "Select roles"}
+                  />
+                </div>
+              </div>
+
+              <div className="ui-form-group" style={{ background: 'rgba(255, 255, 255, 0.02)', marginTop: '1.5rem', padding: '1.5rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <label className="ui-form-label">Custom Alert Message</label>
+                  {isLocked("alert_template") ? (
+                    <div style={{ background: 'rgba(255, 183, 3, 0.1)', color: '#ffb703', padding: '4px 10px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Info size={12} /> Professional Tier Required
+                    </div>
+                  ) : (
+                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '4px 10px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Info size={12} /> Overrides server defaults
+                    </div>
+                  )}
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <textarea
+                    name="custom_alert"
+                    value={formData.custom_alert}
+                    onChange={(e) => setFormData({ ...formData, custom_alert: e.target.value })}
+                    className="ui-input ui-textarea ui-input-mono"
+                    placeholder={isLocked("alert_template") ? "Unlock Professional Tier to customize messages" : `Leave empty to use default.\nExample: @everyone Here is a new post: {title}`}
+                    rows={3}
+                    style={{
+                      opacity: isLocked("alert_template") ? 0.5 : 1
+                    }}
+                    disabled={isLocked("alert_template")}
+                  />
+                  {isLocked("alert_template") && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ background: 'var(--accent-color)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Professional Tier+</span>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px', opacity: isLocked("alert_template") ? 0.3 : 1 }}>
+                  {getAvailableVars(selectedPlatform?.id || '').map(v => (
+                    <button
+                      key={v}
+                      type="button"
+                      className="ui-var-btn"
+                      onClick={() => !isLocked("alert_template") && setFormData(prev => ({ ...prev, custom_alert: (prev.custom_alert || '') + `{${v}}` }))}
+                      title={`Insert {${v}}`}
+                      disabled={isLocked("alert_template")}
+                    >
+                      {`{${v}}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {['twitch', 'kick'].includes(selectedPlatform?.id || '') && (
+                <div style={{
+                  marginTop: '1.5rem',
+                  background: 'rgba(255,255,255,0.03)',
+                  padding: '1rem 1.5rem',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <label className="ui-form-label" style={{ color: 'white' }}>Send initial alert</label>
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', maxWidth: '300px' }}>
+                      Post an update immediately if the source is already live or has new items.
+                    </p>
+                  </div>
+                  <label className="ui-switch">
+                    <input
+                      type="checkbox"
+                      checked={formData.send_initial_alert}
+                      onChange={(e) => setFormData({ ...formData, send_initial_alert: e.target.checked })}
+                    />
+                    <span className="ui-switch-slider"></span>
+                  </label>
+                </div>
+              )}
+
+              {selectedPlatform?.id === 'youtube' && (
+                <div style={{
+                  marginTop: '1.5rem',
+                  background: 'rgba(255,255,255,0.03)',
+                  padding: '1rem 1.5rem',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  opacity: isLocked("custom_color") ? 0.5 : 1
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <label className="ui-form-label" style={{ color: 'white' }}>Use Native Discord Player</label>
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', maxWidth: '300px' }}>
+                      Bypass the custom layout and let Discord embed the video directly.
+                    </p>
+                  </div>
+                  {isLocked("custom_color") ? (
+                    <div style={{ background: 'rgba(255, 183, 3, 0.1)', color: '#ffb703', padding: '4px 10px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 800 }}>
+                      <Info size={12} /> Starter Tier+
+                    </div>
+                  ) : (
+                    <label className="ui-switch">
+                      <input
+                        type="checkbox"
+                        checked={formData.use_native_player}
+                        onChange={(e) => setFormData({ ...formData, use_native_player: e.target.checked })}
+                      />
+                      <span className="ui-switch-slider"></span>
+                    </label>
+                  )}
+                </div>
+              )}
+
+              {(!['youtube'].includes(selectedPlatform?.id || '') || (selectedPlatform?.id === 'youtube' && !formData.use_native_player)) && (
+                <div className="form-group" style={{ marginTop: '1rem', opacity: isLocked("custom_color") ? 0.5 : 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label>Embed Color</label>
+                    {isLocked("custom_color") && (
+                      <div className="hint-pill" style={{ background: 'rgba(255, 183, 3, 0.1)', color: '#ffb703' }}>
+                        <Info size={12} /> Starter Tier+
+                      </div>
+                    )}
+                  </div>
+                  <ColorPicker 
+                    value={formData.embed_color} 
+                    onChange={(color) => !isLocked("custom_color") && setFormData({...formData, embed_color: color})}
+                    disabled={isLocked("custom_color")}
+                  />
+                </div>
+              )}
+
+              <div className="form-group highlighted-group" style={{ background: 'rgba(255, 255, 255, 0.02)', marginTop: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <label>Custom Image URL</label>
+                  {isLocked("custom_color") ? (
+                    <div className="hint-pill" style={{ background: 'rgba(255, 183, 3, 0.1)', color: '#ffb703' }}>
+                      <span style={{ fontSize: '10px' }}>⭐ Starter Tier Required</span>
+                    </div>
+                  ) : (
+                    <div className="hint-pill" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
+                      <Info size={12} /> Imgur, Discord, etc.
+                    </div>
+                  )}
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    value={formData.custom_image}
+                    onChange={(e) => setFormData({ ...formData, custom_image: e.target.value })}
+                    className="ui-input"
+                    placeholder={isLocked("custom_color") ? "Unlock Starter Tier to use custom images" : "https://imgur.com/example.png"}
+                    style={{ 
+                      opacity: isLocked("custom_color") ? 0.5 : 1
+                    }}
+                    disabled={isLocked("custom_color")}
+                  />
+                  {isLocked("custom_color") && (
+                    <div className="premium-field-overlay">
+                      <span className="lock-tag">Starter Tier+</span>
+                    </div>
+                  )}
+                </div>
+                {!isLocked("custom_color") && formData.custom_image && (
+                   <div style={{ marginTop: '10px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', height: '100px', width: 'fit-content' }}>
+                     <img src={formData.custom_image} alt="Preview" style={{ height: '100%', objectFit: 'contain' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                   </div>
+                )}
+              </div>
+            </div>
+
+            <div className="ui-modal-footer">
+              <button type="button" className="ui-btn" style={{ background: 'rgba(255,255,255,0.05)', color: 'white' }} onClick={() => setStep(1)}>
+                <ChevronLeft size={18} /> Back
+              </button>
+              <button type="submit" className="ui-btn ui-btn-primary" disabled={creating}>
+                {creating ? 'Creating...' : 'Create Monitor'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
