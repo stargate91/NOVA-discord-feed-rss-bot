@@ -21,3 +21,4 @@ class BroadcastPayload(DomainModel):
     view: Any = None
     embed: Any = None
     guild_id: int | None = None
+    extra_data: dict[str, Any] = Field(default_factory=dict)

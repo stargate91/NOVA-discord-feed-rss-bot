@@ -13,6 +13,15 @@ from services.discord_delivery_adapter import (
 )
 from services.notification_service import NotificationService
 from services.metrics_service import MetricsService, metrics
+from services.queue_service import (
+    BaseNotificationQueue,
+    MemoryNotificationQueue,
+    RedisNotificationQueue,
+    notification_queue,
+    get_notification_queue
+)
+from services.queue_delivery_adapter import QueueDeliveryAdapter
+from services.queue_consumer import QueueConsumerWorker
 
 __all__ = [
     "LocalizationService",
@@ -25,6 +34,13 @@ __all__ = [
     "NotificationService",
     "MetricsService",
     "metrics",
+    "BaseNotificationQueue",
+    "MemoryNotificationQueue",
+    "RedisNotificationQueue",
+    "notification_queue",
+    "get_notification_queue",
+    "QueueDeliveryAdapter",
+    "QueueConsumerWorker",
     "is_channel_dead",
     "mark_channel_dead",
     "get_dead_channel_count",

@@ -1,12 +1,15 @@
 import asyncio
 import os
+import sys
+import argparse
 from logger import log, setup_logging
 from core.config import BotConfig
 from db import create_db_pool, init_db, close
 from core.bot import FeedBot
+from workers import run_api_worker, run_feed_worker, run_gateway_worker
 
-async def main():
-    # Setup logging
+async def run_monolith():
+    """Default Standalone Mode: Runs Bot, Webhook Server, and Ingestion in a single unified process."""
     setup_logging()
     
     try:
@@ -71,8 +74,28 @@ async def main():
         await close()
         log.info("Feed Bot closed.")
 
+def main():
+    parser = argparse.ArgumentParser(description="Nova Feed Bot Service Runner")
+    parser.add_argument(
+        "--mode",
+        choices=["all", "api", "worker", "gateway"],
+        default=os.getenv("SERVICE_MODE", "all"),
+        help="Execution mode: 'all' (monolith), 'api' (FastAPI server), 'worker' (feed ingestion), 'gateway' (Discord bot)"
+    )
+    args = parser.parse_args()
+
+    mode = args.mode.lower()
+    if mode == "api":
+        asyncio.run(run_api_worker())
+    elif mode == "worker":
+        asyncio.run(run_feed_worker())
+    elif mode == "gateway":
+        asyncio.run(run_gateway_worker())
+    else:
+        asyncio.run(run_monolith())
+
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        main()
     except KeyboardInterrupt:
         pass

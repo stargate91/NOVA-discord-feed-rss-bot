@@ -1,60 +1,273 @@
-# Discord Feed Bot
+# Nova Feed Bot
 
-This is a Discord bot I am working on that helps servers get notifications from different websites and platforms. It is written in Python and has a web dashboard made with Next.js. I used a PostgreSQL database to store everything because it is reliable for this kind of data.
+Nova is a high-performance, asynchronous feed monitoring and notification delivery platform designed for Discord communities. Built on a modular microservices architecture, Nova allows organizations to ingest updates from multiple platforms (YouTube, Twitch, GitHub, Steam, RSS feeds, TMDB, Cryptocurrency markets) and broadcast them to configured Discord channels with rate-limit protection, entitlement tiers, real-time observability, and an integrated web management dashboard.
 
-## Project Overview
+---
 
-The project has two main parts:
-1. The Python Bot: This runs in the background and checks the platforms for new content.
-2. The Web Dashboard: A website where users can log in with Discord and manage their monitors easily without using commands.
+## Architectural Overview
 
-## Features
+Nova is designed around decoupled components connected via asynchronous interfaces, message queues, and REST APIs. It supports both single-process standalone deployment and horizontally scalable multi-process worker pools alongside a modern Next.js management dashboard.
 
-- Multiple Platforms: You can follow YouTube channels, Twitch and Kick streams, RSS feeds, GitHub repos, and Steam news.
-- Game Giveaways: It automatically finds free games on Epic Games, Steam, and GOG.
-- Movies and TV: Uses TMDB to show new trending media. I added advanced filters so you can filter by genre or language.
-- Crypto Alerts: You can set price thresholds for different coins.
-- Web Dashboard: Made with Next.js. It has a live activity ticker and a timeline of recent notifications.
-- Premium System: There are different tiers (Starter, Professional, Ultimate) that unlock more monitors and faster refresh rates.
-- Custom Messages: You can use variables like {title} or {name} to customize how the bot posts.
+```
+                           +--------------------------------------+
+                           |          Web Management App          |
+                           |   (Next.js / React 19 / TypeScript)  |
+                           +--------------------------------------+
+                                             |
+                                    REST API / NextAuth
+                                             |
+                                             v
+                           +--------------------------------------+
+                           |          FastAPI Web Server          |
+                           |   (Dashboard / Webhooks / Metrics)   |
+                           +--------------------------------------+
+                                             |
++---------------------+     +-------------------------------+     +-----------------------+
+| Ingestion Engine    | --> |      Notification Queue       | --> | Discord Gateway Bot   |
+| (Monitors / Feeds)  |     |       (Redis / Memory)        |     | (Delivery / Sharding) |
++---------------------+     +-------------------------------+     +-----------------------+
+         |                                                                    |
+         +--------------------------+                       +-----------------+
+                                    |                       |
+                                    v                       v
+                            +-----------------------------------------------+
+                            |            PostgreSQL Database                |
+                            |       (SQLAlchemy 2.0 / asyncpg / Alembic)    |
+                            +-----------------------------------------------+
+```
 
-## Tech Stack
+### Key Architectural Layers
 
-- Backend: Python 3.10+ with discord.py and aiosqlite/psycopg2.
-- Frontend: Next.js 14, React, and Vanilla CSS for the styling.
-- Database: PostgreSQL for persistent storage.
-- Authentication: NextAuth.js with the Discord provider.
+1. **Ingestion Engine (`engine/`, `monitors/`)**:
+   - Implements a unified `BaseMonitor` interface for periodic polling and event extraction.
+   - Completely decoupled from Discord API tokens and network sessions.
+   - Dispatches structured events to the delivery layer via strongly typed domain models.
 
-## How to Setup
+2. **Delivery & Queue Layer (`services/queue_service.py`, `services/queue_delivery_adapter.py`)**:
+   - `MemoryNotificationQueue`: In-memory asynchronous queue for single-process deployments and automated testing.
+   - `RedisNotificationQueue`: Distributed queue (`LPUSH` / `BRPOP`) for clustered deployments.
+   - `QueueConsumerWorker`: Pulls queued broadcast payloads and forwards them to destination adapters.
 
-### 1. Requirements
-You need to have Python and Node.js installed on your system. You also need a PostgreSQL database running.
+3. **Discord Gateway Service (`core/bot.py`, `services/discord_delivery_adapter.py`)**:
+   - Manages Discord Gateway connection and slash command registration.
+   - Implements dead-channel circuit breaking to prevent repeated API calls to deleted channels.
+   - Formats embeds, links, and action buttons dynamically based on guild settings.
 
-### 2. Python Bot Setup
-1. Go to the root folder.
-2. Install dependencies: `pip install -r requirements.txt`.
-3. Create a .env file with your tokens:
-   - BOT_TOKEN
-   - DATABASE_URL
-   - TMDB_API_KEY
-   - GITHUB_TOKEN
-   - TWITCH_CLIENT_ID / SECRET
-4. Run the bot: `python main.py`.
+4. **API & Management Server (`core/webhook_server.py`, `api/routers/`)**:
+   - Modular FastAPI routing for Stripe billing webhooks, monitor administration, and guild configuration.
+   - Real-time observability: in-memory ring buffer log inspection and Prometheus metric exposition.
 
-### 3. Web Dashboard Setup
-1. Go to the `web` directory.
-2. Install dependencies: `npm install`.
-3. Create a .env.local file:
-   - DATABASE_URL (same as the bot)
-   - NEXTAUTH_SECRET
-   - DISCORD_CLIENT_ID / SECRET
-   - NEXTAUTH_URL
-4. Start the dev server: `npm run dev`.
+5. **Web Management Dashboard (`web/`)**:
+   - Next.js web application built with React 19 and TypeScript.
+   - Authenticates server administrators via Discord OAuth2 (NextAuth.js).
+   - Provides granular monitor controls, live delivery metrics, theme personalization, and subscription management.
 
-## Current Status
+6. **Data Persistence & Domain Layer (`db/`, `models/`)**:
+   - Declarative SQLAlchemy 2.0 Async schema with full Alembic migration tracking.
+   - Strongly typed domain contracts using Pydantic v2.
 
-I am still fixing some bugs and adding new things. I recently fixed the JSON parsing in the API routes and updated the logos in the dashboard. The TMDB filters are now working in the creation modal too.
+---
+
+## Technology Stack
+
+### Backend & Core
+- **Runtime**: Python 3.11+
+- **Discord Framework**: discord.py 2.3+
+- **Web & API Framework**: FastAPI, Starlette, Uvicorn
+- **Data Validation & Typing**: Pydantic v2, Pydantic-Settings
+- **ORM & Database**: SQLAlchemy 2.0 Async, asyncpg, Alembic
+- **Distributed Queue**: Redis (aioredis)
+- **HTTP Client**: aiohttp, httpx
+- **Testing**: Pytest, Pytest-Asyncio
+
+### Frontend (Web Dashboard)
+- **Framework**: Next.js 16 (App Router)
+- **UI Library**: React 19, TypeScript
+- **Authentication**: NextAuth.js (Discord OAuth2 Provider)
+- **Styling**: CSS Modules, CSS Variables (Dark theme design system)
+- **Visualization**: Recharts (Feed volume and delivery latency charts)
+- **Payments**: Stripe Elements and Customer Portal
+
+---
+
+## Execution Modes
+
+Nova provides multiple operational modes managed through command-line arguments or environment variables:
+
+### 1. Unified Standalone Mode (Default)
+Runs the Discord bot, feed ingestion scheduler, and FastAPI webhook server inside a single process. Recommended for development, testing, and standard server instances.
+
+```bash
+python main.py --mode=all
+```
+
+### 2. Standalone API Server
+Runs only the FastAPI HTTP server for web dashboards, Stripe billing webhooks, log streaming, and Prometheus metrics.
+
+```bash
+python main.py --mode=api
+```
+
+### 3. Standalone Ingestion Worker
+Runs only the feed polling and ingestion pipeline. Discovered updates are enqueued into Redis without establishing any Discord gateway connections.
+
+```bash
+python main.py --mode=worker
+```
+
+### 4. Standalone Gateway Consumer
+Connects to the Discord Gateway, pulls items from the notification queue, and delivers formatted messages to Discord channels.
+
+```bash
+python main.py --mode=gateway
+```
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+
+- Python 3.11 or higher
+- Node.js 20+ and npm
+- PostgreSQL 14+ database
+- Redis (Optional, required for distributed worker clusters)
+
+---
+
+### Backend Setup
+
+1. **Clone and create virtual environment**:
+   ```bash
+   git clone https://github.com/stargate91/discord-feed-bot.git
+   cd discord-feed-bot
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+2. **Configure Environment Variables (`.env`)**:
+   ```ini
+   # Discord Bot
+   BOT_TOKEN=your_discord_bot_token_here
+
+   # Database
+   DATABASE_URL=postgresql://nova_user:nova_password@localhost:5432/nova_db
+
+   # Webhook & API Server
+   WEBHOOK_HOST=0.0.0.0
+   WEBHOOK_PORT=8080
+   WEBHOOK_SECRET=your_webhook_secret_key
+
+   # Message Queue (Optional: omit to use in-memory queue)
+   REDIS_URL=redis://localhost:6379/0
+
+   # Stripe Payments (Optional)
+   STRIPE_API_KEY=sk_test_...
+   STRIPE_WEBHOOK_SECRET=whsec_...
+
+   # Platform API Keys (Optional based on active monitors)
+   TWITCH_CLIENT_ID=...
+   TWITCH_CLIENT_SECRET=...
+   YOUTUBE_API_KEY=...
+   TMDB_API_KEY=...
+   GITHUB_TOKEN=...
+   ```
+
+3. **Run Database Migrations**:
+   ```bash
+   alembic upgrade head
+   ```
+
+---
+
+### Frontend Dashboard Setup
+
+The web dashboard is located in the `web/` directory.
+
+1. **Navigate to the web folder and install dependencies**:
+   ```bash
+   cd web
+   npm install
+   ```
+
+2. **Configure Frontend Environment Variables (`web/.env.local`)**:
+   ```ini
+   # App URL
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret_here
+
+   # Discord OAuth2 Application
+   DISCORD_CLIENT_ID=your_discord_application_client_id
+   DISCORD_CLIENT_SECRET=your_discord_application_client_secret
+
+   # Backend API Connection
+   NEXT_PUBLIC_API_URL=http://localhost:8080
+   INTERNAL_API_SECRET=your_webhook_secret_key
+
+   # PostgreSQL Connection (for direct server-side data fetching)
+   DATABASE_URL=postgresql://nova_user:nova_password@localhost:5432/nova_db
+
+   # Stripe Public Key
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   ```
+
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for production**:
+   ```bash
+   npm run build
+   npm run start
+   ```
+
+---
+
+## Web Dashboard Features & Routing
+
+| Route | Purpose | Key Functionality |
+| :--- | :--- | :--- |
+| `/` | Landing Page | Feature showcase, pricing plans, live statistics, bot invite link |
+| `/servers` | Server Selector | Guild list where the authenticated user has administrative privileges |
+| `/dashboard/[guildId]` | Server Management | Feed configuration, target channel binding, custom embeds, manual trigger checks |
+| `/premium` | Premium Management | Tier overview, Stripe checkout integration, subscription renewal status |
+| `/privacy`, `/terms` | Legal & Compliance | Privacy policy and terms of service documents |
+
+---
+
+## Monitoring and Observability
+
+Nova includes built-in observability endpoints accessible via HTTP:
+
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/health` | GET | Basic health check for load balancers and container orchestrators |
+| `/metrics` | GET | Standard Prometheus exposition format for scrapers |
+| `/api/admin/metrics` | GET | JSON metric summary including counter totals, latencies, and uptime |
+| `/api/admin/logs` | GET | Filtered circular buffer logs for admin dashboards (`level`, `guild_id`, `platform`, `search`) |
+
+---
+
+## Testing
+
+The test suite covers unit logic, repository mappings, ORM schemas, delivery adapters, ring buffer filters, and end-to-end integration flows:
+
+```bash
+python -m pytest
+```
+
+To run a specific test module:
+
+```bash
+python -m pytest tests/test_worker_queue_and_microservices.py
+python -m pytest tests/test_database_orm_and_migrations.py
+python -m pytest tests/test_structured_logging_and_metrics.py
+```
+
+---
 
 ## License
 
-This is an open source project. You can use it as you like.
+This project is licensed under the MIT License.
