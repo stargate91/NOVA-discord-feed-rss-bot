@@ -1,16 +1,15 @@
-import feedparser
 import discord
 import re
 import asyncio
 from core.base_monitor import BaseMonitor
 from logger import log
 import calendar
-from core.ui_layouts import generate_news_layout
+from ui import generate_news_layout
 
 # Standard User-Agent to avoid being blocked by WordPress/Cloudflare
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
-import database as db
+from db import monitor_repo
 
 class RSSMonitor(BaseMonitor):
     def __init__(self, bot, config):
@@ -31,10 +30,13 @@ class RSSMonitor(BaseMonitor):
         
         if not feed:
             try:
-                loop = asyncio.get_event_loop()
-                feed = await loop.run_in_executor(None, lambda: feedparser.parse(self.feed_url, agent=USER_AGENT))
-                if hasattr(feed, 'entries') and feed.entries:
-                    self.bot.monitor_manager.set_shared_data(shared_key, feed)
+                from clients import http_client
+                xml_text = await http_client.get_text(self.feed_url)
+                if xml_text:
+                    import feedparser
+                    feed = await asyncio.to_thread(feedparser.parse, xml_text)
+                    if hasattr(feed, 'entries') and feed.entries:
+                        self.bot.monitor_manager.set_shared_data(shared_key, feed)
             except Exception as e:
                 log.error(f"Failed to fetch RSS feed for {self.name}: {e}")
                 return []
@@ -111,7 +113,7 @@ class RSSMonitor(BaseMonitor):
             if entry_id:
                 title = entry.get("title", "New RSS Update")
                 author = entry.get("author") or entry.get("author_detail", {}).get("name")
-                await db.mark_as_published(
+                await monitor_repo.mark_as_published(
                     entry_id, "rss", self.feed_url, 
                     guild_id=self.guild_id,
                     title=title,
@@ -129,8 +131,12 @@ class RSSMonitor(BaseMonitor):
             return []
 
         try:
-            loop = asyncio.get_event_loop()
-            feed = await loop.run_in_executor(None, lambda: feedparser.parse(self.feed_url, agent=USER_AGENT))
+            from clients import http_client
+            xml_text = await http_client.get_text(self.feed_url)
+            if not xml_text:
+                return []
+            import feedparser
+            feed = await asyncio.to_thread(feedparser.parse, xml_text)
         except Exception as e:
             log.error(f"Manual check failed for RSS {self.name}: {e}")
             return []

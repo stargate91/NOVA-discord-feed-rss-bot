@@ -3,19 +3,17 @@ import os
 import asyncpg
 from dotenv import load_dotenv
 from logger import log, setup_logging
-from config_loader import load_config
-import database
+from core.config import BotConfig
+from db import create_db_pool, set_pool, init_db, close
 from core.bot import FeedBot
 
 async def main():
     # Setup logging
     setup_logging()
-    load_dotenv() # Load root .env
-    load_dotenv("web/.env.local") # Also load from web's .env.local if exists
     
     try:
         # Load configuration
-        config = load_config()
+        config = BotConfig.load()
         
         # Initialize Database
         dsn = config.get("database_url")
@@ -24,10 +22,16 @@ async def main():
             return
 
         try:
-            pool = await asyncpg.create_pool(dsn)
-            await database.set_pool(pool)
-            await database.init_db()
-            log.info("Successfully connected to PostgreSQL.")
+            pool = await create_db_pool(
+                dsn,
+                min_size=2,
+                max_size=20,
+                max_queries=50000,
+                max_inactive_connection_lifetime=300.0,
+                command_timeout=30.0
+            )
+            await init_db()
+            log.info("Successfully connected to PostgreSQL with tuned connection pool (min: 2, max: 20).")
         except Exception as e:
             log.critical(f"Failed to connect to PostgreSQL: {e}")
             return
@@ -66,7 +70,7 @@ async def main():
     except Exception as e:
         log.critical(f"Critical error during startup: {e}", exc_info=True)
     finally:
-        await database.close()
+        await close()
         log.info("Feed Bot closed.")
 
 if __name__ == "__main__":

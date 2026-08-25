@@ -1,0 +1,457 @@
+2026-04-04 23:33:24,484 [INFO] Database initialized at data/feed_bot.db
+2026-04-04 23:33:25,209 [INFO] Loaded language: hu
+2026-04-04 23:33:25,211 [INFO] Added monitor: The Why Files (youtube)
+2026-04-04 23:33:25,212 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-04 23:33:28,281 [INFO] --- FEED BOT ONLINE ---
+2026-04-04 23:33:28,295 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-04 23:33:28,296 [INFO] Prefix: !
+2026-04-04 23:33:28,297 [INFO] ------------------------
+2026-04-04 23:33:28,298 [INFO] Rich Presence set: 1 feed figyelése
+2026-04-04 23:33:28,495 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-04 23:38:14,126 [INFO] Database connection closed.
+2026-04-04 23:38:14,127 [INFO] Feed Bot closed.
+2026-04-04 23:38:16,140 [INFO] Database initialized at data/feed_bot.db
+2026-04-04 23:38:16,978 [INFO] Loaded language: hu
+2026-04-04 23:38:16,978 [INFO] Added monitor: The Why Files (youtube)
+2026-04-04 23:38:16,979 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-04 23:38:19,671 [INFO] --- FEED BOT ONLINE ---
+2026-04-04 23:38:19,687 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-04 23:38:19,687 [INFO] Prefix: !
+2026-04-04 23:38:19,688 [INFO] ------------------------
+2026-04-04 23:38:19,688 [INFO] Rich Presence set: 1 feed figyelése
+2026-04-04 23:38:20,019 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-04 23:41:44,524 [INFO] Database connection closed.
+2026-04-04 23:41:44,525 [INFO] Feed Bot closed.
+2026-04-04 23:41:46,425 [INFO] Database initialized at data/feed_bot.db
+2026-04-04 23:41:46,928 [INFO] Loaded language: hu
+2026-04-04 23:41:46,928 [INFO] Added monitor: The Why Files (youtube)
+2026-04-04 23:41:46,929 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-04 23:41:49,733 [INFO] --- FEED BOT ONLINE ---
+2026-04-04 23:41:49,748 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-04 23:41:49,749 [INFO] Prefix: !
+2026-04-04 23:41:49,750 [INFO] ------------------------
+2026-04-04 23:41:49,751 [INFO] Rich Presence set: 1 feed figyelése
+2026-04-04 23:41:51,135 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-04 23:51:24,262 [INFO] Database connection closed.
+2026-04-04 23:51:24,263 [INFO] Feed Bot closed.
+2026-04-04 23:51:26,955 [INFO] Database initialized at data/feed_bot.db
+2026-04-04 23:51:26,957 [INFO] Command suffix applied: _nova
+2026-04-04 23:51:27,517 [INFO] Loaded language: hu
+2026-04-04 23:51:27,519 [INFO] Added monitor: The Why Files (youtube)
+2026-04-04 23:51:27,519 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-04 23:51:31,775 [INFO] --- FEED BOT ONLINE ---
+2026-04-04 23:51:31,777 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-04 23:51:31,792 [INFO] Prefix: !
+2026-04-04 23:51:31,793 [INFO] ------------------------
+2026-04-04 23:51:31,793 [INFO] Rich Presence set: 1 feed figyelése
+2026-04-04 23:51:31,990 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-04 23:56:47,572 [INFO] Database connection closed.
+2026-04-04 23:56:47,573 [INFO] Feed Bot closed.
+2026-04-04 23:56:49,487 [INFO] Database initialized at data/feed_bot.db
+2026-04-04 23:56:49,489 [INFO] Command suffix applied: _nova
+2026-04-04 23:56:50,065 [INFO] Loaded language: hu
+2026-04-04 23:56:50,066 [INFO] Added monitor: The Why Files (youtube)
+2026-04-04 23:56:50,066 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-04 23:56:50,066 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-04 23:56:50,067 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-04 23:56:52,684 [INFO] --- FEED BOT ONLINE ---
+2026-04-04 23:56:52,699 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-04 23:56:52,700 [INFO] Prefix: !
+2026-04-04 23:56:52,701 [INFO] ------------------------
+2026-04-04 23:56:52,701 [INFO] Rich Presence set: 3 feed figyelése
+2026-04-04 23:56:52,875 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-04 23:56:54,590 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-04 23:56:57,002 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 00:16:45,671 [INFO] Database connection closed.
+2026-04-05 00:16:45,672 [INFO] Feed Bot closed.
+2026-04-05 00:16:47,491 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 00:16:47,492 [INFO] Command suffix applied: _nova
+2026-04-05 00:16:48,605 [INFO] Loaded language: hu
+2026-04-05 00:16:48,605 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 00:16:48,606 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 00:16:48,606 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 00:16:48,607 [INFO] Added monitor: Asmongold Tv (youtube)
+2026-04-05 00:16:48,607 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 00:16:48,607 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 00:16:48,607 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 00:16:48,608 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 00:16:48,608 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 00:16:48,608 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 00:16:51,226 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 00:16:51,240 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 00:16:51,241 [INFO] Prefix: !
+2026-04-05 00:16:51,241 [INFO] ------------------------
+2026-04-05 00:16:51,242 [INFO] Rich Presence set: 9 feed figyelése
+2026-04-05 00:16:51,430 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 00:16:51,602 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 00:16:51,791 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 00:16:53,356 [INFO] Initial seed completed for Asmongold Tv. Monitoring active for next updates.
+2026-04-05 00:16:55,485 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 00:16:57,339 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 00:16:58,924 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 00:17:00,441 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 00:17:02,099 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 00:25:35,563 [INFO] Database connection closed.
+2026-04-05 00:25:35,564 [INFO] Feed Bot closed.
+2026-04-05 00:25:37,525 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 00:25:37,526 [INFO] Command suffix applied: _nova
+2026-04-05 00:25:38,012 [INFO] Loaded language: hu
+2026-04-05 00:25:38,013 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 00:25:38,013 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 00:25:38,014 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 00:25:38,014 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 00:25:38,014 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 00:25:38,014 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 00:25:38,014 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 00:25:38,015 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 00:25:38,015 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 00:25:38,015 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 00:25:38,016 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 00:25:40,861 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 00:25:40,862 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 00:25:40,875 [INFO] Prefix: !
+2026-04-05 00:25:40,876 [INFO] ------------------------
+2026-04-05 00:25:40,877 [INFO] Rich Presence set: 10 feed figyelése
+2026-04-05 00:25:40,963 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 00:25:41,052 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 00:25:41,135 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 00:25:41,221 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 00:25:41,310 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 00:25:41,404 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 00:25:41,493 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 00:25:41,580 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 00:25:41,666 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 00:25:43,057 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 00:40:10,819 [INFO] Database connection closed.
+2026-04-05 00:40:10,821 [INFO] Feed Bot closed.
+2026-04-05 00:40:12,601 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 00:40:12,602 [INFO] Command suffix applied: _nova
+2026-04-05 00:40:13,065 [INFO] Loaded language: hu
+2026-04-05 00:40:13,067 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 00:40:13,067 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 00:40:13,067 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 00:40:13,068 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 00:40:13,068 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 00:40:13,068 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 00:40:13,068 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 00:40:13,069 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 00:40:13,069 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 00:40:13,069 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 00:40:13,070 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 00:40:13,070 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 00:40:13,070 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 00:40:13,071 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 00:40:15,678 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 00:40:15,692 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 00:40:15,693 [INFO] Prefix: !
+2026-04-05 00:40:15,693 [INFO] ------------------------
+2026-04-05 00:40:15,694 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 00:40:15,793 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 00:40:15,878 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 00:40:15,963 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 00:40:16,057 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 00:40:16,145 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 00:40:16,237 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 00:40:16,329 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 00:40:16,427 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 00:40:16,511 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 00:40:16,866 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 00:40:17,195 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 00:40:17,987 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 00:40:24,472 [INFO] Initial seed completed for GOG Free Games. Monitoring active.
+2026-04-05 01:03:30,972 [INFO] Database connection closed.
+2026-04-05 01:03:30,974 [INFO] Feed Bot closed.
+2026-04-05 01:03:32,753 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 01:03:32,754 [INFO] Command suffix applied: _nova
+2026-04-05 01:03:33,243 [INFO] Loaded language: hu
+2026-04-05 01:03:33,244 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 01:03:33,245 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 01:03:33,245 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 01:03:33,245 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 01:03:33,245 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 01:03:33,246 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 01:03:33,246 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 01:03:33,247 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 01:03:33,247 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 01:03:33,247 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 01:03:33,248 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 01:03:33,248 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 01:03:33,249 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 01:03:33,250 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 01:03:35,863 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 01:03:35,877 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 01:03:35,878 [INFO] Prefix: !
+2026-04-05 01:03:35,879 [INFO] ------------------------
+2026-04-05 01:03:35,879 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 01:03:35,969 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 01:03:36,054 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 01:03:36,149 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 01:03:36,247 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 01:03:36,336 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 01:03:36,422 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 01:03:36,511 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 01:03:36,596 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 01:03:36,685 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 01:03:36,854 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 01:03:36,995 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 01:03:37,557 [INFO] Initial seed completed for GOG Free Games. Monitoring active.
+2026-04-05 01:13:38,832 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 01:35:22,044 [INFO] Database connection closed.
+2026-04-05 01:35:22,045 [INFO] Feed Bot closed.
+2026-04-05 01:35:24,193 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 01:35:24,195 [INFO] Command suffix applied: _nova
+2026-04-05 01:35:24,669 [INFO] Loaded language: hu
+2026-04-05 01:35:24,670 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 01:35:24,670 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 01:35:24,671 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 01:35:24,671 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 01:35:24,672 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 01:35:24,672 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 01:35:24,672 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 01:35:24,672 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 01:35:24,673 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 01:35:24,673 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 01:35:24,673 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 01:35:24,673 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 01:35:24,674 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 01:35:24,674 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 01:35:27,307 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 01:35:27,321 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 01:35:27,322 [INFO] Prefix: !
+2026-04-05 01:35:27,322 [INFO] ------------------------
+2026-04-05 01:35:27,323 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 01:35:27,415 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 01:35:27,499 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 01:35:27,592 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 01:35:27,682 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 01:35:27,775 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 01:35:27,862 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 01:35:27,950 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 01:35:28,043 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 01:35:28,133 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 01:35:28,554 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 01:35:28,753 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 01:35:28,894 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 01:35:29,206 [INFO] Initial seed completed for GOG Free Games. Monitoring active.
+2026-04-05 02:05:34,022 [INFO] New YouTube video detected: What the f*ck is happening to Clavicular? (C2yfb557wAE)
+2026-04-05 02:05:34,325 [INFO] Published update for Asmongold TV on channel asmongold
+2026-04-05 02:07:21,976 [INFO] Database connection closed.
+2026-04-05 02:07:21,977 [INFO] Feed Bot closed.
+2026-04-05 02:07:23,839 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 02:07:23,840 [INFO] Command suffix applied: _nova
+2026-04-05 02:07:24,303 [INFO] Loaded language: hu
+2026-04-05 02:07:24,305 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 02:07:24,305 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 02:07:24,306 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 02:07:24,306 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 02:07:24,307 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 02:07:24,307 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 02:07:24,308 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 02:07:24,308 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 02:07:24,309 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 02:07:24,310 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 02:07:24,311 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 02:07:24,312 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 02:07:24,312 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 02:07:24,313 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 02:07:26,908 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 02:07:26,922 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 02:07:26,923 [INFO] Prefix: !
+2026-04-05 02:07:26,923 [INFO] ------------------------
+2026-04-05 02:07:26,925 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 02:07:27,015 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 02:07:27,099 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 02:07:27,276 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 02:07:27,376 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 02:07:27,462 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 02:07:27,551 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 02:07:27,639 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 02:07:27,738 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 02:07:27,826 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 02:07:28,171 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 02:07:28,257 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 02:07:28,394 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 02:07:28,653 [INFO] Initial seed completed for GOG Free Games. Monitoring active.
+2026-04-05 02:40:05,485 [INFO] Database connection closed.
+2026-04-05 02:40:05,486 [INFO] Feed Bot closed.
+2026-04-05 02:40:07,388 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 02:40:07,390 [INFO] Command suffix applied: _nova
+2026-04-05 02:40:07,931 [INFO] Loaded language: hu
+2026-04-05 02:40:07,933 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 02:40:07,933 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 02:40:07,934 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 02:40:07,935 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 02:40:07,936 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 02:40:07,936 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 02:40:07,937 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 02:40:07,938 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 02:40:07,938 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 02:40:07,939 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 02:40:07,939 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 02:40:07,939 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 02:40:07,940 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 02:40:07,940 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 02:40:11,744 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 02:40:11,747 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 02:40:11,766 [INFO] Prefix: !
+2026-04-05 02:40:11,767 [INFO] ------------------------
+2026-04-05 02:40:11,769 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 02:40:11,864 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 02:40:11,951 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 02:40:12,037 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 02:40:12,127 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 02:40:12,215 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 02:40:12,303 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 02:40:12,389 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 02:40:12,480 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 02:40:12,572 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 02:40:12,901 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 02:40:12,976 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 02:40:13,230 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 02:40:13,513 [INFO] Initial seed completed for GOG Free Games. Monitoring active.
+2026-04-05 03:03:29,658 [INFO] Database connection closed.
+2026-04-05 03:03:29,659 [INFO] Feed Bot closed.
+2026-04-05 03:03:31,699 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 03:03:31,701 [INFO] Command suffix applied: _nova
+2026-04-05 03:03:32,269 [INFO] Loaded language: hu
+2026-04-05 03:03:32,270 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 03:03:32,271 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 03:03:32,272 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 03:03:32,272 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 03:03:32,273 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 03:03:32,273 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 03:03:32,273 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 03:03:32,274 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 03:03:32,274 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 03:03:32,275 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 03:03:32,275 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 03:03:32,275 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 03:03:32,276 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 03:03:32,277 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 03:03:35,700 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 03:03:35,715 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 03:03:35,716 [INFO] Prefix: !
+2026-04-05 03:03:35,717 [INFO] ------------------------
+2026-04-05 03:03:35,717 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 03:03:35,820 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 03:03:35,912 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 03:03:36,001 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 03:03:36,149 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 03:03:36,231 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 03:03:36,324 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 03:03:36,530 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 03:03:36,643 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 03:03:36,743 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 03:03:37,314 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 03:03:37,441 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 03:03:37,577 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 03:03:37,718 [ERROR] Failed to fetch GamerPower API for GOG: 201
+2026-04-05 03:10:54,272 [INFO] Database connection closed.
+2026-04-05 03:10:54,273 [INFO] Feed Bot closed.
+2026-04-05 03:10:56,202 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 03:10:56,204 [INFO] Command suffix applied: _nova
+2026-04-05 03:10:56,711 [INFO] Loaded language: hu
+2026-04-05 03:10:56,712 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 03:10:56,712 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 03:10:56,713 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 03:10:56,713 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 03:10:56,713 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 03:10:56,714 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 03:10:56,714 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 03:10:56,714 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 03:10:56,714 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 03:10:56,715 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 03:10:56,715 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 03:10:56,716 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 03:10:56,716 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 03:10:56,717 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 03:10:59,369 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 03:10:59,384 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 03:10:59,385 [INFO] Prefix: !
+2026-04-05 03:10:59,385 [INFO] ------------------------
+2026-04-05 03:10:59,386 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 03:10:59,472 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 03:10:59,561 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 03:10:59,650 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 03:10:59,736 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 03:10:59,821 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 03:10:59,917 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 03:11:00,015 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 03:11:00,114 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 03:11:00,205 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 03:11:00,726 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 03:11:00,939 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 03:11:01,143 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 03:11:01,339 [ERROR] Failed to fetch GamerPower API for GOG: 201
+2026-04-05 03:15:13,859 [INFO] Database connection closed.
+2026-04-05 03:15:13,859 [INFO] Feed Bot closed.
+2026-04-05 03:15:16,150 [INFO] Database initialized at data/feed_bot.db
+2026-04-05 03:15:16,151 [INFO] Command suffix applied: _nova
+2026-04-05 03:15:16,781 [INFO] Loaded language: hu
+2026-04-05 03:15:16,781 [INFO] Added monitor: The Why Files (youtube)
+2026-04-05 03:15:16,781 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-05 03:15:16,782 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-05 03:15:16,782 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-05 03:15:16,782 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-05 03:15:16,783 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-05 03:15:16,783 [INFO] Added monitor: TheVR (youtube)
+2026-04-05 03:15:16,783 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-05 03:15:16,783 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-05 03:15:16,784 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-05 03:15:16,784 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-05 03:15:16,784 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-05 03:15:16,785 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-05 03:15:16,786 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-05 03:15:19,312 [INFO] --- FEED BOT ONLINE ---
+2026-04-05 03:15:19,313 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-05 03:15:19,328 [INFO] Prefix: !
+2026-04-05 03:15:19,329 [INFO] ------------------------
+2026-04-05 03:15:19,330 [INFO] Rich Presence set: 13 feed figyelése
+2026-04-05 03:15:19,417 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-05 03:15:19,505 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-05 03:15:19,658 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-05 03:15:19,741 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-05 03:15:19,830 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-05 03:15:19,919 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-05 03:15:20,016 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-05 03:15:20,106 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-05 03:15:20,196 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-05 03:15:20,534 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-05 03:15:20,647 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-05 03:15:20,799 [INFO] Initial seed completed for Steam Free Games. Monitoring active.
+2026-04-05 03:21:21,031 [INFO] Database connection closed.
+2026-04-05 03:21:21,032 [INFO] Feed Bot closed.
+2026-04-16 20:45:32,459 [INFO] Database initialized at data/feed_bot.db
+2026-04-16 20:45:32,523 [INFO] Command suffix applied: _nova
+2026-04-16 20:45:33,077 [INFO] Loaded language: hu
+2026-04-16 20:45:33,078 [INFO] Added monitor: The Why Files (youtube)
+2026-04-16 20:45:33,078 [INFO] Added monitor: The Critical Drinker (youtube)
+2026-04-16 20:45:33,078 [INFO] Added monitor: The Critical Gamer (youtube)
+2026-04-16 20:45:33,078 [INFO] Added monitor: Asmongold TV (youtube)
+2026-04-16 20:45:33,079 [INFO] Added monitor: TheVR Gaming+ (youtube)
+2026-04-16 20:45:33,079 [INFO] Added monitor: TheVR Podcast (youtube)
+2026-04-16 20:45:33,079 [INFO] Added monitor: TheVR (youtube)
+2026-04-16 20:45:33,079 [INFO] Added monitor: TheVR Tech (youtube)
+2026-04-16 20:45:33,079 [INFO] Added monitor: TheVR Shortcut (youtube)
+2026-04-16 20:45:33,079 [INFO] Added monitor: Csillagászat.hu (rss)
+2026-04-16 20:45:33,080 [INFO] Added monitor: Epic Games Free Loot (epic_games)
+2026-04-16 20:45:33,080 [INFO] Added monitor: Steam Free Loot (steam_free)
+2026-04-16 20:45:33,080 [INFO] Added monitor: GOG Free Loot (gog_free)
+2026-04-16 20:45:33,080 [INFO] Starting monitor loop (Interval: 10m)
+2026-04-16 20:45:35,796 [INFO] --- FEED BOT ONLINE ---
+2026-04-16 20:45:35,810 [INFO] Identity: Nova#7583 (ID: 1489908793780338688)
+2026-04-16 20:45:35,810 [INFO] Prefix: !
+2026-04-16 20:45:35,810 [INFO] ------------------------
+2026-04-16 20:45:35,810 [INFO] Dynamic Rich Presence rotating task started.
+2026-04-16 20:45:36,880 [INFO] Initial seed completed for The Why Files. Monitoring active for next updates.
+2026-04-16 20:45:38,041 [INFO] Initial seed completed for The Critical Drinker. Monitoring active for next updates.
+2026-04-16 20:45:38,283 [INFO] Initial seed completed for The Critical Gamer. Monitoring active for next updates.
+2026-04-16 20:45:42,064 [INFO] Initial seed completed for Asmongold TV. Monitoring active for next updates.
+2026-04-16 20:45:43,701 [INFO] Initial seed completed for TheVR Gaming+. Monitoring active for next updates.
+2026-04-16 20:45:45,042 [INFO] Initial seed completed for TheVR Podcast. Monitoring active for next updates.
+2026-04-16 20:45:45,131 [INFO] Initial seed completed for TheVR. Monitoring active for next updates.
+2026-04-16 20:45:45,227 [INFO] Initial seed completed for TheVR Tech. Monitoring active for next updates.
+2026-04-16 20:45:45,321 [INFO] Initial seed completed for TheVR Shortcut. Monitoring active for next updates.
+2026-04-16 20:45:46,740 [INFO] Initial seed completed for RSS Csillagászat.hu. Monitoring active.
+2026-04-16 20:45:47,075 [INFO] Initial seed completed for Epic Games Store. Monitoring active.
+2026-04-16 20:45:48,690 [INFO] Initial seed completed for Steam Free Games. Monitoring active.

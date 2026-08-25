@@ -2,7 +2,7 @@ import discord
 import aiohttp
 from core.base_monitor import BaseMonitor
 from logger import log
-import database as db
+from db import monitor_repo
 import asyncio
 from datetime import datetime, timezone
 
@@ -95,7 +95,7 @@ class GitHubMonitor(BaseMonitor):
             if release_id != "None":
                 title = release.get("name") or release.get("tag_name") or "New Release"
                 author = release.get("author", {}).get("login", "Unknown")
-                await db.mark_as_published(
+                await monitor_repo.mark_as_published(
                     release_id, "github", self.api_url,
                     guild_id=self.guild_id,
                     title=f"{self.repo_path}: {title}",
@@ -149,7 +149,7 @@ class GitHubMonitor(BaseMonitor):
             except:
                 pass
                 
-        from core.ui_layouts import generate_github_layout
+        from ui import generate_github_layout
         content, layout = generate_github_layout(
             bot=self.bot,
             guild_id=self.guild_id,

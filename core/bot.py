@@ -7,43 +7,54 @@ import re
 from discord.ext import commands
 from discord import app_commands
 from logger import log
-import database
+from db import guild_repo, monitor_repo, bot_settings_repo
 from datetime import datetime
 
 class FeedBot(commands.Bot):
     def __init__(self, config):
-        # Intents needed for basic bot functionality
+        # Lightweight intents tailored for Feed & Alert operations
         intents = discord.Intents.default()
         intents.message_content = True
-        
+        intents.presences = False
+        intents.typing = False
+        intents.voice_states = False
+        intents.invites = False
+        intents.integrations = False
+        intents.webhooks = False
+
         prefix = config.get("command_prefix", "!")
-        super().__init__(command_prefix=prefix, intents=intents)
+        super().__init__(
+            command_prefix=prefix,
+            intents=intents,
+            max_messages=None,  # Disable message memory cache
+            chunk_guilds_at_startup=False,  # Skip slow member chunking on startup
+            member_cache_flags=discord.MemberCacheFlags.none()  # Disable in-memory member tracking
+        )
         self.config = config
         self.monitor_manager = None
-        self.language_data = {}
-        self.locales = {}
         self.guild_settings_cache = {}
         
-        # Initialize Crypto Manager
-        from core.crypto_manager import CryptoManager
-        self.crypto_manager = CryptoManager(self)
+        # Domain Services
+        from services import LocalizationService, EntitlementService, PermissionService, CryptoService
+        self.i18n = LocalizationService(self)
+        self.entitlements = EntitlementService(self, config)
+        self.permissions = PermissionService(self, config)
+        self.crypto_service = CryptoService(self)
 
     async def reload_guild_settings_cache(self):
         """Reload all guild settings from DB into the local memory cache."""
         try:
-            settings_rows = await database._fetch("SELECT guild_id, language, admin_role_id, alert_templates, premium_until, tier, stripe_subscription_id FROM guild_settings")
-            
-            # Clear old cache to remove potentially deleted guilds (or just overwrite)
+            settings_list = await guild_repo.get_all_guild_settings()
             new_cache = {}
-            for row in settings_rows:
-                g_id = row[0]
-                new_cache[g_id] = {
-                    "language": row[1] or "en",
-                    "admin_role_id": row[2] or 0,
-                    "alert_templates": json.loads(row[3]) if row[3] else {},
-                    "premium_until": row[4],
-                    "tier": row[5] or 0,
-                    "stripe_subscription_id": row[6]
+            for s in settings_list:
+                new_cache[s["guild_id"]] = {
+                    "language": s.get("language", "en"),
+                    "admin_role_id": s.get("admin_role_id", 0),
+                    "alert_templates": s.get("alert_templates", {}),
+                    "premium_until": s.get("premium_until"),
+                    "tier": s.get("tier", 0),
+                    "stripe_subscription_id": s.get("stripe_subscription_id"),
+                    "custom_branding": s.get("custom_branding")
                 }
             self.guild_settings_cache = new_cache
             log.info(f"Guild settings cache reloaded. ({len(self.guild_settings_cache)} guilds)")
@@ -55,18 +66,7 @@ class FeedBot(commands.Bot):
     async def setup_hook(self):
         """Perform initialization tasks before the bot connects."""
         # Load localization files
-        if os.path.exists("locales"):
-            for filename in os.listdir("locales"):
-                if filename.endswith(".json"):
-                    lang_code = filename[:-5]
-                    try:
-                        with open(f"locales/{filename}", "r", encoding="utf-8") as f:
-                            self.locales[lang_code] = json.load(f)
-                    except Exception as e:
-                        log.error(f"Failed to load language file {filename}: {e}")
-        
-        self.language_data = self.locales.get("en", {})
-        log.info(f"Loaded {len(self.locales)} language packs (Default: EN).")
+        self.i18n.load_locales("locales")
 
         # Load all guild settings into memory
         await self.reload_guild_settings_cache()
@@ -76,15 +76,15 @@ class FeedBot(commands.Bot):
         
         # Load Global Settings from DB
         # We override config values if they exist in the DB
-        p_interval = await database.get_bot_setting("presence_interval_seconds")
+        p_interval = await bot_settings_repo.get_bot_setting("presence_interval_seconds")
         if p_interval:
             self.config["presence_interval_seconds"] = int(p_interval)
             
-        r_interval = await database.get_bot_setting("refresh_interval_minutes")
+        r_interval = await bot_settings_repo.get_bot_setting("refresh_interval_minutes")
         if r_interval:
             self.config["refresh_interval_minutes"] = int(r_interval)
             
-        a_channel = await database.get_bot_setting("admin_channel_id")
+        a_channel = await bot_settings_repo.get_bot_setting("admin_channel_id")
         if a_channel:
             self.config["admin_channel_id"] = int(a_channel)
 
@@ -93,13 +93,13 @@ class FeedBot(commands.Bot):
         # Load Cogs
         await self.load_all_extensions()
 
-        # Start Crypto Manager
-        await self.crypto_manager.start()
+        # Start Crypto Service
+        await self.crypto_service.start()
 
 
         # Load monitors from DB
         from core.monitor_factory import create_monitor_instance
-        db_monitors = await database.get_all_monitors()
+        db_monitors = await monitor_repo.get_all_monitors()
         for m_config in db_monitors:
             monitor = create_monitor_instance(self, m_config)
             if monitor:
@@ -142,10 +142,7 @@ class FeedBot(commands.Bot):
         for guild in self.guilds:
             try:
                 # Ensure guild exists in database and mark as active
-                res = await database._execute(
-                    "INSERT INTO guild_settings (guild_id, is_active) VALUES ($1, true) ON CONFLICT (guild_id) DO UPDATE SET is_active = true",
-                    guild.id
-                )
+                await guild_repo.ensure_guild_active(guild.id)
                 # If a new row was inserted or if we just want to ensure cache is warm
                 if guild.id not in self.guild_settings_cache:
                     self.guild_settings_cache[guild.id] = {
@@ -170,10 +167,7 @@ class FeedBot(commands.Bot):
         log.info(f"Joined new guild: {guild.name} (ID: {guild.id})")
         try:
             # Ensure guild exists in database and mark as active
-            await database._execute(
-                "INSERT INTO guild_settings (guild_id, is_active) VALUES ($1, true) ON CONFLICT (guild_id) DO UPDATE SET is_active = true",
-                guild.id
-            )
+            await guild_repo.ensure_guild_active(guild.id)
             # Update local cache with default settings
             if guild.id not in self.guild_settings_cache:
                 self.guild_settings_cache[guild.id] = {
@@ -192,7 +186,7 @@ class FeedBot(commands.Bot):
         log.info(f"Left guild: {guild.name} (ID: {guild.id})")
         
         try:
-            await database._execute("UPDATE guild_settings SET is_active = false WHERE guild_id = $1", guild.id)
+            await guild_repo.set_guild_inactive(guild.id)
             log.info(f"Marked guild {guild.id} as inactive in database.")
         except Exception as e:
             log.error(f"Error marking guild {guild.id} as inactive: {e}")
@@ -240,131 +234,42 @@ class FeedBot(commands.Bot):
         
         await self.process_commands(message)
 
+    # --- Domain Service Delegates (Backwards-compatibility & convenience) ---
+
+    @property
+    def locales(self):
+        return self.i18n.locales
+
+    @property
+    def language_data(self):
+        return self.i18n.default_language_data
+
     def is_bot_admin(self, member):
-        """Check if a member is a bot admin based on shared config."""
-        if not member or not hasattr(member, 'guild'):
-            return False
-            
-        # 1. Global Master/Staff
-        if self.is_master_admin(member):
-            return True
-
-        # 2. Discord Permissions from Config
-        perms = member.guild_permissions
-        perm_config = self.config.get("permission_config", {})
-        allowed_perms = perm_config.get("admin_permissions", ["administrator", "manage_guild"])
-        
-        for perm in allowed_perms:
-            if getattr(perms, perm, False):
-                return True
-            
-        # 3. Check for configured Admin Role
-        if perm_config.get("admin_role_enabled", True):
-            settings = self.guild_settings_cache.get(member.guild.id, {})
-            admin_role_id = settings.get("admin_role_id", 0)
-            if admin_role_id != 0:
-                role = member.get_role(admin_role_id)
-                if role and role in member.roles:
-                    return True
-                
-        return False
-
-    def is_master(self, guild_id):
-        """Check if a guild is configured as a Master Guild in config.json."""
-        master_guilds = self.config.get("master_guilds", {})
-        return str(guild_id) in master_guilds
-
-    def is_premium(self, guild_id):
-        """Check if a guild has premium status (via Tier or DB expiration or Master status)."""
-        # 1. Master Guilds are automatically Premium Forever (Tier 3+)
-        if self.is_master(guild_id):
-            return True
-            
-        settings = self.guild_settings_cache.get(guild_id, {})
-        
-        # 2. Check Tier Level
-        if settings.get("tier", 0) >= 1:
-            return True
-
-        # 3. DB Source (Calculated from expiration date - Legacy support)
-        p_until = settings.get("premium_until")
-        if p_until:
-            return p_until > datetime.now()
-            
-        return False
-
-    def get_guild_tier_limits(self, guild_id):
-        """Returns (min_refresh_interval, max_monitors, max_channels, max_pings, max_purge) from config."""
-        settings = self.guild_settings_cache.get(guild_id, {})
-        tier = settings.get("tier", 0)
-        
-        # Legacy fallback if tier is 0 but premium_until is valid
-        if tier == 0 and self.is_premium(guild_id):
-            tier = 3 
-
-        tier_config = self.config.get("tier_config", {})
-        config = tier_config.get(str(tier), tier_config.get("0", {}))
-        
-        return (
-            config.get("min_refresh_interval", 20),
-            config.get("max_monitors", 2),
-            config.get("max_channels", 1),
-            config.get("max_pings", 1),
-            config.get("max_purge", 10)
-        )
-
-    def has_feature(self, guild_id, feature_name):
-        """Check if a guild has access to a specific premium feature based on config."""
-        if self.is_master(guild_id):
-            return True
-            
-        settings = self.guild_settings_cache.get(guild_id, {})
-        tier = settings.get("tier", 0)
-        if tier == 0 and self.is_premium(guild_id):
-            tier = 3
-        
-        tier_config = self.config.get("tier_config", {})
-        config = tier_config.get(str(tier), tier_config.get("0", {}))
-        features = config.get("features", [])
-        
-        return feature_name in features or feature_name == "basic"
-            
-        # Crypto is available to all (no longer premium-gated)
-        return True
-
-    def get_guild_refresh_interval(self, guild_id):
-        """Returns the configured refresh interval in minutes, validated against tier limits."""
-        min_m, _, _, _, _ = self.get_guild_tier_limits(guild_id)
-        settings = self.guild_settings_cache.get(guild_id, {})
-        
-        # We use a fixed fallback (e.g. 60 mins) instead of min_m to prevent 
-        # automatic interval changes when a guild upgrades its tier.
-        ri = settings.get("refresh_interval", 20)
-        
-        if ri is not None and isinstance(ri, (int, float)):
-            # Clamp only to the minimum allowed by the tier.
-            # No upper limit is enforced for the interval itself.
-            clamped = max(min_m, int(ri))
-            return clamped
-            
-        return max(min_m, 20)
-
-
+        return self.permissions.is_bot_admin(member)
 
     def is_master_admin(self, member):
-        """Check if a member is a Master Admin (Owner OR globally permitted User ID)."""
-        if not member:
-            return False
-            
-        # 1. Global Owner
-        if member.id in [self.owner_id] or (self.application and member.id == self.application.owner.id):
-            return True
+        return self.permissions.is_master_admin(member)
 
-        # 2. Check config.json array
-        if member.id in self.config.get("master_user_ids", []):
-            return True
-            
-        return False
+    def is_master(self, guild_id):
+        return self.entitlements.is_master(guild_id)
+
+    def is_premium(self, guild_id):
+        return self.entitlements.is_premium(guild_id)
+
+    def get_guild_tier_limits(self, guild_id):
+        return self.entitlements.get_guild_tier_limits(guild_id)
+
+    def has_feature(self, guild_id, feature_name):
+        return self.entitlements.has_feature(guild_id, feature_name)
+
+    def get_guild_refresh_interval(self, guild_id):
+        return self.entitlements.get_guild_refresh_interval(guild_id)
+
+    def get_feedback(self, key, guild_id=None, force_lang=None, **kwargs):
+        return self.i18n.get_feedback(key, guild_id=guild_id, force_lang=force_lang, **kwargs)
+
+    def parse_emoji_text(self, text: str):
+        return self.i18n.parse_emoji_text(text)
 
     async def on_error(self, event, *args, **kwargs):
         log.error(f"Global Event Error in '{event}':", exc_info=True)
@@ -384,57 +289,6 @@ class FeedBot(commands.Bot):
         else:
             await interaction.response.send_message(msg, ephemeral=True)
 
-    def get_feedback(self, key, guild_id=None, force_lang=None, **kwargs):
-        """Helper to get localized feedback."""
-        guild_id = guild_id or 0
-        settings = self.guild_settings_cache.get(guild_id, {})
-        
-        # Determine language
-        master_guilds = self.config.get("master_guild_ids", [])
-        
-        # 1. Force Language Override
-        if force_lang:
-            lang_code = force_lang
-        else:
-            # 2. User context: prioritizes guild setting
-            lang_code = settings.get("language")
-            
-            # 3. Smart Fallback for user content
-            if not lang_code:
-                # If no guild setting exists, we default to Hungarian for user-facing content (feeds)
-                # This ensures cards are localized even on the Master Guild without manual setup.
-                lang_code = "hu"
-
-        lang_data = self.locales.get(lang_code, self.locales.get("en", self.language_data))
-
-        text = lang_data.get(key, self.language_data.get(key, key))
-        if not isinstance(text, str):
-            return text
-            
-        for k, v in kwargs.items():
-            text = text.replace(f"{{{k}}}", str(v))
-        return text
-
-    def parse_emoji_text(self, text: str):
-        """
-        Parses a string for custom Discord emojis (<:name:ID> or <a:name:ID>).
-        Removes the emoji from the text and returns (clean_text, emoji_str).
-        """
-        if not isinstance(text, str):
-            return text, None
-            
-        # Regex for custom Discord emojis (animated or static)
-        emoji_pattern = r"(<a?:[a-zA-Z0-9_]+:[0-9]+>)"
-        
-        match = re.search(emoji_pattern, text)
-        if match:
-            emoji_str = match.group(1)
-            # Remove emoji and strip extra spaces
-            clean_text = text.replace(emoji_str, "").strip()
-            return clean_text, emoji_str
-        
-        return text, None
-
     def save_config(self):
         """Persist config.json to disk."""
         save_config = self.config.copy()
@@ -446,6 +300,8 @@ class FeedBot(commands.Bot):
 
     async def close(self):
         """Cleanup before shutdown."""
-        if self.crypto_manager:
-            await self.crypto_manager.stop()
+        if hasattr(self, 'crypto_service') and self.crypto_service:
+            await self.crypto_service.stop()
+        from clients import http_client
+        await http_client.close()
         await super().close()

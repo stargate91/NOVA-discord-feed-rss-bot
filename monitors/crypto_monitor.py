@@ -5,7 +5,7 @@ import os
 import time
 from logger import log
 from core.base_monitor import BaseMonitor
-import database as db
+from db import monitor_repo
 from core.emojis import (
     STATUS_SUCCESS, STATUS_ERROR,
     CRYPTO_UP, CRYPTO_DOWN, CRYPTO_BULLET_FILLED, CRYPTO_BULLET_EMPTY, CRYPTO_CHART_COLORFUL
@@ -39,69 +39,10 @@ class CryptoMonitor(BaseMonitor):
         return targets
 
     async def _update_coin_map(self):
-        """Fetch and cache the coin list from CoinGecko to map symbols to IDs."""
-        if not os.path.exists(self.cache_dir):
-            os.makedirs(self.cache_dir)
-
-        # Cache for 24 hours
-        if os.path.exists(self.cache_file):
-            file_age = time.time() - os.path.getmtime(self.cache_file)
-            if file_age < 86400:
-                with open(self.cache_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    self._process_coin_list(data)
-                    return
-
-        log.info("Fetching fresh coin list from CoinGecko...")
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get("https://api.coingecko.com/api/v3/coins/list") as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                        with open(self.cache_file, 'w', encoding='utf-8') as f:
-                            json.dump(data, f)
-                        self._process_coin_list(data)
-                    else:
-                        log.error(f"Failed to fetch CoinGecko list: {resp.status}")
-            except Exception as e:
-                log.error(f"Error fetching CoinGecko list: {e}")
-
-    def _process_coin_list(self, data):
-        # We prefer shorter IDs or specific ones for common coins to avoid mismatches
-        priority_mismatch = {
-            "BTC": "bitcoin",
-            "ETH": "ethereum",
-            "SOL": "solana",
-            "ADA": "cardano",
-            "DOT": "polkadot",
-            "XRP": "ripple",
-            "DOGE": "dogecoin",
-            "BNB": "binancecoin"
-        }
-        
-        mapping = {}
-        for coin in data:
-            sym = coin["symbol"].upper()
-            cid = coin["id"]
-            
-            # Simple heuristic: if multiple IDs for same symbol, keep the one that matches our priority 
-            # or the one that is likely the 'main' one (shorter ID often = more established)
-            if sym not in mapping or len(cid) < len(mapping[sym]):
-                mapping[sym] = cid
-        
-        # Override with known priorities
-        for sym, cid in priority_mismatch.items():
-            if sym in mapping:
-                mapping[sym] = cid
-            else:
-                # Add if missing (unlikely)
-                mapping[sym] = cid
-                
-        self.coin_id_map = mapping
-        
-        # Register these IDs with the central CryptoManager
-        if hasattr(self.bot, 'crypto_manager'):
-            self.bot.crypto_manager.register_coins(list(mapping.values()))
+        """Retrieve symbol-to-CoinGecko ID mapping from CryptoService."""
+        if hasattr(self.bot, 'crypto_service') and self.bot.crypto_service:
+            self.coin_id_map = await self.bot.crypto_service.get_coin_map()
+            self.bot.crypto_service.register_coins(list(self.coin_id_map.values()))
 
     async def fetch_new_items(self):
         if not self.targets:
@@ -122,13 +63,13 @@ class CryptoMonitor(BaseMonitor):
         if not ids_to_fetch:
             return []
 
-        # Ensure manager is tracking these
-        if hasattr(self.bot, 'crypto_manager'):
-            self.bot.crypto_manager.register_coins(ids_to_fetch)
+        # Ensure service is tracking these
+        if hasattr(self.bot, 'crypto_service') and self.bot.crypto_service:
+            self.bot.crypto_service.register_coins(ids_to_fetch)
             
         prices_data = {}
         for cid in ids_to_fetch:
-            p_data = self.bot.crypto_manager.get_price_data(cid)
+            p_data = self.bot.crypto_service.get_price_data(cid) if self.bot.crypto_service else None
             if p_data:
                 prices_data[cid] = p_data
         
@@ -192,7 +133,7 @@ class CryptoMonitor(BaseMonitor):
             pub_id = self.get_item_id(event)
             if pub_id:
                 title = f"{event['sym']} {event['direction'].upper()} {event['percent_str']}"
-                await db.mark_as_published(
+                await monitor_repo.mark_as_published(
                     pub_id, "crypto", 
                     feed_url=f"https://www.coingecko.com/en/coins/{event['cid']}",
                     guild_id=self.guild_id,
@@ -282,13 +223,13 @@ class CryptoMonitor(BaseMonitor):
         if not ids_to_fetch:
             return None
 
-        # Register with manager
-        if hasattr(self.bot, 'crypto_manager'):
-            self.bot.crypto_manager.register_coins(ids_to_fetch)
+        # Register with service
+        if hasattr(self.bot, 'crypto_service') and self.bot.crypto_service:
+            self.bot.crypto_service.register_coins(ids_to_fetch)
 
         prices_data = {}
         for cid in ids_to_fetch:
-            p_data = self.bot.crypto_manager.get_price_data(cid)
+            p_data = self.bot.crypto_service.get_price_data(cid) if self.bot.crypto_service else None
             if p_data:
                 prices_data[cid] = p_data
 

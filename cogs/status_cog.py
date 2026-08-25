@@ -4,7 +4,7 @@ import asyncio
 from discord.ext import commands, tasks
 from discord import app_commands
 from logger import log
-import database
+from db import bot_settings_repo
 
 class StatusCog(commands.Cog, name="status"):
     def __init__(self, bot):
@@ -26,12 +26,12 @@ class StatusCog(commands.Cog, name="status"):
             monitor_count = len(self.bot.monitor_manager.monitors) if self.bot.monitor_manager else 0
             
             # Fetch from DB
-            db_statuses = await database.get_bot_statuses()
+            db_statuses = await bot_settings_repo.get_bot_statuses()
             
             log.debug(f"Rotating presence... Monitors found: {monitor_count}, DB Statuses: {len(db_statuses)}")
             
             if db_statuses:
-                mode = await database.get_bot_setting("status_rotation_mode", "random")
+                mode = await bot_settings_repo.get_bot_setting("status_rotation_mode", "random")
                 
                 if mode == "sequential":
                     if self.current_index >= len(db_statuses):
@@ -56,7 +56,7 @@ class StatusCog(commands.Cog, name="status"):
                 # Fallback to language file
                 statuses = self.bot.language_data.get("dynamic_status", ["{count} feeds"])
                 
-                mode = await database.get_bot_setting("status_rotation_mode", "random")
+                mode = await bot_settings_repo.get_bot_setting("status_rotation_mode", "random")
                 if mode == "sequential":
                     if self.current_index >= len(statuses):
                         self.current_index = 0
@@ -72,7 +72,7 @@ class StatusCog(commands.Cog, name="status"):
             await self.bot.change_presence(activity=activity, status=discord.Status.online)
             
             # Update loop interval based on config
-            new_interval = int(await database.get_bot_setting("presence_interval_seconds", self.bot.config.get("presence_interval_seconds", 60)))
+            new_interval = int(await bot_settings_repo.get_bot_setting("presence_interval_seconds", self.bot.config.get("presence_interval_seconds", 60)))
             if self.status_rotation.seconds != new_interval:
                 log.debug(f"Changing presence rotation interval to {new_interval}s")
                 self.status_rotation.change_interval(seconds=new_interval)

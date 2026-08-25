@@ -1,7 +1,35 @@
+import time
 from abc import ABC, abstractmethod
 import discord
 from logger import log
-import database as db
+from db import monitor_repo
+
+# In-memory blacklist for deleted/inaccessible Discord channels
+_DEAD_CHANNELS: dict[int, float] = {}
+DEAD_CHANNEL_TTL: float = 3600.0  # 1 hour
+
+def is_channel_dead(channel_id: int) -> bool:
+    """Check if a channel ID is marked as deleted/dead within TTL."""
+    if not channel_id:
+        return True
+    exp = _DEAD_CHANNELS.get(channel_id)
+    if exp is None:
+        return False
+    if time.time() < exp:
+        return True
+    # Expired from blacklist
+    del _DEAD_CHANNELS[channel_id]
+    return False
+
+def mark_channel_dead(channel_id: int, ttl: float = DEAD_CHANNEL_TTL):
+    """Mark a channel ID as dead for a specific TTL duration."""
+    if channel_id:
+        _DEAD_CHANNELS[channel_id] = time.time() + ttl
+
+def get_dead_channel_count() -> int:
+    """Return count of active dead channels."""
+    now = time.time()
+    return sum(1 for exp in _DEAD_CHANNELS.values() if now < exp)
 
 class BaseMonitor(ABC):
     def __init__(self, bot, config):
@@ -28,73 +56,47 @@ class BaseMonitor(ABC):
         return " ".join(pings) if pings else ""
 
     def get_alert_message(self, variables=None):
-        """
-        Get the alert message based on priority:
-        1. Monitor-specific custom alert
-        2. Guild-specific default alert for this platform
-        3. System default from language files
-        """
-        variables = variables or {}
-        # Ensure {name} is always available as a variable
-        if "name" not in variables:
-            variables["name"] = self.name
-
-        # 1. Monitor-specific
-        extra = self.config.get("extra_settings", {})
-        msg = extra.get("custom_alert")
-        
-        # 2. Guild-default
-        if not msg:
-            guild_settings = self.bot.guild_settings_cache.get(self.guild_id, {})
-            templates = guild_settings.get("alert_templates", {})
-            msg = templates.get(self.platform)
+        """Get the alert template for this monitor's guild/platform and format it."""
+        try:
+            template = self.bot.get_alert_template(self.guild_id, self.platform)
+            if not template:
+                return self.ping_role
             
-        # 3. System fallback
-        if not msg:
-            # Use base platform name (strip :lang suffix) for translation keys
-            base_type = self.platform.split(':')[0]
-            msg = self.bot.get_feedback(f"new_{base_type}_alert", guild_id=self.guild_id)
-            # If still just the key, use a generic fallback
-            if msg == f"new_{base_type}_alert":
-                msg = self.bot.get_feedback("default_new_item", name=self.name, guild_id=self.guild_id)
-
-        # Apply variables
-        for k, v in variables.items():
-            msg = msg.replace(f"{{{k}}}", str(v))
+            # Extract variables safely
+            v = variables or {}
             
-        ping = self.ping_role
-        if ping:
-            return f"{ping}\n{msg}"
-        return msg
-        
-    async def fetch_new_items(self):
-        """Fetch and return new, unpublished items from the data source.
-        Should return a list of items."""
-        return []
-
-    async def process_item(self, item):
-        """Process and send the new item to discord."""
-        pass
-        
-    def get_item_id(self, item):
-        """Return the unique identifier for an item from fetch_new_items.
-        Should be overridden by subclasses."""
-        return None
-        
-    async def mark_items_published(self, items):
-        """Mark a list of items as published globally (guild_id=0)."""
-        pass
+            # Map standard fields
+            title = v.get("title", "")
+            url = v.get("url", "")
+            author = v.get("author") or v.get("name") or self.name
+            role = self.ping_role
+            
+            # Global clean replacers
+            res = template.replace("{role}", role)
+            res = res.replace("{author}", author)
+            res = res.replace("{name}", author)
+            res = res.replace("{title}", title)
+            res = res.replace("{url}", url)
+            
+            # Custom tags
+            for key, val in v.items():
+                res = res.replace(f"{{{key}}}", str(val))
+                
+            return res.strip()
+        except Exception as e:
+            log.error(f"Error parsing alert template: {e}")
+            return self.ping_role
 
     def get_shared_key(self):
-        """Return a key for the shared poll registry. Subclasses should override if pollable."""
+        """
+        Return a unique string identifying the underlying external resource (e.g. RSS URL, YT channel ID).
+        Monitors sharing the same key will be polled together. Return None if polling cannot be shared.
+        """
         return None
-        
+
     def get_color(self, default_hex=0x3d3f45):
-        """Get the localized/custom embed color, falling back to global default (0x3d3f45)."""
-        # The config is often flattened, so check top level first
-        c = self.config.get("embed_color")
-        
-        # Fallback to nested extra_settings if not at top level
+        """Get the embed color configured for this monitor, or fallback to default."""
+        c = self.embed_color
         if not c:
             extra = self.config.get("extra_settings", {})
             if isinstance(extra, dict):
@@ -136,6 +138,28 @@ class BaseMonitor(ABC):
             return [item] if item else []
         return [] # Subclasses should override for N > 1
 
+    async def mark_items_published(self, items: list):
+        """Default bulk implementation to mark items published in DB."""
+        if not items:
+            return
+        records = []
+        for item in items:
+            item_id = self.get_item_id(item) if hasattr(self, "get_item_id") else None
+            if item_id:
+                title = item.get("title") if isinstance(item, dict) else str(item_id)
+                thumb = item.get("thumbnail") or item.get("thumbnail_url") if isinstance(item, dict) else None
+                records.append({
+                    "entry_id": str(item_id),
+                    "platform": self.platform,
+                    "guild_id": self.guild_id,
+                    "feed_url": getattr(self, "feed_url", None) or getattr(self, "api_url", None),
+                    "title": title,
+                    "thumbnail_url": self.get_image_url(thumb),
+                    "author_name": self.name
+                })
+        if records:
+            await monitor_repo.mark_as_published_bulk(records)
+
     async def get_preview(self):
         """
         Return a list of data dicts (content, embed, view) to represent how an alert looks.
@@ -147,21 +171,34 @@ class BaseMonitor(ABC):
         return [item]
 
     async def send_update(self, content=None, embed=None, view=None):
-        """Send an update to the configured Discord channel(s)."""
+        """Send an update to the configured Discord channel(s) with dead-channel protection."""
         if not self.target_channels:
             log.warning(f"No target channels configured for monitor: {self.name}")
             return
 
         for ch_id in self.target_channels:
+            if not ch_id:
+                continue
+
+            # Skip known dead/deleted channels to avoid Discord API 404/403 spam
+            if is_channel_dead(ch_id):
+                log.debug(f"[BaseMonitor] Skipping dead/blacklisted channel {ch_id} for {self.name}")
+                continue
+
             channel = self.bot.get_channel(ch_id)
             if not channel:
                 try:
                     channel = await self.bot.fetch_channel(ch_id)
                 except discord.NotFound as enf:
-                    if enf.code == 10003: # Unknown Channel
-                        log.error(f"Channel {ch_id} for {self.name} is GONE (10003).")
+                    if enf.code == 10003: # Unknown Channel (deleted)
+                        log.warning(f"Channel {ch_id} for {self.name} is DELETED (10003). Blacklisting for 1h.")
+                        mark_channel_dead(ch_id)
                         continue
                     log.error(f"Could not fetch channel {ch_id} for {self.name}: {enf}")
+                    continue
+                except discord.Forbidden:
+                    log.warning(f"Missing permissions (403 Forbidden) for channel {ch_id} on {self.name}. Blacklisting for 1h.")
+                    mark_channel_dead(ch_id)
                     continue
                 except Exception as e:
                     log.error(f"Could not fetch channel {ch_id} for {self.name}: {e}")
@@ -187,8 +224,14 @@ class BaseMonitor(ABC):
                         await channel.send(content=content, embed=embed, view=view)
                         
                     log.info(f"Published update for {self.name} on channel {channel.name}", extra={'guild_id': self.guild_id})
-                    await db.increment_post_stat(self.guild_id, self.platform)
-                    await db.update_last_post_at(self.id)
+                    await monitor_repo.increment_post_stat(self.guild_id, self.platform)
+                    await monitor_repo.update_last_post_at(self.id)
+                except discord.NotFound:
+                    log.warning(f"Channel {ch_id} was deleted during send for {self.name}. Blacklisting.")
+                    mark_channel_dead(ch_id)
+                except discord.Forbidden:
+                    log.warning(f"Missing send permissions in channel {ch_id} for {self.name}. Blacklisting.")
+                    mark_channel_dead(ch_id)
                 except Exception as e:
                     log.error(f"Failed to send update to channel {ch_id} for {self.name}: {e}", extra={'guild_id': self.guild_id})
             else:

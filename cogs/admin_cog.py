@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from logger import log
-import database
 
 
 
@@ -75,7 +74,7 @@ class AdminCog(commands.Cog):
         """Sends a link to the web dashboard and support server."""
         await interaction.response.defer(ephemeral=True)
         
-        from core.ui_layouts import generate_dashboard_layout
+        from ui import generate_dashboard_layout
         layout = generate_dashboard_layout(self.bot, interaction.guild_id)
         
         await interaction.followup.send(view=layout, ephemeral=True)

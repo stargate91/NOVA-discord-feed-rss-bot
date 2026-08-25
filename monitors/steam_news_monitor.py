@@ -2,9 +2,9 @@ import aiohttp
 import discord
 from core.base_monitor import BaseMonitor
 from logger import log
-import database as db
+from db import monitor_repo, cache_repo
 import os
-from core.ui_layouts import generate_steam_news_layout
+from ui import generate_steam_news_layout
 
 # Standard User-Agent
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -51,7 +51,7 @@ class SteamNewsMonitor(BaseMonitor):
             return
 
         # Check Cache
-        cached_id = await db.get_steam_cached_id(str(self.appid))
+        cached_id = await cache_repo.get_steam_cached_id(str(self.appid))
         if cached_id:
             self.appid = cached_id
             return
@@ -74,7 +74,7 @@ class SteamNewsMonitor(BaseMonitor):
                             log.info(f"[SteamNews] Resolved '{self.appid}' to AppID {found_id} ({found_name})")
                             
                             # Cache it
-                            await db.cache_steam_id(str(self.appid), found_id, found_name)
+                            await cache_repo.cache_steam_id(str(self.appid), found_id, found_name)
                             
                             self.appid = found_id
                         else:
@@ -145,7 +145,7 @@ class SteamNewsMonitor(BaseMonitor):
         for item in items:
             gid = self.get_item_id(item)
             if gid:
-                await db.mark_as_published(gid, "steam_news", self.api_url, guild_id=self.guild_id)
+                await monitor_repo.mark_as_published(gid, "steam_news", self.api_url, guild_id=self.guild_id)
 
     async def get_latest_item(self):
         """Wrapper for get_latest_items(1)"""
