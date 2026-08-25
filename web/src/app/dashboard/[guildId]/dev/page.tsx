@@ -1,109 +1,179 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { Trash2, Copy, Check, Zap, X, ShieldAlert, Activity } from 'lucide-react';
-import LoginButton from '@/components/LoginButton';
-import CustomSelect from '@/components/CustomSelect';
-import LogStreamer from '@/components/LogStreamer';
-import devService, { AnnouncementItem, BotStatusItem, PremiumKeyItem } from '@/services/devService';
-import { DEV_ROTATION_OPTIONS, DEV_ACTIVITY_OPTIONS, DEV_DURATION_OPTIONS, DEV_TIER_OPTIONS } from '@/constants/tiers';
-import styles from './dev.module.css';
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import {
+  Trash2,
+  Copy,
+  Check,
+  Zap,
+  X,
+  ShieldAlert,
+  Activity,
+  ChevronDown,
+  Radio,
+  Key,
+  Flame,
+} from "lucide-react";
+import { PageHeader } from "@/components/layout";
+import {
+  Button,
+  IconButton,
+  Badge,
+  Input,
+  Select,
+  Modal,
+  ModalHeader,
+  ModalTitle,
+  ModalContent,
+  ModalFooter,
+  Inline,
+  Stack,
+  Text,
+} from "@/components/ui";
+import LogStreamer from "@/components/LogStreamer";
+import devService, {
+  AnnouncementItem,
+  BotStatusItem,
+  PremiumKeyItem,
+} from "@/services/devService";
+import {
+  DEV_ROTATION_OPTIONS,
+  DEV_ACTIVITY_OPTIONS,
+  DEV_DURATION_OPTIONS,
+  DEV_TIER_OPTIONS,
+} from "@/constants/tiers";
+import { useToast } from "@/context/ToastContext";
+import styles from "./dev.module.css";
 
 export default function DevSettingsPage() {
   const { data: session } = useSession();
+  const { addToast } = useToast();
 
   const [keys, setKeys] = useState<PremiumKeyItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [duration, setDuration] = useState('30');
-  const [customDays, setCustomDays] = useState('30');
-  const [maxUses, setMaxUses] = useState('1');
+  const [duration, setDuration] = useState("30");
+  const [customDays, setCustomDays] = useState("30");
+  const [maxUses, setMaxUses] = useState("1");
   const [generating, setGenerating] = useState(false);
   const [copying, setCopying] = useState<string | null>(null);
-  const [tier, setTier] = useState('3');
+  const [tier, setTier] = useState("3");
+
+  // Section Accordion Toggles
+  const [showBroadcast, setShowBroadcast] = useState(false);
+  const [showPresence, setShowPresence] = useState(false);
+  const [showPremium, setShowPremium] = useState(true);
+  const [showMaintenance, setShowMaintenance] = useState(false);
 
   // Status & Presence State
   const [statuses, setStatuses] = useState<BotStatusItem[]>([]);
-  const [rotationMode, setRotationMode] = useState('random');
-  const [rotationInterval, setRotationInterval] = useState('60');
-  const [newStatusType, setNewStatusType] = useState('watching');
-  const [newStatusText, setNewStatusText] = useState('');
+  const [rotationMode, setRotationMode] = useState("random");
+  const [rotationInterval, setRotationInterval] = useState("60");
+  const [newStatusType, setNewStatusType] = useState("watching");
+  const [newStatusText, setNewStatusText] = useState("");
   const [statusLoading, setStatusLoading] = useState(false);
-  const [showPresence, setShowPresence] = useState(false);
-  
-  // Broadcast State
-  const [showBroadcast, setShowBroadcast] = useState(false);
-  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
-  const [newAnnounce, setNewAnnounce] = useState<{ title: string; content: string; type: 'info' | 'warning' | 'alert' | 'maintenance' }>({ title: '', content: '', type: 'info' });
-  const [announceLoading, setAnnounceLoading] = useState(false);
-  
-  // Maintenance State
-  const [showPremium, setShowPremium] = useState(false);
-  const [showMaintenance, setShowMaintenance] = useState(false);
-  const [resetAllLoading, setResetAllLoading] = useState(false);
-  const [resetAllStatus, setResetAllStatus] = useState<{ type: string; message: string } | null>(null);
-  const [confirmNuclear, setConfirmNuclear] = useState(false);
-  const [factoryLoading, setFactoryLoading] = useState(false);
-  const [factoryStatus, setFactoryStatus] = useState<{ type: string; message: string } | null>(null);
-  const [confirmFactory, setConfirmFactory] = useState(false);
 
-  // Custom Modal State
-  const [modalConfig, setModalConfig] = useState<{ show: boolean; title: string; message: string; action: (() => void) | null; type: 'danger' | 'extreme' }>({ show: false, title: '', message: '', action: null, type: 'danger' });
+  // Broadcast State
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [newAnnounce, setNewAnnounce] = useState<{
+    title: string;
+    content: string;
+    type: "info" | "warning" | "alert" | "maintenance";
+  }>({ title: "", content: "", type: "info" });
+  const [announceLoading, setAnnounceLoading] = useState(false);
+
+  // Maintenance Modal State
+  const [modalConfig, setModalConfig] = useState<{
+    show: boolean;
+    title: string;
+    message: string;
+    action: (() => Promise<void>) | null;
+    isProcessing: boolean;
+  }>({
+    show: false,
+    title: "",
+    message: "",
+    action: null,
+    isProcessing: false,
+  });
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [fetchedKeys, fetchedStatuses, botSettings, fetchedAnnouncements] = await Promise.all([
-        devService.getKeys(),
-        devService.getStatuses(),
-        devService.getBotSettings(),
-        devService.getAnnouncements()
-      ]);
-      
+      const [fetchedKeys, fetchedStatuses, botSettings, fetchedAnnouncements] =
+        await Promise.all([
+          devService.getKeys(),
+          devService.getStatuses(),
+          devService.getBotSettings(),
+          devService.getAnnouncements(),
+        ]);
+
       if (Array.isArray(fetchedKeys)) setKeys(fetchedKeys);
       if (Array.isArray(fetchedStatuses)) setStatuses(fetchedStatuses);
-      if (botSettings.status_rotation_mode) setRotationMode(botSettings.status_rotation_mode);
-      if (botSettings.presence_interval_seconds) setRotationInterval(String(botSettings.presence_interval_seconds));
-      if (Array.isArray(fetchedAnnouncements)) setAnnouncements(fetchedAnnouncements);
+      if (botSettings.status_rotation_mode)
+        setRotationMode(botSettings.status_rotation_mode);
+      if (botSettings.presence_interval_seconds)
+        setRotationInterval(String(botSettings.presence_interval_seconds));
+      if (Array.isArray(fetchedAnnouncements))
+        setAnnouncements(fetchedAnnouncements);
     } catch (err) {
-      console.error("Error fetching dev data", err);
+      console.error("Error fetching dev data:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  // --- Premium Keys ---
+  // --- Keys ---
   const handleGenerate = async () => {
     setGenerating(true);
-    const daysToGenerate = duration === 'custom' ? parseInt(customDays, 10) : parseInt(duration, 10);
+    const daysToGenerate =
+      duration === "custom" ? parseInt(customDays, 10) : parseInt(duration, 10);
     try {
-      await devService.generateKey(daysToGenerate, parseInt(maxUses, 10), parseInt(tier, 10));
+      await devService.generateKey(
+        daysToGenerate,
+        parseInt(maxUses, 10),
+        parseInt(tier, 10)
+      );
+      addToast("New premium key generated!", "success");
       const newKeys = await devService.getKeys();
       setKeys(newKeys);
-    } catch (err) { console.error(err); }
-    setGenerating(false);
+    } catch (err: any) {
+      addToast(err?.message || "Failed to generate key", "error");
+    } finally {
+      setGenerating(false);
+    }
   };
 
-  const handleDelete = async (code: string) => {
+  const handleDeleteKey = async (code: string) => {
     try {
       await devService.deleteKey(code);
-      setKeys(keys.filter(k => k.code !== code));
-    } catch (err) { console.error(err); }
+      setKeys((prev) => prev.filter((k) => k.code !== code));
+      addToast("Key deleted", "info");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleRevoke = async (code: string) => {
+  const handleRevokeKey = async (code: string) => {
     try {
       await devService.revokeKey(code);
-      setKeys(keys.map(k => k.code === code ? { ...k, is_revoked: true } : k));
-    } catch (err) { console.error(err); }
+      setKeys((prev) =>
+        prev.map((k) => (k.code === code ? { ...k, is_revoked: true } : k))
+      );
+      addToast("Key revoked", "warning");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopying(text);
+    addToast("Copied to clipboard!", "info");
     setTimeout(() => setCopying(null), 2000);
   };
 
@@ -113,25 +183,24 @@ export default function DevSettingsPage() {
     setStatusLoading(true);
     try {
       await devService.addStatus(newStatusType, newStatusText);
-      setNewStatusText('');
+      setNewStatusText("");
       const fetchedStatuses = await devService.getStatuses();
       setStatuses(fetchedStatuses);
-    } catch (err) { console.error(err); }
-    setStatusLoading(false);
+      addToast("Status pattern added", "success");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setStatusLoading(false);
+    }
   };
 
   const handleDeleteStatus = async (id: number) => {
     try {
       await devService.deleteStatus(id);
-      const fetchedStatuses = await devService.getStatuses();
-      setStatuses(fetchedStatuses);
-    } catch (err) { console.error(err); }
-  };
-
-  const handleUpdateBotSetting = async (key: string, value: any) => {
-    try {
-      await devService.updateBotSetting(key, value);
-    } catch (err) { console.error(err); }
+      setStatuses((prev) => prev.filter((s) => s.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // --- Announcements ---
@@ -140,382 +209,418 @@ export default function DevSettingsPage() {
     setAnnounceLoading(true);
     try {
       await devService.addAnnouncement(newAnnounce);
-      setNewAnnounce({ title: '', content: '', type: 'info' });
+      setNewAnnounce({ title: "", content: "", type: "info" });
       const fetchedAnnouncements = await devService.getAnnouncements();
       setAnnouncements(fetchedAnnouncements);
-    } catch (err) { console.error(err); }
-    setAnnounceLoading(false);
+      addToast("Announcement broadcasted!", "success");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAnnounceLoading(false);
+    }
   };
 
   const handleDeleteAnnouncement = async (id: number) => {
     try {
       await devService.deleteAnnouncement(id);
-      const fetchedAnnouncements = await devService.getAnnouncements();
-      setAnnouncements(fetchedAnnouncements);
-    } catch (err) { console.error(err); }
-  };
-
-  // --- System Administration ---
-  const handleResetAllHistory = async () => {
-    if (!modalConfig.show && !confirmNuclear) {
-      setModalConfig({
-        show: true,
-        title: 'Nuclear History Reset',
-        message: 'This will clear publication history for ALL monitors. Every feed entry will be re-posted to Discord. Continue?',
-        type: 'danger',
-        action: () => setConfirmNuclear(true)
-      });
-      return;
+      setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+      addToast("Announcement removed", "info");
+    } catch (err) {
+      console.error(err);
     }
-
-    setResetAllLoading(true);
-    setResetAllStatus(null);
-    try {
-      await devService.resetHistory();
-      setResetAllStatus({ type: 'success', message: 'Nuclear Reset Complete! ALL monitor history cleared.' });
-      setConfirmNuclear(false);
-    } catch (err: any) {
-      setResetAllStatus({ type: 'error', message: err?.message || 'Connection failed' });
-    }
-    setResetAllLoading(false);
-  };
-
-  const handleFactoryReset = async () => {
-    if (!modalConfig.show && !confirmFactory) {
-      setModalConfig({
-        show: true,
-        title: 'TOTAL FACTORY RESET',
-        message: 'This is irreversible. All monitors, settings, and premium keys will be permanently deleted. Are you absolutely sure?',
-        type: 'extreme',
-        action: () => setConfirmFactory(true)
-      });
-      return;
-    }
-
-    setFactoryLoading(true);
-    setFactoryStatus(null);
-    try {
-      await devService.factoryReset();
-      setFactoryStatus({ type: 'success', message: 'FACTORY RESET COMPLETE. SYSTEM WIPED.' });
-      setConfirmFactory(false);
-      setTimeout(() => window.location.reload(), 2000);
-    } catch (err: any) {
-      setFactoryStatus({ type: 'error', message: err?.message || 'Connection failed' });
-    }
-    setFactoryLoading(false);
   };
 
   return (
-    <div className={styles.devPageWrapper}>
-      
-      {/* Custom Confirmation Modal */}
-      {modalConfig.show && (
-        <div className={styles.modalOverlay}>
-          <div className={`${styles.modalContent} ${modalConfig.type === 'extreme' ? styles.extreme : ''}`}>
-            <div className={styles.modalHeader}>
-              <ShieldAlert size={24} />
-              <h3>{modalConfig.title}</h3>
-            </div>
-            <div className={styles.modalBody}>
-              <p>{modalConfig.message}</p>
-            </div>
-            <div className={styles.modalFooter}>
-              <button className={`${styles.modalBtn} ${styles.cancel}`} onClick={() => setModalConfig({ ...modalConfig, show: false })}>Cancel</button>
-              <button className={`${styles.modalBtn} ${styles.confirm}`} onClick={() => { if (modalConfig.action) modalConfig.action(); setModalConfig({ ...modalConfig, show: false }); }}>Confirm Intent</button>
+    <div className={styles["dev-container"]}>
+      {/* ── Page Header ── */}
+      <PageHeader
+        title="Developer Controls"
+        description="Master administrative tools for real-time monitoring, live streams, presence, and license keys."
+        badge={
+          <Badge variant="master" size="sm">
+            MASTER ACCESS
+          </Badge>
+        }
+      />
+
+      {/* ── Log Streamer ── */}
+      <LogStreamer />
+
+      {/* ── 1. Global Broadcasts Accordion ── */}
+      <div className={styles["section-card"]}>
+        <div
+          className={styles["section-header"]}
+          onClick={() => setShowBroadcast(!showBroadcast)}
+        >
+          <div className={styles["section-title-wrap"]}>
+            <Activity size={18} color="var(--accent-light)" />
+            <span className={styles["section-title"]}>Global Broadcasts</span>
+          </div>
+          <ChevronDown
+            size={18}
+            style={{
+              transform: showBroadcast ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          />
+        </div>
+
+        {showBroadcast && (
+          <div className={styles["section-body"]}>
+            <div className={styles["broadcast-grid"]}>
+              <Stack gap="sm">
+                <Input
+                  label="Message Title"
+                  placeholder="e.g. Scheduled Infrastructure Maintenance"
+                  value={newAnnounce.title}
+                  onChange={(e) =>
+                    setNewAnnounce({ ...newAnnounce, title: e.target.value })
+                  }
+                />
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2xs)" }}>
+                  <label className="text-caption">Content Markdown</label>
+                  <textarea
+                    placeholder="Broadcast message details..."
+                    value={newAnnounce.content}
+                    onChange={(e) =>
+                      setNewAnnounce({ ...newAnnounce, content: e.target.value })
+                    }
+                    className="ui-textarea"
+                    style={{ minHeight: "6rem" }}
+                  />
+                </div>
+                <Inline gap="sm" align="center">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    isLoading={announceLoading}
+                    onClick={handleSendAnnouncement}
+                  >
+                    Broadcast to Owners
+                  </Button>
+                </Inline>
+              </Stack>
+
+              <div className={styles["announcements-list"]}>
+                <span className="text-caption">Active Broadcasts</span>
+                {announcements.map((a) => (
+                  <div key={a.id} className={styles["announce-card"]}>
+                    <Stack gap="3xs">
+                      <Badge variant="warning" size="sm">
+                        {a.type.toUpperCase()}
+                      </Badge>
+                      <strong style={{ fontSize: "var(--text-xs)" }}>{a.title}</strong>
+                    </Stack>
+                    <IconButton
+                      icon={<X size={14} />}
+                      size="xs"
+                      variant="danger"
+                      aria-label="Delete announcement"
+                      onClick={() => handleDeleteAnnouncement(a.id)}
+                    />
+                  </div>
+                ))}
+                {announcements.length === 0 && (
+                  <Text as="p" size="xs" variant="muted">
+                    No active broadcasts found.
+                  </Text>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-      <header className="ui-dashboard-header">
-        <div className="ui-dashboard-info">
-          <h1 className="ui-dashboard-title">Developer Controls</h1>
-          <p className="ui-dashboard-subtitle">Master administrator tools for logs, announcements, and premium management.</p>
-        </div>
-        <div className="page-header-actions">
-          <LoginButton session={session} />
-        </div>
-      </header>
-
-      <section style={{ marginBottom: '1rem' }}>
-        <LogStreamer />
-      </section>
-
-      {/* Broadcast Notifications Section */}
-      <div 
-        onClick={() => setShowBroadcast(!showBroadcast)} 
-        className={`${styles.accordionHeader} ${styles.broadcast} ${showBroadcast ? styles.accordionHeaderOpen : styles.accordionHeaderClosed}`}
-      >
-        <div className={styles.accordionTitleContainer}>
-          <Activity size={20} color="#60a5fa" />
-          <h3 className="ui-monitor-name" style={{ marginBottom: 0 }}>Global Broadcasts</h3>
-        </div>
-        <span className={styles.accordionArrow} style={{ transform: showBroadcast ? 'rotate(180deg)' : 'rotate(0deg)', color: '#60a5fa' }}>▼</span>
+        )}
       </div>
 
-      <div className={`${styles.accordionContent} ${styles.broadcast} ${showBroadcast ? styles.accordionContentOpen : styles.accordionContentClosed}`}>
-        <div className={styles.broadcastGrid}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Message Title</label>
-              <input 
-                type="text" 
-                value={newAnnounce.title} 
-                onChange={(e) => setNewAnnounce({ ...newAnnounce, title: e.target.value })}
-                placeholder="e.g. Scheduled Maintenance"
-                className={styles.styledInputBasic}
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Content Markdown</label>
-              <textarea 
-                value={newAnnounce.content} 
-                onChange={(e) => setNewAnnounce({ ...newAnnounce, content: e.target.value })}
-                placeholder="Details of the announcement..."
-                className={styles.styledInputBasic}
-                style={{ minHeight: '120px', resize: 'vertical' }}
-              />
-            </div>
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-end' }}>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                  <label className={styles.formLabel}>Alert Type</label>
-                  <div className={styles.typeBtnGroup}>
-                    {(['info', 'warning', 'danger'] as const).map(type => (
-                      <button 
-                        key={type}
-                        onClick={() => setNewAnnounce({ ...newAnnounce, type: type === 'danger' ? 'alert' : type })}
-                        className={`${styles.typeBtn} ${newAnnounce.type === (type === 'danger' ? 'alert' : type) ? styles[`active${type.charAt(0).toUpperCase() + type.slice(1)}`] : ''}`}
-                      >
-                        {type.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
-               </div>
-               <button className="btn" style={{ padding: '0.8rem 2rem' }} onClick={handleSendAnnouncement} disabled={announceLoading}>
-                 {announceLoading ? 'Sending...' : 'Broadcast to Owners'}
-               </button>
-            </div>
+      {/* ── 2. Discord Rich Presence Accordion ── */}
+      <div className={styles["section-card"]}>
+        <div
+          className={styles["section-header"]}
+          onClick={() => setShowPresence(!showPresence)}
+        >
+          <div className={styles["section-title-wrap"]}>
+            <Radio size={18} color="var(--accent-light)" />
+            <span className={styles["section-title"]}>Discord Bot Presence</span>
           </div>
+          <ChevronDown
+            size={18}
+            style={{
+              transform: showPresence ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          />
+        </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h4 style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Active Broadcasts</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto' }}>
-              {announcements.map(a => (
-                <div key={a.id} className={styles.announceMiniCard}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <span className={`${styles.miniType} ${styles[a.type]}`}>{a.type}</span>
-                    <button onClick={() => handleDeleteAnnouncement(a.id)} className={styles.iconBtnDanger}><X size={12} /></button>
+        {showPresence && (
+          <div className={styles["section-body"]}>
+            <div className={styles["presence-grid"]}>
+              <Stack gap="sm">
+                <Select
+                  label="Rotation Mode"
+                  value={rotationMode}
+                  onChange={(val) => setRotationMode(val)}
+                  options={DEV_ROTATION_OPTIONS}
+                />
+                <Input
+                  label="Interval (Seconds)"
+                  type="number"
+                  value={rotationInterval}
+                  onChange={(e) => setRotationInterval(e.target.value)}
+                />
+              </Stack>
+
+              <Stack gap="sm">
+                <Select
+                  label="Activity Type"
+                  value={newStatusType}
+                  onChange={(val) => setNewStatusType(val)}
+                  options={DEV_ACTIVITY_OPTIONS}
+                />
+                <Inline gap="xs" align="end">
+                  <div style={{ flex: 1 }}>
+                    <Input
+                      label="Status Pattern"
+                      placeholder="e.g. {count} Discord Servers"
+                      value={newStatusText}
+                      onChange={(e) => setNewStatusText(e.target.value)}
+                    />
                   </div>
-                  <p className={styles.miniTitle}>{a.title}</p>
+                  <Button
+                    variant="primary"
+                    size="md"
+                    isLoading={statusLoading}
+                    onClick={handleAddStatus}
+                  >
+                    Add
+                  </Button>
+                </Inline>
+              </Stack>
+            </div>
+
+            <div className={styles["statuses-grid"]}>
+              {statuses.map((s) => (
+                <div key={s.id} className={styles["status-item"]}>
+                  <Inline gap="xs" align="center">
+                    <Badge variant="neutral" size="sm">
+                      {s.type}
+                    </Badge>
+                    <span>{s.text}</span>
+                  </Inline>
+                  <IconButton
+                    icon={<Trash2 size={14} />}
+                    size="xs"
+                    variant="danger"
+                    aria-label="Delete status"
+                    onClick={() => handleDeleteStatus(s.id)}
+                  />
                 </div>
               ))}
-              {announcements.length === 0 && <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: '2rem' }}>No active broadcasts.</p>}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Discord Presence Section */}
-      <div 
-        onClick={() => setShowPresence(!showPresence)} 
-        className={`${styles.accordionHeader} ${styles.presence} ${showPresence ? styles.accordionHeaderOpen : styles.accordionHeaderClosed}`}
-      >
-        <div className={styles.accordionTitleContainer}>
-          <div className={styles.presenceIndicator}></div>
-          <h3 className="ui-monitor-name" style={{ marginBottom: 0 }}>Discord Rich Presence</h3>
+      {/* ── 3. Premium Key Management Accordion ── */}
+      <div className={styles["section-card"]}>
+        <div
+          className={styles["section-header"]}
+          onClick={() => setShowPremium(!showPremium)}
+        >
+          <div className={styles["section-title-wrap"]}>
+            <Key size={18} color="var(--status-warning)" />
+            <span className={styles["section-title"]}>Promo & Premium Key Generator</span>
+          </div>
+          <ChevronDown
+            size={18}
+            style={{
+              transform: showPremium ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          />
         </div>
-        <span className={styles.accordionArrow} style={{ transform: showPresence ? 'rotate(180deg)' : 'rotate(0deg)', color: 'var(--accent-hover)' }}>▼</span>
-      </div>
-      
-      <div className={`${styles.accordionContent} ${styles.presence} ${showPresence ? styles.accordionContentOpen : styles.accordionContentClosed}`}>
-        <div className={styles.presenceGrid}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <h4 style={{ color: 'var(--accent-hover)', fontSize: '0.9rem', textTransform: 'uppercase' }}>Global Configuration</h4>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Rotation Mode</label>
-              <CustomSelect options={DEV_ROTATION_OPTIONS} value={rotationMode} onChange={(val) => { setRotationMode(val); handleUpdateBotSetting('status_rotation_mode', val); }} />
-            </div>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Rotation Interval</label>
-              <div className={styles.inputWithSuffix}>
-                <input type="number" value={rotationInterval} onChange={(e) => setRotationInterval(e.target.value)} onBlur={(e) => handleUpdateBotSetting('presence_interval_seconds', e.target.value)} className={styles.styledInputBasic} style={{ width: '100%', paddingRight: '3rem' }} min="10" />
-                <span className={styles.inputSuffix}>sec</span>
+
+        {showPremium && (
+          <div className={styles["section-body"]}>
+            <Inline gap="sm" wrap align="end">
+              <div style={{ minWidth: "10rem" }}>
+                <Select
+                  label="Duration"
+                  value={duration}
+                  onChange={(val) => setDuration(val)}
+                  options={DEV_DURATION_OPTIONS}
+                />
               </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <h4 style={{ color: 'var(--accent-hover)', fontSize: '0.9rem', textTransform: 'uppercase' }}>Add New Pattern</h4>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Activity Type</label>
-              <CustomSelect options={DEV_ACTIVITY_OPTIONS} value={newStatusType} onChange={(val) => setNewStatusType(val)} />
-            </div>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Text Pattern</label>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <input type="text" value={newStatusText} onChange={(e) => setNewStatusText(e.target.value)} placeholder="e.g. {count} servers" className={styles.styledInputBasic} style={{ flex: 1 }} />
-                <button className="btn" onClick={handleAddStatus} disabled={statusLoading}>{statusLoading ? '...' : 'ADD'}</button>
+              <div style={{ minWidth: "8rem" }}>
+                <Select
+                  label="Tier"
+                  value={tier}
+                  onChange={(val) => setTier(val)}
+                  options={DEV_TIER_OPTIONS}
+                />
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '10px' }}>
-          {statuses.map(s => (
-            <div key={s.id} className={styles.statusMiniCard}>
-              <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <span className={styles.miniTypeBadge}>{s.type}</span>
-                <span style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.text}</span>
-              </div>
-              <button className={styles.iconBtnDanger} onClick={() => handleDeleteStatus(s.id)}><Trash2 size={16} /></button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Premium Key Management Section */}
-      <div 
-        onClick={() => setShowPremium(!showPremium)} 
-        className={`${styles.accordionHeader} ${styles.premium} ${showPremium ? styles.accordionHeaderOpen : styles.accordionHeaderClosed}`}
-      >
-        <div className={styles.accordionTitleContainer}>
-          <Zap size={20} color="#c084fc" />
-          <h3 className="ui-monitor-name" style={{ marginBottom: 0 }}>Premium Key Management</h3>
-        </div>
-        <span className={styles.accordionArrow} style={{ transform: showPremium ? 'rotate(180deg)' : 'rotate(0deg)', color: '#c084fc' }}>▼</span>
-      </div>
-
-      <div className={`${styles.accordionContent} ${styles.premium} ${showPremium ? styles.accordionContentOpen : styles.accordionContentClosed}`}>
-        <h4 style={{ color: 'var(--accent-hover)', fontSize: '0.9rem', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Generate New Access Keys</h4>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: '3rem' }}>
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Duration</label>
-            <CustomSelect options={DEV_DURATION_OPTIONS} value={duration} onChange={(val) => setDuration(val)} width="250px" />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Tier</label>
-            <CustomSelect options={DEV_TIER_OPTIONS} value={tier} onChange={(val) => setTier(val)} width="200px" />
-          </div>
-          {duration === 'custom' && (
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Days</label>
-              <input type="number" value={customDays} onChange={(e) => setCustomDays(e.target.value)} className={styles.styledInputBasic} style={{ width: '100px' }} min="1" />
-            </div>
-          )}
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Max Uses</label>
-            <input type="number" value={maxUses} onChange={(e) => setMaxUses(e.target.value)} className={styles.styledInputBasic} style={{ width: '100px' }} min="1" />
-          </div>
-          <button className="btn" onClick={handleGenerate} disabled={generating}>{generating ? 'Generating...' : 'Generate New Key'}</button>
-        </div>
-
-        <h4 style={{ color: 'var(--accent-hover)', fontSize: '0.9rem', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Active & Unused Keys</h4>
-        <div className={styles.keysGrid}>
-          {loading ? <div style={{ textAlign: 'center', padding: '2rem', gridColumn: '1/-1' }}>Loading...</div> : keys.map(k => (
-            <div key={k.code} className={styles.keyCard}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span className={styles.keyCode}>{k.code}</span>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className={`${styles.tierBadge} ${styles[`tier${k.tier || 3}`]}`}>Tier {k.tier || 3}</span>
-                  <span>• {k.duration_days === 0 ? 'Lifetime' : `${k.duration_days}d`}</span>
-                  <span>• {k.used_count}/{k.max_uses} uses</span>
-                  {k.is_revoked && <span style={{ color: '#ef4444' }}>[REVOKED]</span>}
+              {duration === "custom" && (
+                <div style={{ width: "6rem" }}>
+                  <Input
+                    label="Days"
+                    type="number"
+                    value={customDays}
+                    onChange={(e) => setCustomDays(e.target.value)}
+                  />
                 </div>
+              )}
+              <div style={{ width: "6rem" }}>
+                <Input
+                  label="Max Uses"
+                  type="number"
+                  value={maxUses}
+                  onChange={(e) => setMaxUses(e.target.value)}
+                />
               </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className={styles.iconBtn} onClick={() => copyToClipboard(k.code)}>{copying === k.code ? <Check size={16} /> : <Copy size={16} />}</button>
-                <button className={styles.iconBtn} onClick={() => handleRevoke(k.code)} style={{ color: '#f59e0b' }} disabled={k.is_revoked}><ShieldAlert size={16} /></button>
-                <button className={styles.iconBtn} onClick={() => handleDelete(k.code)} style={{ color: '#ef4444' }}><X size={16} /></button>
-              </div>
+              <Button
+                variant="primary"
+                size="md"
+                isLoading={generating}
+                onClick={handleGenerate}
+              >
+                Generate Key
+              </Button>
+            </Inline>
+
+            <div className={styles["keys-grid"]}>
+              {keys.map((k) => (
+                <div key={k.code} className={styles["key-card"]}>
+                  <Stack gap="3xs">
+                    <span className={styles["key-code"]}>{k.code}</span>
+                    <Inline gap="xs" align="center">
+                      <Badge variant="warning" size="sm">
+                        Tier {k.tier || 3}
+                      </Badge>
+                      <span className="text-caption">
+                        {k.duration_days === 0 ? "Lifetime" : `${k.duration_days}d`} • {k.used_count}/{k.max_uses} uses
+                      </span>
+                      {k.is_revoked && (
+                        <Badge variant="danger" size="sm">
+                          REVOKED
+                        </Badge>
+                      )}
+                    </Inline>
+                  </Stack>
+
+                  <Inline gap="3xs">
+                    <IconButton
+                      icon={copying === k.code ? <Check size={14} /> : <Copy size={14} />}
+                      size="xs"
+                      variant="ghost"
+                      aria-label="Copy key"
+                      onClick={() => copyToClipboard(k.code)}
+                    />
+                    <IconButton
+                      icon={<ShieldAlert size={14} />}
+                      size="xs"
+                      variant="ghost"
+                      aria-label="Revoke key"
+                      disabled={k.is_revoked}
+                      onClick={() => handleRevokeKey(k.code)}
+                    />
+                    <IconButton
+                      icon={<X size={14} />}
+                      size="xs"
+                      variant="danger"
+                      aria-label="Delete key"
+                      onClick={() => handleDeleteKey(k.code)}
+                    />
+                  </Inline>
+                </div>
+              ))}
             </div>
-          ))}
-          {!loading && keys.length === 0 && <div style={{ textAlign: 'center', padding: '2rem', gridColumn: '1/-1', color: 'var(--text-secondary)' }}>No keys found.</div>}
-        </div>
-      </div>
-
-      {/* System Maintenance Section */}
-      <div 
-        onClick={() => setShowMaintenance(!showMaintenance)} 
-        className={`${styles.accordionHeader} ${styles.maintenance} ${showMaintenance ? styles.accordionHeaderOpen : styles.accordionHeaderClosed}`}
-      >
-        <div className={styles.accordionTitleContainer}>
-          <ShieldAlert size={20} color="#ef4444" />
-          <h3 className="ui-monitor-name" style={{ marginBottom: 0 }}>System Maintenance</h3>
-        </div>
-        <span className={styles.accordionArrow} style={{ transform: showMaintenance ? 'rotate(180deg)' : 'rotate(0deg)', color: '#ef4444' }}>▼</span>
-      </div>
-
-      <div className={`${styles.accordionContent} ${styles.maintenance} ${showMaintenance ? styles.accordionContentOpen : styles.accordionContentClosed}`}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className={styles.nuclearCard}>
-            <h4 style={{ color: '#ef4444', fontSize: '1rem', marginBottom: '0.5rem' }}>Nuclear Options</h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-              Warning: This will clear the publication history for <strong>ALL</strong> monitors across <strong>ALL</strong> servers. 
-              The bot will re-process every feed and potentially send thousands of messages if not handled carefully.
-            </p>
-            
-            <button 
-              className="btn danger" 
-              style={{ 
-                padding: '1rem 2rem', 
-                background: confirmNuclear ? '#b91c1c' : '#ef4444',
-                borderColor: '#b91c1c',
-                width: '100%',
-                fontWeight: 800,
-                letterSpacing: '1px',
-                borderRadius: '12px',
-                color: 'white',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }} 
-              onClick={handleResetAllHistory}
-              disabled={resetAllLoading}
-            >
-              {resetAllLoading ? 'Processing Nuclear Reset...' : (confirmNuclear ? 'CONFIRM NUCLEAR RESET (CLICK AGAIN)' : 'RESET ENTIRE SYSTEM HISTORY')}
-            </button>
-
-            {resetAllStatus && (
-              <div style={{ marginTop: '1rem', color: resetAllStatus.type === 'success' ? '#10b981' : '#ef4444', fontSize: '0.85rem', fontWeight: 600, textAlign: 'center' }}>
-                {resetAllStatus.message}
-              </div>
-            )}
           </div>
-
-          <div className={styles.factoryCard}>
-            <h4 style={{ color: '#ef4444', fontSize: '1rem', marginBottom: '0.5rem' }}>Extreme Danger: Factory Reset</h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-              This is the ultimate wipe. It will delete <strong>ALL MONITORS</strong>, <strong>ALL SETTINGS</strong>, <strong>ALL PREMIUM KEYS</strong>, and all history. 
-              The system will be completely empty.
-            </p>
-            
-            <button 
-              className="btn danger" 
-              style={{ 
-                padding: '1rem 2rem', 
-                background: confirmFactory ? '#ef4444' : 'transparent',
-                border: '2px solid #ef4444',
-                color: confirmFactory ? 'white' : '#ef4444',
-                width: '100%',
-                fontWeight: 800,
-                letterSpacing: '2px',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }} 
-              onClick={handleFactoryReset}
-              disabled={factoryLoading}
-            >
-              {factoryLoading ? 'WIPING SYSTEM...' : (confirmFactory ? 'CONFIRM FULL FACTORY RESET (FINAL WARNING)' : 'FULL FACTORY RESET')}
-            </button>
-
-            {factoryStatus && (
-              <div style={{ marginTop: '1rem', color: factoryStatus.type === 'success' ? '#10b981' : '#ef4444', fontSize: '0.85rem', fontWeight: 600, textAlign: 'center' }}>
-                {factoryStatus.message}
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
+
+      {/* ── 4. System Maintenance & Nuclear Actions ── */}
+      <div className={styles["section-card"]}>
+        <div
+          className={styles["section-header"]}
+          onClick={() => setShowMaintenance(!showMaintenance)}
+        >
+          <div className={styles["section-title-wrap"]}>
+            <Flame size={18} color="var(--status-error)" />
+            <span className={styles["section-title"]}>System Maintenance (Danger Zone)</span>
+          </div>
+          <ChevronDown
+            size={18}
+            style={{
+              transform: showMaintenance ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          />
+        </div>
+
+        {showMaintenance && (
+          <div className={styles["section-body"]}>
+            <div className={styles["nuclear-card"]}>
+              <strong style={{ color: "var(--status-error)" }}>
+                Nuclear History Reset
+              </strong>
+              <Text as="p" size="xs" variant="secondary">
+                Clears publication history for <strong>ALL</strong> monitors across all servers. Every feed will re-post latest entries.
+              </Text>
+              <Button
+                variant="danger"
+                size="md"
+                onClick={() =>
+                  setModalConfig({
+                    show: true,
+                    title: "Nuclear History Reset",
+                    message: "Are you absolutely sure? Every monitor on every server will re-broadcast its latest post.",
+                    action: async () => {
+                      await devService.resetHistory();
+                      addToast("Nuclear reset completed", "success");
+                    },
+                    isProcessing: false,
+                  })
+                }
+              >
+                Reset All Feed History
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Danger Modal ── */}
+      {modalConfig.show && (
+        <Modal
+          isOpen={modalConfig.show}
+          onClose={() => setModalConfig({ ...modalConfig, show: false })}
+          size="sm"
+        >
+          <ModalHeader>
+            <ModalTitle>{modalConfig.title}</ModalTitle>
+          </ModalHeader>
+          <ModalContent>
+            <p>{modalConfig.message}</p>
+          </ModalContent>
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setModalConfig({ ...modalConfig, show: false })}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={async () => {
+                if (modalConfig.action) {
+                  await modalConfig.action();
+                }
+                setModalConfig({ ...modalConfig, show: false });
+              }}
+            >
+              Confirm Intent
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
     </div>
   );
 }

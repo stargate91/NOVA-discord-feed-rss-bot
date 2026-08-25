@@ -23,10 +23,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     // 1. Check Master status using shared logic
     const isMaster = isMasterGuild(guildId);
 
-    const res = await pool.query(
-      "SELECT language, admin_role_id, premium_until, refresh_interval, alert_templates, tier, stripe_subscription_id, custom_branding, is_master FROM guild_settings WHERE guild_id = $1::bigint",
-      [guildId]
-    );
+    let res: any = { rows: [] };
+    try {
+      res = await pool.query(
+        "SELECT language, admin_role_id, premium_until, refresh_interval, alert_templates, tier, stripe_subscription_id, custom_branding, is_master FROM guild_settings WHERE guild_id = $1::bigint",
+        [guildId]
+      );
+    } catch (dbErr: any) {
+      console.warn("[Settings API GET] DB query failed, using defaults:", dbErr?.message);
+    }
 
     let settings = {
       language: "en",
@@ -99,9 +104,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { language, admin_role_id, refresh_interval, alert_templates, custom_branding } = body;
 
   // Validation
-  const allowedLangs = ['en', 'hu'];
+  const allowedLangs = ['en', 'hu', 'de', 'fr', 'es', 'it', 'pt', 'ja', 'ko', 'zh', 'ru', 'tr', 'pl', 'nl', 'ar', 'ro', 'uk'];
   if (language && !allowedLangs.includes(language)) {
-    return NextResponse.json({ error: "Invalid language. Allowed: en, hu" }, { status: 400 });
+    return NextResponse.json({ error: `Invalid language. Allowed: ${allowedLangs.join(', ')}` }, { status: 400 });
   }
 
   const interval = parseInt(refresh_interval, 10);

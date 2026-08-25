@@ -13,6 +13,13 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { PageHeader } from '@/components/layout';
+import {
+  Badge,
+  Button,
+  Spinner,
+  Text,
+} from '@/components/ui';
 import styles from './guide.module.css';
 
 function GuideContent() {
@@ -22,136 +29,117 @@ function GuideContent() {
   const steps = [
     {
       id: 1,
-      title: "Configure Base Settings",
-      description: "Start by setting your server's language and management roles. This ensures Nova speaks your language and updates at the speed you want.",
+      title: "Configure Server Settings",
+      description: "Set your server's language, polling speed, and management roles. This ensures the bot speaks your language and staff have access.",
       icon: Settings,
-      color: "#9d4edd",
       link: `/dashboard/${guildId}/settings`,
       linkText: "Configure Settings",
       tips: [
-        { text: "Select English or Hungarian as your primary language", premium: false },
-        { text: "Set a Management Role so your staff can manage monitors", premium: false },
-        { text: "Unlock ultra-fast 2-minute polling intervals", premium: true }
+        { text: "Choose your primary language from 17 supported options", premium: false },
+        { text: "Set an Admin Role so your moderation team can edit monitors", premium: false },
+        { text: "Unlock fast 2-minute polling intervals with premium", premium: true }
       ]
     },
     {
       id: 2,
-      title: "Create Your First Monitor",
-      description: "Nova supports over 10 platforms including YouTube, Twitch, RSS, and Steam. Just paste a link and we'll handle the rest.",
+      title: "Create Feed Monitors",
+      description: "Nova supports YouTube, Twitch, Kick, Steam, RSS, Crypto and Free Games. Just paste a link or handle and we'll handle the rest.",
       icon: PlusCircle,
-      color: "#3296ff",
       link: `/dashboard/${guildId}/monitors`,
       linkText: "Open Monitors",
       tips: [
-        { text: "Paste any YouTube channel or Twitch profile URL", premium: false },
-        { text: "Select multiple Discord channels for alerts", premium: true },
-        { text: "Expand your limit up to 100 monitors per server", premium: true }
+        { text: "Add any YouTube channel, Twitch streamer, or RSS feed URL", premium: false },
+        { text: "Select target Discord channels and ping roles for each feed", premium: false },
+        { text: "Bulk add wizard available for batch importing monitors", premium: false }
       ]
     },
     {
       id: 3,
-      title: "Design Custom Alerts",
-      description: "Make every notification feel like a part of your server. Customize colors, message content, and mention roles automatically.",
+      title: "Design Custom Alert Embeds",
+      description: "Personalize notification layouts. Customize embed colors, markdown content, and automated mention tags.",
       icon: Bell,
-      color: "#ffb703",
+      link: `/dashboard/${guildId}/settings`,
+      linkText: "Edit Templates",
       tips: [
-        { text: "Use pre-configured high-quality alert templates", premium: false },
-        { text: "Fully custom messages with {title}, {url} tags", premium: true },
-        { text: "Remove 'Delivered by Nova' footer branding", premium: true }
+        { text: "Use built-in high fidelity Cyberpunk embed templates", premium: false },
+        { text: "Custom template variables: {title}, {url}, {author}", premium: true },
+        { text: "Remove bot footer branding for a native server look", premium: true }
       ]
     },
     {
       id: 4,
-      title: "Monitor Performance",
-      description: "Track how your feeds are performing. See total messages sent and active monitoring status across all your channels.",
+      title: "Track Performance & Logs",
+      description: "Analyze delivery throughput, peak activity hours, and system health status in real time.",
       icon: Layout,
-      color: "#10b981",
       link: `/dashboard/${guildId}/analytics`,
-      linkText: "Check Stats",
+      linkText: "View Analytics",
       tips: [
-        { text: "View detailed delivery statistics in the Analytics tab", premium: false },
-        { text: "Ensure the bot has 'Send Messages' permissions", premium: false },
-        { text: "Help us grow! Your feedback directly shapes Nova", premium: false }
+        { text: "Check delivery statistics in the Analytics dashboard", premium: false },
+        { text: "Ensure the bot has 'Send Messages' and 'Embed Links' permissions", premium: false },
+        { text: "Use diagnostics drawer in monitors for manual force checking", premium: false }
       ]
     }
   ];
 
   return (
-    <div className={styles.guideWrapper}>
-      <div className={styles.bgGlowContainer}>
-        <div className={`${styles.glowOrb} ${styles.orb1}`}></div>
-        <div className={`${styles.glowOrb} ${styles.orb2}`}></div>
-      </div>
+    <div className={styles['guide-container']}>
+      {/* ── Page Header ── */}
+      <PageHeader
+        title="Quick Start Guide"
+        description="Follow these 4 simple steps to set up automated high-fidelity feeds for your server."
+        badge={
+          <Badge variant="primary" size="sm" icon={<Sparkles size={12} />}>
+            ONBOARDING
+          </Badge>
+        }
+      />
 
-      <div className={styles.guideContent}>
-        <header className={styles.guideHero} style={{ marginBottom: '4rem', textAlign: 'center' }}>
-          <div className="ui-badge-neon">
-            <Sparkles size={14} />
-            <span>Onboarding Experience</span>
-          </div>
-          <h1 className="ui-title-hero" style={{ fontSize: '3.5rem', marginTop: '1.5rem' }}>Let&apos;s get <span className="ui-text-gradient">Nova</span> running.</h1>
-          <p className="ui-text-lead" style={{ margin: '1rem auto' }}>Follow these 4 simple steps to start delivering the latest content to your community.</p>
-        </header>
-
-        <div className={styles.stepsContainer}>
-          {steps.map((step) => (
-            <div key={step.id} className="ui-card">
-              <div className="ui-card-glow"></div>
-              <div className={styles.stepAccent} style={{ background: step.color }}></div>
-              <div className={styles.stepHeader}>
-                <div className={styles.stepIcon} style={{ background: `${step.color}15`, color: step.color }}>
-                  <step.icon size={28} />
+      {/* ── Steps List ── */}
+      <div className={styles['steps-list']}>
+        {steps.map((step) => {
+          const Icon = step.icon;
+          return (
+            <div key={step.id} className={styles['step-card']}>
+              <div className={styles['step-header']}>
+                <div className={styles['step-icon-box']}>
+                  <Icon size={22} />
                 </div>
-                <div className={styles.stepNumber}>0{step.id}</div>
+                <div className={styles['step-title-wrap']}>
+                  <span className={styles['step-num']}>Step 0{step.id}</span>
+                  <h3 className={styles['step-title']}>{step.title}</h3>
+                </div>
               </div>
 
-              <div className={styles.stepBody}>
-                <h3 className="ui-monitor-name" style={{ fontSize: '1.4rem' }}>{step.title}</h3>
-                <p className="ui-dashboard-subtitle">{step.description}</p>
-                
-                <div className={styles.proTips}>
-                  {step.tips.map((tip, i) => (
-                    <div key={i} className={`${styles.tipRow} ${tip.premium ? styles.premiumTip : ''}`}>
-                      {tip.premium ? <Crown size={14} className={styles.crownIcon} /> : <CheckCircle2 size={14} className={styles.checkIcon} />}
-                      <span>{tip.text}</span>
-                      {tip.premium && <span className={styles.premiumBadge}>PRO</span>}
-                    </div>
-                  ))}
-                </div>
+              <Text as="p" size="sm" variant="secondary" className={styles['step-desc']}>
+                {step.description}
+              </Text>
+
+              <div className={styles['tips-list']}>
+                {step.tips.map((tip, idx) => (
+                  <div key={idx} className={styles['tip-item']}>
+                    <CheckCircle2 size={14} className={styles['tip-icon']} />
+                    <span>{tip.text}</span>
+                    {tip.premium && (
+                      <Badge variant="warning" size="sm" icon={<Crown size={10} />}>
+                        Premium
+                      </Badge>
+                    )}
+                  </div>
+                ))}
               </div>
 
               {step.link && (
-                <div className={styles.stepFooter}>
-                  <Link href={step.link} style={{ textDecoration: 'none' }}>
-                    <div className={styles.stepBtn} style={{ '--hover-color': step.color } as React.CSSProperties}>
-                      <span>{step.linkText}</span>
-                      <ArrowRight size={18} />
-                    </div>
+                <div style={{ marginTop: 'var(--space-xs)' }}>
+                  <Link href={step.link}>
+                    <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
+                      {step.linkText}
+                    </Button>
                   </Link>
                 </div>
               )}
             </div>
-          ))}
-        </div>
-
-        <div className="ui-card" style={{ marginTop: '4rem', display: 'flex', alignItems: 'center', gap: '2rem', padding: '3rem' }}>
-          <div className="ui-card-glow"></div>
-          <div className={styles.ctaIcon}>
-            <Crown size={32} color="var(--accent-hover)" />
-          </div>
-          <div className={styles.ctaText} style={{ flex: 1 }}>
-            <h3 className="ui-monitor-name" style={{ fontSize: '1.6rem', marginBottom: '8px' }}>Want the full experience?</h3>
-            <p className="ui-dashboard-subtitle">Upgrade to <strong>Nova Premium</strong> for 2-minute updates, custom branding, and 100 monitors.</p>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <Link href={`/dashboard/${guildId}/billing`} style={{ textDecoration: 'none' }}>
-              <button className="ui-btn-primary">View Plans</button>
-            </Link>
-            <a href="https://discord.gg/PbvX3S7pXR" target="_blank" rel="noopener noreferrer" className="ui-btn-primary" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}>
-              <span>Support</span>
-            </a>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -159,7 +147,7 @@ function GuideContent() {
 
 export default function GuidePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Spinner size="lg" label="Loading guide..." />}>
       <GuideContent />
     </Suspense>
   );

@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { signIn, signOut } from "next-auth/react";
-import { LogOut } from "lucide-react";
+import { LogOut, ChevronDown, Shield } from "lucide-react";
+import { Button, Avatar } from "@/components/ui";
 
 interface LoginButtonProps {
   session?: any;
@@ -15,7 +16,10 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -26,60 +30,120 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
   if (session) {
     if (isMobile) {
       return (
-        <button 
-          className="ui-navbar-link"
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', color: '#ff4d4d', fontSize: '1.8rem' }}
-          onClick={() => signOut({ callbackUrl: '/' })}
+        <Button
+          variant="danger"
+          size="md"
+          fullWidth
+          leftIcon={<LogOut size={18} />}
+          onClick={() => signOut({ callbackUrl: "/" })}
         >
-          <LogOut size={24} />
-          <span>Sign Out</span>
-        </button>
+          Sign Out
+        </Button>
       );
     }
+
     return (
-      <div style={{ position: 'relative' }} ref={dropdownRef}>
-        <button 
-          className="ui-navbar-link"
-          style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '6px 14px 6px 6px', borderRadius: '50px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+      <div style={{ position: "relative" }} ref={dropdownRef}>
+        <button
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "var(--space-xs)",
+            padding: "0.25rem 0.75rem 0.25rem 0.25rem",
+            borderRadius: "var(--radius-full)",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-default)",
+            color: "var(--text-primary)",
+            cursor: "pointer",
+            transition: "var(--transition-fast)",
+          }}
           onClick={() => setIsOpen(!isOpen)}
           type="button"
         >
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.1)', flexShrink: 0 }}>
-            {session.user?.image ? (
-              <img 
-                src={session.user.image} 
-                alt="Avatar" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div style={{ width: '100%', height: '100%', background: 'rgba(123, 44, 191, 0.2)' }} />
-            )}
-          </div>
-          <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <Avatar
+            src={session.user?.image}
+            alt={session.user?.name || "User"}
+            size="sm"
+          />
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "var(--text-xs)",
+              fontWeight: "var(--font-weight-semibold)",
+              maxWidth: "8rem",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
             {session.user?.name}
           </span>
-          <div style={{ width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid rgba(255,255,255,0.4)', transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none' }}></div>
+          <ChevronDown
+            size={14}
+            style={{
+              transform: isOpen ? "rotate(180deg)" : "none",
+              transition: "transform 0.2s",
+              color: "var(--text-muted)",
+            }}
+          />
         </button>
 
         {isOpen && (
-          <div className="ui-select-dropdown" style={{ top: 'calc(100% + 12px)', right: 0, width: '220px' }}>
-            <div style={{ padding: '12px 16px' }}>
-               <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session.user?.email}</p>
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + var(--space-2xs))",
+              right: 0,
+              width: "14rem",
+              padding: "var(--space-xs)",
+              borderRadius: "var(--radius-xl)",
+              background: "var(--bg-card-strong)",
+              border: "1px solid var(--border-accent)",
+              boxShadow: "var(--shadow-xl)",
+              backdropFilter: "blur(var(--blur-xl))",
+              zIndex: "var(--z-dropdown)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "var(--space-2xs)",
+            }}
+          >
+            <div style={{ padding: "var(--space-xs) var(--space-sm)" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "var(--text-2xs)",
+                  color: "var(--text-muted)",
+                  margin: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {session.user?.email || "Logged in"}
+              </p>
             </div>
-            
-            <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '4px 0' }}></div>
-            
-            <button 
-              className="ui-select-item"
-              style={{ width: '100%', border: 'none', borderRadius: '12px', justifyContent: 'flex-start', gap: '12px', color: '#ff4d4d' }}
+
+            <div
+              style={{
+                height: "1px",
+                background: "var(--border-subtle)",
+                margin: "0.25rem 0",
+              }}
+            />
+
+            <Button
+              variant="ghost"
+              size="sm"
+              fullWidth
+              leftIcon={<LogOut size={14} />}
+              style={{ color: "var(--status-error)", justifyContent: "flex-start" }}
               onClick={() => {
                 setIsOpen(false);
-                signOut({ callbackUrl: '/' });
+                signOut({ callbackUrl: "/" });
               }}
             >
-              <LogOut size={16} />
-              <span>Sign Out</span>
-            </button>
+              Sign Out
+            </Button>
           </div>
         )}
       </div>
@@ -87,12 +151,12 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
   }
 
   return (
-    <button 
-      className="ui-btn ui-btn-primary" 
-      style={{ padding: '0.55rem 1.35rem', fontSize: '0.85rem', borderRadius: '10px' }}
+    <Button
+      variant="primary"
+      size="sm"
       onClick={() => signIn("discord", { callbackUrl: "/servers" })}
     >
-      Sign in with Discord
-    </button>
+      Login with Discord
+    </Button>
   );
 }

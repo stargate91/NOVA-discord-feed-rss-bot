@@ -1,14 +1,34 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Settings, RefreshCcw, Send, Trash, Wrench, Check, AlertCircle, Shield, Radio, Moon, TrendingUp, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Settings,
+  RefreshCcw,
+  Send,
+  Trash2,
+  Wrench,
+  Check,
+  AlertCircle,
+  Radio,
+  Moon,
+  TrendingUp,
+  Sparkles,
+} from 'lucide-react';
 import { useConfig } from '@/hooks/useConfig';
 import { MonitorConfig } from '@/types/monitor';
-import { PLATFORM_NAMES, getTypeIconPath } from '@/lib/monitorConstants';
+import { PLATFORM_NAMES } from '@/constants/platforms';
+import { getPlatformLogo } from '@/utils';
 import monitorService from '@/services/monitorService';
+import {
+  Badge,
+  Button,
+  IconButton,
+  Checkbox,
+} from '@/components/ui';
+import styles from './monitor-card.module.css';
 
-interface MonitorCardProps {
+export interface MonitorCardProps {
   monitor: MonitorConfig;
   onToggle: (id: number, enabled: boolean) => Promise<void>;
   onDelete: (id: number) => void;
@@ -20,50 +40,48 @@ interface MonitorCardProps {
   selectionMode?: boolean;
 }
 
-export default function MonitorCard({ 
-  monitor, 
-  onToggle, 
-  onDelete, 
-  onEdit, 
-  isPremium, 
-  tier = 0, 
-  isSelected = false, 
-  onSelect, 
-  selectionMode = false 
+export default function MonitorCard({
+  monitor,
+  onToggle,
+  onDelete,
+  onEdit,
+  isPremium,
+  tier = 0,
+  isSelected = false,
+  onSelect,
+  selectionMode = false,
 }: MonitorCardProps) {
   const { getTierConfig, hasFeature } = useConfig();
-  const [loading, setLoading] = useState(false);
+  const [toggleLoading, setToggleLoading] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [actionStatus, setActionStatus] = useState<{ type: string | null; message: string | null }>({ type: null, message: null });
+  const [actionStatus, setActionStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string | null;
+  }>({ type: null, message: null });
   const [repostCount, setRepostCount] = useState(1);
   const [purgeAmount, setPurgeAmount] = useState(50);
 
   const currentTier = getTierConfig(tier, isPremium);
-  const canRepost = hasFeature(tier, isPremium, "repost");
+  const canRepost = hasFeature(tier, isPremium, 'repost');
   const maxPurge = currentTier.max_purge || 10;
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Never';
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return 'Never';
-    return date.toLocaleString('hu-HU', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const handleToggle = async () => {
-    setLoading(true);
+    setToggleLoading(true);
     await onToggle(monitor.id, !monitor.enabled);
-    setLoading(false);
-  };
-
-  const handleDeleteClick = () => {
-    onDelete(monitor.id);
+    setToggleLoading(false);
   };
 
   const runAction = async (action: 'check' | 'repost' | 'purge') => {
@@ -76,182 +94,281 @@ export default function MonitorCard({
         monitor.id,
         actionType as any,
         {
-          count: action === 'repost' ? repostCount : (action === 'purge' ? Math.min(purgeAmount, maxPurge) : 1)
+          count:
+            action === 'repost'
+              ? repostCount
+              : action === 'purge'
+              ? Math.min(purgeAmount, maxPurge)
+              : 1,
         }
       );
 
       if (data.success !== false) {
-        setActionStatus({ type: 'success', message: data.message || 'Success!' });
+        setActionStatus({
+          type: 'success',
+          message: data.message || 'Success!',
+        });
       } else {
         setActionStatus({ type: 'error', message: data.error || 'Failed' });
       }
     } catch (err: any) {
-      setActionStatus({ type: 'error', message: err?.message || 'Connection error' });
+      setActionStatus({
+        type: 'error',
+        message: err?.message || 'Connection error',
+      });
+    } finally {
+      setActionLoading(null);
+      setTimeout(() => setActionStatus({ type: null, message: null }), 6000);
     }
-
-    setActionLoading(null);
-    setTimeout(() => setActionStatus({ type: null, message: null }), 6000);
   };
 
   return (
     <div
-      className={`ui-card ui-monitor-card ${!monitor.enabled ? 'ui-disabled' : ''} ${showTools ? 'ui-tools-active' : ''} ${isSelected ? 'ui-selected' : ''}`}
+      className={[
+        styles['monitor-card'],
+        !monitor.enabled && styles.paused,
+        isSelected && styles.selected,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       onClick={() => {
         if (selectionMode) {
           onSelect(monitor.id);
         }
       }}
     >
-      <div className="ui-card-glow"></div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className="ui-platform-icon-wrapper" style={{ width: '36px', height: '36px' }}>
-            <input
-              type="checkbox"
-              style={{ position: 'absolute', top: '-6px', left: '-6px', width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--accent-color)', zIndex: 10, opacity: isSelected ? 1 : 0 }}
+      {/* ── Card Top Header ── */}
+      <div className={styles['card-top']}>
+        <div className={styles['brand-wrapper']}>
+          {selectionMode && (
+            <Checkbox
               checked={isSelected}
-              onChange={(e) => {
-                e.stopPropagation();
-                onSelect(monitor.id);
-              }}
-              onClick={(e) => e.stopPropagation()}
+              onChange={() => onSelect(monitor.id)}
             />
+          )}
+
+          <div className={styles['brand-icon-box']}>
             <img
-              src={getTypeIconPath(monitor.type)}
+              src={getPlatformLogo(monitor.type)}
               alt=""
-              style={{ width: '22px', height: '22px', zIndex: 2 }}
+              width={20}
+              height={20}
             />
-            <div className="ui-platform-icon-glow"></div>
           </div>
-          <span className="ui-platform-label">
+
+          <span className={styles['brand-name']}>
             {PLATFORM_NAMES[monitor.type] || monitor.type.toUpperCase()}
           </span>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button
-            className="ui-btn"
-            style={{ width: '32px', height: '32px', padding: 0, background: showTools ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)', color: showTools ? 'white' : 'rgba(255,255,255,0.4)' }}
-            onClick={(e) => { e.stopPropagation(); setShowTools(!showTools); }}
-            title="Diagnostic Tools"
+
+        <div className={styles['top-actions']}>
+          <IconButton
+            icon={<Wrench size={14} />}
+            size="xs"
+            variant={showTools ? 'primary' : 'ghost'}
+            aria-label="Toggle diagnostics"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTools(!showTools);
+            }}
+          />
+
+          <Badge
+            variant={monitor.enabled ? 'success' : 'neutral'}
+            size="sm"
+            dot
           >
-            <Wrench size={14} />
-          </button>
-          <div className={`ui-status-badge ${monitor.enabled ? 'ui-online' : 'ui-offline'}`}>
             {monitor.enabled ? 'Active' : 'Paused'}
-          </div>
+          </Badge>
         </div>
       </div>
 
-      <div>
-        <h3 className="ui-monitor-name" style={{ marginBottom: '1.25rem' }}>{monitor.name}</h3>
+      {/* ── Monitor Body ── */}
+      <div className={styles['monitor-body']}>
+        <h3 className={styles['monitor-name']}>{monitor.name}</h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', fontWeight: 800, letterSpacing: '1px' }}>Last Post</span>
-            <span style={{ fontSize: '0.85rem', color: monitor.last_post_at ? 'white' : 'rgba(255,255,255,0.3)', fontWeight: monitor.last_post_at ? 600 : 400 }}>
+        <div className={styles['monitor-meta-grid']}>
+          <div className={styles['meta-item']}>
+            <span className={styles['meta-label']}>Last Post</span>
+            <span className={styles['meta-value']}>
               {formatDate(monitor.last_post_at)}
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', fontWeight: 800, letterSpacing: '1px' }}>Monitor ID</span>
-            <code style={{ fontFamily: 'var(--font-mono)', background: 'rgba(255, 255, 255, 0.05)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--accent-hover)', width: 'fit-content' }}>{monitor.id}</code>
+
+          <div className={styles['meta-item']}>
+            <span className={styles['meta-label']}>Monitor ID</span>
+            <code className={styles['meta-code']}>#{monitor.id}</code>
           </div>
         </div>
       </div>
 
-      {/* Diagnostics Panel */}
-      <div className={`ui-diagnostics-panel ${showTools ? 'ui-expanded' : ''}`}>
-        <div className="ui-tools-grid">
-          <button className="ui-tool-btn" onClick={() => runAction('check')} disabled={Boolean(actionLoading)}>
-            <RefreshCcw size={16} className={actionLoading === 'check' ? 'spin' : ''} />
-            <span>Check</span>
-          </button>
-
-          <div className={`ui-tool-group ${!canRepost ? 'locked' : ''}`} title={!canRepost ? "Requires Professional Tier" : ""}>
-            <button
-              className={`ui-tool-btn ui-wide ${!canRepost ? 'is-locked' : ''}`}
-              onClick={() => canRepost && runAction('repost')}
-              disabled={Boolean(actionLoading) || !canRepost}
+      {/* ── Diagnostics Drawer ── */}
+      {showTools && (
+        <div className={styles['tools-panel']}>
+          <div className={styles['tools-grid']}>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={
+                <RefreshCcw
+                  size={14}
+                  className={actionLoading === 'check' ? 'spin' : ''}
+                />
+              }
+              disabled={Boolean(actionLoading)}
+              onClick={(e) => {
+                e.stopPropagation();
+                runAction('check');
+              }}
             >
-              {!canRepost ? <Shield size={14} style={{ color: '#ffd700' }} /> : <Send size={16} className={actionLoading === 'repost' ? 'pulse' : ''} />}
-              <span>{!canRepost ? "Repost" : `Repost (${repostCount})`}</span>
-            </button>
-            <input
-              type="range" min="1" max="10"
-              value={repostCount}
-              onChange={(e) => canRepost && setRepostCount(parseInt(e.target.value, 10))}
-              className="ui-slider"
-              disabled={!canRepost}
-            />
-          </div>
+              Force Check
+            </Button>
 
-          <div className="ui-tool-group">
-            <button className="ui-tool-btn ui-purge ui-wide" onClick={() => runAction('purge')} disabled={Boolean(actionLoading)} title="Clear Discord Channel">
-              <Trash size={16} className={actionLoading === 'purge' ? 'shake' : ''} />
-              <span>Purge ({purgeAmount})</span>
-            </button>
-            {(() => {
-              const values = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100];
-              const currentIndex = values.indexOf(purgeAmount);
-              return (
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={
+                <Send
+                  size={14}
+                  className={actionLoading === 'repost' ? 'pulse' : ''}
+                />
+              }
+              disabled={Boolean(actionLoading) || !canRepost}
+              onClick={(e) => {
+                e.stopPropagation();
+                runAction('repost');
+              }}
+            >
+              Repost ({repostCount})
+            </Button>
+
+            {canRepost && (
+              <div className={styles['slider-group']}>
+                <div className={styles['slider-header']}>
+                  <span>Repost Count</span>
+                  <span>{repostCount}</span>
+                </div>
                 <input
                   type="range"
-                  min="0"
-                  max={values.length - 1}
-                  step="1"
-                  value={currentIndex === -1 ? values.indexOf(5) : currentIndex}
-                  onChange={(e) => setPurgeAmount(values[parseInt(e.target.value, 10)])}
-                  className="ui-slider ui-slider-purge"
+                  min={1}
+                  max={10}
+                  value={repostCount}
+                  onChange={(e) =>
+                    setRepostCount(parseInt(e.target.value, 10))
+                  }
+                  className={styles['slider-input']}
+                  onClick={(e) => e.stopPropagation()}
                 />
-              );
-            })()}
+              </div>
+            )}
+
+            <Button
+              variant="danger"
+              size="sm"
+              leftIcon={
+                <Trash2
+                  size={14}
+                  className={actionLoading === 'purge' ? 'shake' : ''}
+                />
+              }
+              disabled={Boolean(actionLoading)}
+              onClick={(e) => {
+                e.stopPropagation();
+                runAction('purge');
+              }}
+            >
+              Purge ({purgeAmount})
+            </Button>
+
+            <div className={styles['slider-group']}>
+              <div className={styles['slider-header']}>
+                <span>Purge Messages</span>
+                <span>{purgeAmount}</span>
+              </div>
+              <input
+                type="range"
+                min={5}
+                max={Math.min(100, maxPurge)}
+                step={5}
+                value={purgeAmount}
+                onChange={(e) =>
+                  setPurgeAmount(parseInt(e.target.value, 10))
+                }
+                className={styles['slider-input']}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
           </div>
+
+          {actionStatus.message && (
+            <div
+              className={[
+                styles['action-feedback'],
+                actionStatus.type === 'success'
+                  ? styles['feedback-success']
+                  : styles['feedback-error'],
+              ].join(' ')}
+            >
+              {actionStatus.type === 'success' ? (
+                <Check size={14} />
+              ) : (
+                <AlertCircle size={14} />
+              )}
+              <span>{actionStatus.message}</span>
+            </div>
+          )}
+
+          {!isPremium && (
+            <p className="text-caption" style={{ textAlign: 'center' }}>
+              Upgrade to{' '}
+              <Link
+                href={`/dashboard/${monitor.guild_id}/billing`}
+                style={{ color: 'var(--status-warning)' }}
+              >
+                Premium
+              </Link>{' '}
+              for higher limits and instant reposts.
+            </p>
+          )}
         </div>
-        {actionStatus.message && (
-          <div className={`ui-action-feedback ui-${actionStatus.type}`}>
-            {actionStatus.type === 'success' && actionStatus.message?.includes('LIVE NOW') ? <Radio size={14} className="pulse" /> :
-              actionStatus.type === 'success' && actionStatus.message?.includes('OFFLINE') ? <Moon size={14} /> :
-                actionStatus.type === 'success' && actionStatus.message?.includes('Price Alert') ? <TrendingUp size={14} /> :
-                  actionStatus.type === 'success' && actionStatus.message?.includes('Found') ? <Sparkles size={14} /> :
-                    actionStatus.type === 'success' ? <Check size={14} /> :
-                      <AlertCircle size={14} />}
-            {actionStatus.message}
-          </div>
-        )}
-        {!isPremium && showTools && (
-          <div className="premium-lock-message" style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(255, 215, 0, 0.1)', fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)', textAlign: 'center' }}>
-            Upgrade to <Link href={`/dashboard/${monitor.guild_id}/billing`} style={{ color: '#ffd700', textDecoration: 'underline' }}>Premium</Link> to use Repost tools.
-          </div>
-        )}
-      </div>
+      )}
 
-      <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
-        <button
-          className="ui-btn"
-          style={{ width: '42px', height: '42px', padding: 0, background: 'rgba(255, 255, 255, 0.05)', color: 'rgba(255, 255, 255, 0.4)' }}
-          onClick={(e) => { e.stopPropagation(); onEdit(monitor); }}
-          title="Edit Configuration"
+      {/* ── Card Footer Actions ── */}
+      <div className={styles['card-footer']}>
+        <IconButton
+          icon={<Settings size={16} />}
+          size="sm"
+          variant="secondary"
+          aria-label="Edit monitor"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(monitor);
+          }}
+        />
+
+        <Button
+          variant={monitor.enabled ? 'secondary' : 'primary'}
+          size="sm"
+          fullWidth
+          isLoading={toggleLoading}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggle();
+          }}
         >
-          <Settings size={18} />
-        </button>
+          {monitor.enabled ? 'Pause' : 'Resume'}
+        </Button>
 
-        <button
-          className={`ui-btn ${monitor.enabled ? '' : 'ui-btn-primary'}`}
-          style={{ flex: 1, height: '42px', padding: 0, background: monitor.enabled ? 'rgba(255, 255, 255, 0.08)' : '' }}
-          onClick={(e) => { e.stopPropagation(); handleToggle(); }}
-          disabled={loading}
-        >
-          {loading ? '...' : (monitor.enabled ? 'Pause' : 'Resume')}
-        </button>
-
-        <button
-          className="ui-btn"
-          style={{ height: '42px', padding: '0 16px', background: 'transparent', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
-          onClick={(e) => { e.stopPropagation(); handleDeleteClick(); }}
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(monitor.id);
+          }}
         >
           Delete
-        </button>
+        </Button>
       </div>
     </div>
   );

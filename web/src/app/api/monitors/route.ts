@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(monitors);
   } catch (error) {
     console.error("Database Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json([]);
   }
 }
 

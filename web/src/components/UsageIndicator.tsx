@@ -1,61 +1,69 @@
 "use client";
 
-import React from "react";
+import React from 'react';
+import styles from './usage-indicator.module.css';
 
-interface UsageIndicatorProps {
+export interface UsageIndicatorProps {
   label: string;
   current: number;
   max: number;
   unit?: string;
 }
 
-export default function UsageIndicator({ label, current, max, unit = "" }: UsageIndicatorProps) {
+export default function UsageIndicator({
+  label,
+  current,
+  max,
+  unit = '',
+}: UsageIndicatorProps) {
   const percentage = Math.min(Math.round((current / max) * 100), 100);
-  
+
   // SVG Circle parameters
   const radius = 36;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (percentage / 100) * circumference;
 
-  let color = "var(--accent-color)";
-  if (percentage >= 100) color = "#ef4444";
-  else if (percentage >= 80) color = "#f59e0b";
+  let strokeColor = 'var(--accent-light)';
+  if (percentage >= 100) strokeColor = 'var(--status-error)';
+  else if (percentage >= 80) strokeColor = 'var(--status-warning)';
 
   return (
-    <div className="ui-gauge-container">
-      <div className="ui-gauge-wrapper">
-        <svg viewBox="0 0 100 100" className="ui-gauge-svg">
+    <div className={styles['usage-container']}>
+      <div className={styles['gauge-wrapper']}>
+        <svg viewBox="0 0 100 100" className={styles['gauge-svg']}>
           {/* Background Track */}
-          <circle 
-            className="ui-gauge-track"
-            cx="50" cy="50" r={radius} 
-          />
+          <circle className={styles['gauge-track']} cx="50" cy="50" r={radius} />
           {/* Progress Indicator */}
-          <circle 
-            className="ui-gauge-progress"
-            cx="50" cy="50" r={radius}
-            style={{ 
-              strokeDasharray: circumference, 
+          <circle
+            className={styles['gauge-progress']}
+            cx="50"
+            cy="50"
+            r={radius}
+            style={{
+              strokeDasharray: circumference,
               strokeDashoffset: offset,
-              stroke: color,
-              filter: `drop-shadow(0 0 8px ${color}66)`
+              stroke: strokeColor,
             }}
           />
         </svg>
-        <div className="ui-gauge-content">
-          <span className="ui-gauge-value">{percentage}%</span>
-          <span className="ui-gauge-label">{label}</span>
+        <div className={styles['gauge-content']}>
+          <span className={styles['gauge-value']}>{percentage}%</span>
+          <span className={styles['gauge-label']}>{label}</span>
         </div>
       </div>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '100%' }}>
-        <div className="ui-stat-pill">
-          <span className="ui-stat-pill-label">Usage</span>
-          <span className="ui-stat-pill-value" style={{ color }}>{current} / {max}{unit}</span>
+
+      <div className={styles['stats-grid']}>
+        <div className={styles['stat-pill']}>
+          <span className={styles['stat-pill-label']}>Usage</span>
+          <span className={styles['stat-pill-value']} style={{ color: strokeColor }}>
+            {current} / {max} {unit}
+          </span>
         </div>
-        <div className="ui-stat-pill">
-          <span className="ui-stat-pill-label">Remaining</span>
-          <span className="ui-stat-pill-value">{Math.max(0, max - current)}{unit}</span>
+        <div className={styles['stat-pill']}>
+          <span className={styles['stat-pill-label']}>Remaining</span>
+          <span className={styles['stat-pill-value']}>
+            {Math.max(0, max - current)} {unit}
+          </span>
         </div>
       </div>
     </div>

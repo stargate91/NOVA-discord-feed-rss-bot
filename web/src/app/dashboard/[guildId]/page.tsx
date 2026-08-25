@@ -1,11 +1,21 @@
 import React from "react";
-import StatCard from "@/components/StatCard";
-import LoginButton from "@/components/LoginButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Activity, Send, Award } from "lucide-react";
+import { Activity, Send, Award, ArrowRight, ShieldCheck } from "lucide-react";
+import { PageHeader } from "@/components/layout";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Grid,
+  Button,
+  Badge,
+  EmptyState,
+} from "@/components/ui";
+import StatCard from "@/components/StatCard";
 import UsageIndicator from "@/components/UsageIndicator";
 import QuickActions from "@/components/QuickActions";
 import EmptyStateCard from "@/components/EmptyStateCard";
@@ -32,99 +42,148 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
 
   if (stats?.error) {
     return (
-      <div className={`card ${styles.errorCard}`}>
-        <h2>Dashboard Error</h2>
-        <pre>{stats.error}</pre>
+      <div className={styles["dashboard-content"]}>
+        <EmptyState
+          icon={<Activity size={36} />}
+          title="Dashboard Error"
+          description={stats.error}
+          action={
+            <Link href="/servers">
+              <Button variant="primary">Back to Server List</Button>
+            </Link>
+          }
+        />
       </div>
     );
   }
 
+  const isMaster = stats?.tierName === "Master" || stats?.isLifetime;
+  const isPremium = (stats?.tier ?? 0) >= 1 || isMaster;
+
   return (
-    <div className={styles.dashboardPageContent}>
-      <header className="ui-dashboard-header">
-        <div className="ui-dashboard-info">
-          <h1 className="ui-dashboard-title">Dashboard Overview</h1>
-          <p className="ui-dashboard-subtitle">Welcome back, {session.user?.name}.</p>
-        </div>
+    <div className={styles["dashboard-content"]}>
+      {/* ── Page Header ── */}
+      <PageHeader
+        title="Dashboard Overview"
+        description={`Welcome back, ${session.user?.name || "Server Admin"}. Here is your live feed activity.`}
+        badge={
+          isMaster ? (
+            <Badge variant="master" size="sm" icon={<ShieldCheck size={12} />}>
+              Master Tier
+            </Badge>
+          ) : isPremium ? (
+            <Badge variant="warning" size="sm" dot>
+              {stats?.tierName}
+            </Badge>
+          ) : (
+            <Badge variant="neutral" size="sm">
+              Free Plan
+            </Badge>
+          )
+        }
+      />
 
-        <div className="page-header-actions">
-          <LoginButton session={session} />
-        </div>
-      </header>
+      {/* ── Stat Cards Grid ── */}
+      <div className={styles["stats-grid"]}>
+        <Grid columns={3} gap="lg">
+          <StatCard
+            title="Active Monitors"
+            value={stats ? stats.activeMonitors : "0"}
+            description="Actively tracking feeds"
+            icon={Activity}
+          />
+          <StatCard
+            title="Messages Sent"
+            value={stats ? stats.totalPosts.toLocaleString() : "0"}
+            description="Lifetime delivered notifications"
+            icon={Send}
+          />
+          <StatCard
+            title="Plan Status"
+            value={stats?.tierName || "Free"}
+            description={
+              isMaster
+                ? "Unlimited capacity & 1-minute speed"
+                : `${stats?.maxMonitors || 2} feeds • ${stats?.refreshInterval || 20}m refresh`
+            }
+            actionButton={
+              stats?.tier === 0 && !isMaster ? "Upgrade Plan" : undefined
+            }
+            actionHref={`/dashboard/${guildId}/billing`}
+            icon={Award}
+          />
+        </Grid>
+      </div>
 
-      <section className={`dashboard-grid ${styles.dashboardGrid}`}>
-        <StatCard
-          title="Active Monitors"
-          value={stats ? stats.activeMonitors : "0"}
-          description="Running on this server"
-          icon={Activity}
-        />
-        <StatCard
-          title="Messages Sent"
-          value={stats ? stats.totalPosts.toLocaleString() : "0"}
-          description="Lifetime stats"
-          icon={Send}
-        />
-        <StatCard
-          title="Premium Status"
-          value={stats?.tierName || "Free"}
-          valueColor={(stats?.tier ?? 0) >= 1 || stats?.isLifetime ? "var(--accent-color)" : "var(--text-secondary)"}
-          actionButton={stats?.tier === 0 && !stats?.isLifetime && guildId ? "Upgrade Server" : undefined}
-          actionHref={`/dashboard/${guildId}/billing`}
-          icon={Award}
-        />
-      </section>
-
-      <div className={styles.mainLayout}>
-        <div className={styles.leftColumn}>
+      {/* ── Main Layout ── */}
+      <div className={styles["main-grid"]}>
+        <div className={styles["main-left"]}>
           {stats?.totalMonitorsCount === 0 && (
             <EmptyStateCard guildId={guildId} />
           )}
 
-          <div className="ui-card">
-            <div className="ui-card-glow"></div>
-            <h3 className={styles.usageTitle}>Plan Usage & Limits</h3>
-            <UsageIndicator
-              label="Feed Monitors"
-              current={stats?.totalMonitorsCount || 0}
-              max={stats?.isLifetime ? 1000 : (stats?.maxMonitors || 5)}
-              unit="monitors"
-            />
-            <p className={styles.usageText}>
-              {stats?.tierName === "Master" ? (
-                <span>You have <strong>Master Access</strong> with unlimited capacity.</span>
-              ) : (
-                <span>Your current <strong>{stats?.tierName}</strong> plan allows for up to <strong>{stats?.maxMonitors}</strong> monitors.</span>
-              )}
-            </p>
-          </div>
+          {/* Plan Usage & Limits Card */}
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle>Plan Usage & Limits</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <UsageIndicator
+                label="Active Feeds"
+                current={stats?.totalMonitorsCount || 0}
+                max={isMaster ? 1000 : stats?.maxMonitors || 5}
+                unit="monitors"
+              />
+              <p className={styles["usage-desc"]}>
+                {isMaster ? (
+                  <span>
+                    Your server has <strong>Master Access</strong> with
+                    unlimited monitor capacity and dedicated priority queues.
+                  </span>
+                ) : (
+                  <span>
+                    Your current <strong>{stats?.tierName}</strong> plan allows
+                    up to <strong>{stats?.maxMonitors}</strong> monitors.
+                  </span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
 
-          {!stats?.isLifetime && (stats?.tier ?? 0) < 3 && (
-            <div className={`card highlight-card ${styles.upgradeCard}`}>
-              <div className={styles.upgradeGlow}></div>
-
-              <div className={styles.upgradeContent}>
-                <div>
-                  <h3>
-                    {stats?.tier === 0 ? "Ready for Premium?" : "Ready to scale up?"}
-                  </h3>
-                  <p>
-                    {stats?.tier === 0
-                      ? "Unlock role pings, faster refresh, and more monitors."
-                      : `Upgrade to ${stats?.tier === 1 ? "Operator" : "Architect"} for even higher limits and features.`}
-                  </p>
+          {/* Upgrade Banner for non-lifetime / lower tiers */}
+          {!isMaster && (stats?.tier ?? 0) < 3 && (
+            <Card variant="elevated" className={styles["upgrade-card"]}>
+              <CardContent>
+                <div className={styles["upgrade-content"]}>
+                  <div className={styles["upgrade-info"]}>
+                    <span className={styles["upgrade-title"]}>
+                      {stats?.tier === 0
+                        ? "Unlock Instant Delivery & Unlimited Feeds"
+                        : "Ready to scale up your server?"}
+                    </span>
+                    <p className={styles["upgrade-desc"]}>
+                      {stats?.tier === 0
+                        ? "Get 2-minute refresh speeds, role mentions, and custom embed branding."
+                        : `Upgrade to higher tier for even faster intervals and massive monitor limits.`}
+                    </p>
+                  </div>
+                  <Link href={`/dashboard/${guildId}/billing`}>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      rightIcon={<ArrowRight size={16} />}
+                    >
+                      {stats?.tier === 0 ? "Upgrade Now" : "View Plans"}
+                    </Button>
+                  </Link>
                 </div>
-                <Link href={`/dashboard/${guildId}/billing`}>
-                  <button className={`btn ${styles.upgradeBtn}`}>
-                    {stats?.tier === 0 ? "Upgrade Now" : "View Plans"}
-                  </button>
-                </Link>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
         </div>
 
-        <div className={styles.rightColumn}>
+        {/* Quick Actions Sidebar */}
+        <div className={styles["main-right"]}>
           <QuickActions guildId={guildId} />
         </div>
       </div>

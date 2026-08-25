@@ -83,15 +83,15 @@ export async function GET(req: NextRequest) {
       `, [guildId, effectiveDays]);
 
       const result = {
-        history: historyRes.rows,
-        platforms: platformRes.rows,
-        totalPosts: parseInt(totalsRes.rows[0]?.total_posts, 10) || 0,
-        activeMonitors: parseInt(monitorsRes.rows[0]?.count, 10) || 0,
-        platformCount: parseInt(totalsRes.rows[0]?.platform_count, 10) || 0,
-        heatmap: heatmapRes.rows,
+        history: historyRes?.rows || [],
+        platforms: platformRes?.rows || [],
+        totalPosts: parseInt(totalsRes?.rows[0]?.total_posts, 10) || 0,
+        activeMonitors: parseInt(monitorsRes?.rows[0]?.count, 10) || 0,
+        platformCount: parseInt(totalsRes?.rows[0]?.platform_count, 10) || 0,
+        heatmap: heatmapRes?.rows || [],
         tier: tier,
-        isMaster: guildRes.rows[0]?.is_master || false,
-        isPremium: guildRes.rows[0]?.is_premium || false
+        isMaster: guildRes?.rows[0]?.is_master || false,
+        isPremium: guildRes?.rows[0]?.is_premium || false
       };
 
       console.log(`[API Stats] Success for guild ${guildId}`);
@@ -115,6 +115,16 @@ export async function GET(req: NextRequest) {
 
   } catch (error) {
     console.error("Database Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({
+      history: [],
+      platforms: [],
+      totalPosts: 0,
+      activeMonitors: 0,
+      platformCount: 0,
+      heatmap: [],
+      tier: 0,
+      isMaster: false,
+      isPremium: false
+    });
   }
 }

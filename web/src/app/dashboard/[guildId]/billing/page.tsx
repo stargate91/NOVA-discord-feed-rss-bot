@@ -3,52 +3,69 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import PricingCard from '@/components/PricingCard';
+import { Sparkles, ShieldCheck } from 'lucide-react';
+import { PageHeader } from '@/components/layout';
+import {
+  Badge,
+  SegmentedControl,
+  Spinner,
+  Stack,
+  Heading,
+  Text,
+} from '@/components/ui';
+import { PricingCard } from '@/components/pricing/PricingCard';
+import { PremiumComparisonTable } from '@/components/pricing/PremiumComparisonTable';
 import { TIERS } from '@/constants/tiers';
-import LoginButton from '@/components/LoginButton';
 import billingService from '@/services/billingService';
 import settingsService from '@/services/settingsService';
-import styles from '@/components/Premium.module.css';
+import { useToast } from '@/context/ToastContext';
+import styles from './billing.module.css';
 
 function GuildBillingContent() {
   const params = useParams();
   const guildId = (params?.guildId as string) || '';
   const { data: session } = useSession();
+  const { addToast } = useToast();
 
   const [billingInterval, setBillingInterval] = useState<'mo' | 'yr'>('mo');
   const [currentTier, setCurrentTier] = useState(0);
   const [isMaster, setIsMaster] = useState(false);
   const [stripeConfig, setStripeConfig] = useState<any>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (guildId) {
-      settingsService.getSettings(guildId)
-        .then(data => {
-          if (data.tier !== undefined) setCurrentTier(data.tier);
-          if (data.isMaster !== undefined) setIsMaster(data.isMaster);
+      Promise.all([
+        settingsService.getSettings(guildId),
+        billingService.getConfig(),
+      ])
+        .then(([sData, bConfig]) => {
+          if (sData.tier !== undefined) setCurrentTier(sData.tier);
+          if (sData.isMaster !== undefined) setIsMaster(sData.isMaster);
+          setStripeConfig(bConfig);
         })
-        .catch(err => console.error("Failed to fetch current tier:", err));
+        .catch((err) => {
+          console.error('Failed to fetch billing data:', err);
+          addToast('Failed to load billing config', 'error');
+        })
+        .finally(() => setLoading(false));
     }
-
-    billingService.getConfig()
-      .then(data => setStripeConfig(data))
-      .catch(err => console.error("Failed to fetch billing config:", err));
   }, [guildId]);
 
   const handlePurchaseClick = async (tier: number) => {
     if (!stripeConfig?.products) {
-      alert("Billing configuration not loaded. Please refresh the page.");
+      addToast('Billing configuration not loaded. Please refresh.', 'error');
       return;
     }
 
-    const priceId = Object.keys(stripeConfig.products).find(pid => {
+    const priceId = Object.keys(stripeConfig.products).find((pid) => {
       const p = stripeConfig.products[pid];
       return p.tier === tier && p.interval === billingInterval;
     });
 
     if (!priceId) {
-      alert("No Price ID found for this plan. Please contact support.");
+      addToast('No Price ID found for this plan.', 'error');
       return;
     }
 
@@ -58,48 +75,71 @@ function GuildBillingContent() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Failed to create checkout session");
+        addToast('Failed to create checkout session', 'error');
       }
     } catch (err: any) {
-      console.error("Checkout error:", err);
-      alert(err.message || "An error occurred. Please try again.");
+      console.error('Checkout error:', err);
+      addToast(err?.message || 'An error occurred during checkout.', 'error');
+    } finally {
+      setCheckoutLoading(null);
     }
-    setCheckoutLoading(null);
   };
 
+  if (loading) {
+    return (
+      <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: '8rem' }}>
+        <Spinner size="lg" label="Loading subscription details..." />
+      </Stack>
+    );
+  }
+
   return (
-    <div className={styles.premiumDashboardContainer}>
-      <header className="ui-dashboard-header">
-        <div className="ui-dashboard-info">
-          <h1 className="ui-dashboard-title">Server Subscription & Plans</h1>
-          <p className="ui-dashboard-subtitle">
-            Manage this server's subscription tier, limits, and billing details.
-          </p>
-        </div>
+    <div className={styles['billing-container']}>
+      {/* ── Page Header ── */}
+      <PageHeader
+        title="Server Subscription & Plans"
+        description="Upgrade your feed delivery speed, increase monitor quotas, and unlock white-label branding."
+        badge={
+          isMaster ? (
+            <Badge variant="master" size="sm" icon={<ShieldCheck size={12} />}>
+              Master Tier
+            </Badge>
+          ) : currentTier > 0 ? (
+            <Badge variant="warning" size="sm" dot>
+              Tier {currentTier} Active
+            </Badge>
+          ) : (
+            <Badge variant="neutral" size="sm">
+              Free Tier
+            </Badge>
+          )
+        }
+      />
 
-        <div className="page-header-actions">
-          <LoginButton session={session} />
-        </div>
-      </header>
-
-      <div className="ui-billing-toggle-wrapper">
-        <div className="ui-billing-toggle">
-          <button 
-            onClick={() => setBillingInterval('mo')} 
-            className={billingInterval === 'mo' ? 'ui-active' : ''}
-          >
-            Monthly
-          </button>
-          <button 
-            onClick={() => setBillingInterval('yr')} 
-            className={billingInterval === 'yr' ? 'ui-active' : ''}
-          >
-            Yearly <span className="ui-billing-save">SAVE 20%</span>
-          </button>
-        </div>
+      {/* ── Billing Interval Switcher ── */}
+      <div className={styles['switcher-row']}>
+        <SegmentedControl<'mo' | 'yr'>
+          value={billingInterval}
+          onChange={setBillingInterval}
+          options={[
+            { value: 'mo', label: 'Monthly Billing' },
+            {
+              value: 'yr',
+              label: (
+                <span className={styles['yearly-badge-wrapper']}>
+                  <span>Yearly Billing</span>
+                  <Badge variant="warning" size="sm">
+                    SAVE 20%
+                  </Badge>
+                </span>
+              ),
+            },
+          ]}
+        />
       </div>
 
-      <div className={styles.dashboardPricingGrid}>
+      {/* ── Pricing Cards Grid ── */}
+      <div className={styles['plans-grid']}>
         {TIERS.map((t) => (
           <PricingCard
             key={t.tier}
@@ -117,13 +157,26 @@ function GuildBillingContent() {
           />
         ))}
       </div>
+
+      {/* ── Feature Comparison Table ── */}
+      <div className={styles['comparison-wrapper']}>
+        <Stack gap="md" align="center">
+          <Heading level={2} size="2xl" weight="bold">
+            Full Tier Comparison
+          </Heading>
+          <Text as="p" size="sm" variant="muted">
+            Detailed breakdown of features, rate limits, and management tools across all tiers.
+          </Text>
+          <PremiumComparisonTable />
+        </Stack>
+      </div>
     </div>
   );
 }
 
 export default function GuildBillingPage() {
   return (
-    <Suspense fallback={<div className="ui-loading-fullscreen">Loading...</div>}>
+    <Suspense fallback={<Spinner size="lg" label="Loading..." />}>
       <GuildBillingContent />
     </Suspense>
   );

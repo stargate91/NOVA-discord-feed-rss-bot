@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     // Fetch last 15 global notifications with titles and platforms
     // We wrap this in a sub-try to handle cases where the schema hasn't been updated yet

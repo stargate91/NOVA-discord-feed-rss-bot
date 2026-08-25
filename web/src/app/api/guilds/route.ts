@@ -39,15 +39,18 @@ export async function GET() {
           };
       });
     } catch (dbErr: any) {
-      console.warn("[API/Guilds] Could not fetch is_active (likely migration pending):", dbErr?.message);
-      // Fallback: try without is_active
-      const dbRes = await pool.query('SELECT guild_id, premium_until FROM guild_settings');
-      dbRes.rows.forEach(row => {
-          botGuildsMap[String(row.guild_id)] = {
-              premiumUntil: row.premium_until,
-              isActive: true // Fallback to true
-          };
-      });
+      console.warn("[API/Guilds] Primary query failed, attempting fallback:", dbErr?.message);
+      try {
+        const dbRes = await pool.query('SELECT guild_id, premium_until FROM guild_settings');
+        dbRes.rows.forEach(row => {
+            botGuildsMap[String(row.guild_id)] = {
+                premiumUntil: row.premium_until,
+                isActive: true
+            };
+        });
+      } catch (fallbackErr: any) {
+        console.warn("[API/Guilds] DB unavailable or table missing, using empty map:", fallbackErr?.message);
+      }
     }
 
     // 3. Load Master Guilds from config.json

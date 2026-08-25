@@ -1,10 +1,10 @@
 import React, { Suspense } from "react";
-import SidebarWrapper from "@/components/SidebarWrapper";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
-import FloatingHelp from "@/components/FloatingHelp";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { DashboardLayout } from "@/components/layout";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
+import FloatingHelp from "@/components/FloatingHelp";
 
 export default async function GuildDashboardLayout({
   children,
@@ -22,18 +22,17 @@ export default async function GuildDashboardLayout({
   const isMaster = (session?.user as any)?.role === "master";
   const { guildId } = await params;
 
+  if (!guildId) {
+    redirect("/servers");
+  }
+
   return (
-    <div className="app-container">
-      <Suspense fallback={<aside className="sidebar"></aside>}>
-        <SidebarWrapper session={session} isMaster={isMaster} />
-      </Suspense>
-      <main className="main-content app-grid-bg" style={{ padding: '2rem' }}>
-        <AnnouncementBanner />
-        {children}
-      </main>
+    <DashboardLayout session={session} isMaster={isMaster}>
+      <AnnouncementBanner />
+      {children}
       <Suspense fallback={null}>
         <FloatingHelp />
       </Suspense>
-    </div>
+    </DashboardLayout>
   );
 }

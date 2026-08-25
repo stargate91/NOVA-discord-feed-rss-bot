@@ -1,170 +1,296 @@
 import React from "react";
 import { Metadata } from "next";
-import LoginButton from "@/components/LoginButton";
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Zap, Shield, Activity, Globe, Play, Rss, Layout, Rocket } from "lucide-react";
-import FloatingBackground from "@/components/FloatingBackground";
+import {
+  Zap,
+  Shield,
+  Activity,
+  Globe,
+  Play,
+  Rss,
+  Layout,
+  Rocket,
+  Bot,
+  Sparkles,
+  Layers,
+  ArrowRight,
+} from "lucide-react";
+import { PublicLayout } from "@/components/layout";
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Heading,
+  Text,
+  Grid,
+  Inline,
+} from "@/components/ui";
 import PlatformCarousel from "@/components/PlatformCarousel";
-import Footer from "@/components/Footer";
-import AuthErrorNotification from "@/components/AuthErrorNotification";
-import MarketingNavbar from "@/components/MarketingNavbar";
+import LiveTicker from "@/components/LiveTicker";
 import DiscordV2Preview from "@/components/DiscordV2Preview";
-import styles from "./marketing.module.css";
+import AuthErrorNotification from "@/components/AuthErrorNotification";
+import styles from "./landing.module.css";
 
 export const metadata: Metadata = {
-  title: "NovaFeeds | Feed-RSS Discord Bot",
-  description: "The ultimate Discord bot for automated feeds. Real-time updates from YouTube, Twitch, RSS, Crypto, and Free Games delivered straight to your server.",
+  title: "NovaFeeds | Ultimate Discord Feed & Alert Bot",
+  description: "Real-time automated Discord feeds from YouTube, Twitch, Kick, Steam, RSS, Crypto and Free Game alerts delivered with high-fidelity embeds.",
   openGraph: {
-    title: "NovaFeeds | Feed-RSS Discord Bot",
-    description: "The ultimate Discord bot for automated feeds. Real-time updates from YouTube, Twitch, RSS, Crypto, and Free Games.",
+    title: "NovaFeeds | Ultimate Discord Feed & Alert Bot",
+    description: "Real-time automated Discord feeds with high-fidelity cyberpunk embeds.",
     images: [{ url: "/nova_v2.jpg" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NovaFeeds | Feed-RSS Discord Bot",
-    description: "The ultimate Discord bot for automated feeds.",
+    title: "NovaFeeds | Ultimate Discord Feed & Alert Bot",
+    description: "Real-time automated Discord feeds with high-fidelity embeds.",
     images: ["/nova_v2.jpg"],
   },
 };
 
+const FEATURES = [
+  {
+    icon: <Zap size={24} />,
+    title: "Free Game Drops",
+    desc: "Epic Games, Steam, and GOG free-to-keep promotions sent the minute they go live.",
+  },
+  {
+    icon: <Play size={24} />,
+    title: "YouTube & Twitch",
+    desc: "Instant notifications for new video uploads, premieres, and live stream broadcasts.",
+  },
+  {
+    icon: <Rss size={24} />,
+    title: "Universal RSS Feeds",
+    desc: "Track any news site, blog, podcast, or game patch notes with sub-minute accuracy.",
+  },
+  {
+    icon: <Activity size={24} />,
+    title: "Crypto & Markets",
+    desc: "Real-time price threshold alerts and market movements directly in your channels.",
+  },
+  {
+    icon: <Layout size={24} />,
+    title: "Web Dashboard V2",
+    desc: "Ultra-fast, responsive dashboard for total control over server alerts and roles.",
+  },
+  {
+    icon: <Shield size={24} />,
+    title: "Custom Branding",
+    desc: "White-label feeds with custom bot avatar, server branding, and color palettes.",
+  },
+];
+
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
+  const botInviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1489908793780338688'}&permissions=3387582172359760&response_type=code&redirect_uri=https%3A%2F%2Fnovafeeds.xyz%2Fapi%2Fauth%2Fcallback%2Fdiscord&integration_type=0&scope=identify+guilds+bot+applications.commands`;
 
   return (
-    <div className={`${styles.landingPage} is-landing`}>
+    <PublicLayout session={session}>
       <AuthErrorNotification />
-      <FloatingBackground />
 
-      {/* ── Navbar ── */}
-      <MarketingNavbar session={session} />
+      <div className={["ui-container", styles["landing-container"]].join(" ")}>
+        {/* ── 1. Hero Section ── */}
+        <section className={styles["hero-section"]}>
+          <div className={styles["hero-glow-orb"]} aria-hidden="true" />
 
-      {/* ── Hero ── */}
-      <section className={`${styles.lpHero} ui-container`}>
-        <div className={styles.lpHeroGlow}></div>
-        <div className={styles.lpHeroContent}>
-          <div className={styles.lpHeroLeft}>
-            <div className="ui-badge-neon parallax-element" data-depth="0.2" style={{ alignItems: 'flex-start', padding: '0.5rem 1.25rem', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
-                <span className={styles.lpBadgeDot}></span>
-                <Activity size={14} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                <span style={{ lineHeight: 1, color: '#fff' }}>Early Access</span>
-                <span style={{ fontSize: '0.85em', opacity: 0.7, lineHeight: 1 }}>Growing Fast</span>
-              </div>
-            </div>
-            <h1 className="ui-title-hero parallax-element" data-depth="0.1">
-              Elevate your<br />
-              <span className="ui-text-gradient">server&apos;s feeds</span>
-            </h1>
-            <p className="ui-text-lead parallax-element" data-depth="0.05" style={{ maxWidth: '480px', marginBottom: '2rem' }}>
-              Your new favorite bot for Free Games, YouTube, Twitch, RSS, and Crypto - delivered right to your server.
-            </p>
-            <div className={styles.lpHeroActions}>
-              {session ? (
-                <a href="/servers" className="ui-btn ui-btn-primary">
-                  <Activity size={20} />
-                  Go to Servers
-                </a>
-              ) : (
-                <a
-                  href={`https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1489908793780338688'}&permissions=3387582172359760&response_type=code&redirect_uri=https%3A%2F%2Fnovafeeds.xyz%2Fapi%2Fauth%2Fcallback%2Fdiscord&integration_type=0&scope=identify+guilds+bot+applications.commands`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ui-btn ui-btn-primary"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+          <div className={styles["hero-content"]}>
+            <Badge variant="primary" size="md" dot icon={<Sparkles size={14} />}>
+              NovaFeeds 2.0 • Ultra Fast Feeds
+            </Badge>
+
+            <Heading level={1} size="6xl" weight="black">
+              Elevate your <br />
+              <span className={styles["text-gradient"]}>server&apos;s feeds</span>
+            </Heading>
+
+            <Text
+              as="p"
+              size="lg"
+              variant="secondary"
+              className={styles["hero-lead"]}
+            >
+              The ultimate real-time Discord bot for Free Games, YouTube, Twitch,
+              Kick, Steam, RSS, and Crypto — delivered with high-fidelity alerts.
+            </Text>
+
+            <div className={styles["hero-actions"]}>
+              <a href={botInviteUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="primary" leftIcon={<Bot size={20} />}>
                   Add to Discord
-                </a>
+                </Button>
+              </a>
+
+              {session ? (
+                <Link href="/servers">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    leftIcon={<Activity size={20} />}
+                  >
+                    Go to Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/premium">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    leftIcon={<Shield size={20} />}
+                  >
+                    View Premium Plans
+                  </Button>
+                </Link>
               )}
-              {!session && <LoginButton session={session} />}
             </div>
-          </div>
-          <div className={styles.lpHeroRight}>
-            <div className={styles.lpAvatarWrapper}>
-              <img src="/nova_v2.jpg" alt="NovaFeeds" className={styles.lpAvatar} />
-            </div>
-          </div>
-        </div>
 
-        {/* Stats row inside hero */}
-        <div className={styles.lpStatsRow}>
-          <div className={styles.lpStat}>
-            <span className={styles.lpStatNum}><Zap size={24} /></span>
-            <span className={styles.lpStatText}>Real-Time Delivery</span>
-          </div>
-          <div className={styles.lpStatSep}></div>
-          <div className={styles.lpStat}>
-            <span className={styles.lpStatNum}><Globe size={24} /></span>
-            <span className={styles.lpStatText}>Multi-Platform Feeds</span>
-          </div>
-          <div className={styles.lpStatSep}></div>
-          <div className={styles.lpStat}>
-            <span className={styles.lpStatNum}><Zap size={24} /></span>
-            <span className={styles.lpStatText}>Fully Customizable</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Discord Preview Showcase ── */}
-      <section className={styles.lpPreviewSection}>
-        <div className={`${styles.lpPreviewContainer} ui-glass-card`}>
-          <div className={styles.lpPreviewText}>
-            <div className="ui-label-caps">Stunning Layouts</div>
-            <h2 className="ui-title-section">The most beautiful alerts in Discord.</h2>
-            <p className="ui-text-lead" style={{ marginBottom: '2.5rem' }}>
-              Nova v2 introduces high-fidelity message layouts. With rich embeds, 
-              interactive buttons, and smart media handling, your server updates 
-              will look more professional than ever.
-            </p>
-            <div className={styles.lpPreviewFeatures}>
-              <div className={styles.lpPFeat}>
-                <div className={styles.lpPFeatIcon}><Zap size={18} /></div>
-                <span>Rich Media Previews</span>
+            {/* Stats Row */}
+            <div className={styles["stats-bar"]}>
+              <div className={styles["stat-item"]}>
+                <span className={styles["stat-icon"]}><Zap size={18} /></span>
+                <span>Real-Time Delivery</span>
               </div>
-              <div className={styles.lpPFeat}>
-                <div className={styles.lpPFeatIcon}><Layout size={18} /></div>
-                <span>Smart Embed V2</span>
+              <div className={styles["stat-divider"]} aria-hidden="true" />
+              <div className={styles["stat-item"]}>
+                <span className={styles["stat-icon"]}><Globe size={18} /></span>
+                <span>12+ Platform Feeds</span>
               </div>
-              <div className={styles.lpPFeat}>
-                <div className={styles.lpPFeatIcon}><Rocket size={18} /></div>
-                <span>Interactive Buttons</span>
+              <div className={styles["stat-divider"]} aria-hidden="true" />
+              <div className={styles["stat-item"]}>
+                <span className={styles["stat-icon"]}><Layers size={18} /></span>
+                <span>100% Customizable</span>
               </div>
             </div>
           </div>
-          <div className={styles.lpPreviewVisual}>
-            <DiscordV2Preview />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Features ── */}
-      <section className={`${styles.lpFeatures} ui-container`}>
-        <span className="ui-label-caps">Features</span>
-        <h2 className="ui-title-section">All the good stuff, none of the clutter</h2>
-        <div className="ui-features-grid">
-          {[
-            { icon: <Zap size={24} />, title: "Free Game Alerts", desc: "Epic, Steam, GOG - we'll make sure you never miss a free drop." },
-            { icon: <Play size={24} />, title: "YouTube & Twitch", desc: "Catch every upload and live stream the second it goes live." },
-            { icon: <Rss size={24} />, title: "RSS / Atom Feeds", desc: "Monitor any feed URL. News, blogs, changelogs - totally up to you." },
-            { icon: <Activity size={24} />, title: "Crypto Tracking", desc: "Keep an eye on prices and get real-time market updates." },
-            { icon: <Layout size={24} />, title: "Web Dashboard", desc: "Tweak all your settings from a super easy-to-use control panel." },
-            { icon: <Shield size={24} />, title: "Premium Tiers", desc: "Unlock more feeds, faster updates, and priority support." },
-          ].map((f, i) => (
-            <div className="ui-card-feature" key={i}>
-              <div className="ui-card-feature-icon">{f.icon}</div>
-              <h3>{f.title}</h3>
-              <p>{f.desc}</p>
+        {/* ── 2. Live Ticker Bar ── */}
+        <LiveTicker />
+
+        {/* ── 3. Discord Showcase ── */}
+        <section className={styles["showcase-section"]}>
+          <div className={styles["showcase-card"]}>
+            <div className={styles["showcase-info"]}>
+              <Badge variant="primary" size="sm">
+                STUNNING LAYOUTS
+              </Badge>
+              <Heading level={2} size="3xl" weight="bold">
+                The most beautiful alerts in Discord.
+              </Heading>
+              <Text as="p" size="base" variant="secondary">
+                Nova v2 introduces high-fidelity message layouts. With rich
+                embeds, interactive action buttons, and smart media handling,
+                your server updates look cleaner and more professional than ever.
+              </Text>
+
+              <div className={styles["showcase-badges"]}>
+                <div className={styles["showcase-item"]}>
+                  <div className={styles["showcase-icon-box"]}>
+                    <Zap size={16} />
+                  </div>
+                  <span>Rich Media Video & Live Previews</span>
+                </div>
+                <div className={styles["showcase-item"]}>
+                  <div className={styles["showcase-icon-box"]}>
+                    <Layout size={16} />
+                  </div>
+                  <span>Smart Cyberpunk Embed V2 Styling</span>
+                </div>
+                <div className={styles["showcase-item"]}>
+                  <div className={styles["showcase-icon-box"]}>
+                    <Rocket size={16} />
+                  </div>
+                  <span>Interactive Quick-Action Discord Buttons</span>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      <PlatformCarousel />
+            <div className={styles["showcase-preview-wrapper"]}>
+              <DiscordV2Preview />
+            </div>
+          </div>
+        </section>
 
-      <Footer />
-    </div>
+        {/* ── 4. Supported Platforms Carousel ── */}
+        <PlatformCarousel />
+
+        {/* ── 5. Features Grid ── */}
+        <section>
+          <div className={styles["section-header"]}>
+            <Badge variant="neutral" size="sm">
+              POWERFUL FEATURES
+            </Badge>
+            <Heading level={2} size="3xl" weight="bold">
+              All the good stuff, none of the clutter
+            </Heading>
+            <Text as="p" size="base" variant="muted">
+              Engineered for maximum reliability, speed, and customization.
+            </Text>
+          </div>
+
+          <Grid columns={3} gap="lg">
+            {FEATURES.map((feature, idx) => (
+              <Card key={idx} variant="elevated" className={styles["feature-card"]}>
+                <CardHeader>
+                  <div className={styles["feature-icon-wrapper"]}>
+                    {feature.icon}
+                  </div>
+                  <CardTitle>{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Text as="p" size="sm" variant="secondary">
+                    {feature.desc}
+                  </Text>
+                </CardContent>
+              </Card>
+            ))}
+          </Grid>
+        </section>
+
+        {/* ── 6. Final Call to Action ── */}
+        <section>
+          <div className={styles["cta-card"]}>
+            <div className={styles["cta-glow"]} aria-hidden="true" />
+            <Badge variant="primary" size="md">
+              READY TO UPGRADE?
+            </Badge>
+            <Heading level={2} size="4xl" weight="black">
+              Start delivering high-octane feeds today.
+            </Heading>
+            <Text
+              as="p"
+              size="base"
+              variant="secondary"
+              className={styles["cta-desc"]}
+            >
+              Join hundreds of Discord servers enjoying automated alerts, zero
+              downtime, and customizable feeds.
+            </Text>
+
+            <Inline gap="md" wrap>
+              <a href={botInviteUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="primary" leftIcon={<Bot size={20} />}>
+                  Invite NovaFeeds Free
+                </Button>
+              </a>
+              <Link href="/premium">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  rightIcon={<ArrowRight size={18} />}
+                >
+                  Explore Premium
+                </Button>
+              </Link>
+            </Inline>
+          </div>
+        </section>
+      </div>
+    </PublicLayout>
   );
 }

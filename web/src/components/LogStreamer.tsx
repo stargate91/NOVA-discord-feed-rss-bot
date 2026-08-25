@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Terminal, RefreshCw, Trash2, Maximize2, Minimize2 } from "lucide-react";
-
 import devService from "@/services/devService";
+import { IconButton, Button } from "@/components/ui";
+import styles from "./log-streamer.module.css";
 
 export default function LogStreamer() {
   const [logs, setLogs] = useState<string[]>([]);
@@ -22,9 +23,9 @@ export default function LogStreamer() {
       } else if (data.error) {
         setError(data.error);
       }
-    } catch (error: any) {
-      console.error("Failed to fetch logs:", error);
-      setError(error?.message || String(error));
+    } catch (err: any) {
+      console.error("Failed to fetch logs:", err);
+      setError(err?.message || String(err));
     } finally {
       setLoading(false);
     }
@@ -34,7 +35,7 @@ export default function LogStreamer() {
     fetchLogs();
     let interval: any;
     if (isLive) {
-      interval = setInterval(fetchLogs, 3000); // Poll every 3s
+      interval = setInterval(fetchLogs, 3000);
     }
     return () => clearInterval(interval);
   }, [isLive]);
@@ -52,59 +53,75 @@ export default function LogStreamer() {
 
   const formatLog = (line: string) => {
     if (!line || !line.trim()) return null;
-    
-    let className = "";
-    if (line.includes("[ERROR]")) className = "ui-log-error";
-    else if (line.includes("[WARNING]")) className = "ui-log-warning";
-    else if (line.includes("[INFO]")) className = "ui-log-info";
-    
+
+    let lineClass = "";
+    if (line.includes("[ERROR]")) lineClass = styles["log-error"];
+    else if (line.includes("[WARNING]")) lineClass = styles["log-warning"];
+    else if (line.includes("[INFO]")) lineClass = styles["log-info"];
+
     return (
-      <div className={`log-line ${className}`} style={{ marginBottom: '4px', lineHeight: 1.4, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-        <span className="line-text">{line}</span>
+      <div key={line} className={[styles["log-line"], lineClass].filter(Boolean).join(" ")}>
+        <span>{line}</span>
       </div>
     );
   };
 
   return (
-    <div className="ui-terminal" style={{ height: isExpanded ? '600px' : '300px' }}>
-      <div className="ui-terminal-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Terminal size={14} style={{ color: '#bd93f9' }} />
-          <span className="ui-form-label" style={{ margin: 0, opacity: 0.6 }}>System Log Streamer</span>
-          {isLive && !error && (
-            <div className="ui-terminal-status ui-terminal-status-live">
-              <div className="ui-dot"></div>
-              LIVE
-            </div>
-          )}
-          {error && (
-            <div className="ui-terminal-status" style={{ background: 'rgba(255, 85, 85, 0.1)', color: '#ff5555' }}>
+    <div
+      className={styles["terminal-container"]}
+      style={{ height: isExpanded ? "38rem" : "20rem" }}
+    >
+      <div className={styles["terminal-header"]}>
+        <div className={styles["header-left"]}>
+          <Terminal size={14} style={{ color: "var(--accent-light)" }} />
+          <span className={styles["terminal-title"]}>System Log Streamer</span>
+          {isLive && !error ? (
+            <span className={[styles["status-badge"], styles["status-live"]].join(" ")}>
+              ● LIVE
+            </span>
+          ) : (
+            <span className={[styles["status-badge"], styles["status-offline"]].join(" ")}>
               OFFLINE
-            </div>
+            </span>
           )}
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => setIsLive(!isLive)} className="ui-btn" style={{ padding: '6px', background: 'transparent', color: isLive ? '#50fa7b' : 'rgba(255,255,255,0.3)' }}>
-            <RefreshCw size={14} className={isLive && !error ? 'ui-spin' : ''} />
-          </button>
-          <button onClick={clearLogs} className="ui-btn" style={{ padding: '6px', background: 'transparent', color: 'rgba(255,255,255,0.3)' }}>
-            <Trash2 size={14} />
-          </button>
-          <button onClick={() => setIsExpanded(!isExpanded)} className="ui-btn" style={{ padding: '6px', background: 'transparent', color: 'rgba(255,255,255,0.3)' }}>
-            {isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          </button>
+
+        <div className={styles["header-actions"]}>
+          <IconButton
+            icon={<RefreshCw size={14} className={isLive && !error ? "spin" : ""} />}
+            size="xs"
+            variant="ghost"
+            aria-label="Toggle live streaming"
+            onClick={() => setIsLive(!isLive)}
+          />
+          <IconButton
+            icon={<Trash2 size={14} />}
+            size="xs"
+            variant="ghost"
+            aria-label="Clear logs"
+            onClick={clearLogs}
+          />
+          <IconButton
+            icon={isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            size="xs"
+            variant="ghost"
+            aria-label="Toggle expand"
+            onClick={() => setIsExpanded(!isExpanded)}
+          />
         </div>
       </div>
 
-      <div className="ui-terminal-body" ref={scrollRef}>
+      <div className={styles["terminal-body"]} ref={scrollRef}>
         {loading ? (
-          <div className="ui-terminal-loading" style={{ color: 'rgba(255, 255, 255, 0.3)', fontStyle: 'italic' }}>Initializing secure stream...</div>
+          <p style={{ color: "var(--text-muted)", fontStyle: "italic" }}>
+            Initializing log stream...
+          </p>
         ) : error ? (
-          <div className="ui-terminal-error">
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', background: 'rgba(255, 85, 85, 0.05)', padding: '10px 15px', borderRadius: '8px', border: '1px dashed rgba(255, 85, 85, 0.2)', color: '#ff5555' }}>
-              CONNECTION ERROR: {error}
-            </div>
-            <button className="ui-btn" style={{ background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.75rem', padding: '6px 15px' }} onClick={fetchLogs}>Try Reconnect</button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-xs)" }}>
+            <p style={{ color: "var(--status-error)" }}>CONNECTION ERROR: {error}</p>
+            <Button variant="secondary" size="sm" onClick={fetchLogs}>
+              Reconnect
+            </Button>
           </div>
         ) : (
           logs.map((line, i) => <div key={i}>{formatLog(line)}</div>)

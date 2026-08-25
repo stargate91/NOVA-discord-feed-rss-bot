@@ -1,37 +1,50 @@
 "use client";
 
-import React, { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import {
+  Plus,
+  Play,
+  Pause,
+  Trash2,
+  Globe,
+  Zap,
+  X,
+  CheckSquare,
+  Square,
+  Search,
+  RefreshCw,
+  Edit3,
+} from 'lucide-react';
+import { PageHeader } from '@/components/layout';
+import {
+  Button,
+  IconButton,
+  Badge,
+  Input,
+  Modal,
+  ModalHeader,
+  ModalTitle,
+  ModalContent,
+  ModalFooter,
+  EmptyState,
+  Spinner,
+  Inline,
+  Stack,
+} from '@/components/ui';
 import MonitorCard from '@/components/MonitorCard';
 import EditMonitorModal from '@/components/EditMonitorModal';
 import CreateMonitorModal from '@/components/CreateMonitorModal';
 import BulkEditModal from '@/components/BulkEditModal';
 import BulkAddModal from '@/components/BulkAddModal';
-import { Plus, Play, Pause, Trash2, Globe, Activity, Zap, X, MousePointer2, Edit3 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 import monitorService from '@/services/monitorService';
 import guildService from '@/services/guildService';
-import LoginButton from '@/components/LoginButton';
 import { MonitorConfig } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
+import { getPlatformLogo } from '@/utils';
 import styles from './monitors.module.css';
-
-const platformIcons: Record<string, React.ReactNode> = {
-  'all': <Globe size={14} />,
-  'youtube': <img src="/brands/youtube.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'twitch': <img src="/brands/twitch.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'kick': <img src="/brands/kick.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'rss': <img src="/brands/rss.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'github': <img src="/brands/github.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'steam_news': <img src="/brands/steam.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'epic_games': <img src="/brands/epic-games.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'steam_free': <img src="/brands/steam.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'gog_free': <img src="/brands/gog.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'movie': <img src="/brands/tmdb.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'tv_series': <img src="/brands/tmdb.png" alt="" style={{ width: '16px', height: '16px' }} />,
-  'crypto': <img src="/brands/crypto.png" alt="" style={{ width: '16px', height: '16px' }} />
-};
 
 function MonitorsContent() {
   const { data: session } = useSession();
@@ -46,7 +59,6 @@ function MonitorsContent() {
   const [filter, setFilter] = useState('all');
   const [isPremium, setIsPremium] = useState(false);
   const [tier, setTier] = useState(0);
-  const [guildLoading, setGuildLoading] = useState(true);
 
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,65 +69,34 @@ function MonitorsContent() {
   const [monitorToDelete, setMonitorToDelete] = useState<MonitorConfig | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Selection State
+  // Multi-Selection State
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [isBulkDeletingMode, setIsBulkDeletingMode] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
 
-  const platforms = ['all', ...Array.from(new Set(monitors.map(m => m.type)))];
-  
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [canScroll, setCanScroll] = useState(false);
-
-  const checkScroll = () => {
-    if (scrollRef.current) {
-      setCanScroll(scrollRef.current.scrollWidth > scrollRef.current.clientWidth);
-    }
-  };
-
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener('resize', checkScroll);
-    
-    const el = scrollRef.current;
-    if (el) {
-      const onWheel = (e: WheelEvent) => {
-        if (e.deltaY !== 0 && el.scrollWidth > el.clientWidth) {
-          e.preventDefault();
-          el.scrollLeft += e.deltaY;
-        }
-      };
-      el.addEventListener('wheel', onWheel, { passive: false });
-      return () => {
-        window.removeEventListener('resize', checkScroll);
-        el.removeEventListener('wheel', onWheel);
-      };
-    }
-    
-    return () => window.removeEventListener('resize', checkScroll);
-  }, [monitors, platforms]);
+  const platforms = useMemo(() => {
+    return ['all', ...Array.from(new Set(monitors.map((m) => m.type)))];
+  }, [monitors]);
 
   const loadData = async () => {
     if (!guildId) return;
     setLoading(true);
-    setGuildLoading(true);
     try {
       const [fetchedMonitors, guilds] = await Promise.all([
         monitorService.getMonitors(guildId),
-        guildService.getGuilds()
+        guildService.getGuilds(),
       ]);
       setMonitors(fetchedMonitors);
-      
+
       const current = guilds.find((g: any) => String(g.id) === String(guildId));
       if (current) {
         setIsPremium(current.isPremium || current.isMaster || false);
-        setTier(current.isMaster ? 0 : (current.tier || 0));
+        setTier(current.isMaster ? 0 : current.tier || 0);
       }
     } catch (err: any) {
-      console.error(err);
-      addToast(err.message || "Failed to sync server data", "error");
+      console.error('Failed to load monitors:', err);
+      addToast(err?.message || 'Failed to sync server data', 'error');
     } finally {
       setLoading(false);
-      setGuildLoading(false);
     }
   };
 
@@ -149,274 +130,420 @@ function MonitorsContent() {
   const handleToggle = async (id: number, enabled: boolean) => {
     try {
       await monitorService.toggleMonitor(id, enabled);
-      setMonitors(monitors.map(m => m.id === id ? { ...m, enabled } : m));
-      addToast(`Monitor ${enabled ? 'enabled' : 'disabled'}`, 'info');
-    } catch (err) {
-      console.error(err);
+      setMonitors((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, enabled } : m))
+      );
+      addToast(`Monitor ${enabled ? 'resumed' : 'paused'}`, 'info');
+    } catch (err: any) {
+      addToast(err?.message || 'Failed to update monitor', 'error');
     }
   };
 
   const handleDelete = (id: number) => {
-    const monitor = monitors.find(m => m.id === id);
+    const monitor = monitors.find((m) => m.id === id);
     if (monitor) setMonitorToDelete(monitor);
   };
 
   const confirmDelete = async () => {
+    if (!monitorToDelete) return;
     setIsDeleting(true);
     try {
-      if (isBulkDeletingMode) {
-        const idsToDelete = selectedIds.length > 0 ? selectedIds : monitors.map(m => m.id);
-        await monitorService.bulkDelete(guildId, idsToDelete);
-        addToast(`Deleted ${idsToDelete.length} monitors`, 'success');
-        setSelectedIds([]);
-        reloadMonitors();
-      } else if (monitorToDelete) {
-        await monitorService.deleteMonitor(monitorToDelete.id);
-        setMonitors(monitors.filter(m => m.id !== monitorToDelete.id));
-        addToast('Monitor deleted', 'success');
-      }
+      await monitorService.deleteMonitor(monitorToDelete.id);
+      setMonitors((prev) => prev.filter((m) => m.id !== monitorToDelete.id));
+      addToast('Monitor deleted successfully', 'success');
+      setMonitorToDelete(null);
     } catch (err: any) {
-      addToast(err.message || 'Failed to delete monitor(s)', 'error');
+      addToast(err?.message || 'Failed to delete monitor', 'error');
     } finally {
       setIsDeleting(false);
-      setMonitorToDelete(null);
-      setIsBulkDeletingMode(false);
     }
   };
 
-  const handleBulkUpdate = async (updateData: Record<string, any>) => {
-    const idsToUpdate = selectedIds.length > 0 ? selectedIds : monitors.map(m => m.id);
+  const handleBulkToggle = async (enable: boolean) => {
+    if (selectedIds.length === 0) return;
     try {
-      await monitorService.bulkUpdate(guildId, idsToUpdate, updateData);
-      showSuccess();
-      addToast(`Updated ${idsToUpdate.length} monitors`, 'success');
+      await Promise.all(
+        selectedIds.map((id) => monitorService.toggleMonitor(id, enable))
+      );
+      addToast(
+        `${selectedIds.length} monitor(s) ${enable ? 'resumed' : 'paused'}`,
+        'success'
+      );
       setSelectedIds([]);
-      setIsBulkEditOpen(false);
       reloadMonitors();
     } catch (err) {
-      addToast('Failed to update monitors', 'error');
+      addToast('Failed to toggle selected monitors', 'error');
     }
   };
 
-  const openEditModal = (monitor: MonitorConfig) => {
-    setEditingMonitor(monitor);
-    setIsModalOpen(true);
-  };
-
-  const handleUpdate = async (id: number, data: Partial<MonitorConfig> & Record<string, any>) => {
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
     try {
-      await monitorService.updateMonitor(id, data);
-      showSuccess();
+      await monitorService.bulkDelete(guildId, selectedIds);
+      addToast(`Deleted ${selectedIds.length} monitor(s)`, 'success');
+      setSelectedIds([]);
       reloadMonitors();
-      setIsModalOpen(false);
-      return true;
     } catch (err: any) {
-      addToast(err.message || 'Failed to update monitor', 'error', 'Error');
-      return false;
+      addToast(err?.message || 'Failed to delete monitors', 'error');
     }
   };
 
-  const handleSelect = (id: number) => {
-    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  const handleSelectMonitor = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
   };
 
-  const handleBulkToggle = async (enabled: boolean) => {
-    const idsToToggle = selectedIds.length > 0 ? selectedIds : monitors.map(m => m.id);
-    const action = enabled ? 'resume' : 'pause';
-    try {
-      await monitorService.bulkToggle(guildId, idsToToggle, action);
-      addToast(`${enabled ? 'Resumed' : 'Paused'} ${idsToToggle.length} monitors`, 'success');
-      reloadMonitors();
-    } catch (err) {
-      addToast('Failed to toggle monitors', 'error');
+  const handleSelectAll = () => {
+    if (selectedIds.length === filteredMonitors.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredMonitors.map((m) => m.id));
     }
   };
 
-  const filteredMonitors = monitors.filter(m => {
-    const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) || (m.api_url?.toLowerCase() || '').includes(search.toLowerCase());
-    const matchesFilter = filter === 'all' || m.type === filter;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredMonitors = useMemo(() => {
+    return monitors.filter((m) => {
+      const matchesSearch =
+        m.name.toLowerCase().includes(search.toLowerCase()) ||
+        String(m.id).includes(search);
+      const matchesPlatform = filter === 'all' || m.type === filter;
+      return matchesSearch && matchesPlatform;
+    });
+  }, [monitors, search, filter]);
+
+  const activeCount = monitors.filter((m) => m.enabled).length;
 
   return (
-    <div className={styles.monitorsPageWrapper}>
-      <header className="ui-dashboard-header">
-        <div className="ui-dashboard-info">
-          <h1 className="ui-dashboard-title">Manage Monitors</h1>
-          <p className="ui-dashboard-subtitle">Configure and oversee your automated feed sources and notification targets.</p>
-        </div>
+    <div className={styles['monitors-container']}>
+      {/* ── Page Header ── */}
+      <PageHeader
+        title="Feed Monitors"
+        description="Configure automated feeds, diagnostic actions, and alert delivery."
+        badge={
+          <Badge variant="primary" size="sm">
+            {activeCount} Active / {monitors.length} Total
+          </Badge>
+        }
+        actions={
+          <Inline gap="sm" wrap>
+            <Button
+              variant={selectionMode ? 'primary' : 'secondary'}
+              size="md"
+              leftIcon={selectionMode ? <CheckSquare size={16} /> : <Square size={16} />}
+              onClick={() => {
+                setSelectionMode(!selectionMode);
+                if (selectionMode) setSelectedIds([]);
+              }}
+            >
+              {selectionMode ? 'Exit Select' : 'Select'}
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              leftIcon={<Zap size={16} />}
+              onClick={() => setIsBulkAddOpen(true)}
+            >
+              Bulk Wizard
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              leftIcon={<Plus size={16} />}
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              + Add Monitor
+            </Button>
+          </Inline>
+        }
+      />
 
-        <div className="page-header-actions">
-          <input
-            type="text"
-            placeholder="Search monitors..."
-            className={styles.searchInput}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <LoginButton session={session} />
-        </div>
-      </header>
-
-      {/* Platform Control Center */}
-      <div className={styles.controlCenter}>
-        <div className={styles.filterTabsWrapper}>
-          <div className={styles.filterTabs} ref={scrollRef}>
-            {platforms.map(p => (
-              <button
-                key={p}
-                className={`${styles.filterTab} ${filter === p ? styles.filterTabActive : ''}`}
-                onClick={() => setFilter(p)}
-              >
-                <span className={styles.tabIcon}>{platformIcons[p] || <Activity size={14} />}</span>
-                <span className={styles.tabLabel}>{p === 'all' ? 'All Platforms' : (PLATFORM_NAMES[p] || p)}</span>
-                <span className={styles.countBadge}>
-                  {p === 'all' ? monitors.length : monitors.filter(m => m.type === p).length}
-                </span>
-              </button>
-            ))}
+      {/* ── Controls Bar ── */}
+      <div className={styles['controls-bar']}>
+        <div className={styles['search-row']}>
+          <div className={styles['search-input-wrapper']}>
+            <Input
+              placeholder="Search monitors by name or ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              leftIcon={<Search size={16} />}
+              rightIcon={
+                search ? (
+                  <IconButton
+                    icon={<X size={14} />}
+                    size="xs"
+                    variant="ghost"
+                    aria-label="Clear search"
+                    onClick={() => setSearch('')}
+                  />
+                ) : undefined
+              }
+            />
           </div>
-        </div>
-        
-        {canScroll && (
-          <div className={styles.scrollHint}>
-            <MousePointer2 size={12} />
-            <span>Scroll horizontally to see all platforms</span>
-          </div>
-        )}
 
-        {/* Bulk Actions */}
-        <div className={styles.bulkActionsToolbar}>
-          {selectedIds.length > 0 && (
-            <button className={`${styles.bulkBtn} ${styles.bulkBtnDeselect}`} onClick={() => setSelectedIds([])}>
-              <X size={14} /> Deselect ({selectedIds.length})
-            </button>
+          {selectionMode && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSelectAll}
+            >
+              {selectedIds.length === filteredMonitors.length
+                ? 'Deselect All'
+                : 'Select All'}
+            </Button>
           )}
-          <button
-            className={`${styles.bulkBtn} ${(() => {
-              const target = selectedIds.length > 0 ? monitors.filter(m => selectedIds.includes(m.id)) : monitors;
-              return target.every(m => m.enabled) ? styles.bulkBtnToggleActive : styles.bulkBtnTogglePaused;
-            })()}`}
-            onClick={() => {
-              const target = selectedIds.length > 0 ? monitors.filter(m => selectedIds.includes(m.id)) : monitors;
-              handleBulkToggle(!target.every(m => m.enabled));
-            }}
-            disabled={monitors.length === 0}
-          >
-            {(() => {
-              const target = selectedIds.length > 0 ? monitors.filter(m => selectedIds.includes(m.id)) : monitors;
-              return target.every(m => m.enabled) 
-                ? <><Pause size={14} /> {selectedIds.length > 0 ? 'Pause Selected' : 'Pause All'}</>
-                : <><Play size={14} /> {selectedIds.length > 0 ? 'Resume Selected' : 'Resume All'}</>;
-            })()}
-          </button>
-          <button className={`${styles.bulkBtn} ${styles.bulkBtnEdit}`} onClick={() => setIsBulkEditOpen(true)} disabled={monitors.length === 0}>
-            <Edit3 size={14} /> {selectedIds.length > 0 ? `Edit Selected (${selectedIds.length})` : 'Edit All'}
-          </button>
-          <button className={`${styles.bulkBtn} ${styles.bulkBtnDelete}`} onClick={() => setIsBulkDeletingMode(true)} disabled={monitors.length === 0}>
-            <Trash2 size={14} /> {selectedIds.length > 0 ? 'Delete Selected' : 'Delete All'}
-          </button>
+        </div>
+
+        {/* Platform Filter Tabs */}
+        <div className={styles['filter-scroll-wrapper']}>
+          <div className={styles['filter-tabs']}>
+            {platforms.map((p) => {
+              const count =
+                p === 'all'
+                  ? monitors.length
+                  : monitors.filter((m) => m.type === p).length;
+
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  className={[
+                    styles['filter-chip'],
+                    filter === p && styles.active,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={() => setFilter(p)}
+                >
+                  <span className={styles['chip-icon']}>
+                    {p === 'all' ? (
+                      <Globe size={14} />
+                    ) : (
+                      <img
+                        src={getPlatformLogo(p)}
+                        alt=""
+                        width={14}
+                        height={14}
+                      />
+                    )}
+                  </span>
+                  <span>{PLATFORM_NAMES[p] || p.toUpperCase()}</span>
+                  <span className={styles['chip-count']}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem' }}>Loading monitors...</div>
-      ) : (
-        <>
-          <div className={styles.dashboardGrid}>
-            {filteredMonitors.map(m => (
-              <MonitorCard
-                key={m.id}
-                monitor={m}
-                isPremium={isPremium}
-                tier={tier}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
-                onEdit={openEditModal}
-                isSelected={selectedIds.includes(m.id)}
-                onSelect={handleSelect}
-                selectionMode={selectedIds.length > 0}
-              />
-            ))}
-          </div>
-
-          {filteredMonitors.length === 0 && (
-            <div className={styles.emptyStateContainer}>
-              <div className={styles.emptyStateIcon}>
-                <div className={`${styles.radarRing} ${styles.ring1}`}></div>
-                <div className={`${styles.radarRing} ${styles.ring2}`}></div>
-                <div className={`${styles.radarRing} ${styles.ring3}`}></div>
-                <Activity size={32} color="var(--accent-color)" />
-              </div>
-
-              {monitors.length === 0 ? (
-                <>
-                  <h3 className={styles.emptyStateTitle}>No Monitors Yet</h3>
-                  <p className={styles.emptyStateDesc}>
-                    Set up your first feed monitor and start receiving automated updates directly in your Discord channels.
-                  </p>
-                  <button className={styles.emptyStateBtn} onClick={() => setIsCreateModalOpen(true)}>
-                    <Plus size={18} /> Create Your First Monitor
-                  </button>
-                </>
-              ) : (
-                <>
-                  <h3 className={styles.emptyStateTitle}>No Results Found</h3>
-                  <p className={styles.emptyStateDesc}>
-                    No monitors match your current search or filter. Try adjusting your criteria.
-                  </p>
-                  <button className={styles.emptyStateBtnGhost} onClick={() => { setSearch(''); setFilter('all'); }}>
-                    Clear Filters
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </>
+      {/* ── Loading State ── */}
+      {loading && (
+        <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: '4rem' }}>
+          <Spinner size="lg" label="Loading monitors..." />
+        </Stack>
       )}
 
-      {/* Modals outside main flow */}
-      <EditMonitorModal monitor={editingMonitor} guildId={guildId} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleUpdate} tier={tier} isPremium={isPremium} />
-      <CreateMonitorModal guildId={guildId} isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={reloadMonitors} tier={tier} isPremium={isPremium} />
-      <BulkEditModal isOpen={isBulkEditOpen} onClose={() => setIsBulkEditOpen(false)} onSave={handleBulkUpdate} monitorCount={selectedIds.length > 0 ? selectedIds.length : monitors.length} guildId={guildId} tier={tier} isPremium={isPremium} />
-      <BulkAddModal isOpen={isBulkAddOpen} onClose={() => setIsBulkAddOpen(false)} guildId={guildId} onSuccess={reloadMonitors} tier={tier} isPremium={isPremium} guildLoading={guildLoading} />
+      {/* ── Empty State ── */}
+      {!loading && filteredMonitors.length === 0 && (
+        <EmptyState
+          icon={<Globe size={36} />}
+          title={search || filter !== 'all' ? 'No matching monitors' : 'No monitors configured'}
+          description={
+            search || filter !== 'all'
+              ? 'Try changing your search keywords or platform filters.'
+              : 'Add your first feed monitor to start receiving notifications.'
+          }
+          action={
+            search || filter !== 'all' ? (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setSearch('');
+                  setFilter('all');
+                }}
+              >
+                Reset Filters
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                leftIcon={<Plus size={16} />}
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                + Add Monitor
+              </Button>
+            )
+          }
+        />
+      )}
 
-      {(monitorToDelete || isBulkDeletingMode) && (
-        <div className={styles.deleteModalOverlay}>
-          <div className={styles.deleteModalContent}>
-            <div className={styles.deleteModalIcon}>
-              <Trash2 size={36} color="#ef4444" />
-            </div>
-            <h3>Delete Monitor{isBulkDeletingMode ? 's' : ''}</h3>
+      {/* ── Monitors Grid ── */}
+      {!loading && filteredMonitors.length > 0 && (
+        <div className={styles['monitors-grid']}>
+          {filteredMonitors.map((monitor) => (
+            <MonitorCard
+              key={monitor.id}
+              monitor={monitor}
+              onToggle={handleToggle}
+              onDelete={handleDelete}
+              onEdit={(m) => {
+                setEditingMonitor(m);
+                setIsModalOpen(true);
+              }}
+              isPremium={isPremium}
+              tier={tier}
+              isSelected={selectedIds.includes(monitor.id)}
+              onSelect={handleSelectMonitor}
+              selectionMode={selectionMode}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* ── Floating Action Bar for Selection ── */}
+      {selectedIds.length > 0 && (
+        <div className={styles['floating-bar']}>
+          <span className={styles['selected-count']}>
+            {selectedIds.length} Selected
+          </span>
+
+          <Inline gap="xs">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Play size={14} />}
+              onClick={() => handleBulkToggle(true)}
+            >
+              Resume
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Pause size={14} />}
+              onClick={() => handleBulkToggle(false)}
+            >
+              Pause
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Edit3 size={14} />}
+              onClick={() => setIsBulkEditOpen(true)}
+            >
+              Edit All
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              leftIcon={<Trash2 size={14} />}
+              onClick={handleBulkDelete}
+            >
+              Delete
+            </Button>
+          </Inline>
+        </div>
+      )}
+
+      {/* ── Delete Confirmation Modal ── */}
+      {monitorToDelete && (
+        <Modal
+          isOpen={Boolean(monitorToDelete)}
+          onClose={() => setMonitorToDelete(null)}
+          size="sm"
+        >
+          <ModalHeader>
+            <ModalTitle>Delete Monitor</ModalTitle>
+          </ModalHeader>
+          <ModalContent>
             <p>
-              {isBulkDeletingMode ? (
-                <>Are you sure you want to delete <strong>{selectedIds.length > 0 ? `${selectedIds.length} selected` : 'ALL'}</strong> monitors?</>
-              ) : (
-                <>Are you sure you want to delete <strong>{monitorToDelete?.name}</strong>?</>
-              )}
-              <br/><br/>This action cannot be undone and will stop all future notifications to your Discord server.
+              Are you sure you want to delete{' '}
+              <strong>{monitorToDelete.name}</strong>? This action cannot be
+              undone.
             </p>
-            <div className={styles.deleteModalActions}>
-              <button className={styles.btnCancel} onClick={() => { setMonitorToDelete(null); setIsBulkDeletingMode(false); }} disabled={isDeleting}>Cancel</button>
-              <button className={styles.btnConfirmDelete} onClick={confirmDelete} disabled={isDeleting}>{isDeleting ? 'Deleting...' : 'Yes, Delete'}</button>
-            </div>
-          </div>
-        </div>
+          </ModalContent>
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setMonitorToDelete(null)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              isLoading={isDeleting}
+              onClick={confirmDelete}
+            >
+              Confirm Delete
+            </Button>
+          </ModalFooter>
+        </Modal>
       )}
-      {/* Floating Command Pill - Hidden when any modal is open */}
-      {!(isCreateModalOpen || isBulkAddOpen || isModalOpen || isBulkEditOpen || monitorToDelete || isBulkDeletingMode) && (
-        <div className={styles.floatingActions}>
-          <div className={styles.floatingActionsInner}>
-            <button className={styles.floatingBulkBtn} onClick={() => setIsBulkAddOpen(true)}>
-              <Zap size={18} />
-              <span>Bulk Wizard</span>
-            </button>
-            <button className={styles.floatingAddBtn} onClick={() => setIsCreateModalOpen(true)}>
-              <Plus size={18} />
-              <span>Add Monitor</span>
-            </button>
-          </div>
-        </div>
+
+      {/* ── Modals ── */}
+      {isCreateModalOpen && (
+        <CreateMonitorModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          guildId={guildId}
+          onSuccess={reloadMonitors}
+          tier={tier}
+          isPremium={isPremium}
+        />
+      )}
+
+      {isModalOpen && editingMonitor && (
+        <EditMonitorModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingMonitor(null);
+          }}
+          monitor={editingMonitor}
+          guildId={guildId}
+          onSave={async (id, data) => {
+            try {
+              await monitorService.updateMonitor(id, data);
+              addToast('Monitor updated successfully', 'success');
+              reloadMonitors();
+              setIsModalOpen(false);
+              return true;
+            } catch (err: any) {
+              addToast(err?.message || 'Failed to update monitor', 'error');
+              return false;
+            }
+          }}
+          tier={tier}
+          isPremium={isPremium}
+        />
+      )}
+
+      {isBulkAddOpen && (
+        <BulkAddModal
+          isOpen={isBulkAddOpen}
+          onClose={() => setIsBulkAddOpen(false)}
+          guildId={guildId}
+          onSuccess={reloadMonitors}
+          tier={tier}
+          isPremium={isPremium}
+        />
+      )}
+
+      {isBulkEditOpen && (
+        <BulkEditModal
+          isOpen={isBulkEditOpen}
+          onClose={() => setIsBulkEditOpen(false)}
+          guildId={guildId}
+          monitorCount={selectedIds.length || monitors.length}
+          onSave={async (data) => {
+            await monitorService.bulkUpdate(guildId, selectedIds.length ? selectedIds : monitors.map(m => m.id), data);
+            addToast('Monitors updated', 'success');
+            reloadMonitors();
+            setIsBulkEditOpen(false);
+          }}
+          tier={tier}
+          isPremium={isPremium}
+        />
       )}
     </div>
   );
@@ -424,7 +551,7 @@ function MonitorsContent() {
 
 export default function MonitorsPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Spinner size="lg" label="Loading..." />}>
       <MonitorsContent />
     </Suspense>
   );

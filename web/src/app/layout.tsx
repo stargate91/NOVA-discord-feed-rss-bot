@@ -2,8 +2,6 @@ import React from "react";
 import { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "@/styles/index.css";
-import "./globals.css";
-import "./ui.css";
 import AuthProvider from "@/components/SessionProvider";
 import { ToastProvider } from "@/context/ToastContext";
 import ToastContainer from "@/components/ToastContainer";
