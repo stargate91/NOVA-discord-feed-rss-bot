@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { calculateGaugeMetrics } from '@/utils';
 import styles from './usage_indicator.module.css';
 
 export interface UsageIndicatorProps {
@@ -10,48 +11,42 @@ export interface UsageIndicatorProps {
   unit?: string;
 }
 
+const GAUGE_RADIUS = 36;
+
+const VARIANT_CLASS_MAP = {
+  accent: styles['color-accent'],
+  warning: styles['color-warning'],
+  error: styles['color-error'],
+};
+
 export default function UsageIndicator({
   label,
   current,
   max,
   unit = '',
 }: UsageIndicatorProps) {
-  const percentage = Math.min(Math.round((current / max) * 100), 100);
-
-  // SVG Circle parameters
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percentage / 100) * circumference;
-
-  let strokeColor = 'var(--accent-light)';
-  let valueColorClass = styles['color-accent'];
-  if (percentage >= 100) {
-    strokeColor = 'var(--status-error)';
-    valueColorClass = styles['color-error'];
-  } else if (percentage >= 80) {
-    strokeColor = 'var(--status-warning)';
-    valueColorClass = styles['color-warning'];
-  }
+  const metrics = calculateGaugeMetrics(current, max, GAUGE_RADIUS);
+  const valueColorClass = VARIANT_CLASS_MAP[metrics.variant];
 
   return (
     <div className={styles['usage-container']}>
       <div className={styles['gauge-wrapper']}>
         <svg viewBox="0 0 100 100" className={styles['gauge-svg']}>
           {/* Background Track */}
-          <circle className={styles['gauge-track']} cx="50" cy="50" r={radius} />
+          <circle className={styles['gauge-track']} cx="50" cy="50" r={GAUGE_RADIUS} />
           {/* Progress Indicator */}
           <circle
             className={styles['gauge-progress']}
             cx="50"
             cy="50"
-            r={radius}
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            stroke={strokeColor}
+            r={GAUGE_RADIUS}
+            strokeDasharray={metrics.circumference}
+            strokeDashoffset={metrics.offset}
+            stroke={metrics.strokeColor}
           />
         </svg>
         <div className={styles['gauge-content']}>
-          <span className={styles['gauge-value']}>{percentage}%</span>
+          <span className={styles['gauge-value']}>{metrics.percentage}%</span>
           <span className={styles['gauge-label']}>{label}</span>
         </div>
       </div>
@@ -66,7 +61,7 @@ export default function UsageIndicator({
         <div className={styles['stat-pill']}>
           <span className={styles['stat-pill-label']}>Remaining</span>
           <span className={styles['stat-pill-value']}>
-            {Math.max(0, max - current)} {unit}
+            {metrics.remaining} {unit}
           </span>
         </div>
       </div>

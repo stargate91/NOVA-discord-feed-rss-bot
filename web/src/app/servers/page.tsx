@@ -29,7 +29,7 @@ import {
   Stack,
   IconButton,
 } from "@/components/ui";
-import { getGuildIconUrl, getBotInviteUrl } from "@/utils";
+import { getGuildIconUrl, getBotInviteUrl, getGuildInitials } from "@/utils";
 import { useServerList } from "@/hooks/use_server_list";
 import styles from "./servers.module.css";
 
@@ -163,7 +163,7 @@ export default function ServersPage() {
                       alt={guild.name}
                       shape="square"
                       size="lg"
-                      fallback={guild.name.slice(0, 2).toUpperCase()}
+                      fallback={getGuildInitials(guild.name)}
                       status={hasBot ? "online" : undefined}
                     />
 

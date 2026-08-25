@@ -176,3 +176,11 @@ export function buildUpdateMonitorPayload(
     symbols: isCrypto ? platformInput : undefined,
   };
 }
+
+/**
+ * Appends a variable tag to an existing template string.
+ */
+export function appendTemplateTag(currentTemplate = '', tag: string): string {
+  return `${currentTemplate}${tag}`;
+}
+

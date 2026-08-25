@@ -183,6 +183,39 @@ export function useCreateMonitorWizard({
     });
   };
 
+  const handleInputChange = useCallback((field: keyof MonitorFormData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleMultiChange = useCallback((field: keyof MonitorFormData, value: string[]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleToggleChange = useCallback((field: keyof MonitorFormData, checked: boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: checked }));
+  }, []);
+
+  const handleColorChange = useCallback((color: string) => {
+    if (!isLocked('custom_color')) {
+      setFormData((prev) => ({ ...prev, embed_color: color }));
+    }
+  }, [isLocked]);
+
+  const selectAutocompleteItem = useCallback((item: { id: string; name: string }) => {
+    setFormData((prev) => ({ ...prev, platform_input: item.id, name: item.name }));
+    setAutoQuery(item.id);
+    setShowAutoDropdown(false);
+  }, []);
+
+  const insertTemplateVariable = useCallback((varName: string) => {
+    if (!isLocked('alert_template')) {
+      setFormData((prev) => ({
+        ...prev,
+        custom_alert: (prev.custom_alert || '') + `{${varName}}`,
+      }));
+    }
+  }, [isLocked]);
+
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!selectedPlatform) return;
@@ -240,6 +273,12 @@ export function useCreateMonitorWizard({
     addCryptoPair,
     removeCryptoPair,
     updateCryptoPair,
+    handleInputChange,
+    handleMultiChange,
+    handleToggleChange,
+    handleColorChange,
+    selectAutocompleteItem,
+    insertTemplateVariable,
     handleSubmit,
     resetState,
   };

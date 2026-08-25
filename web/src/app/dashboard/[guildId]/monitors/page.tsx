@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
 import {
@@ -37,9 +37,6 @@ import EditMonitorModal from '@/components/edit_monitor_modal';
 import CreateMonitorModal from '@/components/create_monitor_modal';
 import BulkEditModal from '@/components/bulk_edit_modal';
 import BulkAddModal from '@/components/bulk_add_modal';
-import { useToast } from '@/context/toast_context';
-import monitorService from '@/services/monitor_service';
-import { MonitorConfig } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
 import { getPlatformLogo } from '@/utils';
 import { useMonitors } from '@/hooks/use_monitors';
@@ -49,7 +46,6 @@ function MonitorsContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const guildId = (params?.guildId as string) || searchParams?.get('guild') || '';
-  const { addToast } = useToast();
 
   const {
     monitors,
@@ -61,56 +57,43 @@ function MonitorsContent() {
     isPremium,
     tier,
     platforms,
+    platformCounts,
     filteredMonitors,
     activeCount,
     selectedIds,
     setSelectedIds,
     selectionMode,
     setSelectionMode,
+    isCreateModalOpen,
+    setIsCreateModalOpen,
+    isBulkAddOpen,
+    setIsBulkAddOpen,
+    isBulkEditOpen,
+    setIsBulkEditOpen,
+    isEditModalOpen,
+    editingMonitor,
+    handleOpenEdit,
+    handleCloseEdit,
+    monitorToDelete,
+    setMonitorToDelete,
+    isDeleting,
+    handleRequestDelete,
+    confirmDelete,
     reloadMonitors,
     handleToggle,
-    deleteMonitor,
+    handleUpdateMonitor,
+    handleBulkUpdateMonitors,
     handleBulkToggle,
     handleBulkDelete,
     handleSelectMonitor,
     handleSelectAll,
-  } = useMonitors(guildId);
-
-  // Modal States
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingMonitor, setEditingMonitor] = useState<MonitorConfig | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(() => searchParams?.get('add') === 'true');
-  const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
-  const [isBulkAddOpen, setIsBulkAddOpen] = useState(() => searchParams?.get('bulk') === 'true');
-  const [monitorToDelete, setMonitorToDelete] = useState<MonitorConfig | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const addParam = searchParams?.get('add');
-    const bulkParam = searchParams?.get('bulk');
-
-    if (addParam === 'true' || bulkParam === 'true') {
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    }
-  }, [searchParams]);
-
-  const handleDelete = (id: number) => {
-    const monitor = monitors.find((m) => m.id === id);
-    if (monitor) setMonitorToDelete(monitor);
-  };
-
-  const confirmDelete = async () => {
-    if (!monitorToDelete) return;
-    setIsDeleting(true);
-    const success = await deleteMonitor(monitorToDelete.id);
-    setIsDeleting(false);
-    if (success) {
-      setMonitorToDelete(null);
-    }
-  };
+  } = useMonitors(guildId, {
+    initialAddOpen: searchParams?.get('add') === 'true',
+    initialBulkOpen: searchParams?.get('bulk') === 'true',
+  });
 
   return (
+
     <div className={styles['monitors-container']}>
       {/* ── Page Header ── */}
       <PageHeader
@@ -194,10 +177,7 @@ function MonitorsContent() {
         <div className={styles['filter-scroll-wrapper']}>
           <div className={styles['filter-tabs']}>
             {platforms.map((p) => {
-              const count =
-                p === 'all'
-                  ? monitors.length
-                  : monitors.filter((m) => m.type === p).length;
+              const count = platformCounts[p] || 0;
 
               return (
                 <button
@@ -282,11 +262,8 @@ function MonitorsContent() {
               key={monitor.id}
               monitor={monitor}
               onToggle={handleToggle}
-              onDelete={handleDelete}
-              onEdit={(m) => {
-                setEditingMonitor(m);
-                setIsModalOpen(true);
-              }}
+              onDelete={handleRequestDelete}
+              onEdit={handleOpenEdit}
               isPremium={isPremium}
               tier={tier}
               isSelected={selectedIds.includes(monitor.id)}
@@ -389,27 +366,13 @@ function MonitorsContent() {
         />
       )}
 
-      {isModalOpen && editingMonitor && (
+      {isEditModalOpen && editingMonitor && (
         <EditMonitorModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingMonitor(null);
-          }}
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEdit}
           monitor={editingMonitor}
           guildId={guildId}
-          onSave={async (id, data) => {
-            try {
-              await monitorService.updateMonitor(id, data);
-              addToast('Monitor updated successfully', 'success');
-              reloadMonitors();
-              setIsModalOpen(false);
-              return true;
-            } catch (err: any) {
-              addToast(err?.message || 'Failed to update monitor', 'error');
-              return false;
-            }
-          }}
+          onSave={handleUpdateMonitor}
           tier={tier}
           isPremium={isPremium}
         />
@@ -432,12 +395,7 @@ function MonitorsContent() {
           onClose={() => setIsBulkEditOpen(false)}
           guildId={guildId}
           monitorCount={selectedIds.length || monitors.length}
-          onSave={async (data) => {
-            await monitorService.bulkUpdate(guildId, selectedIds.length ? selectedIds : monitors.map(m => m.id), data);
-            addToast('Monitors updated', 'success');
-            reloadMonitors();
-            setIsBulkEditOpen(false);
-          }}
+          onSave={handleBulkUpdateMonitors}
           tier={tier}
           isPremium={isPremium}
         />

@@ -21,7 +21,7 @@ export function useBulkEdit(
   isOpen: boolean,
   tier: number = 0,
   isPremium: boolean = false,
-  onSave?: (updateData: Record<string, any>) => Promise<void>,
+  onSave?: (updateData: Record<string, any>) => Promise<void | boolean>,
   onClose?: () => void
 ) {
   const { addToast } = useToast();
@@ -115,6 +115,26 @@ export function useBulkEdit(
     }
   };
 
+  const toggleField = (
+    field: 'use_channels' | 'use_roles' | 'use_color' | 'use_native' | 'use_custom_image',
+    enabled?: boolean
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: enabled !== undefined ? enabled : !prev[field],
+    }));
+  };
+
+  const updateField = <K extends keyof BulkEditFormData>(
+    field: K,
+    value: BulkEditFormData[K]
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   return {
     formData,
     setFormData,
@@ -123,6 +143,8 @@ export function useBulkEdit(
     guildChannels,
     guildRoles,
     isLocked,
+    toggleField,
+    updateField,
     handleSubmit,
   };
 }

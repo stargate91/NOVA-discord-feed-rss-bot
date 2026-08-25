@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Terminal, RefreshCw, Trash2, Maximize2, Minimize2 } from "lucide-react";
 import { IconButton, Button } from "@/components/ui";
 import { useLogStream } from "@/hooks/use_log_stream";
@@ -15,8 +15,6 @@ const LOG_LEVEL_CLASSES = {
 };
 
 export default function LogStreamer() {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-
   const {
     logs,
     isLive,
@@ -25,15 +23,11 @@ export default function LogStreamer() {
     setIsExpanded,
     loading,
     error,
+    scrollRef,
     fetchLogs,
     clearLogs,
   } = useLogStream(3000);
 
-  useEffect(() => {
-    if (scrollRef.current && !error) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [logs, error]);
 
   const formatLog = (line: string) => {
     if (!line || !line.trim()) return null;

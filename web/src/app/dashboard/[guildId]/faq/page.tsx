@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronDown, HelpCircle, Zap, ShieldCheck, Terminal } from 'lucide-react';
 import { PageHeader } from '@/components/layout';
 import { Badge } from '@/components/ui';
-import { FAQ_CATEGORIES } from '@/constants/faq';
+import { useFaq } from '@/hooks/use_faq';
 import styles from './faq.module.css';
 
 const FAQ_ICONS = {
@@ -14,9 +14,14 @@ const FAQ_ICONS = {
   Terminal: <Terminal size={16} />,
 };
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [isOpen, setIsOpen] = useState(false);
+interface FAQItemProps {
+  q: string;
+  a: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}
 
+function FAQItem({ q, a, isOpen, onToggle }: FAQItemProps) {
   return (
     <div
       className={[styles['faq-item'], isOpen && styles.active].filter(Boolean).join(' ')}
@@ -24,7 +29,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
       <button
         type="button"
         className={styles['faq-question']}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         aria-expanded={isOpen}
       >
         <span>{q}</span>
@@ -40,8 +45,14 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function FAQPage() {
-  const [activeCategory, setActiveCategory] = useState(FAQ_CATEGORIES[0].category);
-  const currentCategoryData = FAQ_CATEGORIES.find((c) => c.category === activeCategory);
+  const {
+    categories,
+    activeCategory,
+    currentCategoryData,
+    handleCategorySelect,
+    toggleItem,
+    isItemOpen,
+  } = useFaq();
 
   return (
     <div className={styles['faq-container']}>
@@ -58,7 +69,7 @@ export default function FAQPage() {
 
       {/* ── Categories Row ── */}
       <div className={styles['faq-categories']}>
-        {FAQ_CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat.category}
             type="button"
@@ -68,7 +79,7 @@ export default function FAQPage() {
             ]
               .filter(Boolean)
               .join(' ')}
-            onClick={() => setActiveCategory(cat.category)}
+            onClick={() => handleCategorySelect(cat.category)}
           >
             {FAQ_ICONS[cat.iconName]}
             <span>{cat.category}</span>
@@ -79,9 +90,16 @@ export default function FAQPage() {
       {/* ── FAQ Items ── */}
       <div className={styles['faq-list']}>
         {currentCategoryData?.questions.map((item, idx) => (
-          <FAQItem key={idx} q={item.q} a={item.a} />
+          <FAQItem
+            key={idx}
+            q={item.q}
+            a={item.a}
+            isOpen={isItemOpen(idx)}
+            onToggle={() => toggleItem(idx)}
+          />
         ))}
       </div>
     </div>
   );
 }
+

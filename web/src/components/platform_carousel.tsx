@@ -2,21 +2,11 @@
 
 import React from "react";
 import Image from "next/image";
+import { CAROUSEL_PLATFORMS } from "@/constants/platforms";
 import styles from "./platform_carousel.module.css";
 
-const PLATFORMS = [
-  { id: "youtube", name: "YouTube", icon: "/brands/youtube.png" },
-  { id: "twitch", name: "Twitch", icon: "/brands/twitch.png" },
-  { id: "kick", name: "Kick", icon: "/brands/kick.png" },
-  { id: "epic-games", name: "Epic Games", icon: "/brands/epic-games.png" },
-  { id: "steam", name: "Steam", icon: "/brands/steam.png" },
-  { id: "rss", name: "RSS", icon: "/brands/rss.png" },
-  { id: "github", name: "GitHub", icon: "/brands/github.png" },
-  { id: "crypto", name: "Crypto", icon: "/brands/crypto.png" },
-];
-
 export default function PlatformCarousel() {
-  const displayPlatforms = [...PLATFORMS, ...PLATFORMS, ...PLATFORMS];
+  const displayPlatforms = [...CAROUSEL_PLATFORMS, ...CAROUSEL_PLATFORMS, ...CAROUSEL_PLATFORMS];
 
   return (
     <div className={styles["carousel-wrapper"]}>

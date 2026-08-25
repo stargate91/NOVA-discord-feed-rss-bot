@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useSyncExternalStore, useRef } from 'react';
+import React, { useSyncExternalStore, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useEscapeKey, useBodyScrollLock } from '@/hooks';
 import styles from './modal.module.css';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -41,25 +42,8 @@ export function Modal({
   );
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  // Escape key listener & Body scroll lock
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (closeOnEscape && e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, closeOnEscape, onClose]);
+  useBodyScrollLock(isOpen);
+  useEscapeKey(onClose, isOpen && closeOnEscape);
 
   if (!isOpen || !mounted) return null;
 

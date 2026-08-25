@@ -32,7 +32,6 @@ export default function CreateMonitorModal({
     setStep,
     selectedPlatform,
     formData,
-    setFormData,
     cryptoPairs,
     guildChannels,
     guildRoles,
@@ -43,7 +42,6 @@ export default function CreateMonitorModal({
     autoQuery,
     setAutoQuery,
     autoResults,
-    isAutoSearching,
     showAutoDropdown,
     setShowAutoDropdown,
     dropdownRef,
@@ -54,6 +52,12 @@ export default function CreateMonitorModal({
     addCryptoPair,
     removeCryptoPair,
     updateCryptoPair,
+    handleInputChange,
+    handleMultiChange,
+    handleToggleChange,
+    handleColorChange,
+    selectAutocompleteItem,
+    insertTemplateVariable,
     handleSubmit,
   } = useCreateMonitorWizard({
     guildId,
@@ -122,7 +126,7 @@ export default function CreateMonitorModal({
                   id="monitor-name-input"
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
                   required
                   className="ui-input"
                   placeholder="e.g. My Favorite Streamer"
@@ -196,7 +200,7 @@ export default function CreateMonitorModal({
                           value={autoQuery || formData.platform_input}
                           onChange={(e) => {
                             setAutoQuery(e.target.value);
-                            setFormData(prev => ({ ...prev, platform_input: e.target.value }));
+                            handleInputChange('platform_input', e.target.value);
                           }}
                           onFocus={() => autoResults.length > 0 && setShowAutoDropdown(true)}
                           required
@@ -211,11 +215,7 @@ export default function CreateMonitorModal({
                                 key={item.id} 
                                 type="button"
                                 className={styles["autocomplete-item"]}
-                                onClick={() => {
-                                  setFormData(prev => ({ ...prev, platform_input: item.id, name: item.name }));
-                                  setAutoQuery(item.id); 
-                                  setShowAutoDropdown(false);
-                                }}
+                                onClick={() => selectAutocompleteItem(item)}
                               >
                                 <Image 
                                   src={item.thumbnail || "/nova_thumbnail.jpg"} 
@@ -242,7 +242,7 @@ export default function CreateMonitorModal({
                       <input
                         type="text"
                         value={formData.platform_input}
-                        onChange={(e) => setFormData(prev => ({ ...prev, platform_input: e.target.value }))}
+                        onChange={(e) => handleInputChange('platform_input', e.target.value)}
                         required
                         className="ui-input"
                         placeholder={selectedPlatform.placeholder}
@@ -298,7 +298,7 @@ export default function CreateMonitorModal({
                       type="checkbox"
                       id="create-include-upcoming"
                       checked={formData.include_upcoming}
-                      onChange={(e) => setFormData(prev => ({ ...prev, include_upcoming: e.target.checked }))}
+                      onChange={(e) => handleToggleChange('include_upcoming', e.target.checked)}
                     />
                     <span className="ui-switch-slider"></span>
                   </label>
@@ -315,7 +315,7 @@ export default function CreateMonitorModal({
                     <MultiSelect
                       options={MOVIE_GENRES}
                       value={formData.target_genres}
-                      onChange={(val) => setFormData(prev => ({ ...prev, target_genres: val }))}
+                      onChange={(val) => handleMultiChange('target_genres', val)}
                       placeholder={isLocked("genre_filter") ? "Unlock Starter Tier" : "Select genres"}
                     />
                   </div>
@@ -324,7 +324,7 @@ export default function CreateMonitorModal({
                     <MultiSelect
                       options={LANGUAGES}
                       value={formData.target_languages}
-                      onChange={(val) => setFormData(prev => ({ ...prev, target_languages: val }))}
+                      onChange={(val) => handleMultiChange('target_languages', val)}
                       placeholder={isLocked("tmdb_language_filter") ? "Unlock Starter Tier" : "Select languages"}
                     />
                   </div>
@@ -345,7 +345,7 @@ export default function CreateMonitorModal({
                   <MultiSelect
                     options={guildChannels}
                     value={formData.target_channels}
-                    onChange={(val) => setFormData(prev => ({ ...prev, target_channels: val }))}
+                    onChange={(val) => handleMultiChange('target_channels', val)}
                     placeholder={loadingContext ? "Loading..." : "Select channels"}
                   />
                 </div>
@@ -354,7 +354,7 @@ export default function CreateMonitorModal({
                   <MultiSelect
                     options={guildRoles}
                     value={formData.target_roles}
-                    onChange={(val) => setFormData(prev => ({ ...prev, target_roles: val }))}
+                    onChange={(val) => handleMultiChange('target_roles', val)}
                     placeholder={loadingContext ? "Loading..." : "Select roles"}
                   />
                 </div>
@@ -380,7 +380,7 @@ export default function CreateMonitorModal({
                     id="create-custom-alert"
                     name="custom_alert"
                     value={formData.custom_alert}
-                    onChange={(e) => setFormData(prev => ({ ...prev, custom_alert: e.target.value }))}
+                    onChange={(e) => handleInputChange('custom_alert', e.target.value)}
                     className="ui-input ui-textarea"
                     placeholder={isLocked("alert_template") ? "Unlock Professional Tier to customize messages" : `Leave empty to use default.\nExample: @everyone Here is a new post: {title}`}
                     rows={3}
@@ -399,7 +399,7 @@ export default function CreateMonitorModal({
                       key={v}
                       type="button"
                       className={styles["var-btn"]}
-                      onClick={() => !isLocked("alert_template") && setFormData(prev => ({ ...prev, custom_alert: (prev.custom_alert || '') + `{${v}}` }))}
+                      onClick={() => insertTemplateVariable(v)}
                       title={`Insert {${v}}`}
                       disabled={isLocked("alert_template")}
                     >
@@ -424,7 +424,7 @@ export default function CreateMonitorModal({
                       id="create-send-initial-alert"
                       type="checkbox"
                       checked={formData.send_initial_alert}
-                      onChange={(e) => setFormData(prev => ({ ...prev, send_initial_alert: e.target.checked }))}
+                      onChange={(e) => handleToggleChange('send_initial_alert', e.target.checked)}
                     />
                     <span className="ui-switch-slider"></span>
                   </label>
@@ -451,7 +451,7 @@ export default function CreateMonitorModal({
                         id="create-use-native-player"
                         type="checkbox"
                         checked={formData.use_native_player}
-                        onChange={(e) => setFormData(prev => ({ ...prev, use_native_player: e.target.checked }))}
+                        onChange={(e) => handleToggleChange('use_native_player', e.target.checked)}
                       />
                       <span className="ui-switch-slider"></span>
                     </label>
@@ -471,7 +471,7 @@ export default function CreateMonitorModal({
                   </div>
                   <ColorPicker 
                     value={formData.embed_color} 
-                    onChange={(color) => !isLocked("custom_color") && setFormData(prev => ({ ...prev, embed_color: color }))}
+                    onChange={handleColorChange}
                     disabled={isLocked("custom_color")}
                   />
                 </div>
@@ -497,7 +497,7 @@ export default function CreateMonitorModal({
                     id="create-custom-image"
                     type="text"
                     value={formData.custom_image}
-                    onChange={(e) => setFormData(prev => ({ ...prev, custom_image: e.target.value }))}
+                    onChange={(e) => handleInputChange('custom_image', e.target.value)}
                     className="ui-input"
                     placeholder={isLocked("custom_color") ? "Unlock Starter Tier to use custom images" : "https://imgur.com/example.png"}
                     disabled={isLocked("custom_color")}

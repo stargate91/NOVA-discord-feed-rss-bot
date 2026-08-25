@@ -10,7 +10,7 @@ import styles from './bulk_edit_modal.module.css';
 interface BulkEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (updateData: Record<string, any>) => Promise<void>;
+  onSave: (updateData: Record<string, any>) => Promise<void | boolean>;
   monitorCount: number;
   guildId: string;
   tier?: number;
@@ -28,12 +28,13 @@ export default function BulkEditModal({
 }: BulkEditModalProps) {
   const {
     formData,
-    setFormData,
     loading,
     loadingContext,
     guildChannels,
     guildRoles,
     isLocked,
+    toggleField,
+    updateField,
     handleSubmit,
   } = useBulkEdit(guildId, isOpen, tier, isPremium, onSave, onClose);
 
@@ -89,7 +90,7 @@ export default function BulkEditModal({
                   id="bulk-edit-use-channels"
                   type="checkbox" 
                   checked={formData.use_channels} 
-                  onChange={e => setFormData(prev => ({ ...prev, use_channels: e.target.checked }))} 
+                  onChange={e => toggleField('use_channels', e.target.checked)} 
                   className={styles["checkbox-input"]}
                 />
                 <label htmlFor="bulk-edit-use-channels" className={styles["section-label"]}>
@@ -100,7 +101,7 @@ export default function BulkEditModal({
                 <MultiSelect 
                   options={guildChannels}
                   value={formData.target_channels}
-                  onChange={(val: string[]) => setFormData(prev => ({ ...prev, target_channels: val }))}
+                  onChange={(val: string[]) => updateField('target_channels', val)}
                   placeholder={loadingContext ? "Loading..." : "Select channels"}
                 />
               </div>
@@ -112,7 +113,7 @@ export default function BulkEditModal({
                   id="bulk-edit-use-roles"
                   type="checkbox" 
                   checked={formData.use_roles} 
-                  onChange={e => setFormData(prev => ({ ...prev, use_roles: e.target.checked }))} 
+                  onChange={e => toggleField('use_roles', e.target.checked)} 
                   className={styles["checkbox-input"]}
                 />
                 <label htmlFor="bulk-edit-use-roles" className={styles["section-label"]}>
@@ -123,7 +124,7 @@ export default function BulkEditModal({
                 <MultiSelect 
                   options={guildRoles}
                   value={formData.target_roles}
-                  onChange={(val: string[]) => setFormData(prev => ({ ...prev, target_roles: val }))}
+                  onChange={(val: string[]) => updateField('target_roles', val)}
                   placeholder={loadingContext ? "Loading..." : "Select roles"}
                 />
               </div>
@@ -135,7 +136,7 @@ export default function BulkEditModal({
                   id="bulk-edit-use-color"
                   type="checkbox" 
                   checked={formData.use_color} 
-                  onChange={e => setFormData(prev => ({ ...prev, use_color: e.target.checked }))} 
+                  onChange={e => toggleField('use_color', e.target.checked)} 
                   className={styles["checkbox-input"]}
                 />
                 <label htmlFor="bulk-edit-use-color" className={styles["section-label"]}>
@@ -145,7 +146,7 @@ export default function BulkEditModal({
               <div className={`${styles["section-content"]} ${!formData.use_color ? styles["disabled"] : ''}`}>
                 <ColorPicker 
                   value={formData.embed_color} 
-                  onChange={(color: string) => setFormData(prev => ({ ...prev, embed_color: color }))}
+                  onChange={(color: string) => updateField('embed_color', color)}
                 />
               </div>
             </div>
@@ -156,7 +157,7 @@ export default function BulkEditModal({
                   id="bulk-edit-use-native"
                   type="checkbox" 
                   checked={formData.use_native} 
-                  onChange={e => setFormData(prev => ({ ...prev, use_native: e.target.checked }))} 
+                  onChange={e => toggleField('use_native', e.target.checked)} 
                   className={styles["checkbox-input"]}
                 />
                 <label htmlFor="bulk-edit-use-native" className={styles["section-label"]}>
@@ -176,7 +177,7 @@ export default function BulkEditModal({
                       id="bulk-edit-native-toggle"
                       type="checkbox" 
                       checked={formData.use_native_player} 
-                      onChange={(e) => setFormData(prev => ({ ...prev, use_native_player: e.target.checked }))}
+                      onChange={(e) => updateField('use_native_player', e.target.checked)}
                     />
                     <span className="ui-switch-slider"></span>
                   </label>
@@ -190,7 +191,7 @@ export default function BulkEditModal({
                   id="bulk-edit-use-image"
                   type="checkbox" 
                   checked={formData.use_custom_image} 
-                  onChange={e => setFormData(prev => ({ ...prev, use_custom_image: e.target.checked }))} 
+                  onChange={e => toggleField('use_custom_image', e.target.checked)} 
                   className={styles["checkbox-input"]}
                 />
                 <label htmlFor="bulk-edit-use-image" className={styles["section-label"]}>
@@ -203,7 +204,7 @@ export default function BulkEditModal({
                   className="ui-input" 
                   placeholder="https://imgur.com/example.png"
                   value={formData.custom_image}
-                  onChange={(e) => setFormData(prev => ({ ...prev, custom_image: e.target.value }))}
+                  onChange={(e) => updateField('custom_image', e.target.value)}
                 />
               </div>
             </div>

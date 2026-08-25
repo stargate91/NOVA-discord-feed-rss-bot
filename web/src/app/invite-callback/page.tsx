@@ -1,23 +1,11 @@
 "use client";
 
-import React, { useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
+import { useInviteCallback } from '@/hooks/use_invite_callback';
 import styles from './invite_callback.module.css';
 
 function InviteCallbackContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const guildId = searchParams?.get('guild_id');
-
-  useEffect(() => {
-    // If we have a guild_id, redirect to dashboard for that guild
-    // Otherwise just go to the selector
-    if (guildId) {
-      router.push(`/dashboard/${guildId}`);
-    } else {
-      router.push('/servers');
-    }
-  }, [guildId, router]);
+  useInviteCallback();
 
   return (
     <div className={styles['callback-container']}>
@@ -35,3 +23,4 @@ export default function InviteCallback() {
     </Suspense>
   );
 }
+

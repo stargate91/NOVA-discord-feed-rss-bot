@@ -1,20 +1,11 @@
 "use client";
 
-import React, { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense } from "react";
+import { useAuthErrorRedirect } from "@/hooks/use_auth_error_redirect";
 import styles from "./error.module.css";
 
 function AuthErrorContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const error = searchParams?.get("error");
-
-  useEffect(() => {
-    // Redirect back to landing page with a clean error message
-    // If it's a callback error (like 'Cancel' on Discord), we'll call it auth_cancelled
-    const errorType = error === "Callback" ? "auth_cancelled" : "auth_error";
-    router.push(`/?error=${errorType}`);
-  }, [router, error]);
+  useAuthErrorRedirect();
 
   return (
     <div className={styles["error-container"]}>

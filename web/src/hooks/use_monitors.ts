@@ -4,7 +4,12 @@ import guildService from '@/services/guild_service';
 import { MonitorConfig } from '@/types/monitor';
 import { useToast } from '@/context/toast_context';
 
-export function useMonitors(guildId: string) {
+interface UseMonitorsOptions {
+  initialAddOpen?: boolean;
+  initialBulkOpen?: boolean;
+}
+
+export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
   const { addToast } = useToast();
 
   const [monitors, setMonitors] = useState<MonitorConfig[]>([]);
@@ -18,9 +23,40 @@ export function useMonitors(guildId: string) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
 
+  // Modal States
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(Boolean(options?.initialAddOpen));
+  const [isBulkAddOpen, setIsBulkAddOpen] = useState(Boolean(options?.initialBulkOpen));
+  const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingMonitor, setEditingMonitor] = useState<MonitorConfig | null>(null);
+
+  // Delete Confirmation State
+  const [monitorToDelete, setMonitorToDelete] = useState<MonitorConfig | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const platforms = useMemo(() => {
     return ['all', ...Array.from(new Set(monitors.map((m) => m.type)))];
   }, [monitors]);
+
+  const platformCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: monitors.length };
+    for (const m of monitors) {
+      counts[m.type] = (counts[m.type] || 0) + 1;
+    }
+    return counts;
+  }, [monitors]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('add') || url.searchParams.has('bulk')) {
+        url.searchParams.delete('add');
+        url.searchParams.delete('bulk');
+        const newUrl = url.pathname + (url.search ? url.search : '');
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, []);
 
   const reloadMonitors = useCallback(async () => {
     if (!guildId) return;
@@ -74,14 +110,59 @@ export function useMonitors(guildId: string) {
     }
   };
 
-  const deleteMonitor = async (id: number) => {
+  const handleRequestDelete = (target: MonitorConfig | number) => {
+    if (typeof target === 'number') {
+      const found = monitors.find((m) => m.id === target);
+      if (found) setMonitorToDelete(found);
+    } else {
+      setMonitorToDelete(target);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!monitorToDelete) return false;
+    setIsDeleting(true);
     try {
-      await monitorService.deleteMonitor(id);
-      setMonitors((prev) => prev.filter((m) => m.id !== id));
+      await monitorService.deleteMonitor(monitorToDelete.id);
+      setMonitors((prev) => prev.filter((m) => m.id !== monitorToDelete.id));
       addToast('Monitor deleted successfully', 'success');
+      setMonitorToDelete(null);
       return true;
     } catch (err: any) {
       addToast(err?.message || 'Failed to delete monitor', 'error');
+      return false;
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleUpdateMonitor = async (
+    id: number,
+    data: Partial<MonitorConfig> & Record<string, any>
+  ): Promise<boolean> => {
+    try {
+      await monitorService.updateMonitor(id, data);
+      addToast('Monitor updated successfully', 'success');
+      await reloadMonitors();
+      setIsEditModalOpen(false);
+      setEditingMonitor(null);
+      return true;
+    } catch (err: any) {
+      addToast(err?.message || 'Failed to update monitor', 'error');
+      return false;
+    }
+  };
+
+  const handleBulkUpdateMonitors = async (data: Record<string, any>): Promise<boolean> => {
+    try {
+      const idsToUpdate = selectedIds.length ? selectedIds : monitors.map((m) => m.id);
+      await monitorService.bulkUpdate(guildId, idsToUpdate, data);
+      addToast('Monitors updated', 'success');
+      await reloadMonitors();
+      setIsBulkEditOpen(false);
+      return true;
+    } catch (err: any) {
+      addToast(err?.message || 'Failed to bulk update monitors', 'error');
       return false;
     }
   };
@@ -113,6 +194,16 @@ export function useMonitors(guildId: string) {
     } catch (err: any) {
       addToast(err?.message || 'Failed to delete monitors', 'error');
     }
+  };
+
+  const handleOpenEdit = (monitor: MonitorConfig) => {
+    setEditingMonitor(monitor);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditModalOpen(false);
+    setEditingMonitor(null);
   };
 
   const filteredMonitors = useMemo(() => {
@@ -155,15 +246,34 @@ export function useMonitors(guildId: string) {
     isPremium,
     tier,
     platforms,
+    platformCounts,
     filteredMonitors,
     activeCount,
     selectedIds,
     setSelectedIds,
     selectionMode,
     setSelectionMode,
+    isCreateModalOpen,
+    setIsCreateModalOpen,
+    isBulkAddOpen,
+    setIsBulkAddOpen,
+    isBulkEditOpen,
+    setIsBulkEditOpen,
+    isEditModalOpen,
+    setIsEditModalOpen,
+    editingMonitor,
+    setEditingMonitor,
+    handleOpenEdit,
+    handleCloseEdit,
+    monitorToDelete,
+    setMonitorToDelete,
+    isDeleting,
+    handleRequestDelete,
+    confirmDelete,
     reloadMonitors,
     handleToggle,
-    deleteMonitor,
+    handleUpdateMonitor,
+    handleBulkUpdateMonitors,
     handleBulkToggle,
     handleBulkDelete,
     handleSelectMonitor,

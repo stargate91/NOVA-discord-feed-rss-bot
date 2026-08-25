@@ -4,7 +4,7 @@ import React, { useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronDown, Globe } from "lucide-react";
-import { getGuildIconUrl } from "@/utils";
+import { getGuildIconUrl, getGuildInitials } from "@/utils";
 import { useGuildSwitch } from "@/hooks/use_guild_switch";
 import styles from "./guild_switcher.module.css";
 
@@ -62,7 +62,7 @@ export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProp
                 />
               ) : (
                 <div className={styles["guild-fallback"]}>
-                  {currentGuild.name.substring(0, 1)}
+                  {getGuildInitials(currentGuild.name, 1)}
                 </div>
               )}
               <span className={styles["guild-name"]}>{currentGuild.name}</span>
@@ -105,7 +105,7 @@ export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProp
                     />
                   ) : (
                     <div className={styles["guild-fallback"]}>
-                      {guild.name.substring(0, 1)}
+                      {getGuildInitials(guild.name, 1)}
                     </div>
                   )}
                   <div className={styles["item-info"]}>

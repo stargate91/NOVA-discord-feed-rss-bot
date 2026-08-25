@@ -30,20 +30,16 @@ import {
   Text,
 } from "@/components/ui";
 import LogStreamer from "@/components/log_streamer";
-import devService from "@/services/dev_service";
 import {
   DEV_ROTATION_OPTIONS,
   DEV_ACTIVITY_OPTIONS,
   DEV_DURATION_OPTIONS,
   DEV_TIER_OPTIONS,
 } from "@/constants/tiers";
-import { useToast } from "@/context/toast_context";
 import { useDevControls } from "@/hooks/use_dev_controls";
 import styles from "./dev.module.css";
 
 export default function DevSettingsPage() {
-  const { addToast } = useToast();
-
   const {
     keys,
     duration,
@@ -87,7 +83,9 @@ export default function DevSettingsPage() {
     handleSendAnnouncement,
     handleDeleteAnnouncement,
     modalConfig,
-    setModalConfig,
+    openNuclearResetModal,
+    handleConfirmModal,
+    handleCloseModal,
   } = useDevControls();
 
   return (
@@ -422,18 +420,7 @@ export default function DevSettingsPage() {
               <Button
                 variant="danger"
                 size="md"
-                onClick={() =>
-                  setModalConfig({
-                    show: true,
-                    title: "Nuclear History Reset",
-                    message: "Are you absolutely sure? Every monitor on every server will re-broadcast its latest post.",
-                    action: async () => {
-                      await devService.resetHistory();
-                      addToast("Nuclear reset completed", "success");
-                    },
-                    isProcessing: false,
-                  })
-                }
+                onClick={openNuclearResetModal}
               >
                 Reset All Feed History
               </Button>
@@ -446,7 +433,7 @@ export default function DevSettingsPage() {
       {modalConfig.show && (
         <Modal
           isOpen={modalConfig.show}
-          onClose={() => setModalConfig({ ...modalConfig, show: false })}
+          onClose={handleCloseModal}
           size="sm"
         >
           <ModalHeader>
@@ -458,18 +445,15 @@ export default function DevSettingsPage() {
           <ModalFooter>
             <Button
               variant="ghost"
-              onClick={() => setModalConfig({ ...modalConfig, show: false })}
+              onClick={handleCloseModal}
+              disabled={modalConfig.isProcessing}
             >
               Cancel
             </Button>
             <Button
               variant="danger"
-              onClick={async () => {
-                if (modalConfig.action) {
-                  await modalConfig.action();
-                }
-                setModalConfig({ ...modalConfig, show: false });
-              }}
+              isLoading={modalConfig.isProcessing}
+              onClick={handleConfirmModal}
             >
               Confirm Intent
             </Button>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import devService from '@/services/dev_service';
 
 export function useLogStream(pollIntervalMs: number = 3000) {
@@ -7,6 +7,13 @@ export function useLogStream(pollIntervalMs: number = 3000) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (scrollRef.current && !error) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [logs, error]);
 
   const fetchLogs = useCallback(async () => {
     try {
@@ -77,7 +84,9 @@ export function useLogStream(pollIntervalMs: number = 3000) {
     setIsExpanded,
     loading,
     error,
+    scrollRef,
     fetchLogs,
     clearLogs,
   };
 }
+

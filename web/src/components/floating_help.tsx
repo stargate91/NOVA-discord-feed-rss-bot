@@ -1,40 +1,26 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { HelpCircle, Book, MessageCircle, X, ExternalLink, ChevronRight, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useParams } from "next/navigation";
+import { useFloatingHelp } from "@/hooks/use_floating_help";
 import styles from "./floating_help.module.css";
 
 export default function FloatingHelp() {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const pathname = usePathname();
-  const params = useParams();
-  const guildId = (params?.guildId as string) || "";
+  const {
+    isOpen,
+    menuRef,
+    isHidden,
+    toggleMenu,
+    closeMenu,
+    guideHref,
+    faqHref,
+    supportDiscordUrl,
+  } = useFloatingHelp();
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Hide on public premium page
-  if (!guildId && pathname === "/premium") {
+  if (isHidden) {
     return null;
   }
-
-  const toggleMenu = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsOpen(!isOpen);
-  };
-
-  const guideHref = guildId ? `/dashboard/${guildId}/guide` : "/premium";
-  const faqHref = guildId ? `/dashboard/${guildId}/faq` : "/premium";
 
   return (
     <div className={styles["floating-container"]} ref={menuRef}>
@@ -45,7 +31,7 @@ export default function FloatingHelp() {
             <button 
               type="button"
               className={styles["menu-close-btn"]} 
-              onClick={() => setIsOpen(false)}
+              onClick={closeMenu}
               aria-label="Close help menu"
             >
               <X size={16} />
@@ -53,7 +39,7 @@ export default function FloatingHelp() {
           </div>
           
           <div className={styles["menu-body"]}>
-            <Link href={guideHref} onClick={() => setIsOpen(false)} className={styles["item-link"]}>
+            <Link href={guideHref} onClick={closeMenu} className={styles["item-link"]}>
               <div className={styles["help-item"]}>
                 <div className={styles["icon-wrap-purple"]}>
                   <Book size={18} />
@@ -66,7 +52,7 @@ export default function FloatingHelp() {
               </div>
             </Link>
 
-            <Link href={faqHref} onClick={() => setIsOpen(false)} className={styles["item-link"]}>
+            <Link href={faqHref} onClick={closeMenu} className={styles["item-link"]}>
               <div className={styles["help-item"]}>
                 <div className={styles["icon-wrap-blue"]}>
                   <MessageSquare size={18} />
@@ -80,7 +66,7 @@ export default function FloatingHelp() {
             </Link>
 
             <a 
-              href="https://discord.gg/PbvX3S7pXR" 
+              href={supportDiscordUrl} 
               target="_blank" 
               rel="noopener noreferrer" 
               className={`${styles["item-link"]} ${styles["help-item"]}`}

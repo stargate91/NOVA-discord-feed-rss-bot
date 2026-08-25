@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import React from "react";
 import { Sparkles } from "lucide-react";
 import { PublicLayout } from "@/components/layout";
 import {
@@ -14,21 +12,18 @@ import {
   Stack,
 } from "@/components/ui";
 import { PricingCard, PremiumComparisonTable } from "@/components/pricing";
-import { TIERS } from "@/constants/tiers";
+import { usePremiumPage, BillingInterval } from "@/hooks/use_premium_page";
 import styles from "./premium.module.css";
 
 export default function PublicPremiumPage() {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const [billingInterval, setBillingInterval] = useState<"mo" | "yr">("mo");
-
-  const handlePurchaseClick = (_tier: number) => {
-    if (!session) {
-      signIn("discord", { callbackUrl: "/servers" });
-      return;
-    }
-    router.push("/servers");
-  };
+  const {
+    session,
+    billingInterval,
+    setBillingInterval,
+    handlePurchaseClick,
+    getTierPrice,
+    tiers,
+  } = usePremiumPage();
 
   return (
     <PublicLayout session={session}>
@@ -50,7 +45,7 @@ export default function PublicPremiumPage() {
 
           {/* Billing Switcher */}
           <div className={styles["switcher-wrapper"]}>
-            <SegmentedControl<"mo" | "yr">
+            <SegmentedControl<BillingInterval>
               value={billingInterval}
               onChange={setBillingInterval}
               options={[
@@ -73,13 +68,13 @@ export default function PublicPremiumPage() {
 
         {/* ── Pricing Cards Grid ── */}
         <Grid columns={4} gap="lg">
-          {TIERS.map((t) => (
+          {tiers.map((t) => (
             <PricingCard
               key={t.tier}
               tier={t.tier}
               title={t.title}
               description={t.description}
-              price={billingInterval === "mo" ? t.price.mo : t.price.yr}
+              price={getTierPrice(t)}
               interval={billingInterval === "mo" ? "mo" : "yr"}
               isPopular={t.isPopular}
               features={t.features}
@@ -102,3 +97,4 @@ export default function PublicPremiumPage() {
     </PublicLayout>
   );
 }
+

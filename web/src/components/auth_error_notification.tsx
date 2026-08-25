@@ -1,29 +1,10 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { useToast } from "@/context/toast_context";
+import { Suspense } from "react";
+import { useAuthErrorNotification } from "@/hooks/use_auth_error_notification";
 
 function ErrorNotifier() {
-  const searchParams = useSearchParams();
-  const { addToast } = useToast();
-
-  useEffect(() => {
-    const error = searchParams?.get("error");
-    if (error === "auth_cancelled") {
-      addToast("A bejelentkezés megszakítva.", "error", "Bejelentkezés");
-      
-      // Clean up the URL
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    } else if (error === "auth_error") {
-      addToast("Hiba történt a bejelentkezés során.", "error", "Hiba");
-      
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    }
-  }, [searchParams, addToast]);
-
+  useAuthErrorNotification();
   return null;
 }
 
@@ -34,3 +15,4 @@ export default function AuthErrorNotification() {
     </Suspense>
   );
 }
+

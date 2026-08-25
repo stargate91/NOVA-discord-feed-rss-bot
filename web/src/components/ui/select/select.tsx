@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import { useClickOutside, useEscapeKey } from '@/hooks';
 import styles from './select.module.css';
 
 export interface SelectOption<T = string> {
@@ -37,15 +38,8 @@ export function Select<T = string>({
 
   const selectedOption = options.find((opt) => opt.value === value);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
+  useEscapeKey(() => setIsOpen(false), isOpen);
 
   const handleSelect = (option: SelectOption<T>) => {
     if (option.disabled) return;
@@ -57,8 +51,6 @@ export function Select<T = string>({
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       if (!disabled) setIsOpen(!isOpen);
-    } else if (e.key === 'Escape') {
-      setIsOpen(false);
     }
   };
 

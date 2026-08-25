@@ -1,31 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, ExternalLink, Bot } from 'lucide-react';
+import { Menu, Bot } from 'lucide-react';
 import styles from './public.module.css';
 import { Button, IconButton, Drawer, Stack } from '@/components/ui';
 import LoginButton from '@/components/login_button';
-import { getBotInviteUrl } from '@/utils';
+import { useMarketingHeader } from '@/hooks/use_marketing_header';
 
 export interface MarketingHeaderProps {
   session?: any;
 }
 
 export function MarketingHeader({ session }: MarketingHeaderProps) {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const botInviteUrl = getBotInviteUrl();
+  const {
+    scrolled,
+    mobileMenuOpen,
+    openMobileMenu,
+    closeMobileMenu,
+    botInviteUrl,
+  } = useMarketingHeader();
 
   return (
     <header className={[styles['public-header'], scrolled && styles.scrolled].filter(Boolean).join(' ')}>
@@ -82,7 +77,7 @@ export function MarketingHeader({ session }: MarketingHeaderProps) {
               aria-label="Open mobile menu"
               size="sm"
               variant="ghost"
-              onClick={() => setMobileMenuOpen(true)}
+              onClick={openMobileMenu}
             />
           </div>
         </div>
@@ -91,7 +86,7 @@ export function MarketingHeader({ session }: MarketingHeaderProps) {
       {/* Mobile Navigation Drawer */}
       <Drawer
         isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        onClose={closeMobileMenu}
         title="NovaFeeds"
         side="right"
       >
@@ -99,14 +94,14 @@ export function MarketingHeader({ session }: MarketingHeaderProps) {
           <Link
             href="/dashboard"
             className={styles['nav-link']}
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
           >
             Dashboard
           </Link>
           <Link
             href="/premium"
             className={styles['nav-link']}
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
           >
             Premium Plans
           </Link>
@@ -131,3 +126,4 @@ export function MarketingHeader({ session }: MarketingHeaderProps) {
     </header>
   );
 }
+

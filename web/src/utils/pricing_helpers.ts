@@ -31,3 +31,62 @@ export function getPricingButtonVariant(
   }
   return 'secondary';
 }
+
+export interface PricingCardStateOptions {
+  tier?: number;
+  currentTier?: number;
+  isMaster?: boolean;
+  isLoading?: boolean;
+  isPopular?: boolean;
+}
+
+export interface PricingCardState {
+  isCurrentPlan: boolean;
+  isFree: boolean;
+  isUpgrade: boolean;
+  isDowngrade: boolean;
+  isDisabled: boolean;
+  canPurchase: boolean;
+  buttonLabel: string;
+  buttonVariant: 'primary' | 'secondary';
+}
+
+export function calculatePricingCardState(options: PricingCardStateOptions): PricingCardState {
+  const tier = options.tier ?? 0;
+  const currentTier = options.currentTier ?? 0;
+  const isMaster = Boolean(options.isMaster);
+  const isLoading = Boolean(options.isLoading);
+  const isPopular = Boolean(options.isPopular);
+
+  const isCurrentPlan = tier === currentTier && !isMaster;
+  const isFree = tier === 0;
+  const isUpgrade = tier > currentTier && !isMaster;
+  const isDowngrade = tier < currentTier && !isMaster;
+
+  const buttonParams: PricingButtonStateParams = {
+    isLoading,
+    isMaster,
+    isCurrentPlan,
+    isUpgrade,
+    isDowngrade,
+    isFree,
+    isPopular,
+  };
+
+  const isDisabled = isFree || isCurrentPlan || isMaster || isLoading;
+  const canPurchase = !isFree && !isCurrentPlan && !isMaster && !isLoading;
+  const buttonLabel = getPricingButtonLabel(buttonParams);
+  const buttonVariant = getPricingButtonVariant(buttonParams);
+
+  return {
+    isCurrentPlan,
+    isFree,
+    isUpgrade,
+    isDowngrade,
+    isDisabled,
+    canPurchase,
+    buttonLabel,
+    buttonVariant,
+  };
+}
+

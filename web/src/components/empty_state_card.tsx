@@ -3,6 +3,7 @@
 import React from "react";
 import { Rocket, Settings, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { getGuildDashboardRoute } from "@/utils/navigation";
 import styles from "./empty_state_card.module.css";
 
 interface EmptyStateCardProps {
@@ -10,6 +11,9 @@ interface EmptyStateCardProps {
 }
 
 export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
+  const settingsHref = getGuildDashboardRoute(guildId, 'settings');
+  const monitorsHref = getGuildDashboardRoute(guildId, 'monitors');
+
   return (
     <div className={styles["empty-state-card"]}>
       {/* Background decorative elements */}
@@ -30,7 +34,7 @@ export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
           </p>
 
           <div className={styles["steps-container"]}>
-            <Link href={`/settings?guild=${guildId || ''}`} className={styles["step-card"]}>
+            <Link href={settingsHref} className={styles["step-card"]}>
               <div className={styles["step-num"]}>01</div>
               <div className={styles["step-body"]}>
                 <h3 className={styles["step-title"]}>
@@ -43,7 +47,7 @@ export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
               </div>
             </Link>
 
-            <Link href={`/monitors?guild=${guildId || ''}`} className={styles["step-card"]}>
+            <Link href={monitorsHref} className={styles["step-card"]}>
               <div className={styles["step-num"]}>02</div>
               <div className={styles["step-body"]}>
                 <h3 className={styles["step-title"]}>
@@ -61,3 +65,4 @@ export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
     </div>
   );
 }
+

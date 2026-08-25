@@ -1,7 +1,6 @@
 import React from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Activity, Send, Award, ArrowRight, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/layout";
@@ -19,8 +18,7 @@ import StatCard from "@/components/stat_card";
 import UsageIndicator from "@/components/usage_indicator";
 import QuickActions from "@/components/quick_actions";
 import EmptyStateCard from "@/components/empty_state_card";
-import dashboardService from "@/services/dashboard_service";
-import { getDashboardTierMeta } from "@/utils/tier_limits";
+import { getGuildDashboardData } from "@/utils/dashboard";
 import styles from "./dashboard.module.css";
 
 interface GuildDashboardPageProps {
@@ -31,23 +29,15 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
   const session = await getServerSession(authOptions);
   const { guildId } = await params;
 
-  if (!session) {
-    redirect("/");
-  }
+  const { stats, tierMeta, error } = await getGuildDashboardData(guildId, session);
 
-  if (!guildId) {
-    redirect("/servers");
-  }
-
-  const stats: any = await dashboardService.getGuildStats(guildId, session);
-
-  if (stats?.error) {
+  if (error) {
     return (
       <div className={styles["dashboard-content"]}>
         <EmptyState
           icon={<Activity size={36} />}
           title="Dashboard Error"
-          description={stats.error}
+          description={error}
           action={
             <Link href="/servers">
               <Button variant="primary">Back to Server List</Button>
@@ -65,14 +55,15 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
     badgeVariant,
     upgradeTitle,
     upgradeDesc,
-  } = getDashboardTierMeta(stats);
+  } = tierMeta;
+
 
   return (
     <div className={styles["dashboard-content"]}>
       {/* ── Page Header ── */}
       <PageHeader
         title="Dashboard Overview"
-        description={`Welcome back, ${session.user?.name || "Server Admin"}. Here is your live feed activity.`}
+        description={`Welcome back, ${session?.user?.name || "Server Admin"}. Here is your live feed activity.`}
         badge={
           isMaster ? (
             <Badge variant="master" size="sm" icon={<ShieldCheck size={12} />}>

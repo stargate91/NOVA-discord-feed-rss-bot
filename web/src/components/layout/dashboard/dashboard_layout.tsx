@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useSyncExternalStore } from 'react';
+import React from 'react';
 import styles from './dashboard.module.css';
 import { DashboardSidebar } from './dashboard_sidebar';
 import { DashboardHeader } from './dashboard_header';
@@ -8,6 +8,7 @@ import { Drawer, Stack } from '@/components/ui';
 import GuildSwitcher from '@/components/guild_switcher';
 import NavLinks from '@/components/nav_links';
 import LogoutButton from '@/components/logout_button';
+import { useDashboardLayout } from '@/hooks/use_dashboard_layout';
 
 export interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -18,8 +19,6 @@ export interface DashboardLayoutProps {
   className?: string;
 }
 
-const emptySubscribe = () => () => {};
-
 export function DashboardLayout({
   children,
   session,
@@ -28,24 +27,14 @@ export function DashboardLayout({
   headerActions,
   className,
 }: DashboardLayoutProps) {
-  const isClient = useSyncExternalStore(emptySubscribe, () => true, () => false);
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('nova_sidebar_collapsed') === 'true';
-    }
-    return false;
-  });
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
-  const toggleCollapse = () => {
-    setIsCollapsed((prev) => {
-      const next = !prev;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('nova_sidebar_collapsed', String(next));
-      }
-      return next;
-    });
-  };
+  const {
+    isClient,
+    isCollapsed,
+    mobileDrawerOpen,
+    openMobileDrawer,
+    closeMobileDrawer,
+    toggleCollapse,
+  } = useDashboardLayout();
 
   return (
     <div className={[styles['dashboard-root'], className].filter(Boolean).join(' ')}>
@@ -54,7 +43,7 @@ export function DashboardLayout({
         <DashboardSidebar
           session={session}
           isMaster={isMaster}
-          isCollapsed={isClient ? isCollapsed : false}
+          isCollapsed={isCollapsed}
           onToggleCollapse={toggleCollapse}
         />
       </div>
@@ -62,16 +51,16 @@ export function DashboardLayout({
       {/* Mobile Drawer Navigation */}
       <Drawer
         isOpen={mobileDrawerOpen}
-        onClose={() => setMobileDrawerOpen(false)}
+        onClose={closeMobileDrawer}
         title="NovaFeeds Dashboard"
         side="left"
       >
         <Stack gap="lg">
           <GuildSwitcher isMaster={isMaster} />
           <nav 
-            onClick={() => setMobileDrawerOpen(false)}
+            onClick={closeMobileDrawer}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') setMobileDrawerOpen(false);
+              if (e.key === 'Enter') closeMobileDrawer();
             }}
           >
             <NavLinks session={session} isMaster={isMaster} />
@@ -92,7 +81,7 @@ export function DashboardLayout({
         <DashboardHeader
           session={session}
           breadcrumbs={breadcrumbs}
-          onOpenMobileMenu={() => setMobileDrawerOpen(true)}
+          onOpenMobileMenu={openMobileDrawer}
           actions={headerActions}
         />
 

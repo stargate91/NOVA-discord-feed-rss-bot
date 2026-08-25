@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { ChevronDown, X, Search, Check } from 'lucide-react';
+import { useMultiSelect } from '@/hooks/use_multi_select';
+import { SelectOption, getOptionId, getOptionName } from '@/utils';
 import styles from './multi_select.module.css';
 
-interface MultiSelectOption {
-  id?: string;
-  name?: string;
-  [key: string]: any;
-}
-
 interface MultiSelectProps {
-  options?: Array<MultiSelectOption | string>;
+  options?: Array<SelectOption | string>;
   value?: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
@@ -23,68 +19,41 @@ export default function MultiSelect({
   onChange, 
   placeholder = "Select options..." 
 }: MultiSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const getItemId = (opt: MultiSelectOption | string): string => {
-    if (typeof opt === 'string') return opt;
-    return String(opt.id || opt.value || opt.name || '');
-  };
-
-  const getItemName = (opt: MultiSelectOption | string): string => {
-    if (typeof opt === 'string') return opt;
-    return String(opt.name || opt.label || opt.id || '');
-  };
-
-  const selectedItems = options.filter(opt => value.includes(getItemId(opt)));
-  const filteredOptions = options.filter(opt => 
-    getItemName(opt).toLowerCase().includes(search.toLowerCase())
-  );
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const toggleOption = (id: string) => {
-    const newValue = value.includes(id)
-      ? value.filter(v => v !== id)
-      : [...value, id];
-    onChange(newValue);
-  };
-
-  const removeTag = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    onChange(value.filter(v => v !== id));
-  };
+  const {
+    isOpen,
+    search,
+    setSearch,
+    dropdownRef,
+    selectedItems,
+    filteredOptions,
+    handleToggle,
+    removeTag,
+    clearAll,
+    toggleDropdown,
+    isSelected,
+  } = useMultiSelect({ options, value, onChange });
 
   return (
     <div className={styles["select-wrapper"]} ref={dropdownRef}>
       <button 
         type="button"
         className={`${styles["select-box"]} ${isOpen ? styles.open : ''}`} 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleDropdown}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
         <div className={styles["tag-list"]}>
           {selectedItems.length > 0 ? (
-            selectedItems.map(item => {
-              const id = getItemId(item);
-              const name = getItemName(item);
+            selectedItems.map((item) => {
+              const id = getOptionId(item);
+              const name = getOptionName(item);
               return (
                 <span key={id} className={styles["tag-item"]}>
                   <span>{name}</span>
                   <button 
                     type="button" 
                     className={styles["tag-remove-btn"]} 
-                    onClick={(e) => removeTag(e, id)}
+                    onClick={(e) => removeTag(id, e)}
                     aria-label={`Remove ${name}`}
                   >
                     <X size={14} />
@@ -117,19 +86,19 @@ export default function MultiSelect({
           </div>
           
           <div className={styles["options-list"]}>
-            {filteredOptions.map(option => {
-              const id = getItemId(option);
-              const name = getItemName(option);
-              const isSelected = value.includes(id);
+            {filteredOptions.map((option) => {
+              const id = getOptionId(option);
+              const name = getOptionName(option);
+              const checked = isSelected(id);
               return (
                 <button 
                   key={id} 
                   type="button"
-                  className={`${styles["option-item"]} ${isSelected ? styles.selected : ''}`}
-                  onClick={() => toggleOption(id)}
+                  className={`${styles["option-item"]} ${checked ? styles.selected : ''}`}
+                  onClick={() => handleToggle(id)}
                 >
-                  <div className={`${styles["checkbox-custom"]} ${isSelected ? styles.checked : ''}`}>
-                    {isSelected && <Check size={12} />}
+                  <div className={`${styles["checkbox-custom"]} ${checked ? styles.checked : ''}`}>
+                    {checked && <Check size={12} />}
                   </div>
                   <span className={styles["option-label"]}>{name}</span>
                 </button>
@@ -145,7 +114,7 @@ export default function MultiSelect({
             <button 
               type="button" 
               className={styles["btn-clear"]} 
-              onClick={() => onChange([])}
+              onClick={clearAll}
             >
               Clear All
             </button>
@@ -155,3 +124,4 @@ export default function MultiSelect({
     </div>
   );
 }
+

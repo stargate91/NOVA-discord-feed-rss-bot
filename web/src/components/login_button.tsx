@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { signIn, signOut } from "next-auth/react";
+import React from "react";
 import { LogOut, ChevronDown } from "lucide-react";
 import { Button, Avatar } from "@/components/ui";
+import { useLoginButton } from "@/hooks/use_login_button";
 import styles from "./login_button.module.css";
 
 interface LoginButtonProps {
@@ -12,21 +12,15 @@ interface LoginButtonProps {
 }
 
 export default function LoginButton({ session, isMobile }: LoginButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const {
+    isOpen,
+    dropdownRef,
+    displayName,
+    displayEmail,
+    handleLogin,
+    handleLogout,
+    toggleDropdown,
+  } = useLoginButton({ session });
 
   if (session) {
     if (isMobile) {
@@ -36,7 +30,7 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
           size="md"
           fullWidth
           leftIcon={<LogOut size={18} />}
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={handleLogout}
         >
           Sign Out
         </Button>
@@ -47,18 +41,18 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
       <div className={styles.container} ref={dropdownRef}>
         <button
           className={styles["profile-btn"]}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleDropdown}
           type="button"
           aria-haspopup="menu"
           aria-expanded={isOpen}
         >
           <Avatar
             src={session.user?.image}
-            alt={session.user?.name || "User"}
+            alt={displayName}
             size="sm"
           />
           <span className={styles["user-name"]}>
-            {session.user?.name}
+            {displayName}
           </span>
           <ChevronDown
             size={14}
@@ -70,7 +64,7 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
           <div className={styles["dropdown-card"]}>
             <div className={styles["email-wrap"]}>
               <p className={styles["email-text"]}>
-                {session.user?.email || "Logged in"}
+                {displayEmail}
               </p>
             </div>
 
@@ -79,10 +73,7 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
             <button
               type="button"
               className={styles["signout-btn"]}
-              onClick={() => {
-                setIsOpen(false);
-                signOut({ callbackUrl: "/" });
-              }}
+              onClick={handleLogout}
             >
               <LogOut size={14} />
               <span>Sign Out</span>
@@ -97,7 +88,7 @@ export default function LoginButton({ session, isMobile }: LoginButtonProps) {
     <Button
       variant="primary"
       size="sm"
-      onClick={() => signIn("discord", { callbackUrl: "/servers" })}
+      onClick={handleLogin}
     >
       Login with Discord
     </Button>

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useSyncExternalStore, useRef } from 'react';
+import React, { useSyncExternalStore, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useEscapeKey, useBodyScrollLock } from '@/hooks';
 import styles from './drawer.module.css';
 import { IconButton } from '../icon_button';
 
@@ -36,22 +37,8 @@ export function Drawer({
   );
   const drawerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  useBodyScrollLock(isOpen);
+  useEscapeKey(onClose, isOpen);
 
   if (!isOpen || !mounted) return null;
 

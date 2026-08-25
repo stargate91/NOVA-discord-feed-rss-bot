@@ -8,6 +8,23 @@ export interface TemplatePlatform {
   tags: string[];
 }
 
+export interface CarouselPlatformItem {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+export const CAROUSEL_PLATFORMS: CarouselPlatformItem[] = [
+  { id: 'youtube', name: 'YouTube', icon: '/brands/youtube.png' },
+  { id: 'twitch', name: 'Twitch', icon: '/brands/twitch.png' },
+  { id: 'kick', name: 'Kick', icon: '/brands/kick.png' },
+  { id: 'epic-games', name: 'Epic Games', icon: '/brands/epic-games.png' },
+  { id: 'steam', name: 'Steam', icon: '/brands/steam.png' },
+  { id: 'rss', name: 'RSS', icon: '/brands/rss.png' },
+  { id: 'github', name: 'GitHub', icon: '/brands/github.png' },
+  { id: 'crypto', name: 'Crypto', icon: '/brands/crypto.png' },
+];
+
 export const PLATFORMS: PlatformMetadata[] = [
   // Content & Streaming
   { id: 'youtube', name: 'YouTube', logo: '/brands/youtube.png', color: '#FF0000', description: 'Monitor a channel for new videos.', inputLabel: 'Channel Info', inputKey: 'channel_id', placeholder: '@handle, Link or Name', hint: 'Format: @handle, channel link, name or UCID.' },

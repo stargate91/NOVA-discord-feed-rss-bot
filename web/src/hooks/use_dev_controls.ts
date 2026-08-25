@@ -192,6 +192,38 @@ export function useDevControls() {
     }
   };
 
+  const openNuclearResetModal = () => {
+    setModalConfig({
+      show: true,
+      title: 'Nuclear History Reset',
+      message: 'Are you absolutely sure? Every monitor on every server will re-broadcast its latest post.',
+      action: async () => {
+        await devService.resetHistory();
+        addToast('Nuclear reset completed', 'success');
+      },
+      isProcessing: false,
+    });
+  };
+
+  const handleConfirmModal = async () => {
+    if (modalConfig.action) {
+      try {
+        setModalConfig((prev) => ({ ...prev, isProcessing: true }));
+        await modalConfig.action();
+      } catch (err: any) {
+        addToast(err?.message || 'Action failed', 'error');
+      } finally {
+        setModalConfig((prev) => ({ ...prev, show: false, isProcessing: false }));
+      }
+    } else {
+      setModalConfig((prev) => ({ ...prev, show: false }));
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalConfig((prev) => ({ ...prev, show: false }));
+  };
+
   return {
     loading,
     keys,
@@ -237,5 +269,8 @@ export function useDevControls() {
     handleDeleteAnnouncement,
     modalConfig,
     setModalConfig,
+    openNuclearResetModal,
+    handleConfirmModal,
+    handleCloseModal,
   };
 }

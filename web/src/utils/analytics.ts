@@ -87,3 +87,47 @@ export function formatHeatmapMatrix(
 
   return matrix;
 }
+
+export interface GaugeMetrics {
+  percentage: number;
+  circumference: number;
+  offset: number;
+  strokeColor: string;
+  variant: 'accent' | 'warning' | 'error';
+  remaining: number;
+}
+
+/**
+ * Calculates SVG circular gauge metrics and threshold states
+ */
+export function calculateGaugeMetrics(
+  current: number,
+  max: number,
+  radius = 36
+): GaugeMetrics {
+  const safeMax = max > 0 ? max : 1;
+  const percentage = Math.min(Math.round((current / safeMax) * 100), 100);
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
+
+  let strokeColor = 'var(--accent-light)';
+  let variant: 'accent' | 'warning' | 'error' = 'accent';
+
+  if (percentage >= 100) {
+    strokeColor = 'var(--status-error)';
+    variant = 'error';
+  } else if (percentage >= 80) {
+    strokeColor = 'var(--status-warning)';
+    variant = 'warning';
+  }
+
+  return {
+    percentage,
+    circumference,
+    offset,
+    strokeColor,
+    variant,
+    remaining: Math.max(0, max - current),
+  };
+}
+

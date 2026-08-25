@@ -5,10 +5,7 @@ import { Check, ChevronRight } from 'lucide-react';
 import styles from './pricing_card.module.css';
 import { Button, Divider } from '@/components/ui';
 import { TierFeature } from '@/lib/premium_data';
-import {
-  getPricingButtonLabel,
-  getPricingButtonVariant,
-} from '@/utils/pricing_helpers';
+import { calculatePricingCardState } from '@/utils/pricing_helpers';
 
 export interface PricingCardProps {
   title: string;
@@ -37,23 +34,19 @@ export function PricingCard({
   onPurchaseClick = () => {},
   isLoading = false,
 }: PricingCardProps) {
-  const isCurrentPlan = tier === currentTier && !isMaster;
-  const isFree = tier === 0;
-  const isUpgrade = tier > currentTier && !isMaster;
-  const isDowngrade = tier < currentTier && !isMaster;
-
-  const buttonParams = {
-    isLoading,
-    isMaster,
-    isCurrentPlan,
-    isUpgrade,
-    isDowngrade,
+  const {
     isFree,
+    isDisabled,
+    canPurchase,
+    buttonLabel,
+    buttonVariant,
+  } = calculatePricingCardState({
+    tier,
+    currentTier,
+    isMaster,
+    isLoading,
     isPopular,
-  };
-
-  const buttonLabel = getPricingButtonLabel(buttonParams);
-  const buttonVariant = getPricingButtonVariant(buttonParams);
+  });
 
   return (
     <div
@@ -106,15 +99,15 @@ export function PricingCard({
           variant={buttonVariant}
           size="lg"
           fullWidth
-          disabled={isFree || isCurrentPlan || isMaster}
+          disabled={isDisabled}
           isLoading={isLoading}
           rightIcon={
-            !isFree && !isCurrentPlan && !isMaster && !isLoading ? (
+            canPurchase ? (
               <ChevronRight size={18} />
             ) : undefined
           }
           onClick={() => {
-            if (!isFree && !isCurrentPlan && !isMaster) {
+            if (canPurchase) {
               onPurchaseClick();
             }
           }}
@@ -125,3 +118,4 @@ export function PricingCard({
     </div>
   );
 }
+

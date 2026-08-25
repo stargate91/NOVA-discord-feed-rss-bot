@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { Lock } from 'lucide-react';
 import Link from 'next/link';
-import { TEMPLATE_PLATFORMS, TAG_DESCRIPTIONS } from '@/constants';
+import { TAG_DESCRIPTIONS } from '@/constants';
 import { Button } from '@/components/ui';
+import { useTemplateEditor } from '@/hooks/use_template_editor';
 
 export interface TemplateEditorProps {
   templates: Record<string, string>;
@@ -22,8 +23,15 @@ export default function TemplateEditor({
   guildId,
   styles,
 }: TemplateEditorProps) {
-  const [activePlatform, setActivePlatform] = useState(TEMPLATE_PLATFORMS[0].id);
-  const currentPlatform = TEMPLATE_PLATFORMS.find((p) => p.id === activePlatform);
+  const {
+    platforms,
+    activePlatform,
+    setActivePlatform,
+    currentPlatform,
+    currentTemplate,
+    handleTemplateChange,
+    handleTagClick,
+  } = useTemplateEditor({ templates, onUpdate });
 
   if (isLocked) {
     return (
@@ -44,7 +52,7 @@ export default function TemplateEditor({
   return (
     <div className={styles['template-wrapper']}>
       <div className={styles['platform-tabs']}>
-        {TEMPLATE_PLATFORMS.map((p) => (
+        {platforms.map((p) => (
           <button
             key={p.id}
             type="button"
@@ -76,9 +84,7 @@ export default function TemplateEditor({
               key={tag}
               type="button"
               className={styles['tag-pill']}
-              onClick={() =>
-                onUpdate(activePlatform, (templates[activePlatform] || '') + tag)
-              }
+              onClick={() => handleTagClick(tag)}
               title={TAG_DESCRIPTIONS[tag]}
             >
               {tag}
@@ -90,8 +96,8 @@ export default function TemplateEditor({
       <textarea
         className={styles['template-textarea']}
         placeholder="Enter your custom alert template markdown..."
-        value={templates[activePlatform] || ''}
-        onChange={(e) => onUpdate(activePlatform, e.target.value)}
+        value={currentTemplate}
+        onChange={(e) => handleTemplateChange(e.target.value)}
       />
     </div>
   );

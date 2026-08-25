@@ -31,3 +31,29 @@ export function getBotInviteUrl(guildId?: string): string {
   }
   return url;
 }
+
+/**
+ * Converts a Discord integer color to a hex string (e.g. 0x5865F2 -> "#5865f2").
+ */
+export function discordColorToHex(color?: number | null, fallback = 'var(--text-muted)'): string {
+  if (!color || color === 0) return fallback;
+  return `#${color.toString(16).padStart(6, '0')}`;
+}
+
+/**
+ * Extracts 1-2 letter uppercase initials from a guild/server name.
+ */
+export function getGuildInitials(name?: string, maxLength = 2): string {
+  if (!name || typeof name !== 'string') return '';
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].slice(0, maxLength).toUpperCase();
+  }
+  return words
+    .map((w) => w[0])
+    .join('')
+    .slice(0, maxLength)
+    .toUpperCase();
+}
+
+
