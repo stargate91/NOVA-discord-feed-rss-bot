@@ -1,0 +1,110 @@
+.toast-container {
+  position: fixed;
+  bottom: var(--space-xl);
+  right: var(--space-xl);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  pointer-events: none;
+  max-width: 26rem;
+  width: 100%;
+}
+
+.toast-card {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--bg-card-strong);
+  border: 1px solid var(--border-default);
+  backdrop-filter: blur(var(--blur-xl));
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  animation: slideIn var(--transition-fast) var(--ease-spring);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-body {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-icon-wrap {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.toast-icon-success {
+  color: var(--status-success);
+}
+
+.toast-icon-error {
+  color: var(--status-error);
+}
+
+.toast-icon-warning {
+  color: var(--status-warning);
+}
+
+.toast-icon-info {
+  color: var(--accent-light);
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+}
+
+.toast-message {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+}
+
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-3xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.toast-close-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}

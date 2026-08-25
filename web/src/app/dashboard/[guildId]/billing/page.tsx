@@ -13,12 +13,11 @@ import {
   Heading,
   Text,
 } from '@/components/ui';
-import { PricingCard } from '@/components/pricing/PricingCard';
-import { PremiumComparisonTable } from '@/components/pricing/PremiumComparisonTable';
+import { PricingCard, PremiumComparisonTable } from '@/components/pricing';
 import { TIERS } from '@/constants/tiers';
-import billingService from '@/services/billingService';
-import settingsService from '@/services/settingsService';
-import { useToast } from '@/context/ToastContext';
+import billingService from '@/services/billing_service';
+import settingsService from '@/services/settings_service';
+import { useToast } from '@/context/toast_context';
 import styles from './billing.module.css';
 
 function GuildBillingContent() {
@@ -51,7 +50,7 @@ function GuildBillingContent() {
         })
         .finally(() => setLoading(false));
     }
-  }, [guildId]);
+  }, [guildId, addToast]);
 
   const handlePurchaseClick = async (tier: number) => {
     if (!stripeConfig?.products) {
@@ -73,7 +72,7 @@ function GuildBillingContent() {
     try {
       const data = await billingService.createCheckoutSession(priceId, guildId);
       if (data.url) {
-        window.location.href = data.url;
+        window.location.assign(data.url);
       } else {
         addToast('Failed to create checkout session', 'error');
       }
@@ -87,7 +86,7 @@ function GuildBillingContent() {
 
   if (loading) {
     return (
-      <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: '8rem' }}>
+      <Stack align="center" justify="center" gap="lg" className={styles['loading-stack']}>
         <Spinner size="lg" label="Loading subscription details..." />
       </Stack>
     );

@@ -1,3 +1,3 @@
-export * from './Stack';
-export * from './Inline';
-export * from './Grid';
+export * from './stack';
+export * from './inline';
+export * from './grid';

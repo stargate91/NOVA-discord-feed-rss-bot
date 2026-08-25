@@ -129,7 +129,7 @@ function GuideContent() {
               </div>
 
               {step.link && (
-                <div style={{ marginTop: 'var(--space-xs)' }}>
+                <div className={styles['step-actions']}>
                   <Link href={step.link}>
                     <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
                       {step.linkText}

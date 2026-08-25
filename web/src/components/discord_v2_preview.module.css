@@ -1,0 +1,219 @@
+.discord-wrapper {
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.discord-container {
+  background: var(--bg-card-strong);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  backdrop-filter: blur(var(--blur-md));
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+}
+
+.discord-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.channel-hash {
+  color: var(--text-muted);
+  font-size: var(--text-base);
+}
+
+.channel-name {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-xs);
+}
+
+.scanline {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 6.25rem;
+  background: var(--gradient-accent-soft);
+  pointer-events: none;
+  z-index: var(--z-raised);
+}
+
+.discord-message {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.avatar-wrap {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+}
+
+.message-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-2xs);
+}
+
+.bot-name {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+}
+
+.badge-app {
+  background: var(--accent-light);
+  color: var(--text-inverse);
+  font-size: var(--text-2xs);
+  padding: var(--space-3xs) var(--space-2xs);
+  border-radius: var(--radius-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.timestamp {
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+}
+
+.embed-container {
+  display: flex;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.embed-stripe {
+  width: 0.25rem;
+  background: var(--status-error);
+  flex-shrink: 0;
+}
+
+.embed-content {
+  padding: var(--space-sm) var(--space-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.embed-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.embed-title {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.media-wrap {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-xs);
+  border: 1px solid var(--border-subtle);
+}
+
+.media-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.channel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  flex: 1;
+}
+
+.author-title {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-xs);
+}
+
+.published-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-2xs);
+}
+
+.published-pill {
+  color: var(--text-primary);
+  font-size: var(--text-2xs);
+  background: var(--bg-card);
+  padding: var(--space-3xs) var(--space-2xs);
+  border-radius: var(--radius-xs);
+  display: inline-block;
+  width: fit-content;
+}
+
+.published-relative {
+  color: var(--text-muted);
+}
+
+.btn-action-wrap {
+  flex-shrink: 0;
+}
+
+.discord-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.discord-btn:hover {
+  background: var(--bg-card-hover);
+}
+
+.delivered-by {
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: var(--text-2xs);
+}
+
+.delivered-highlight {
+  color: var(--accent-light);
+  font-weight: var(--font-weight-bold);
+  font-style: normal;
+}

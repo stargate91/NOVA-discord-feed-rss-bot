@@ -5,6 +5,10 @@
   width: 100%;
 }
 
+.loading-stack {
+  padding-block: 4rem;
+}
+
 .controls-bar {
   display: flex;
   flex-direction: column;

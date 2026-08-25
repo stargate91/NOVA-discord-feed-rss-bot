@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
+import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import {
@@ -33,14 +34,14 @@ import {
   Inline,
   Stack,
 } from '@/components/ui';
-import MonitorCard from '@/components/MonitorCard';
-import EditMonitorModal from '@/components/EditMonitorModal';
-import CreateMonitorModal from '@/components/CreateMonitorModal';
-import BulkEditModal from '@/components/BulkEditModal';
-import BulkAddModal from '@/components/BulkAddModal';
-import { useToast } from '@/context/ToastContext';
-import monitorService from '@/services/monitorService';
-import guildService from '@/services/guildService';
+import MonitorCard from '@/components/monitor_card';
+import EditMonitorModal from '@/components/edit_monitor_modal';
+import CreateMonitorModal from '@/components/create_monitor_modal';
+import BulkEditModal from '@/components/bulk_edit_modal';
+import BulkAddModal from '@/components/bulk_add_modal';
+import { useToast } from '@/context/toast_context';
+import monitorService from '@/services/monitor_service';
+import guildService from '@/services/guild_service';
 import { MonitorConfig } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
 import { getPlatformLogo } from '@/utils';
@@ -63,9 +64,9 @@ function MonitorsContent() {
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMonitor, setEditingMonitor] = useState<MonitorConfig | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(() => searchParams?.get('add') === 'true');
   const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
-  const [isBulkAddOpen, setIsBulkAddOpen] = useState(false);
+  const [isBulkAddOpen, setIsBulkAddOpen] = useState(() => searchParams?.get('bulk') === 'true');
   const [monitorToDelete, setMonitorToDelete] = useState<MonitorConfig | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -77,30 +78,47 @@ function MonitorsContent() {
     return ['all', ...Array.from(new Set(monitors.map((m) => m.type)))];
   }, [monitors]);
 
-  const loadData = async () => {
-    if (!guildId) return;
-    setLoading(true);
-    try {
-      const [fetchedMonitors, guilds] = await Promise.all([
-        monitorService.getMonitors(guildId),
-        guildService.getGuilds(),
-      ]);
-      setMonitors(fetchedMonitors);
+  useEffect(() => {
+    let ignore = false;
+    async function load() {
+      if (!guildId) return;
+      try {
+        const [fetchedMonitors, guilds] = await Promise.all([
+          monitorService.getMonitors(guildId),
+          guildService.getGuilds(),
+        ]);
+        if (ignore) return;
+        setMonitors(fetchedMonitors);
 
-      const current = guilds.find((g: any) => String(g.id) === String(guildId));
-      if (current) {
-        setIsPremium(current.isPremium || current.isMaster || false);
-        setTier(current.isMaster ? 0 : current.tier || 0);
+        const current = guilds.find((g: any) => String(g.id) === String(guildId));
+        if (current) {
+          setIsPremium(current.isPremium || current.isMaster || false);
+          setTier(current.isMaster ? 0 : current.tier || 0);
+        }
+      } catch (err: any) {
+        console.error('Failed to load monitors:', err);
+        addToast(err?.message || 'Failed to sync server data', 'error');
+      } finally {
+        if (!ignore) setLoading(false);
       }
-    } catch (err: any) {
-      console.error('Failed to load monitors:', err);
-      addToast(err?.message || 'Failed to sync server data', 'error');
-    } finally {
-      setLoading(false);
     }
-  };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [guildId, addToast]);
 
-  const reloadMonitors = async () => {
+  useEffect(() => {
+    const addParam = searchParams?.get('add');
+    const bulkParam = searchParams?.get('bulk');
+
+    if (addParam === 'true' || bulkParam === 'true') {
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [searchParams]);
+
+  const reloadMonitors = useCallback(async () => {
     if (!guildId) return;
     try {
       const fetchedMonitors = await monitorService.getMonitors(guildId);
@@ -108,24 +126,7 @@ function MonitorsContent() {
     } catch (err) {
       console.error(err);
     }
-  };
-
-  useEffect(() => {
-    loadData();
   }, [guildId]);
-
-  useEffect(() => {
-    const addParam = searchParams?.get('add');
-    const bulkParam = searchParams?.get('bulk');
-
-    if (addParam === 'true') setIsCreateModalOpen(true);
-    if (bulkParam === 'true') setIsBulkAddOpen(true);
-
-    if (addParam === 'true' || bulkParam === 'true') {
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    }
-  }, [searchParams, guildId]);
 
   const handleToggle = async (id: number, enabled: boolean) => {
     try {
@@ -188,6 +189,16 @@ function MonitorsContent() {
     }
   };
 
+  const filteredMonitors = useMemo(() => {
+    return monitors.filter((m) => {
+      const matchesSearch =
+        m.name.toLowerCase().includes(search.toLowerCase()) ||
+        String(m.id).includes(search);
+      const matchesPlatform = filter === 'all' || m.type === filter;
+      return matchesSearch && matchesPlatform;
+    });
+  }, [monitors, search, filter]);
+
   const handleSelectMonitor = (id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -201,16 +212,6 @@ function MonitorsContent() {
       setSelectedIds(filteredMonitors.map((m) => m.id));
     }
   };
-
-  const filteredMonitors = useMemo(() => {
-    return monitors.filter((m) => {
-      const matchesSearch =
-        m.name.toLowerCase().includes(search.toLowerCase()) ||
-        String(m.id).includes(search);
-      const matchesPlatform = filter === 'all' || m.type === filter;
-      return matchesSearch && matchesPlatform;
-    });
-  }, [monitors, search, filter]);
 
   const activeCount = monitors.filter((m) => m.enabled).length;
 
@@ -319,11 +320,12 @@ function MonitorsContent() {
                     {p === 'all' ? (
                       <Globe size={14} />
                     ) : (
-                      <img
+                      <Image
                         src={getPlatformLogo(p)}
                         alt=""
                         width={14}
                         height={14}
+                        unoptimized
                       />
                     )}
                   </span>
@@ -338,7 +340,7 @@ function MonitorsContent() {
 
       {/* ── Loading State ── */}
       {loading && (
-        <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: '4rem' }}>
+        <Stack align="center" justify="center" gap="lg" className={styles['loading-stack']}>
           <Spinner size="lg" label="Loading monitors..." />
         </Stack>
       )}

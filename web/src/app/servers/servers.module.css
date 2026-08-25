@@ -7,6 +7,10 @@
   padding-block: var(--space-4xl);
 }
 
+.loading-stack {
+  padding-block: var(--space-4xl);
+}
+
 .servers-header {
   display: flex;
   flex-direction: column;

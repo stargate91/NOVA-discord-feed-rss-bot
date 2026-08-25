@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -30,7 +30,7 @@ import {
   IconButton,
 } from "@/components/ui";
 import { GuildInfo } from "@/types/guild";
-import guildService from "@/services/guildService";
+import guildService from "@/services/guild_service";
 import { getGuildIconUrl } from "@/utils";
 import styles from "./servers.module.css";
 
@@ -45,10 +45,33 @@ export default function ServersPage() {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
-    } else if (status === "authenticated") {
-      fetchGuilds();
+      return;
     }
-  }, [status]);
+    if (status === "authenticated") {
+      let ignore = false;
+      async function load() {
+        try {
+          const data = await guildService.getGuilds();
+          if (!ignore) {
+            setGuilds(data);
+          }
+        } catch (err: any) {
+          if (!ignore) {
+            setError(err?.message || "Failed to load Discord servers");
+            console.error("Guild fetch error:", err);
+          }
+        } finally {
+          if (!ignore) {
+            setLoading(false);
+          }
+        }
+      }
+      load();
+      return () => {
+        ignore = true;
+      };
+    }
+  }, [status, router]);
 
   const fetchGuilds = async () => {
     setLoading(true);
@@ -131,7 +154,7 @@ export default function ServersPage() {
 
         {/* ── Loading State ── */}
         {loading && (
-          <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: "4rem" }}>
+          <Stack align="center" justify="center" gap="lg" className={styles["loading-stack"]}>
             <Spinner size="lg" label="Loading Discord servers..." />
           </Stack>
         )}

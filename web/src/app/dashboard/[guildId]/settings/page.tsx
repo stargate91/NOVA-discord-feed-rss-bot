@@ -27,12 +27,12 @@ import {
   Stack,
   Text,
 } from "@/components/ui";
-import SettingCard from "@/components/SettingCard";
-import TemplateEditor from "@/components/TemplateEditor";
-import { useToast } from "@/context/ToastContext";
-import { useConfig } from "@/hooks/useConfig";
-import settingsService from "@/services/settingsService";
-import billingService from "@/services/billingService";
+import SettingCard from "@/components/setting_card";
+import TemplateEditor from "@/components/template_editor";
+import { useToast } from "@/context/toast_context";
+import { useConfig } from "@/hooks/use_config";
+import settingsService from "@/services/settings_service";
+import billingService from "@/services/billing_service";
 import { DiscordRole, GuildSettings } from "@/types/guild";
 import { BOT_LANGUAGES } from "@/constants";
 import styles from "./settings.module.css";
@@ -64,33 +64,32 @@ function CustomRoleSelect({ roles, value, onChange }: CustomRoleSelectProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const selectedColor = selectedRole?.color
+    ? `#${selectedRole.color.toString(16).padStart(6, "0")}`
+    : "var(--border-subtle)";
+
   return (
     <div className={styles["role-select-wrapper"]} ref={dropdownRef}>
-      <div
+      <button
+        type="button"
         className={styles["role-trigger"]}
         onClick={() => setIsOpen(!isOpen)}
-        role="button"
-        tabIndex={0}
+        aria-expanded={isOpen}
       >
         <div className={styles["role-value-box"]}>
-          <div
-            className={styles["role-dot"]}
-            style={{
-              backgroundColor: selectedRole?.color
-                ? `#${selectedRole.color.toString(16).padStart(6, "0")}`
-                : "var(--border-subtle)",
-            }}
-          />
+          <svg width="10" height="10" viewBox="0 0 10 10" className={styles["role-dot"]} aria-hidden="true">
+            <circle cx="5" cy="5" r="5" fill={selectedColor} />
+          </svg>
           <span>
             {selectedRole ? selectedRole.name : "None (Owner & Admins only)"}
           </span>
         </div>
         <ChevronDown size={16} />
-      </div>
+      </button>
 
       {isOpen && (
         <div className={styles["role-menu"]}>
-          <div style={{ padding: "var(--space-2xs)", marginBottom: "var(--space-xs)" }}>
+          <div className={styles["role-search-wrap"]}>
             <Input
               placeholder="Search roles..."
               value={search}
@@ -99,7 +98,8 @@ function CustomRoleSelect({ roles, value, onChange }: CustomRoleSelectProps) {
             />
           </div>
 
-          <div
+          <button
+            type="button"
             className={[
               styles["role-option"],
               (value === "0" || !value) && styles.active,
@@ -111,35 +111,36 @@ function CustomRoleSelect({ roles, value, onChange }: CustomRoleSelectProps) {
               setIsOpen(false);
             }}
           >
-            <div className={styles["role-dot"]} style={{ background: "transparent", border: "1px dashed var(--border-light)" }} />
+            <div className={`${styles["role-dot"]} ${styles["role-dot-none"]}`} />
             <span>None (Owner & Admins only)</span>
-          </div>
+          </button>
 
-          {filteredRoles.map((role) => (
-            <div
-              key={role.id}
-              className={[
-                styles["role-option"],
-                value === role.id && styles.active,
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={() => {
-                onChange(role.id);
-                setIsOpen(false);
-              }}
-            >
-              <div
-                className={styles["role-dot"]}
-                style={{
-                  backgroundColor: role.color
-                    ? `#${role.color.toString(16).padStart(6, "0")}`
-                    : "var(--text-muted)",
+          {filteredRoles.map((role) => {
+            const roleColor = role.color
+              ? `#${role.color.toString(16).padStart(6, "0")}`
+              : "var(--text-muted)";
+            return (
+              <button
+                type="button"
+                key={role.id}
+                className={[
+                  styles["role-option"],
+                  value === role.id && styles.active,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => {
+                  onChange(role.id);
+                  setIsOpen(false);
                 }}
-              />
-              <span>{role.name}</span>
-            </div>
-          ))}
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" className={styles["role-dot"]} aria-hidden="true">
+                  <circle cx="5" cy="5" r="5" fill={roleColor} />
+                </svg>
+                <span>{role.name}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -319,7 +320,7 @@ function SettingsContent() {
 
   if (loading) {
     return (
-      <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: "8rem" }}>
+      <Stack align="center" justify="center" gap="lg" className={styles["loading-stack"]}>
         <Spinner size="lg" label="Loading server settings..." />
       </Stack>
     );
@@ -523,7 +524,7 @@ function SettingsContent() {
                 Manage Stripe Subscription
               </Button>
             ) : (
-              <Link href={`/dashboard/${guildId}/billing`} style={{ width: "100%" }}>
+              <Link href={`/dashboard/${guildId}/billing`} className={styles["upgrade-link"]}>
                 <Button variant={activeTierLevel > 0 ? "secondary" : "primary"} size="md" fullWidth>
                   {activeTierLevel > 0 ? "Upgrade / Manage Plan" : "Upgrade to Premium"}
                 </Button>
@@ -534,7 +535,7 @@ function SettingsContent() {
           {/* Promo Code Redemption Card */}
           <div className={styles["status-card"]}>
             <div className={styles["status-header"]}>
-              <div className={styles["status-icon-box"]} style={{ background: "var(--accent-faint)", color: "var(--accent-light)", borderColor: "var(--border-accent)" }}>
+              <div className={`${styles["status-icon-box"]} ${styles["promo-icon-box"]}`}>
                 <Tag size={24} />
               </div>
               <div className={styles["status-info"]}>

@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { notifyBotOfChange } from "@/lib/bot-sync";
+import { notifyBotOfChange } from "@/lib/bot_sync";
 import { canManageGuild } from "@/lib/permissions";
 import { getGuildTierLimits, hasFeature } from "@/lib/config";
 

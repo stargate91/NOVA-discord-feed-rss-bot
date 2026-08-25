@@ -1,0 +1,71 @@
+.heatmap-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  overflow-x: auto;
+  padding: var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+}
+
+.heatmap-svg {
+  width: 100%;
+  min-width: 36rem;
+  height: auto;
+  display: block;
+}
+
+.day-label {
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  fill: var(--text-muted);
+}
+
+.hour-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  fill: var(--text-muted);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+}
+
+.legend-cells {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.legend-swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--radius-xs);
+}
+
+.swatch-0 {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.swatch-1 {
+  background: var(--accent-light);
+  opacity: 0.3;
+}
+
+.swatch-2 {
+  background: var(--accent-light);
+  opacity: 0.6;
+}
+
+.swatch-3 {
+  background: var(--accent-light);
+  opacity: 1;
+}

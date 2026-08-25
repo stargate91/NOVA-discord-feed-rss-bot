@@ -2,9 +2,9 @@ import React from "react";
 import { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "@/styles/index.css";
-import AuthProvider from "@/components/SessionProvider";
-import { ToastProvider } from "@/context/ToastContext";
-import ToastContainer from "@/components/ToastContainer";
+import AuthProvider from "@/components/session_provider";
+import { ToastProvider } from "@/context/toast_context";
+import ToastContainer from "@/components/toast_container";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -13,8 +13,7 @@ import {
   SegmentedControl,
   Stack,
 } from "@/components/ui";
-import { PricingCard } from "@/components/pricing/PricingCard";
-import { PremiumComparisonTable } from "@/components/pricing/PremiumComparisonTable";
+import { PricingCard, PremiumComparisonTable } from "@/components/pricing";
 import { TIERS } from "@/constants/tiers";
 import styles from "./premium.module.css";
 

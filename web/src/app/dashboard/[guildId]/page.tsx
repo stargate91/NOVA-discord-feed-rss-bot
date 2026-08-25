@@ -15,11 +15,11 @@ import {
   Badge,
   EmptyState,
 } from "@/components/ui";
-import StatCard from "@/components/StatCard";
-import UsageIndicator from "@/components/UsageIndicator";
-import QuickActions from "@/components/QuickActions";
-import EmptyStateCard from "@/components/EmptyStateCard";
-import dashboardService from "@/services/dashboardService";
+import StatCard from "@/components/stat_card";
+import UsageIndicator from "@/components/usage_indicator";
+import QuickActions from "@/components/quick_actions";
+import EmptyStateCard from "@/components/empty_state_card";
+import dashboardService from "@/services/dashboard_service";
 import styles from "./dashboard.module.css";
 
 interface GuildDashboardPageProps {

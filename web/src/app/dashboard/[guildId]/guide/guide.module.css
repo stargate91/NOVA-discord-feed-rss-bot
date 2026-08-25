@@ -90,3 +90,7 @@
   color: var(--accent-light);
   flex-shrink: 0;
 }
+
+.step-actions {
+  margin-top: var(--space-xs);
+}

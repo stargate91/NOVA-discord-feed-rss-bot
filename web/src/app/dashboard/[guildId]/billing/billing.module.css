@@ -5,6 +5,10 @@
   width: 100%;
 }
 
+.loading-stack {
+  padding-block: 8rem;
+}
+
 .switcher-row {
   display: flex;
   justify-content: center;

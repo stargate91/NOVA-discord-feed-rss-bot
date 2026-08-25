@@ -3,8 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DashboardLayout } from "@/components/layout";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
-import FloatingHelp from "@/components/FloatingHelp";
+import AnnouncementBanner from "@/components/announcement_banner";
+import FloatingHelp from "@/components/floating_help";
 
 export default async function GuildDashboardLayout({
   children,

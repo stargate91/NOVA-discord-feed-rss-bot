@@ -31,19 +31,19 @@ import {
   Stack,
   Text,
 } from "@/components/ui";
-import LogStreamer from "@/components/LogStreamer";
+import LogStreamer from "@/components/log_streamer";
 import devService, {
   AnnouncementItem,
   BotStatusItem,
   PremiumKeyItem,
-} from "@/services/devService";
+} from "@/services/dev_service";
 import {
   DEV_ROTATION_OPTIONS,
   DEV_ACTIVITY_OPTIONS,
   DEV_DURATION_OPTIONS,
   DEV_TIER_OPTIONS,
 } from "@/constants/tiers";
-import { useToast } from "@/context/ToastContext";
+import { useToast } from "@/context/toast_context";
 import styles from "./dev.module.css";
 
 export default function DevSettingsPage() {
@@ -97,34 +97,37 @@ export default function DevSettingsPage() {
     isProcessing: false,
   });
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [fetchedKeys, fetchedStatuses, botSettings, fetchedAnnouncements] =
-        await Promise.all([
-          devService.getKeys(),
-          devService.getStatuses(),
-          devService.getBotSettings(),
-          devService.getAnnouncements(),
-        ]);
-
-      if (Array.isArray(fetchedKeys)) setKeys(fetchedKeys);
-      if (Array.isArray(fetchedStatuses)) setStatuses(fetchedStatuses);
-      if (botSettings.status_rotation_mode)
-        setRotationMode(botSettings.status_rotation_mode);
-      if (botSettings.presence_interval_seconds)
-        setRotationInterval(String(botSettings.presence_interval_seconds));
-      if (Array.isArray(fetchedAnnouncements))
-        setAnnouncements(fetchedAnnouncements);
-    } catch (err) {
-      console.error("Error fetching dev data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
+    let ignore = false;
+    async function loadDevData() {
+      try {
+        const [fetchedKeys, fetchedStatuses, botSettings, fetchedAnnouncements] =
+          await Promise.all([
+            devService.getKeys(),
+            devService.getStatuses(),
+            devService.getBotSettings(),
+            devService.getAnnouncements(),
+          ]);
+
+        if (ignore) return;
+        if (Array.isArray(fetchedKeys)) setKeys(fetchedKeys);
+        if (Array.isArray(fetchedStatuses)) setStatuses(fetchedStatuses);
+        if (botSettings.status_rotation_mode)
+          setRotationMode(botSettings.status_rotation_mode);
+        if (botSettings.presence_interval_seconds)
+          setRotationInterval(String(botSettings.presence_interval_seconds));
+        if (Array.isArray(fetchedAnnouncements))
+          setAnnouncements(fetchedAnnouncements);
+      } catch (err) {
+        console.error("Error fetching dev data:", err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    loadDevData();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   // --- Keys ---
@@ -248,9 +251,11 @@ export default function DevSettingsPage() {
 
       {/* ── 1. Global Broadcasts Accordion ── */}
       <div className={styles["section-card"]}>
-        <div
+        <button
+          type="button"
           className={styles["section-header"]}
           onClick={() => setShowBroadcast(!showBroadcast)}
+          aria-expanded={showBroadcast}
         >
           <div className={styles["section-title-wrap"]}>
             <Activity size={18} color="var(--accent-light)" />
@@ -258,12 +263,9 @@ export default function DevSettingsPage() {
           </div>
           <ChevronDown
             size={18}
-            style={{
-              transform: showBroadcast ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}
+            className={`${styles["accordion-chevron"]} ${showBroadcast ? styles.expanded : ""}`}
           />
-        </div>
+        </button>
 
         {showBroadcast && (
           <div className={styles["section-body"]}>
@@ -277,7 +279,7 @@ export default function DevSettingsPage() {
                     setNewAnnounce({ ...newAnnounce, title: e.target.value })
                   }
                 />
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2xs)" }}>
+                <div className="ui-form-group">
                   <label className="text-caption">Content Markdown</label>
                   <textarea
                     placeholder="Broadcast message details..."
@@ -285,8 +287,7 @@ export default function DevSettingsPage() {
                     onChange={(e) =>
                       setNewAnnounce({ ...newAnnounce, content: e.target.value })
                     }
-                    className="ui-textarea"
-                    style={{ minHeight: "6rem" }}
+                    className={`ui-textarea ${styles["broadcast-textarea"]}`}
                   />
                 </div>
                 <Inline gap="sm" align="center">
@@ -309,7 +310,7 @@ export default function DevSettingsPage() {
                       <Badge variant="warning" size="sm">
                         {a.type.toUpperCase()}
                       </Badge>
-                      <strong style={{ fontSize: "var(--text-xs)" }}>{a.title}</strong>
+                      <strong className={styles["announce-title"]}>{a.title}</strong>
                     </Stack>
                     <IconButton
                       icon={<X size={14} />}
@@ -331,11 +332,13 @@ export default function DevSettingsPage() {
         )}
       </div>
 
-      {/* ── 2. Discord Rich Presence Accordion ── */}
+      {/* ── 2. Discord Bot Presence Accordion ── */}
       <div className={styles["section-card"]}>
-        <div
+        <button
+          type="button"
           className={styles["section-header"]}
           onClick={() => setShowPresence(!showPresence)}
+          aria-expanded={showPresence}
         >
           <div className={styles["section-title-wrap"]}>
             <Radio size={18} color="var(--accent-light)" />
@@ -343,12 +346,9 @@ export default function DevSettingsPage() {
           </div>
           <ChevronDown
             size={18}
-            style={{
-              transform: showPresence ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}
+            className={`${styles["accordion-chevron"]} ${showPresence ? styles.expanded : ""}`}
           />
-        </div>
+        </button>
 
         {showPresence && (
           <div className={styles["section-body"]}>
@@ -376,7 +376,7 @@ export default function DevSettingsPage() {
                   options={DEV_ACTIVITY_OPTIONS}
                 />
                 <Inline gap="xs" align="end">
-                  <div style={{ flex: 1 }}>
+                  <div className={styles["flex-auto"]}>
                     <Input
                       label="Status Pattern"
                       placeholder="e.g. {count} Discord Servers"
@@ -421,9 +421,11 @@ export default function DevSettingsPage() {
 
       {/* ── 3. Premium Key Management Accordion ── */}
       <div className={styles["section-card"]}>
-        <div
+        <button
+          type="button"
           className={styles["section-header"]}
           onClick={() => setShowPremium(!showPremium)}
+          aria-expanded={showPremium}
         >
           <div className={styles["section-title-wrap"]}>
             <Key size={18} color="var(--status-warning)" />
@@ -431,17 +433,14 @@ export default function DevSettingsPage() {
           </div>
           <ChevronDown
             size={18}
-            style={{
-              transform: showPremium ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}
+            className={`${styles["accordion-chevron"]} ${showPremium ? styles.expanded : ""}`}
           />
-        </div>
+        </button>
 
         {showPremium && (
           <div className={styles["section-body"]}>
             <Inline gap="sm" wrap align="end">
-              <div style={{ minWidth: "10rem" }}>
+              <div className={styles["input-duration"]}>
                 <Select
                   label="Duration"
                   value={duration}
@@ -449,7 +448,7 @@ export default function DevSettingsPage() {
                   options={DEV_DURATION_OPTIONS}
                 />
               </div>
-              <div style={{ minWidth: "8rem" }}>
+              <div className={styles["input-tier"]}>
                 <Select
                   label="Tier"
                   value={tier}
@@ -458,7 +457,7 @@ export default function DevSettingsPage() {
                 />
               </div>
               {duration === "custom" && (
-                <div style={{ width: "6rem" }}>
+                <div className={styles["input-small"]}>
                   <Input
                     label="Days"
                     type="number"
@@ -467,7 +466,7 @@ export default function DevSettingsPage() {
                   />
                 </div>
               )}
-              <div style={{ width: "6rem" }}>
+              <div className={styles["input-small"]}>
                 <Input
                   label="Max Uses"
                   type="number"
@@ -538,9 +537,11 @@ export default function DevSettingsPage() {
 
       {/* ── 4. System Maintenance & Nuclear Actions ── */}
       <div className={styles["section-card"]}>
-        <div
+        <button
+          type="button"
           className={styles["section-header"]}
           onClick={() => setShowMaintenance(!showMaintenance)}
+          aria-expanded={showMaintenance}
         >
           <div className={styles["section-title-wrap"]}>
             <Flame size={18} color="var(--status-error)" />
@@ -548,17 +549,14 @@ export default function DevSettingsPage() {
           </div>
           <ChevronDown
             size={18}
-            style={{
-              transform: showMaintenance ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}
+            className={`${styles["accordion-chevron"]} ${showMaintenance ? styles.expanded : ""}`}
           />
-        </div>
+        </button>
 
         {showMaintenance && (
           <div className={styles["section-body"]}>
             <div className={styles["nuclear-card"]}>
-              <strong style={{ color: "var(--status-error)" }}>
+              <strong className={styles["nuclear-title"]}>
                 Nuclear History Reset
               </strong>
               <Text as="p" size="xs" variant="secondary">

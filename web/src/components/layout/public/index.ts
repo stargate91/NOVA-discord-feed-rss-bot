@@ -1,3 +1,3 @@
-export * from './PublicLayout';
-export * from './MarketingHeader';
-export * from './MarketingFooter';
+export * from './public_layout';
+export * from './marketing_header';
+export * from './marketing_footer';

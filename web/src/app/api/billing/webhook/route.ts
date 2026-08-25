@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import fs from "fs";
 import path from "path";
 import pool from "@/lib/db";
-import { notifyBotOfChange } from "@/lib/bot-sync";
+import { notifyBotOfChange } from "@/lib/bot_sync";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";

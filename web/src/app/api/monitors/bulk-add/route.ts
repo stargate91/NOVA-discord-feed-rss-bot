@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { notifyBotOfChange } from "@/lib/bot-sync";
+import { NextRequest, NextResponse } from "next/server";
+import { notifyBotOfChange } from "@/lib/bot_sync";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { query } from "@/lib/db";

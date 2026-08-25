@@ -40,11 +40,12 @@ import {
   Stack,
   Text,
 } from "@/components/ui";
-import StatCard from "@/components/StatCard";
-import HeatmapChart from "@/components/HeatmapChart";
-import LiveTicker from "@/components/LiveTicker";
+import StatCard from "@/components/stat_card";
+import HeatmapChart from "@/components/heatmap_chart";
+import LiveTicker from "@/components/live_ticker";
 import { ANALYTICS_RANGE_LABELS, ANALYTICS_PIE_COLORS } from "@/constants/navigation";
-import analyticsService, { AnalyticsData } from "@/services/analyticsService";
+import analyticsService, { AnalyticsData } from "@/services/analytics_service";
+import { calculatePeriodGrowthRate, formatPlatformBreakdown } from "@/utils/analytics";
 import styles from "./analytics.module.css";
 
 // Custom Chart Tooltip
@@ -127,9 +128,17 @@ function AnalyticsContent() {
     }));
   }, [data]);
 
+  const growthRate = useMemo(() => {
+    return calculatePeriodGrowthRate(data?.history || []);
+  }, [data]);
+
+  const formattedPlatforms = useMemo(() => {
+    return formatPlatformBreakdown(data?.platforms || [], data?.totalPosts || 0);
+  }, [data]);
+
   if (loading && !data) {
     return (
-      <Stack align="center" justify="center" gap="lg" style={{ paddingBlock: "8rem" }}>
+      <Stack align="center" justify="center" gap="lg" className={styles["loading-stack"]}>
         <Spinner size="lg" label="Loading analytics and delivery data..." />
       </Stack>
     );
@@ -162,7 +171,7 @@ function AnalyticsContent() {
 
       {/* ── Range Selector & Live Ticker ── */}
       <div className={styles["range-row"]}>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-xs)" }}>
+        <div className={styles["range-controls"]}>
           <Calendar size={16} color="var(--accent-light)" />
           <span className="text-caption">Time Range:</span>
           <SegmentedControl<string>
@@ -177,7 +186,7 @@ function AnalyticsContent() {
             options={Object.entries(ANALYTICS_RANGE_LABELS).map(([val, label]) => ({
               value: val,
               label: (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                <span className={styles["range-label-badge"]}>
                   <span>{label}</span>
                   {isRangeLocked(val) && <Lock size={12} />}
                 </span>
@@ -186,7 +195,7 @@ function AnalyticsContent() {
           />
         </div>
 
-        <div style={{ flex: 1, minWidth: "16rem" }}>
+        <div className={styles["ticker-container"]}>
           <LiveTicker />
         </div>
       </div>
@@ -197,6 +206,7 @@ function AnalyticsContent() {
           title="Total Messages"
           value={data.totalPosts.toLocaleString()}
           description="Overall delivered posts"
+          trend={growthRate !== 0 ? { value: Math.abs(growthRate), isPositive: growthRate >= 0 } : undefined}
           icon={TrendingUp}
         />
         <StatCard
@@ -285,9 +295,9 @@ function AnalyticsContent() {
             <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Pie
-                  data={data.platforms || []}
+                  data={formattedPlatforms}
                   dataKey="count"
-                  nameKey="displayName"
+                  nameKey="name"
                   cx="50%"
                   cy="50%"
                   innerRadius={45}
@@ -295,7 +305,7 @@ function AnalyticsContent() {
                   paddingAngle={6}
                   stroke="none"
                 >
-                  {(data.platforms || []).map((entry: any, index: number) => (
+                  {formattedPlatforms.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={ANALYTICS_PIE_COLORS[index % ANALYTICS_PIE_COLORS.length]}
@@ -307,17 +317,14 @@ function AnalyticsContent() {
             </ResponsiveContainer>
 
             <div className={styles["pie-legend-grid"]}>
-              {(data.platforms || []).map((p: any, i: number) => (
-                <div key={p.platform} className={styles["legend-item"]}>
+              {formattedPlatforms.map((p, i) => (
+                <div key={p.id} className={styles["legend-item"]}>
                   <div
                     className={styles["legend-dot"]}
-                    style={{
-                      background:
-                        ANALYTICS_PIE_COLORS[i % ANALYTICS_PIE_COLORS.length],
-                    }}
+                    data-color-index={i % 5}
                   />
                   <span>
-                    {p.displayName} ({p.count})
+                    {p.name} ({p.count}) · {p.percentage}%
                   </span>
                 </div>
               ))}

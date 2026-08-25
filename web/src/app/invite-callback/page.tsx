@@ -2,6 +2,7 @@
 
 import React, { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import styles from './invite_callback.module.css';
 
 function InviteCallbackContent() {
   const router = useRouter();
@@ -19,17 +20,10 @@ function InviteCallbackContent() {
   }, [guildId, router]);
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      height: '100vh',
-      textAlign: 'center'
-    }}>
-      <h2 style={{ color: 'var(--accent-color)', marginBottom: '1rem' }}>Success!</h2>
-      <p style={{ color: 'var(--text-secondary)' }}>Redirecting you back to NovaFeeds Dashboard...</p>
-      <div className="loader" style={{ marginTop: '2rem' }}></div>
+    <div className={styles['callback-container']}>
+      <h2 className={styles['callback-title']}>Success!</h2>
+      <p className={styles['callback-text']}>Redirecting you back to NovaFeeds Dashboard...</p>
+      <div className={`ui-loader-simple ${styles['callback-loader']}`} />
     </div>
   );
 }

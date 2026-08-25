@@ -2,6 +2,7 @@
 
 import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import styles from "./error.module.css";
 
 function AuthErrorContent() {
   const router = useRouter();
@@ -16,18 +17,10 @@ function AuthErrorContent() {
   }, [router, error]);
 
   return (
-    <div style={{ 
-      height: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      background: '#0a0a0f', 
-      color: 'white', 
-      fontFamily: 'var(--font-display), sans-serif' 
-    }}>
-      <div style={{ textAlign: 'center' }}>
-        <div className="ui-loader-simple" style={{ marginBottom: '1rem' }}></div>
-        <p style={{ opacity: 0.6, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem' }}>Processing login error...</p>
+    <div className={styles["error-container"]}>
+      <div className={styles["error-content"]}>
+        <div className={`ui-loader-simple ${styles.loader}`} />
+        <p className={styles["error-text"]}>Processing login error...</p>
       </div>
     </div>
   );

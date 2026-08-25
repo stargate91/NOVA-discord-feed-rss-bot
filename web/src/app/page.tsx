@@ -30,10 +30,10 @@ import {
   Grid,
   Inline,
 } from "@/components/ui";
-import PlatformCarousel from "@/components/PlatformCarousel";
-import LiveTicker from "@/components/LiveTicker";
-import DiscordV2Preview from "@/components/DiscordV2Preview";
-import AuthErrorNotification from "@/components/AuthErrorNotification";
+import PlatformCarousel from "@/components/platform_carousel";
+import LiveTicker from "@/components/live_ticker";
+import DiscordV2Preview from "@/components/discord_v2_preview";
+import AuthErrorNotification from "@/components/auth_error_notification";
 import styles from "./landing.module.css";
 
 export const metadata: Metadata = {

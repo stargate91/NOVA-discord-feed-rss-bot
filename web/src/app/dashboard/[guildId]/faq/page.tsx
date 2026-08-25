@@ -81,12 +81,16 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   return (
     <div
       className={[styles['faq-item'], isOpen && styles.active].filter(Boolean).join(' ')}
-      onClick={() => setIsOpen(!isOpen)}
     >
-      <div className={styles['faq-question']}>
+      <button
+        type="button"
+        className={styles['faq-question']}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
         <span>{q}</span>
         <ChevronDown size={16} className={styles['faq-chevron']} />
-      </div>
+      </button>
       {isOpen && (
         <div className={styles['faq-answer']}>
           <p>{a}</p>

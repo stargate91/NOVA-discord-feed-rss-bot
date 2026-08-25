@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { canManageGuild } from "@/lib/permissions";
 import { NextRequest, NextResponse } from "next/server";
-import { notifyBotOfChange } from "@/lib/bot-sync";
+import { notifyBotOfChange } from "@/lib/bot_sync";
 import { getGuildTierLimits, hasFeature } from "@/lib/config";
 
 export async function GET(request: NextRequest) {
