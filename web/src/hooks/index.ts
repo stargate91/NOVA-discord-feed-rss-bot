@@ -35,3 +35,4 @@ export * from './use_marketing_header';
 export * from './use_faq';
 export * from './use_tooltip';
 export * from './use_image_fallback';
+export * from './use_toast_manager';

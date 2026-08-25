@@ -1,11 +1,31 @@
+import React from 'react';
+import { Zap, HelpCircle, ShieldCheck, Terminal, LucideIcon } from 'lucide-react';
+
 export interface FAQQuestion {
   q: string;
   a: string;
 }
 
+export type FAQCategoryIconName = 'Zap' | 'HelpCircle' | 'ShieldCheck' | 'Terminal';
+
+export const FAQ_CATEGORY_ICONS: Record<FAQCategoryIconName, LucideIcon> = {
+  Zap,
+  HelpCircle,
+  ShieldCheck,
+  Terminal,
+};
+
+export function getFaqCategoryIcon(name: FAQCategoryIconName): LucideIcon {
+  return FAQ_CATEGORY_ICONS[name] || HelpCircle;
+}
+
+export function renderFaqCategoryIcon(name: FAQCategoryIconName, size = 16): React.ReactNode {
+  return React.createElement(getFaqCategoryIcon(name), { size });
+}
+
 export interface FAQCategoryItem {
   category: string;
-  iconName: 'Zap' | 'HelpCircle' | 'ShieldCheck' | 'Terminal';
+  iconName: FAQCategoryIconName;
   questions: FAQQuestion[];
 }
 

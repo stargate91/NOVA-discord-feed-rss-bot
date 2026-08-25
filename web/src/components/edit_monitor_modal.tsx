@@ -7,7 +7,14 @@ import { X, Plus, Trash2, Info } from 'lucide-react';
 import ColorPicker from './color_picker';
 import { MonitorConfig } from '@/types/monitor';
 import { MOVIE_GENRES, LANGUAGES, getAvailableVars } from '@/lib/monitor_constants';
-import { getPlatformLogo } from '@/utils';
+import {
+  getPlatformLogo,
+  isCryptoPlatform,
+  supportsNativePlayer,
+  supportsMediaFilters,
+  supportsCustomEmbedColor,
+  supportsUpcomingGames,
+} from '@/utils';
 import { useEditMonitor } from '@/hooks/use_edit_monitor';
 import styles from './edit_monitor_modal.module.css';
 
@@ -102,7 +109,7 @@ export default function EditMonitorModal({
             />
           </div>
 
-          {monitor.type === 'crypto' && (
+          {isCryptoPlatform(monitor.type) && (
             <div className={styles["crypto-box"]}>
               <div className={styles["form-label-row"]}>
                 <span className={styles["form-label"]}>Price Alert Targets</span>
@@ -227,7 +234,7 @@ export default function EditMonitorModal({
             </div>
           </div>
 
-          {monitor.type === 'youtube' && (
+          {supportsNativePlayer(monitor.type) && (
             <div className={styles["toggle-section"]}>
               <div className={styles["toggle-text-wrap"]}>
                 <label htmlFor="edit-use-native-player" className={styles["toggle-label"]}>
@@ -256,7 +263,7 @@ export default function EditMonitorModal({
             </div>
           )}
 
-          {(monitor.type === 'movie' || monitor.type === 'tv_series') && (
+          {supportsMediaFilters(monitor.type) && (
             <div className={`${styles["grid-2"]} ${styles["grid-relative"]}`}>
               <div className={styles["form-group"]}>
                 <span className={styles["form-label"]}>Target Genres</span>
@@ -284,7 +291,7 @@ export default function EditMonitorModal({
             </div>
           )}
 
-          {(!['youtube'].includes(monitor.type) || (monitor.type === 'youtube' && !formData.use_native_player)) && (
+          {supportsCustomEmbedColor(monitor.type, formData.use_native_player) && (
             <div className={styles["form-group"]}>
               <div className={styles["form-label-row"]}>
                 <span className={styles["form-label"]}>Embed Accent Color</span>
@@ -336,7 +343,7 @@ export default function EditMonitorModal({
             </div>
           </div>
 
-          {monitor.type === 'epic_games' && (
+          {supportsUpcomingGames(monitor.type) && (
             <div className={styles["toggle-section"]}>
               <div className={styles["toggle-text-wrap"]}>
                 <label htmlFor="edit-include-upcoming" className={styles["toggle-label"]}>

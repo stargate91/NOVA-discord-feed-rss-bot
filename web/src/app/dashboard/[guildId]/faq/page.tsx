@@ -1,18 +1,12 @@
 "use client";
 
 import React from 'react';
-import { ChevronDown, HelpCircle, Zap, ShieldCheck, Terminal } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { PageHeader } from '@/components/layout';
 import { Badge } from '@/components/ui';
 import { useFaq } from '@/hooks/use_faq';
+import { renderFaqCategoryIcon } from '@/constants/faq';
 import styles from './faq.module.css';
-
-const FAQ_ICONS = {
-  Zap: <Zap size={16} />,
-  HelpCircle: <HelpCircle size={16} />,
-  ShieldCheck: <ShieldCheck size={16} />,
-  Terminal: <Terminal size={16} />,
-};
 
 interface FAQItemProps {
   q: string;
@@ -81,7 +75,7 @@ export default function FAQPage() {
               .join(' ')}
             onClick={() => handleCategorySelect(cat.category)}
           >
-            {FAQ_ICONS[cat.iconName]}
+            {renderFaqCategoryIcon(cat.iconName, 16)}
             <span>{cat.category}</span>
           </button>
         ))}

@@ -62,3 +62,36 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+export interface GuildDashboardAuthResult {
+  session: any;
+  guildId: string;
+  isMaster: boolean;
+}
+
+export async function requireGuildDashboardAuth(
+  paramsPromise: Promise<{ guildId: string }> | { guildId: string }
+): Promise<GuildDashboardAuthResult> {
+  const { getServerSession } = await import("next-auth");
+  const { redirect } = await import("next/navigation");
+
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/");
+  }
+
+  const { guildId } = await paramsPromise;
+
+  if (!guildId) {
+    redirect("/servers");
+  }
+
+  const isMaster = (session?.user as any)?.role === "master";
+
+  return {
+    session,
+    guildId,
+    isMaster,
+  };
+}

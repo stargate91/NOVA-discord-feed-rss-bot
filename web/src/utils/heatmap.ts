@@ -36,3 +36,33 @@ export function getHeatmapCellColor(count: number, max: number): string {
   const opacity = 0.1 + (count / (max || 1)) * 0.9;
   return `rgba(123, 44, 191, ${opacity})`;
 }
+
+export const HEATMAP_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+export const HEATMAP_HOURS = Array.from({ length: 24 }, (_, i) => i);
+
+export const HEATMAP_LAYOUT = {
+  CELL_WIDTH: 24,
+  CELL_HEIGHT: 20,
+  GAP: 4,
+  LEFT_OFFSET: 40,
+  TOP_OFFSET: 24,
+  TOTAL_WIDTH: 40 + 24 * (24 + 4), // 712
+  TOTAL_HEIGHT: 24 + 7 * (20 + 4), // 192
+} as const;
+
+export function getHeatmapCellCoordinates(dayIndex: number, hourIndex: number) {
+  const x = HEATMAP_LAYOUT.LEFT_OFFSET + hourIndex * (HEATMAP_LAYOUT.CELL_WIDTH + HEATMAP_LAYOUT.GAP);
+  const y = HEATMAP_LAYOUT.TOP_OFFSET + dayIndex * (HEATMAP_LAYOUT.CELL_HEIGHT + HEATMAP_LAYOUT.GAP);
+  return { x, y };
+}
+
+export function getHeatmapHeaderCoordinates(hourIndex: number) {
+  const x = HEATMAP_LAYOUT.LEFT_OFFSET + hourIndex * (HEATMAP_LAYOUT.CELL_WIDTH + HEATMAP_LAYOUT.GAP) + HEATMAP_LAYOUT.CELL_WIDTH / 2;
+  return { x, y: 14 };
+}
+
+export function getHeatmapDayLabelCoordinates(dayIndex: number) {
+  const x = HEATMAP_LAYOUT.LEFT_OFFSET - 8;
+  const y = HEATMAP_LAYOUT.TOP_OFFSET + dayIndex * (HEATMAP_LAYOUT.CELL_HEIGHT + HEATMAP_LAYOUT.GAP) + HEATMAP_LAYOUT.CELL_HEIGHT / 2 + 4;
+  return { x, y };
+}

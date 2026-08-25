@@ -7,6 +7,7 @@ import { X, Zap, Check, AlertCircle, ChevronRight, ChevronLeft, RefreshCw, Shiel
 import MultiSelect from './multi_select';
 import ColorPicker from './color_picker';
 import { BULK_PLATFORMS } from '@/constants/platforms';
+import { supportsCustomEmbedColor, supportsLiveAlerts, supportsNativePlayer } from '@/utils';
 import { useBulkAddWizard } from '@/hooks/use_bulk_add_wizard';
 import styles from './bulk_add_modal.module.css';
 
@@ -183,7 +184,7 @@ export default function BulkAddModal({
                     </div>
                   </div>
 
-                  {(!['youtube'].includes(selectedPlatform?.id) || (selectedPlatform?.id === 'youtube' && !useNativePlayer)) && (
+                  {supportsCustomEmbedColor(selectedPlatform?.id, useNativePlayer) && (
                     <div className={styles["form-group"]}>
                       <span className={styles["form-label"]}>Accent Color</span>
                       <ColorPicker 
@@ -212,7 +213,7 @@ export default function BulkAddModal({
                     />
                   </div>
 
-                  {['stream', 'kick'].includes(selectedPlatform?.id) && (
+                  {supportsLiveAlerts(selectedPlatform?.id) && (
                     <div className={styles["toggle-row"]}>
                       <div className={styles["toggle-text-wrap"]}>
                         <label className={styles["toggle-label"]} htmlFor="send-initial-alert-bulk">
@@ -234,7 +235,7 @@ export default function BulkAddModal({
                     </div>
                   )}
 
-                  {selectedPlatform?.id === 'youtube' && (
+                  {supportsNativePlayer(selectedPlatform?.id) && (
                     <div className={styles["toggle-row"]}>
                       <div className={styles["toggle-text-wrap"]}>
                         <label className={styles["toggle-label"]} htmlFor="use-native-player-bulk">

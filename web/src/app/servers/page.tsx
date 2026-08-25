@@ -29,12 +29,10 @@ import {
   Stack,
   IconButton,
 } from "@/components/ui";
-import { getGuildIconUrl, getBotInviteUrl, getGuildInitials } from "@/utils";
 import { useServerList } from "@/hooks/use_server_list";
 import styles from "./servers.module.css";
 
 export default function ServersPage() {
-  const router = useRouter();
   const {
     session,
     guilds,
@@ -44,11 +42,8 @@ export default function ServersPage() {
     searchQuery,
     setSearchQuery,
     fetchGuilds,
+    handleSelectGuild,
   } = useServerList();
-
-  const handleSelect = (guildId: string) => {
-    router.push(`/dashboard/${guildId}`);
-  };
 
   return (
     <PublicLayout session={session}>
@@ -134,103 +129,97 @@ export default function ServersPage() {
         {/* ── Server List ── */}
         {!loading && !error && filteredGuilds.length > 0 && (
           <div className={styles["guild-list"]}>
-            {filteredGuilds.map((guild) => {
-              const hasBot = Boolean(guild.hasBot || guild.bot_in_guild);
-              const iconUrl = getGuildIconUrl(guild.id, guild.icon, 128);
-              const botInviteUrl = getBotInviteUrl(guild.id);
+            {filteredGuilds.map((guild) => (
+              <div
+                key={guild.id}
+                className={[
+                  styles["guild-card"],
+                  guild.isPremium && styles["premium-card"],
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => handleSelectGuild(guild.id)}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleSelectGuild(guild.id);
+                  }
+                }}
+                role="button"
+              >
+                <div className={styles["guild-left"]}>
+                  <Avatar
+                    src={guild.iconUrl}
+                    alt={guild.name}
+                    shape="square"
+                    size="lg"
+                    fallback={guild.initials}
+                    status={guild.hasBot ? "online" : undefined}
+                  />
 
-              return (
-                <div
-                  key={guild.id}
-                  className={[
-                    styles["guild-card"],
-                    guild.isPremium && styles["premium-card"],
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => handleSelect(guild.id)}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      handleSelect(guild.id);
-                    }
-                  }}
-                  role="button"
-                >
-                  <div className={styles["guild-left"]}>
-                    <Avatar
-                      src={iconUrl}
-                      alt={guild.name}
-                      shape="square"
-                      size="lg"
-                      fallback={getGuildInitials(guild.name)}
-                      status={hasBot ? "online" : undefined}
-                    />
-
-                    <div className={styles["guild-info"]}>
-                      <span className={styles["guild-name"]}>{guild.name}</span>
-                      <div className={styles["guild-badges"]}>
-                        {guild.isMaster && (
-                          <Badge
-                            variant="master"
-                            size="sm"
-                            icon={<Shield size={10} />}
-                          >
-                            Master
-                          </Badge>
-                        )}
-                        {guild.isPremium && (
-                          <Badge
-                            variant="warning"
-                            size="sm"
-                            icon={<Crown size={10} />}
-                          >
-                            Premium
-                          </Badge>
-                        )}
-                        {hasBot ? (
-                          <Badge variant="success" size="sm" dot>
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge variant="neutral" size="sm">
-                            Not Installed
-                          </Badge>
-                        )}
-                      </div>
+                  <div className={styles["guild-info"]}>
+                    <span className={styles["guild-name"]}>{guild.name}</span>
+                    <div className={styles["guild-badges"]}>
+                      {guild.isMaster && (
+                        <Badge
+                          variant="master"
+                          size="sm"
+                          icon={<Shield size={10} />}
+                        >
+                          Master
+                        </Badge>
+                      )}
+                      {guild.isPremium && (
+                        <Badge
+                          variant="warning"
+                          size="sm"
+                          icon={<Crown size={10} />}
+                        >
+                          Premium
+                        </Badge>
+                      )}
+                      {guild.hasBot ? (
+                        <Badge variant="success" size="sm" dot>
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge variant="neutral" size="sm">
+                          Not Installed
+                        </Badge>
+                      )}
                     </div>
                   </div>
-
-                  <div className={styles["guild-right"]}>
-                    <Inline gap="xs" align="center">
-                      {!hasBot && (
-                        <a
-                          href={botInviteUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            leftIcon={<Plus size={14} />}
-                          >
-                            Invite
-                          </Button>
-                        </a>
-                      )}
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        rightIcon={<ChevronRight size={16} />}
-                      >
-                        Manage
-                      </Button>
-                    </Inline>
-                  </div>
                 </div>
-              );
-            })}
+
+                <div className={styles["guild-right"]}>
+                  <Inline gap="xs" align="center">
+                    {!guild.hasBot && (
+                      <a
+                        href={guild.botInviteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          leftIcon={<Plus size={14} />}
+                        >
+                          Invite
+                        </Button>
+                      </a>
+                    )}
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      rightIcon={<ChevronRight size={16} />}
+                    >
+                      Manage
+                    </Button>
+                  </Inline>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

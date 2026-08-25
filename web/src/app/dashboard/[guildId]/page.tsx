@@ -50,13 +50,17 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
 
   const {
     isMaster,
-    isPremium,
     effectiveMaxMonitors,
     badgeVariant,
+    badgeLabel,
+    badgeHasDot,
     upgradeTitle,
     upgradeDesc,
+    planStatusDescription,
+    planActionLabel,
+    upgradeButtonLabel,
+    canUpgrade,
   } = tierMeta;
-
 
   return (
     <div className={styles["dashboard-content"]}>
@@ -65,19 +69,14 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
         title="Dashboard Overview"
         description={`Welcome back, ${session?.user?.name || "Server Admin"}. Here is your live feed activity.`}
         badge={
-          isMaster ? (
-            <Badge variant="master" size="sm" icon={<ShieldCheck size={12} />}>
-              Master Tier
-            </Badge>
-          ) : isPremium ? (
-            <Badge variant="warning" size="sm" dot>
-              {stats?.tierName}
-            </Badge>
-          ) : (
-            <Badge variant={badgeVariant} size="sm">
-              Free Plan
-            </Badge>
-          )
+          <Badge
+            variant={badgeVariant}
+            size="sm"
+            dot={badgeHasDot}
+            icon={isMaster ? <ShieldCheck size={12} /> : undefined}
+          >
+            {badgeLabel}
+          </Badge>
         }
       />
 
@@ -99,14 +98,8 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
           <StatCard
             title="Plan Status"
             value={stats?.tierName || "Free"}
-            description={
-              isMaster
-                ? "Unlimited capacity & 1-minute speed"
-                : `${stats?.maxMonitors || 2} feeds • ${stats?.refreshInterval || 20}m refresh`
-            }
-            actionButton={
-              stats?.tier === 0 && !isMaster ? "Upgrade Plan" : undefined
-            }
+            description={planStatusDescription}
+            actionButton={planActionLabel}
             actionHref={`/dashboard/${guildId}/billing`}
             icon={Award}
           />
@@ -140,8 +133,8 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
                   </span>
                 ) : (
                   <span>
-                    Your current <strong>{stats?.tierName}</strong> plan allows
-                    up to <strong>{stats?.maxMonitors}</strong> monitors.
+                    Your current <strong>{stats?.tierName || "Free"}</strong> plan allows
+                    up to <strong>{stats?.maxMonitors || 2}</strong> monitors.
                   </span>
                 )}
               </p>
@@ -149,7 +142,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
           </Card>
 
           {/* Upgrade Banner for non-lifetime / lower tiers */}
-          {!isMaster && (stats?.tier ?? 0) < 3 && (
+          {canUpgrade && (
             <Card variant="elevated" className={styles["upgrade-card"]}>
               <CardContent>
                 <div className={styles["upgrade-content"]}>
@@ -167,7 +160,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
                       size="md"
                       rightIcon={<ArrowRight size={16} />}
                     >
-                      {stats?.tier === 0 ? "Upgrade Now" : "View Plans"}
+                      {upgradeButtonLabel}
                     </Button>
                   </Link>
                 </div>

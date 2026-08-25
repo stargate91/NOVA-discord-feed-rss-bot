@@ -54,12 +54,13 @@ export default function MonitorCard({
     actionLoading,
     actionStatus,
     repostCount,
-    setRepostCount,
+    handleRepostChange,
     purgeAmount,
-    setPurgeAmount,
+    handlePurgeChange,
     canRepost,
-    maxPurge,
+    maxPurgeInputLimit,
     handleToggle,
+    handleCardKeyDown,
     runAction,
   } = useMonitorCardActions({
     monitor,
@@ -82,12 +83,7 @@ export default function MonitorCard({
             role: 'button',
             tabIndex: 0,
             onClick: () => onSelect(monitor.id),
-            onKeyDown: (e: React.KeyboardEvent) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelect(monitor.id);
-              }
-            },
+            onKeyDown: handleCardKeyDown(onSelect, monitor.id),
           }
         : {})}
     >
@@ -208,9 +204,7 @@ export default function MonitorCard({
                   min={1}
                   max={10}
                   value={repostCount}
-                  onChange={(e) =>
-                    setRepostCount(parseInt(e.target.value, 10))
-                  }
+                  onChange={handleRepostChange}
                   className={styles['slider-input']}
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -243,12 +237,10 @@ export default function MonitorCard({
               <input
                 type="range"
                 min={5}
-                max={Math.min(100, maxPurge)}
+                max={maxPurgeInputLimit}
                 step={5}
                 value={purgeAmount}
-                onChange={(e) =>
-                  setPurgeAmount(parseInt(e.target.value, 10))
-                }
+                onChange={handlePurgeChange}
                 className={styles['slider-input']}
                 onClick={(e) => e.stopPropagation()}
               />

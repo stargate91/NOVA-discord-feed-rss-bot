@@ -37,7 +37,6 @@ import EditMonitorModal from '@/components/edit_monitor_modal';
 import CreateMonitorModal from '@/components/create_monitor_modal';
 import BulkEditModal from '@/components/bulk_edit_modal';
 import BulkAddModal from '@/components/bulk_add_modal';
-import { PLATFORM_NAMES } from '@/constants/platforms';
 import { getPlatformLogo } from '@/utils';
 import { useMonitors } from '@/hooks/use_monitors';
 import styles from './monitors.module.css';
@@ -57,13 +56,15 @@ function MonitorsContent() {
     isPremium,
     tier,
     platforms,
-    platformCounts,
     filteredMonitors,
     activeCount,
     selectedIds,
     setSelectedIds,
     selectionMode,
     setSelectionMode,
+    selectAllButtonLabel,
+    getPlatformCount,
+    getPlatformDisplayName,
     isCreateModalOpen,
     setIsCreateModalOpen,
     isBulkAddOpen,
@@ -166,9 +167,7 @@ function MonitorsContent() {
               size="sm"
               onClick={handleSelectAll}
             >
-              {selectedIds.length === filteredMonitors.length
-                ? 'Deselect All'
-                : 'Select All'}
+              {selectAllButtonLabel}
             </Button>
           )}
         </div>
@@ -177,7 +176,7 @@ function MonitorsContent() {
         <div className={styles['filter-scroll-wrapper']}>
           <div className={styles['filter-tabs']}>
             {platforms.map((p) => {
-              const count = platformCounts[p] || 0;
+              const count = getPlatformCount(p);
 
               return (
                 <button
@@ -204,7 +203,7 @@ function MonitorsContent() {
                       />
                     )}
                   </span>
-                  <span>{PLATFORM_NAMES[p] || p.toUpperCase()}</span>
+                  <span>{getPlatformDisplayName(p)}</span>
                   <span className={styles['chip-count']}>{count}</span>
                 </button>
               );

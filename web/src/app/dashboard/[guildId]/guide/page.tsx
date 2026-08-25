@@ -2,12 +2,8 @@
 
 import React, { Suspense } from 'react';
 import { 
-  Settings, 
-  PlusCircle, 
-  Bell, 
   CheckCircle2, 
   ArrowRight, 
-  Layout, 
   Crown, 
   Sparkles,
 } from 'lucide-react';
@@ -20,15 +16,8 @@ import {
   Spinner,
   Text,
 } from '@/components/ui';
-import { GUIDE_STEPS } from '@/constants/guide';
+import { GUIDE_STEPS, renderGuideStepIcon } from '@/constants/guide';
 import styles from './guide.module.css';
-
-const STEP_ICONS = {
-  Settings,
-  PlusCircle,
-  Bell,
-  Layout,
-};
 
 function GuideContent() {
   const params = useParams();
@@ -49,48 +38,45 @@ function GuideContent() {
 
       {/* ── Steps List ── */}
       <div className={styles['steps-list']}>
-        {GUIDE_STEPS.map((step) => {
-          const Icon = STEP_ICONS[step.iconName];
-          return (
-            <div key={step.id} className={styles['step-card']}>
-              <div className={styles['step-header']}>
-                <div className={styles['step-icon-box']}>
-                  <Icon size={22} />
-                </div>
-                <div className={styles['step-title-wrap']}>
-                  <span className={styles['step-num']}>Step 0{step.id}</span>
-                  <h3 className={styles['step-title']}>{step.title}</h3>
-                </div>
+        {GUIDE_STEPS.map((step) => (
+          <div key={step.id} className={styles['step-card']}>
+            <div className={styles['step-header']}>
+              <div className={styles['step-icon-box']}>
+                {renderGuideStepIcon(step.iconName, 22)}
               </div>
-
-              <Text as="p" size="sm" variant="secondary" className={styles['step-desc']}>
-                {step.description}
-              </Text>
-
-              <div className={styles['tips-list']}>
-                {step.tips.map((tip, idx) => (
-                  <div key={idx} className={styles['tip-item']}>
-                    <CheckCircle2 size={14} className={styles['tip-icon']} />
-                    <span>{tip.text}</span>
-                    {tip.premium && (
-                      <Badge variant="warning" size="sm" icon={<Crown size={10} />}>
-                        Premium
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div className={styles['step-actions']}>
-                <Link href={`/dashboard/${guildId}/${step.pathSuffix}`}>
-                  <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
-                    {step.linkText}
-                  </Button>
-                </Link>
+              <div className={styles['step-title-wrap']}>
+                <span className={styles['step-num']}>Step 0{step.id}</span>
+                <h3 className={styles['step-title']}>{step.title}</h3>
               </div>
             </div>
-          );
-        })}
+
+            <Text as="p" size="sm" variant="secondary" className={styles['step-desc']}>
+              {step.description}
+            </Text>
+
+            <div className={styles['tips-list']}>
+              {step.tips.map((tip, idx) => (
+                <div key={idx} className={styles['tip-item']}>
+                  <CheckCircle2 size={14} className={styles['tip-icon']} />
+                  <span>{tip.text}</span>
+                  {tip.premium && (
+                    <Badge variant="warning" size="sm" icon={<Crown size={10} />}>
+                      Premium
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className={styles['step-actions']}>
+              <Link href={`/dashboard/${guildId}/${step.pathSuffix}`}>
+                <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
+                  {step.linkText}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

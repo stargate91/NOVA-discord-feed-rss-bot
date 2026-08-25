@@ -25,6 +25,7 @@ import SettingCard from "@/components/setting_card";
 import TemplateEditor from "@/components/template_editor";
 import CustomRoleSelect from "@/components/custom_role_select";
 import { BOT_LANGUAGES } from "@/constants";
+import { formatExpiryDate } from "@/utils";
 import { useGuildSettings } from "@/hooks/use_guild_settings";
 import styles from "./settings.module.css";
 
@@ -243,13 +244,7 @@ function SettingsContent() {
             {activeTierLevel > 0 && !settings.isMaster && settings.premium_until && (
               <div className={styles["expiry-row"]}>
                 <span>Renews / Expires:</span>
-                <strong>
-                  {new Date(settings.premium_until).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </strong>
+                <strong>{formatExpiryDate(settings.premium_until)}</strong>
               </div>
             )}
 

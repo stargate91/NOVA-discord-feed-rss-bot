@@ -1,10 +1,8 @@
 import React, { Suspense } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { DashboardLayout } from "@/components/layout";
 import AnnouncementBanner from "@/components/announcement_banner";
 import FloatingHelp from "@/components/floating_help";
+import { requireGuildDashboardAuth } from "@/lib/auth";
 
 export default async function GuildDashboardLayout({
   children,
@@ -13,18 +11,7 @@ export default async function GuildDashboardLayout({
   children: React.ReactNode;
   params: Promise<{ guildId: string }>;
 }) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/");
-  }
-
-  const isMaster = (session?.user as any)?.role === "master";
-  const { guildId } = await params;
-
-  if (!guildId) {
-    redirect("/servers");
-  }
+  const { session, isMaster } = await requireGuildDashboardAuth(params);
 
   return (
     <DashboardLayout session={session} isMaster={isMaster}>

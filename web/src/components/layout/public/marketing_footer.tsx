@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getBotInviteUrl } from '@/utils';
 import styles from './public.module.css';
 
 export function MarketingFooter() {
   const currentYear = new Date().getFullYear();
-  const botInviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1489908793780338688'}&permissions=3387582172359760&response_type=code&redirect_uri=https%3A%2F%2Fnovafeeds.xyz%2Fapi%2Fauth%2Fcallback%2Fdiscord&integration_type=0&scope=identify+guilds+bot+applications.commands`;
+  const botInviteUrl = getBotInviteUrl();
 
   return (
     <footer className={styles['public-footer']}>

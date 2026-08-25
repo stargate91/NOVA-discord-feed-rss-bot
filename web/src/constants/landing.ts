@@ -1,7 +1,29 @@
+import React from 'react';
+import { Zap, Play, Rss, Activity, Layout, Shield, LucideIcon } from 'lucide-react';
+
+export type LandingFeatureIconName = 'Zap' | 'Play' | 'Rss' | 'Activity' | 'Layout' | 'Shield';
+
+export const LANDING_FEATURE_ICONS: Record<LandingFeatureIconName, LucideIcon> = {
+  Zap,
+  Play,
+  Rss,
+  Activity,
+  Layout,
+  Shield,
+};
+
+export function getLandingFeatureIcon(name: LandingFeatureIconName): LucideIcon {
+  return LANDING_FEATURE_ICONS[name] || Zap;
+}
+
+export function renderLandingFeatureIcon(name: LandingFeatureIconName, size = 24): React.ReactNode {
+  return React.createElement(getLandingFeatureIcon(name), { size });
+}
+
 export interface LandingFeature {
   title: string;
   desc: string;
-  iconName: 'Zap' | 'Play' | 'Rss' | 'Activity' | 'Layout' | 'Shield';
+  iconName: LandingFeatureIconName;
 }
 
 export const LANDING_FEATURES: LandingFeature[] = [

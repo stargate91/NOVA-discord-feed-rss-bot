@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   AreaChart,
   Area,
@@ -44,27 +44,27 @@ import HeatmapChart from "@/components/heatmap_chart";
 import LiveTicker from "@/components/live_ticker";
 import { ANALYTICS_RANGE_LABELS, ANALYTICS_PIE_COLORS } from "@/constants/navigation";
 import { useGuildAnalytics } from "@/hooks/use_guild_analytics";
+import { formatChartTooltip } from "@/utils/analytics";
 import styles from "./analytics.module.css";
 
 // Custom Chart Tooltip
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className={styles["custom-tooltip"]}>
-        <p className={styles["tooltip-label"]}>{label}</p>
-        <p className={styles["tooltip-value"]}>
-          <Zap size={14} />
-          {payload[0].value.toLocaleString()} Posts
-        </p>
-      </div>
-    );
-  }
-  return null;
+  const tooltipData = formatChartTooltip(active, payload, label);
+  if (!tooltipData) return null;
+
+  return (
+    <div className={styles["custom-tooltip"]}>
+      <p className={styles["tooltip-label"]}>{tooltipData.label}</p>
+      <p className={styles["tooltip-value"]}>
+        <Zap size={14} />
+        {tooltipData.formattedValue}
+      </p>
+    </div>
+  );
 };
 
 function AnalyticsContent() {
   const params = useParams();
-  const router = useRouter();
   const guildId = (params?.guildId as string) || "";
 
   const {
@@ -72,10 +72,10 @@ function AnalyticsContent() {
     loading,
     error,
     range,
-    setRange,
     isRangeLocked,
+    handleRangeChange,
     chartData,
-    growthRate,
+    trendData,
     formattedPlatforms,
   } = useGuildAnalytics(guildId);
 
@@ -119,13 +119,7 @@ function AnalyticsContent() {
           <span className="text-caption">Time Range:</span>
           <SegmentedControl<string>
             value={range}
-            onChange={(val) => {
-              if (isRangeLocked(val)) {
-                router.push(`/dashboard/${guildId}/billing`);
-                return;
-              }
-              setRange(val);
-            }}
+            onChange={handleRangeChange}
             options={Object.entries(ANALYTICS_RANGE_LABELS).map(([val, label]) => ({
               value: val,
               label: (
@@ -149,7 +143,7 @@ function AnalyticsContent() {
           title="Total Messages"
           value={data.totalPosts.toLocaleString()}
           description="Overall delivered posts"
-          trend={growthRate !== 0 ? { value: Math.abs(growthRate), isPositive: growthRate >= 0 } : undefined}
+          trend={trendData}
           icon={TrendingUp}
         />
         <StatCard

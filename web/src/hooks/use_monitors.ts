@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import monitorService from '@/services/monitor_service';
 import guildService from '@/services/guild_service';
 import { MonitorConfig } from '@/types/monitor';
+import { PLATFORM_NAMES } from '@/constants/platforms';
 import { useToast } from '@/context/toast_context';
 
 interface UseMonitorsOptions {
@@ -230,6 +231,21 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     }
   };
 
+  const isAllSelected =
+    filteredMonitors.length > 0 && selectedIds.length === filteredMonitors.length;
+
+  const selectAllButtonLabel = isAllSelected ? 'Deselect All' : 'Select All';
+
+  const getPlatformCount = useCallback(
+    (p: string) => platformCounts[p] || 0,
+    [platformCounts]
+  );
+
+  const getPlatformDisplayName = useCallback(
+    (p: string) => PLATFORM_NAMES[p] || p.toUpperCase(),
+    []
+  );
+
   const activeCount = useMemo(
     () => monitors.filter((m) => m.enabled).length,
     [monitors]
@@ -253,6 +269,10 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     setSelectedIds,
     selectionMode,
     setSelectionMode,
+    isAllSelected,
+    selectAllButtonLabel,
+    getPlatformCount,
+    getPlatformDisplayName,
     isCreateModalOpen,
     setIsCreateModalOpen,
     isBulkAddOpen,
@@ -280,3 +300,4 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     handleSelectAll,
   };
 }
+

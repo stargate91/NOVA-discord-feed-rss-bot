@@ -4,11 +4,19 @@ import { useRouter } from 'next/navigation';
 import { GuildInfo } from '@/types/guild';
 import guildService from '@/services/guild_service';
 import { filterAndSortGuilds } from '@/utils/guild_sorter';
+import { getGuildIconUrl, getBotInviteUrl, getGuildInitials } from '@/utils';
+
+export interface EnrichedGuildInfo extends GuildInfo {
+  hasBot: boolean;
+  iconUrl: string | null;
+  botInviteUrl: string;
+  initials: string;
+}
 
 export function useServerList() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [guilds, setGuilds] = useState<Array<GuildInfo & { hasBot?: boolean }>>([]);
+  const [guilds, setGuilds] = useState<Array<GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,9 +66,23 @@ export function useServerList() {
     }
   }, [status, router]);
 
-  const filteredGuilds = useMemo(() => {
-    return filterAndSortGuilds(guilds, searchQuery);
+  const filteredGuilds: EnrichedGuildInfo[] = useMemo(() => {
+    const sorted = filterAndSortGuilds(guilds, searchQuery);
+    return sorted.map((guild) => ({
+      ...guild,
+      hasBot: Boolean(guild.hasBot || (guild as any).bot_in_guild),
+      iconUrl: getGuildIconUrl(guild.id, guild.icon, 128),
+      botInviteUrl: getBotInviteUrl(guild.id),
+      initials: getGuildInitials(guild.name),
+    }));
   }, [guilds, searchQuery]);
+
+  const handleSelectGuild = useCallback(
+    (guildId: string) => {
+      router.push(`/dashboard/${guildId}`);
+    },
+    [router]
+  );
 
   return {
     session,
@@ -71,5 +93,6 @@ export function useServerList() {
     searchQuery,
     setSearchQuery,
     fetchGuilds,
+    handleSelectGuild,
   };
 }

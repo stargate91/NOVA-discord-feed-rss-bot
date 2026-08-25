@@ -5,3 +5,6 @@ export * from './navigation';
 export * from './landing';
 export * from './guide';
 export * from './faq';
+export * from './toasts';
+export * from './terms';
+export * from './privacy';

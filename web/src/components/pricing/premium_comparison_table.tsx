@@ -4,6 +4,7 @@ import {
   COMPARISON_TIERS,
   COMPARISON_CATEGORIES,
 } from '@/constants/tiers';
+import { parseComparisonCellValue } from '@/utils';
 import styles from './premium_comparison_table.module.css';
 
 const CATEGORY_ICONS = {
@@ -13,32 +14,38 @@ const CATEGORY_ICONS = {
   BarChart3: <BarChart3 size={16} />,
 };
 
-export function PremiumComparisonTable() {
+interface ComparisonCellProps {
+  value: string | boolean;
+  isHighlighted?: boolean;
+}
 
+function ComparisonCell({ value, isHighlighted }: ComparisonCellProps) {
+  const cell = parseComparisonCellValue(value, isHighlighted);
 
-  const renderValue = (val: string | boolean, isHighlighted?: boolean) => {
-    if (typeof val === 'boolean') {
-      return val ? (
-        <Check
-          size={18}
-          className={[
-            styles['icon-check'],
-            isHighlighted && styles.highlighted,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        />
-      ) : (
-        <X size={18} className={styles['icon-x']} />
-      );
-    }
-    return (
-      <span className={isHighlighted ? styles.highlighted : undefined}>
-        {val}
-      </span>
+  if (cell.type === 'boolean') {
+    return cell.booleanValue ? (
+      <Check
+        size={18}
+        className={[
+          styles['icon-check'],
+          cell.isHighlighted && styles.highlighted,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      />
+    ) : (
+      <X size={18} className={styles['icon-x']} />
     );
-  };
+  }
 
+  return (
+    <span className={cell.isHighlighted ? styles.highlighted : undefined}>
+      {cell.textValue}
+    </span>
+  );
+}
+
+export function PremiumComparisonTable() {
   return (
     <div className={styles['comparison-container']}>
       <div className={styles['table-header-row']}>
@@ -77,7 +84,10 @@ export function PremiumComparisonTable() {
                     .filter(Boolean)
                     .join(' ')}
                 >
-                  {renderValue(val, feat.highlight?.includes(valIdx))}
+                  <ComparisonCell
+                    value={val}
+                    isHighlighted={feat.highlight?.includes(valIdx)}
+                  />
                 </div>
               ))}
             </div>

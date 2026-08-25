@@ -25,6 +25,13 @@ export const CAROUSEL_PLATFORMS: CarouselPlatformItem[] = [
   { id: 'crypto', name: 'Crypto', icon: '/brands/crypto.png' },
 ];
 
+export const INFINITE_CAROUSEL_PLATFORMS: CarouselPlatformItem[] = [
+  ...CAROUSEL_PLATFORMS,
+  ...CAROUSEL_PLATFORMS,
+  ...CAROUSEL_PLATFORMS,
+];
+
+
 export const PLATFORMS: PlatformMetadata[] = [
   // Content & Streaming
   { id: 'youtube', name: 'YouTube', logo: '/brands/youtube.png', color: '#FF0000', description: 'Monitor a channel for new videos.', inputLabel: 'Channel Info', inputKey: 'channel_id', placeholder: '@handle, Link or Name', hint: 'Format: @handle, channel link, name or UCID.' },

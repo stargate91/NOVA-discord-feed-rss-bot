@@ -1,13 +1,33 @@
+import React from 'react';
+import { Settings, PlusCircle, Bell, Layout, LucideIcon } from 'lucide-react';
+
 export interface GuideTip {
   text: string;
   premium: boolean;
+}
+
+export type GuideStepIconName = 'Settings' | 'PlusCircle' | 'Bell' | 'Layout';
+
+export const GUIDE_STEP_ICONS: Record<GuideStepIconName, LucideIcon> = {
+  Settings,
+  PlusCircle,
+  Bell,
+  Layout,
+};
+
+export function getGuideStepIcon(name: GuideStepIconName): LucideIcon {
+  return GUIDE_STEP_ICONS[name] || Settings;
+}
+
+export function renderGuideStepIcon(name: GuideStepIconName, size = 22): React.ReactNode {
+  return React.createElement(getGuideStepIcon(name), { size });
 }
 
 export interface GuideStepTemplate {
   id: number;
   title: string;
   description: string;
-  iconName: 'Settings' | 'PlusCircle' | 'Bell' | 'Layout';
+  iconName: GuideStepIconName;
   pathSuffix: string;
   linkText: string;
   tips: GuideTip[];

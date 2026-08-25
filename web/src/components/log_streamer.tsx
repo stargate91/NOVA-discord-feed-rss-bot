@@ -4,15 +4,8 @@ import React from "react";
 import { Terminal, RefreshCw, Trash2, Maximize2, Minimize2 } from "lucide-react";
 import { IconButton, Button } from "@/components/ui";
 import { useLogStream } from "@/hooks/use_log_stream";
-import { getLogLevel } from "@/utils";
+import { parseLogLine, getLogModifierClass } from "@/utils";
 import styles from "./log_streamer.module.css";
-
-const LOG_LEVEL_CLASSES = {
-  error: styles["log-error"],
-  warning: styles["log-warning"],
-  info: styles["log-info"],
-  default: "",
-};
 
 export default function LogStreamer() {
   const {
@@ -28,16 +21,15 @@ export default function LogStreamer() {
     clearLogs,
   } = useLogStream(3000);
 
+  const renderLogLine = (line: string) => {
+    const parsed = parseLogLine(line);
+    if (!parsed) return null;
 
-  const formatLog = (line: string) => {
-    if (!line || !line.trim()) return null;
-
-    const level = getLogLevel(line);
-    const lineClass = LOG_LEVEL_CLASSES[level];
+    const lineClass = getLogModifierClass(parsed.modifier, styles);
 
     return (
       <div key={line} className={[styles["log-line"], lineClass].filter(Boolean).join(" ")}>
-        <span>{line}</span>
+        <span>{parsed.text}</span>
       </div>
     );
   };
@@ -113,7 +105,7 @@ export default function LogStreamer() {
             </span>
           </div>
         ) : (
-          logs.map((line) => formatLog(line))
+          logs.map((line) => renderLogLine(line))
         )}
       </div>
     </div>

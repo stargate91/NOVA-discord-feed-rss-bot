@@ -30,6 +30,27 @@ export function useMonitorCardActions({
   const currentTier = getTierConfig(tier, isPremium);
   const canRepost = hasFeature(tier, isPremium, 'repost');
   const maxPurge = currentTier.max_purge || 10;
+  const maxPurgeInputLimit = Math.min(100, maxPurge);
+
+  const handleRepostChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRepostCount(parseInt(e.target.value, 10));
+  }, []);
+
+  const handlePurgeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPurgeAmount(parseInt(e.target.value, 10));
+  }, []);
+
+  const handleCardKeyDown = useCallback(
+    (onSelect?: (id: number) => void, id?: number) => (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (onSelect && id !== undefined) {
+          onSelect(id);
+        }
+      }
+    },
+    []
+  );
 
   const handleToggle = useCallback(async () => {
     setToggleLoading(true);
@@ -89,11 +110,15 @@ export function useMonitorCardActions({
     actionStatus,
     repostCount,
     setRepostCount,
+    handleRepostChange,
     purgeAmount,
     setPurgeAmount,
+    handlePurgeChange,
     canRepost,
     maxPurge,
+    maxPurgeInputLimit,
     handleToggle,
+    handleCardKeyDown,
     runAction,
   };
 }

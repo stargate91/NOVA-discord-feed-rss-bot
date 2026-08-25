@@ -90,3 +90,29 @@ export function calculatePricingCardState(options: PricingCardStateOptions): Pri
   };
 }
 
+export interface ComparisonCellValue {
+  type: 'boolean' | 'text';
+  booleanValue?: boolean;
+  textValue?: string;
+  isHighlighted: boolean;
+}
+
+export function parseComparisonCellValue(
+  val: string | boolean,
+  isHighlighted?: boolean
+): ComparisonCellValue {
+  if (typeof val === 'boolean') {
+    return {
+      type: 'boolean',
+      booleanValue: val,
+      isHighlighted: Boolean(isHighlighted),
+    };
+  }
+  return {
+    type: 'text',
+    textValue: String(val),
+    isHighlighted: Boolean(isHighlighted),
+  };
+}
+
+

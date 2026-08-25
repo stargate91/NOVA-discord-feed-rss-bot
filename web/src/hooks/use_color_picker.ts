@@ -121,10 +121,14 @@ export function useColorPicker({ value, onChange, disabled = false }: UseColorPi
   };
 
   const currentColorHex = value || '#3d3f45';
+  const ariaValueH = Math.round(hsv.h);
+  const ariaValueV = Math.round(hsv.v);
 
   return {
     hsv,
     currentColorHex,
+    ariaValueH,
+    ariaValueV,
     svPanelRef,
     hueSliderRef,
     handleSvKeyDown,

@@ -34,7 +34,7 @@ import PlatformCarousel from "@/components/platform_carousel";
 import LiveTicker from "@/components/live_ticker";
 import DiscordV2Preview from "@/components/discord_v2_preview";
 import AuthErrorNotification from "@/components/auth_error_notification";
-import { LANDING_FEATURES } from "@/constants/landing";
+import { LANDING_FEATURES, renderLandingFeatureIcon } from "@/constants/landing";
 import { getBotInviteUrl } from "@/utils";
 import styles from "./landing.module.css";
 
@@ -53,15 +53,6 @@ export const metadata: Metadata = {
     description: "Real-time automated Discord feeds with high-fidelity embeds.",
     images: ["/nova_v2.jpg"],
   },
-};
-
-const FEATURE_ICONS = {
-  Zap: <Zap size={24} />,
-  Play: <Play size={24} />,
-  Rss: <Rss size={24} />,
-  Activity: <Activity size={24} />,
-  Layout: <Layout size={24} />,
-  Shield: <Shield size={24} />,
 };
 
 export default async function LandingPage() {
@@ -216,7 +207,7 @@ export default async function LandingPage() {
               <Card key={idx} variant="elevated" className={styles["feature-card"]}>
                 <CardHeader>
                   <div className={styles["feature-icon-wrapper"]}>
-                    {FEATURE_ICONS[feature.iconName]}
+                    {renderLandingFeatureIcon(feature.iconName, 24)}
                   </div>
                   <CardTitle>{feature.title}</CardTitle>
                 </CardHeader>

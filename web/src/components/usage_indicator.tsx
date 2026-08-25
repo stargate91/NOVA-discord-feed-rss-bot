@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { calculateGaugeMetrics } from '@/utils';
+import { calculateGaugeMetrics, getGaugeVariantClass, DEFAULT_GAUGE_RADIUS } from '@/utils';
 import styles from './usage_indicator.module.css';
 
 export interface UsageIndicatorProps {
@@ -11,35 +11,27 @@ export interface UsageIndicatorProps {
   unit?: string;
 }
 
-const GAUGE_RADIUS = 36;
-
-const VARIANT_CLASS_MAP = {
-  accent: styles['color-accent'],
-  warning: styles['color-warning'],
-  error: styles['color-error'],
-};
-
 export default function UsageIndicator({
   label,
   current,
   max,
   unit = '',
 }: UsageIndicatorProps) {
-  const metrics = calculateGaugeMetrics(current, max, GAUGE_RADIUS);
-  const valueColorClass = VARIANT_CLASS_MAP[metrics.variant];
+  const metrics = calculateGaugeMetrics(current, max, DEFAULT_GAUGE_RADIUS);
+  const valueColorClass = getGaugeVariantClass(metrics.variant, styles);
 
   return (
     <div className={styles['usage-container']}>
       <div className={styles['gauge-wrapper']}>
         <svg viewBox="0 0 100 100" className={styles['gauge-svg']}>
           {/* Background Track */}
-          <circle className={styles['gauge-track']} cx="50" cy="50" r={GAUGE_RADIUS} />
+          <circle className={styles['gauge-track']} cx="50" cy="50" r={DEFAULT_GAUGE_RADIUS} />
           {/* Progress Indicator */}
           <circle
             className={styles['gauge-progress']}
             cx="50"
             cy="50"
-            r={GAUGE_RADIUS}
+            r={DEFAULT_GAUGE_RADIUS}
             strokeDasharray={metrics.circumference}
             strokeDashoffset={metrics.offset}
             stroke={metrics.strokeColor}

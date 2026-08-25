@@ -7,6 +7,15 @@ import { X, ChevronRight, ChevronLeft, Info, Plus, Trash2 } from 'lucide-react';
 import ColorPicker from './color_picker';
 import { MOVIE_GENRES, LANGUAGES, getAvailableVars } from '@/lib/monitor_constants';
 import { PLATFORMS } from '@/constants/platforms';
+import {
+  supportsAutocomplete,
+  formatAutocompleteSubtitle,
+  supportsNativePlayer,
+  supportsUpcomingGames,
+  supportsMediaFilters,
+  supportsLiveAlerts,
+  supportsCustomEmbedColor,
+} from '@/utils';
 import { useCreateMonitorWizard } from '@/hooks/use_create_monitor_wizard';
 import styles from './create_monitor_modal.module.css';
 
@@ -193,7 +202,7 @@ export default function CreateMonitorModal({
                     <div className={styles["hint-badge"]}><Info size={12} /> {selectedPlatform.hint}</div>
                   </div>
                   <div>
-                    {['steam_news', 'twitch', 'github'].includes(selectedPlatform.id) ? (
+                    {supportsAutocomplete(selectedPlatform.id) ? (
                       <div className={styles["autocomplete-container"]} ref={dropdownRef}>
                         <input
                           type="text"
@@ -230,7 +239,7 @@ export default function CreateMonitorModal({
                                     {item.name} {item.is_live && <span className={styles["live-badge"]}>LIVE</span>}
                                   </span>
                                   <span className={styles["item-sub"]}>
-                                    {selectedPlatform.id === 'github' ? `⭐ ${item.stars} - ${item.id}` : `ID: ${item.id}`}
+                                    {formatAutocompleteSubtitle(selectedPlatform.id, item)}
                                   </span>
                                 </div>
                               </button>
@@ -250,7 +259,7 @@ export default function CreateMonitorModal({
                       />
                     )}
 
-                    {selectedPlatform.id === 'youtube' && (
+                    {supportsNativePlayer(selectedPlatform.id) && (
                       <button
                         type="button"
                         onClick={handleYouTubeResolve}
@@ -262,7 +271,7 @@ export default function CreateMonitorModal({
                     )}
                   </div>
                   
-                  {selectedPlatform.id === 'youtube' && resolvedChannel && (
+                  {supportsNativePlayer(selectedPlatform.id) && resolvedChannel && (
                     <div className={styles["validation-chip"]}>
                       <div className={styles["chip-avatar-wrap"]}>
                         <Image 
@@ -283,7 +292,7 @@ export default function CreateMonitorModal({
                 </div>
               )}
 
-              {selectedPlatform?.id === 'epic_games' && (
+              {supportsUpcomingGames(selectedPlatform?.id) && (
                 <div className={styles["toggle-section"]}>
                   <div className={styles["toggle-text-wrap"]}>
                     <label htmlFor="create-include-upcoming" className={styles["toggle-label"]}>
@@ -306,7 +315,7 @@ export default function CreateMonitorModal({
               )}
             </div>
 
-            {(selectedPlatform?.id === 'movie' || selectedPlatform?.id === 'tv_series') && (
+            {supportsMediaFilters(selectedPlatform?.id) && (
               <div className={styles["form-section-padded"]}>
                 <h4 className={styles["section-label-accent"]}>Advanced Filters</h4>
                 <div className={`${styles["grid-2"]} ${styles["grid-relative"]}`}>
@@ -409,7 +418,7 @@ export default function CreateMonitorModal({
                 </div>
               </div>
 
-              {['twitch', 'kick'].includes(selectedPlatform?.id || '') && (
+              {supportsLiveAlerts(selectedPlatform?.id) && (
                 <div className={styles["toggle-section"]}>
                   <div className={styles["toggle-text-wrap"]}>
                     <label htmlFor="create-send-initial-alert" className={styles["toggle-label"]}>
@@ -431,7 +440,7 @@ export default function CreateMonitorModal({
                 </div>
               )}
 
-              {selectedPlatform?.id === 'youtube' && (
+              {supportsNativePlayer(selectedPlatform?.id) && (
                 <div className={styles["toggle-section"]}>
                   <div className={styles["toggle-text-wrap"]}>
                     <label htmlFor="create-use-native-player" className={styles["toggle-label"]}>
@@ -459,7 +468,7 @@ export default function CreateMonitorModal({
                 </div>
               )}
 
-              {(!['youtube'].includes(selectedPlatform?.id || '') || (selectedPlatform?.id === 'youtube' && !formData.use_native_player)) && (
+              {supportsCustomEmbedColor(selectedPlatform?.id, formData.use_native_player) && (
                 <div className={styles["form-group"]}>
                   <div className={styles["form-label-row"]}>
                     <span className={styles["form-label"]}>Embed Color</span>

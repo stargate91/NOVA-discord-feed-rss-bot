@@ -16,6 +16,8 @@ export default function ColorPicker({ value, onChange, disabled = false }: Color
   const {
     hsv,
     currentColorHex,
+    ariaValueH,
+    ariaValueV,
     svPanelRef,
     hueSliderRef,
     handleSvKeyDown,
@@ -35,7 +37,7 @@ export default function ColorPicker({ value, onChange, disabled = false }: Color
         tabIndex={disabled ? -1 : 0}
         role="slider"
         aria-label="Color saturation and brightness"
-        aria-valuenow={Math.round(hsv.v)}
+        aria-valuenow={ariaValueV}
         onKeyDown={handleSvKeyDown}
         onMouseDown={handleSvMouseDown}
       >
@@ -68,7 +70,7 @@ export default function ColorPicker({ value, onChange, disabled = false }: Color
         tabIndex={disabled ? -1 : 0}
         role="slider"
         aria-label="Color hue slider"
-        aria-valuenow={Math.round(hsv.h)}
+        aria-valuenow={ariaValueH}
         aria-valuemin={0}
         aria-valuemax={360}
         onKeyDown={handleHueKeyDown}

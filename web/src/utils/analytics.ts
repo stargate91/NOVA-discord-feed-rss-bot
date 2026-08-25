@@ -97,13 +97,33 @@ export interface GaugeMetrics {
   remaining: number;
 }
 
+export const DEFAULT_GAUGE_RADIUS = 36;
+
+/**
+ * Maps gauge variant to corresponding CSS module class name
+ */
+export function getGaugeVariantClass(
+  variant: 'accent' | 'warning' | 'error',
+  styles: Record<string, string> = {}
+): string {
+  switch (variant) {
+    case 'error':
+      return styles['color-error'] || '';
+    case 'warning':
+      return styles['color-warning'] || '';
+    case 'accent':
+    default:
+      return styles['color-accent'] || '';
+  }
+}
+
 /**
  * Calculates SVG circular gauge metrics and threshold states
  */
 export function calculateGaugeMetrics(
   current: number,
   max: number,
-  radius = 36
+  radius = DEFAULT_GAUGE_RADIUS
 ): GaugeMetrics {
   const safeMax = max > 0 ? max : 1;
   const percentage = Math.min(Math.round((current / safeMax) * 100), 100);
@@ -131,3 +151,24 @@ export function calculateGaugeMetrics(
   };
 }
 
+export interface ChartTooltipData {
+  label: string;
+  formattedValue: string;
+}
+
+/**
+ * Formats Recharts tooltip payload data safely with locale formatting
+ */
+export function formatChartTooltip(
+  active?: boolean,
+  payload?: Array<{ value: number | string }>,
+  label?: string
+): ChartTooltipData | null {
+  if (!active || !payload || !payload.length) return null;
+  const rawValue = payload[0]?.value;
+  const numValue = Number(rawValue) || 0;
+  return {
+    label: label ? String(label) : '',
+    formattedValue: `${numValue.toLocaleString()} Posts`,
+  };
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import analyticsService, { AnalyticsData } from '@/services/analytics_service';
@@ -14,14 +14,17 @@ export function useGuildAnalytics(guildId: string) {
   const [range, setRange] = useState('3');
   const [hasSetDefaultRange, setHasSetDefaultRange] = useState(false);
 
-  const isRangeLocked = (val: string) => {
-    if ((session?.user as any)?.role === 'master') return false;
-    if (!data) return true;
-    if (data.isMaster || (data.tier ?? 0) >= 3) return false;
+  const isRangeLocked = useCallback(
+    (val: string) => {
+      if ((session?.user as any)?.role === 'master') return false;
+      if (!data) return true;
+      if (data.isMaster || (data.tier ?? 0) >= 3) return false;
 
-    const limit = analyticsService.getTierLimit(data.tier || 0);
-    return parseInt(val, 10) > limit;
-  };
+      const limit = analyticsService.getTierLimit(data.tier || 0);
+      return parseInt(val, 10) > limit;
+    },
+    [session, data]
+  );
 
   useEffect(() => {
     if (!guildId) {
@@ -81,9 +84,28 @@ export function useGuildAnalytics(guildId: string) {
     return calculatePeriodGrowthRate(data?.history || []);
   }, [data]);
 
+  const trendData = useMemo(() => {
+    if (growthRate === 0) return undefined;
+    return {
+      value: Math.abs(growthRate),
+      isPositive: growthRate >= 0,
+    };
+  }, [growthRate]);
+
   const formattedPlatforms = useMemo(() => {
     return formatPlatformBreakdown(data?.platforms || [], data?.totalPosts || 0);
   }, [data]);
+
+  const handleRangeChange = useCallback(
+    (val: string) => {
+      if (isRangeLocked(val)) {
+        router.push(`/dashboard/${guildId}/billing`);
+        return;
+      }
+      setRange(val);
+    },
+    [isRangeLocked, router, guildId]
+  );
 
   return {
     data,
@@ -92,8 +114,10 @@ export function useGuildAnalytics(guildId: string) {
     range,
     setRange,
     isRangeLocked,
+    handleRangeChange,
     chartData,
     growthRate,
+    trendData,
     formattedPlatforms,
   };
 }

@@ -1,9 +1,7 @@
-"use client";
-
 import React from "react";
 import { Rocket, Settings, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { getGuildDashboardRoute } from "@/utils/navigation";
+import { getDashboardOnboardingSteps } from "@/utils/dashboard";
 import styles from "./empty_state_card.module.css";
 
 interface EmptyStateCardProps {
@@ -11,8 +9,7 @@ interface EmptyStateCardProps {
 }
 
 export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
-  const settingsHref = getGuildDashboardRoute(guildId, 'settings');
-  const monitorsHref = getGuildDashboardRoute(guildId, 'monitors');
+  const steps = getDashboardOnboardingSteps(guildId);
 
   return (
     <div className={styles["empty-state-card"]}>
@@ -34,31 +31,23 @@ export default function EmptyStateCard({ guildId }: EmptyStateCardProps) {
           </p>
 
           <div className={styles["steps-container"]}>
-            <Link href={settingsHref} className={styles["step-card"]}>
-              <div className={styles["step-num"]}>01</div>
-              <div className={styles["step-body"]}>
-                <h3 className={styles["step-title"]}>
-                  Settings <Settings size={14} />
-                </h3>
-                <p className={styles["step-desc"]}>Configure language and default colors.</p>
-              </div>
-              <div className={styles["arrow-wrap"]}>
-                <ArrowRight size={18} />
-              </div>
-            </Link>
-
-            <Link href={monitorsHref} className={styles["step-card"]}>
-              <div className={styles["step-num"]}>02</div>
-              <div className={styles["step-body"]}>
-                <h3 className={styles["step-title"]}>
-                  Add Monitor <Plus size={14} />
-                </h3>
-                <p className={styles["step-desc"]}>Pick a platform and start monitoring.</p>
-              </div>
-              <div className={styles["arrow-wrap"]}>
-                <ArrowRight size={18} />
-              </div>
-            </Link>
+            {steps.map((step) => {
+              const StepIcon = step.iconName === 'Settings' ? Settings : Plus;
+              return (
+                <Link key={step.num} href={step.href} className={styles["step-card"]}>
+                  <div className={styles["step-num"]}>{step.num}</div>
+                  <div className={styles["step-body"]}>
+                    <h3 className={styles["step-title"]}>
+                      {step.title} <StepIcon size={14} />
+                    </h3>
+                    <p className={styles["step-desc"]}>{step.desc}</p>
+                  </div>
+                  <div className={styles["arrow-wrap"]}>
+                    <ArrowRight size={18} />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
