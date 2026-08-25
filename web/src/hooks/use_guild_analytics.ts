@@ -20,7 +20,7 @@ export function useGuildAnalytics(guildId: string) {
       if (!data) return true;
       if (data.isMaster || (data.tier ?? 0) >= 3) return false;
 
-      const limit = analyticsService.getTierLimit(data.tier || 0);
+      const limit = data.maxAllowedDays ?? analyticsService.getTierLimit(data.tier || 0);
       return parseInt(val, 10) > limit;
     },
     [session, data]
@@ -46,7 +46,7 @@ export function useGuildAnalytics(guildId: string) {
               json.isMaster ||
               (json.tier ?? 0) >= 3
                 ? 999
-                : analyticsService.getTierLimit(json.tier || 0);
+                : json.maxAllowedDays ?? analyticsService.getTierLimit(json.tier || 0);
             setRange(String(limit));
             setHasSetDefaultRange(true);
           }
@@ -81,19 +81,43 @@ export function useGuildAnalytics(guildId: string) {
   }, [data]);
 
   const growthRate = useMemo(() => {
+    if (data?.trend) {
+      return data.trend.growthRate;
+    }
     return calculatePeriodGrowthRate(data?.history || []);
   }, [data]);
 
   const trendData = useMemo(() => {
+    if (data?.trend) {
+      if (data.trend.growthRate === 0) return undefined;
+      return {
+        value: data.trend.value,
+        isPositive: data.trend.isPositive,
+      };
+    }
     if (growthRate === 0) return undefined;
     return {
       value: Math.abs(growthRate),
       isPositive: growthRate >= 0,
     };
-  }, [growthRate]);
+  }, [data, growthRate]);
 
   const formattedPlatforms = useMemo(() => {
-    return formatPlatformBreakdown(data?.platforms || [], data?.totalPosts || 0);
+    if (!data?.platforms || data.platforms.length === 0) return [];
+    // If backend already formatted with percentage and name
+    if (typeof data.platforms[0]?.percentage === 'number') {
+      return data.platforms.map((p) => ({
+        id: p.id || p.platform,
+        name: p.name || p.displayName || p.platform,
+        count: Number(p.count) || 0,
+        percentage: p.percentage ?? 0,
+      }));
+    }
+    return formatPlatformBreakdown(data.platforms, data.totalPosts || 0);
+  }, [data]);
+
+  const heatmapMatrix = useMemo(() => {
+    return data?.heatmapMatrix;
   }, [data]);
 
   const handleRangeChange = useCallback(
@@ -119,5 +143,6 @@ export function useGuildAnalytics(guildId: string) {
     growthRate,
     trendData,
     formattedPlatforms,
+    heatmapMatrix,
   };
 }

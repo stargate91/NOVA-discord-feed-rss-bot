@@ -1,4 +1,5 @@
 import api from './api_client';
+import { StructuredLogEntry } from '@/utils/log';
 
 export interface PremiumKey {
   code: string;
@@ -29,7 +30,7 @@ export interface AnnouncementItem {
 }
 
 export interface SystemLogsResponse {
-  logs?: string[];
+  logs?: StructuredLogEntry[];
   error?: string;
 }
 

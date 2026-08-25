@@ -9,6 +9,7 @@ import ColorPicker from './color_picker';
 import { BULK_PLATFORMS } from '@/constants/platforms';
 import { supportsCustomEmbedColor, supportsLiveAlerts, supportsNativePlayer } from '@/utils';
 import { useBulkAddWizard } from '@/hooks/use_bulk_add_wizard';
+import { GuildFeatures } from '@/types/guild';
 import styles from './bulk_add_modal.module.css';
 
 interface BulkAddModalProps {
@@ -19,6 +20,7 @@ interface BulkAddModalProps {
   tier?: number;
   isPremium?: boolean;
   guildLoading?: boolean;
+  features?: GuildFeatures;
 }
 
 const subscribe = () => () => {};
@@ -30,7 +32,8 @@ export default function BulkAddModal({
   onSuccess, 
   tier = 0, 
   isPremium = false, 
-  guildLoading = false 
+  guildLoading = false,
+  features,
 }: BulkAddModalProps) {
   const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
@@ -61,7 +64,7 @@ export default function BulkAddModal({
     handleBack,
     handleSubmit,
     resetState,
-  } = useBulkAddWizard({ guildId, isOpen, onSuccess, tier, isPremium });
+  } = useBulkAddWizard({ guildId, isOpen, onSuccess, tier, isPremium, features });
 
   const handleClose = () => {
     resetState();

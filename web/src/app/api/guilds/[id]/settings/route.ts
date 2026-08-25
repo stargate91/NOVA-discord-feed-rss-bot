@@ -4,7 +4,7 @@ import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { notifyBotOfChange } from "@/lib/bot_sync";
 import { canManageGuild } from "@/lib/permissions";
-import { getGuildTierLimits, hasFeature, isMasterGuild } from "@/lib/config";
+import { getGuildTierLimits, hasFeature, isMasterGuild, resolveGuildFeatures } from "@/lib/config";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -33,21 +33,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       console.warn("[Settings API GET] DB query failed, using defaults:", dbErr?.message);
     }
 
-    let settings = {
-      language: "en",
-      admin_role_id: "0",
-      premium_until: null as string | null,
-      refresh_interval: 20,
-      alert_templates: {},
-      tier: 0,
-      isMaster: isMaster,
-      hasStripeSubscription: false,
-      custom_branding: null as string | null
-    };
+    let tier = 0;
+    let premiumUntil: string | null = null;
+    let effectiveIsMaster = isMaster;
+    let language = "en";
+    let admin_role_id = "0";
+    let refresh_interval = 20;
+    let templates = {};
+    let hasStripeSubscription = false;
+    let custom_branding: string | null = null;
 
     if (res.rows.length > 0) {
       const row = res.rows[0];
-      let templates = {};
       if (row.alert_templates) {
         try {
           templates = typeof row.alert_templates === 'string'
@@ -58,27 +55,37 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         }
       }
 
-      let tier = row.tier || 0;
+      tier = row.tier || 0;
       const now = new Date();
-      const premiumUntil = row.premium_until;
+      premiumUntil = row.premium_until;
 
       // Legacy support: If tier is 0 but premium_until is valid, treat as Tier 3
       if (tier === 0 && premiumUntil && new Date(premiumUntil) > now) {
         tier = 3;
       }
 
-      settings = {
-        language: row.language || "en",
-        admin_role_id: row.admin_role_id ? String(row.admin_role_id) : "0",
-        premium_until: row.premium_until,
-        refresh_interval: row.refresh_interval || 20,
-        alert_templates: templates,
-        tier: tier,
-        isMaster: isMaster || !!row.is_master,
-        hasStripeSubscription: !!row.stripe_subscription_id,
-        custom_branding: row.custom_branding !== null ? row.custom_branding : null
-      };
+      language = row.language || "en";
+      admin_role_id = row.admin_role_id ? String(row.admin_role_id) : "0";
+      refresh_interval = row.refresh_interval || 20;
+      effectiveIsMaster = isMaster || !!row.is_master;
+      hasStripeSubscription = !!row.stripe_subscription_id;
+      custom_branding = row.custom_branding !== null ? row.custom_branding : null;
     }
+
+    const features = resolveGuildFeatures(guildId, tier, effectiveIsMaster, premiumUntil);
+
+    const settings = {
+      language,
+      admin_role_id,
+      premium_until: premiumUntil,
+      refresh_interval,
+      alert_templates: templates,
+      tier,
+      isMaster: effectiveIsMaster,
+      hasStripeSubscription,
+      custom_branding,
+      features
+    };
 
     return NextResponse.json(settings);
   } catch (error) {

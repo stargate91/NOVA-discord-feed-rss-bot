@@ -12,7 +12,7 @@ const MASTER_GUILD_ID = '1083433370815582240';
 export function useGuildSettings(guildId: string) {
   const router = useRouter();
   const { addToast, showSuccess } = useToast();
-  const { getTierConfig, hasFeature } = useConfig();
+  const { hasFeature } = useConfig();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -84,24 +84,24 @@ export function useGuildSettings(guildId: string) {
     };
   }, [guildId, router]);
 
-  const isServerPremium = Boolean(settings.isMaster || (settings.tier || 0) > 0);
-  const activeTierLevel = settings.isMaster ? 3 : settings.tier || 0;
-  const currentTierConfig = getTierConfig(activeTierLevel, isServerPremium);
-  const effectiveMinInterval = currentTierConfig?.min_interval ?? 20;
+  const features = settings.features;
+  const isServerPremium = Boolean(features?.isPremium ?? (settings.isMaster || (settings.tier || 0) > 0));
+  const activeTierLevel = features?.tier ?? (settings.isMaster ? 3 : settings.tier || 0);
+  const effectiveMinInterval = features?.minRefreshInterval ?? 20;
 
   const isIntervalLocked = useCallback(
     (val: number) => {
-      if (settings.isMaster) return false;
+      if (features?.isMaster || settings.isMaster) return false;
       return val < effectiveMinInterval;
     },
-    [settings.isMaster, effectiveMinInterval]
+    [features?.isMaster, settings.isMaster, effectiveMinInterval]
   );
 
   const canUseTemplates = Boolean(
-    settings.isMaster || hasFeature(activeTierLevel, isServerPremium, 'custom_templates')
+    features ? features.canCustomTemplate : (settings.isMaster || hasFeature(activeTierLevel, isServerPremium, 'custom_templates'))
   );
   const canUseBranding = Boolean(
-    settings.isMaster || hasFeature(activeTierLevel, isServerPremium, 'custom_branding')
+    features ? features.canRemoveBranding : (settings.isMaster || hasFeature(activeTierLevel, isServerPremium, 'remove_branding'))
   );
 
   const handleSave = async () => {
@@ -196,7 +196,6 @@ export function useGuildSettings(guildId: string) {
     parsedBranding,
     isServerPremium,
     activeTierLevel,
-    currentTierConfig,
     effectiveMinInterval,
     isIntervalLocked,
     canUseTemplates,

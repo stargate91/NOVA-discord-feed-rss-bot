@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { GuildFeatures } from '@/types/guild';
 
 let cachedConfig: Record<string, any> | null = null;
 
@@ -65,3 +66,41 @@ export function hasFeature(tier: number | string, guildId: string | number | nul
   
   return features.includes(featureName) || featureName === "basic";
 }
+
+export function resolveGuildFeatures(
+  guildId: string | number | null = null,
+  tier: number | string = 0,
+  isMaster: boolean = false,
+  premiumUntil: string | null = null
+): GuildFeatures {
+  const isMasterResult = Boolean(isMaster || (guildId && isMasterGuild(guildId)));
+  const effectiveTier = isMasterResult ? 3 : getEffectiveTier(tier, guildId, premiumUntil);
+  const tierInfo = getGuildTierLimits(effectiveTier, guildId, premiumUntil);
+  const isPremium = isMasterResult || effectiveTier >= 1;
+
+  const rawFeatures: string[] = tierInfo.features || [];
+  const checkFeature = (name: string) => isMasterResult || rawFeatures.includes(name);
+
+  return {
+    tier: effectiveTier,
+    tierName: isMasterResult ? "Master" : (tierInfo.name || "Free"),
+    isMaster: isMasterResult,
+    isPremium,
+    maxMonitors: isMasterResult ? 1000 : (tierInfo.max_monitors ?? 2),
+    minRefreshInterval: isMasterResult ? 1 : (tierInfo.min_refresh_interval ?? 20),
+    maxPurge: isMasterResult ? 100 : (tierInfo.max_purge ?? 10),
+    maxChannels: isMasterResult ? 50 : (tierInfo.max_channels ?? 1),
+    maxPings: isMasterResult ? 50 : (tierInfo.max_pings ?? 1),
+    canCustomColor: checkFeature("custom_color"),
+    canAlertTemplate: checkFeature("alert_template"),
+    canCustomTemplate: checkFeature("custom_template") || checkFeature("alert_template"),
+    canGenreFilter: checkFeature("genre_filter"),
+    canTmdbLanguageFilter: checkFeature("tmdb_language_filter"),
+    canRemoveBranding: checkFeature("remove_branding"),
+    canBulkImport: isMasterResult || effectiveTier >= 2,
+    canBulkDelete: checkFeature("bulk_delete") || isMasterResult || effectiveTier >= 1,
+    canRepost: checkFeature("repost") || isMasterResult,
+    features: isMasterResult ? ["*"] : rawFeatures,
+  };
+}
+

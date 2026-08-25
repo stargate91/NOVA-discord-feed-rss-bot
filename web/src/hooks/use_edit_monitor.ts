@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useConfig } from '@/hooks/use_config';
 import { MonitorConfig } from '@/types/monitor';
-import { DiscordChannel, DiscordRole } from '@/types/guild';
+import { GuildFeatures, DiscordChannel, DiscordRole } from '@/types/guild';
 import guildService from '@/services/guild_service';
 import {
   buildUpdateMonitorPayload,
@@ -17,6 +17,7 @@ interface UseEditMonitorProps {
   onSave: (id: number, updateData: Partial<MonitorConfig> & Record<string, any>) => Promise<boolean | void>;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export function useEditMonitor({
@@ -27,12 +28,24 @@ export function useEditMonitor({
   onSave,
   tier = 0,
   isPremium = false,
+  features,
 }: UseEditMonitorProps) {
   const { hasFeature } = useConfig();
 
   const isLocked = useCallback(
-    (featureName: string) => !hasFeature(tier, isPremium, featureName),
-    [hasFeature, tier, isPremium]
+    (featureName: string) => {
+      if (features) {
+        if (featureName === 'custom_color') return !features.canCustomColor;
+        if (featureName === 'alert_template') return !features.canAlertTemplate;
+        if (featureName === 'custom_template') return !features.canCustomTemplate;
+        if (featureName === 'genre_filter') return !features.canGenreFilter;
+        if (featureName === 'tmdb_language_filter') return !features.canTmdbLanguageFilter;
+        if (featureName === 'remove_branding') return !features.canRemoveBranding;
+        return !features.features.includes(featureName);
+      }
+      return !hasFeature(tier, isPremium, featureName);
+    },
+    [features, hasFeature, tier, isPremium]
   );
 
   const [prevMonitorId, setPrevMonitorId] = useState<number | null>(null);

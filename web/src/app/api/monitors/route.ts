@@ -5,6 +5,7 @@ import { canManageGuild } from "@/lib/permissions";
 import { NextRequest, NextResponse } from "next/server";
 import { notifyBotOfChange } from "@/lib/bot_sync";
 import { getGuildTierLimits, hasFeature } from "@/lib/config";
+import { resolveSource } from "@/lib/source_resolver";
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -144,11 +145,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Limit reached! Your tier allows a maximum of ${maxChannelsRoles} ping roles per monitor.` }, { status: 402 });
     }
 
+    // Canonical source resolution
+    const rawSource = rest.source_id || name;
+    const resolved = resolveSource(rawSource, type);
+
     // Build extra_settings from remaining fields
     const extra_settings: Record<string, any> = {
       target_channels: (tChannels || []).map(id => String(id)),
       target_roles: (tRoles || []).map(id => String(id)),
       send_initial_alert: send_initial_alert ?? true,
+      api_url: resolved.apiUrl,
+      ...resolved.extra,
       ...rest
     };
 

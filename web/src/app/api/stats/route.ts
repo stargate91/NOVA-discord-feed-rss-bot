@@ -3,7 +3,8 @@ import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { canManageGuild } from "@/lib/permissions";
-import { isMasterGuild } from "@/lib/config";
+import { isMasterGuild, resolveGuildFeatures } from "@/lib/config";
+import { PLATFORM_NAMES } from "@/constants/platforms";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -53,7 +54,33 @@ export async function GET(req: NextRequest) {
         ORDER BY date ASC
       `, [guildId, effectiveDays]);
 
-      // 2. Platform Breakdown
+      // 2. Period Comparison for Growth / Trend (Current period vs Previous equal period)
+      const periodComparisonRes = await pool.query(`
+        SELECT 
+          SUM(CASE WHEN date::date >= CURRENT_DATE - ($2 || ' days')::interval THEN post_count ELSE 0 END) as current_posts,
+          SUM(CASE WHEN date::date >= CURRENT_DATE - (($2 * 2) || ' days')::interval AND date::date < CURRENT_DATE - ($2 || ' days')::interval THEN post_count ELSE 0 END) as previous_posts
+        FROM monitor_stats_daily
+        WHERE guild_id = $1::bigint AND date::date >= CURRENT_DATE - (($2 * 2) || ' days')::interval
+      `, [guildId, effectiveDays]);
+
+      const currentPosts = parseInt(periodComparisonRes.rows[0]?.current_posts || '0', 10) || 0;
+      const previousPosts = parseInt(periodComparisonRes.rows[0]?.previous_posts || '0', 10) || 0;
+      let growthRate = 0;
+      if (previousPosts === 0) {
+        growthRate = currentPosts > 0 ? 100 : 0;
+      } else {
+        growthRate = Math.round(((currentPosts - previousPosts) / previousPosts) * 1000) / 10;
+      }
+
+      const trend = {
+        growthRate,
+        value: Math.abs(growthRate),
+        isPositive: growthRate >= 0,
+        currentPosts,
+        previousPosts,
+      };
+
+      // 3. Platform Breakdown with Pre-aggregated Percentages
       const platformRes = await pool.query(`
         SELECT platform, SUM(post_count) as count 
         FROM monitor_stats_daily 
@@ -62,15 +89,33 @@ export async function GET(req: NextRequest) {
         ORDER BY count DESC
       `, [guildId, effectiveDays]);
 
-      // 3. Totals for this guild
+      // 4. Totals for this guild
       const totalsRes = await pool.query(`
         SELECT SUM(post_count) as total_posts, COUNT(DISTINCT platform) as platform_count
         FROM monitor_stats_daily
         WHERE guild_id = $1::bigint AND date::date >= CURRENT_DATE - ($2 || ' days')::interval
       `, [guildId, effectiveDays]);
 
+      const totalPosts = parseInt(totalsRes?.rows[0]?.total_posts, 10) || 0;
+
+      const rawPlatforms = platformRes?.rows || [];
+      const platforms = rawPlatforms.map((p: any) => {
+        const count = parseInt(p.count, 10) || 0;
+        const percentage = totalPosts > 0 ? Math.round((count / totalPosts) * 1000) / 10 : 0;
+        const name = PLATFORM_NAMES[p.platform] || p.platform;
+        return {
+          id: p.platform,
+          platform: p.platform,
+          name,
+          displayName: name,
+          count,
+          percentage,
+        };
+      });
+
       const monitorsRes = await pool.query('SELECT COUNT(*) FROM monitors WHERE guild_id = $1::bigint AND enabled = true', [guildId]);
 
+      // 5. Heatmap Raw & Pre-aggregated 7x24 Matrix
       const heatmapRes = await pool.query(`
         SELECT 
           EXTRACT(DOW FROM published_at)::int as day,
@@ -82,16 +127,43 @@ export async function GET(req: NextRequest) {
         ORDER BY day, hour
       `, [guildId, effectiveDays]);
 
+      const rawHeatmap = heatmapRes?.rows || [];
+      const heatmapGrid: number[][] = Array.from({ length: 7 }, () => Array(24).fill(0));
+      let maxDensity = 0;
+
+      rawHeatmap.forEach((item: any) => {
+        const day = Number(item.day);
+        const hour = Number(item.hour);
+        const count = Number(item.count) || 0;
+        if (day >= 0 && day < 7 && hour >= 0 && hour < 24) {
+          heatmapGrid[day][hour] = count;
+          if (count > maxDensity) maxDensity = count;
+        }
+      });
+
+      const heatmapMatrix = {
+        matrix: heatmapGrid,
+        max: maxDensity || 1,
+      };
+
+      const effectiveIsMaster = isMaster || configIsMaster || isMasterUser;
+      const features = resolveGuildFeatures(guildId, tier, effectiveIsMaster, premiumUntil);
+
       const result = {
         history: historyRes?.rows || [],
-        platforms: platformRes?.rows || [],
-        totalPosts: parseInt(totalsRes?.rows[0]?.total_posts, 10) || 0,
+        platforms,
+        totalPosts,
+        previousPeriodPosts: previousPosts,
+        trend,
         activeMonitors: parseInt(monitorsRes?.rows[0]?.count, 10) || 0,
         platformCount: parseInt(totalsRes?.rows[0]?.platform_count, 10) || 0,
-        heatmap: heatmapRes?.rows || [],
+        heatmap: rawHeatmap,
+        heatmapMatrix,
+        maxAllowedDays,
         tier: tier,
-        isMaster: guildRes?.rows[0]?.is_master || false,
-        isPremium: guildRes?.rows[0]?.is_premium || false
+        isMaster: effectiveIsMaster,
+        isPremium: effectiveIsMaster || (guildRes?.rows[0]?.is_premium || false),
+        features
       };
 
       console.log(`[API Stats] Success for guild ${guildId}`);

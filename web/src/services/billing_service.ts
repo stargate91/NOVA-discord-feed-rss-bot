@@ -7,13 +7,27 @@ export interface BillingConfig {
   cancel_url?: string;
 }
 
+export interface CreateCheckoutParams {
+  guildId: string;
+  tier?: number;
+  interval?: 'mo' | 'yr';
+  priceId?: string;
+}
+
 export const billingService = {
   async getConfig(): Promise<BillingConfig> {
     return api.get<BillingConfig>('/api/billing/config');
   },
 
-  async createCheckoutSession(priceId: string, guildId: string): Promise<{ url: string }> {
-    return api.post<{ url: string }>('/api/billing/checkout', { priceId, guildId });
+  async createCheckoutSession(
+    paramsOrPriceId: string | CreateCheckoutParams,
+    guildId?: string
+  ): Promise<{ url: string }> {
+    const payload =
+      typeof paramsOrPriceId === 'string'
+        ? { priceId: paramsOrPriceId, guildId }
+        : paramsOrPriceId;
+    return api.post<{ url: string }>('/api/billing/checkout', payload);
   },
 
   async createPortalSession(guildId: string): Promise<{ url: string }> {

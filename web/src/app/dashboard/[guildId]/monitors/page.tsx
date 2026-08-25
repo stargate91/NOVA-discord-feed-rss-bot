@@ -55,6 +55,7 @@ function MonitorsContent() {
     setFilter,
     isPremium,
     tier,
+    features,
     platforms,
     filteredMonitors,
     activeCount,
@@ -362,6 +363,7 @@ function MonitorsContent() {
           onSuccess={reloadMonitors}
           tier={tier}
           isPremium={isPremium}
+          features={features}
         />
       )}
 
@@ -374,6 +376,7 @@ function MonitorsContent() {
           onSave={handleUpdateMonitor}
           tier={tier}
           isPremium={isPremium}
+          features={features}
         />
       )}
 
@@ -385,6 +388,7 @@ function MonitorsContent() {
           onSuccess={reloadMonitors}
           tier={tier}
           isPremium={isPremium}
+          features={features}
         />
       )}
 
@@ -397,6 +401,7 @@ function MonitorsContent() {
           onSave={handleBulkUpdateMonitors}
           tier={tier}
           isPremium={isPremium}
+          features={features}
         />
       )}
     </div>

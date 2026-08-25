@@ -14,9 +14,13 @@ export interface DashboardTierMeta {
 }
 
 export function getDashboardTierMeta(stats: any): DashboardTierMeta {
-  const isMaster = Boolean(stats?.tierName === 'Master' || stats?.isLifetime);
-  const isPremium = Boolean((stats?.tier ?? 0) >= 1 || isMaster);
-  const effectiveMaxMonitors = isMaster ? 1000 : stats?.maxMonitors || 5;
+  const features = stats?.features;
+  const isMaster = Boolean(features?.isMaster || stats?.tierName === 'Master' || stats?.isLifetime);
+  const isPremium = Boolean(features?.isPremium || (stats?.tier ?? 0) >= 1 || isMaster);
+  const tier = features?.tier ?? stats?.tier ?? 0;
+  const effectiveMaxMonitors = features?.maxMonitors ?? (isMaster ? 1000 : stats?.maxMonitors || 5);
+  const minInterval = features?.minRefreshInterval ?? stats?.refreshInterval ?? 20;
+  const tierName = features?.tierName || stats?.tierName || (isMaster ? 'Master' : isPremium ? 'Premium' : 'Free');
 
   let badgeVariant: 'master' | 'warning' | 'neutral' = 'neutral';
   let badgeLabel = 'Free Plan';
@@ -27,27 +31,27 @@ export function getDashboardTierMeta(stats: any): DashboardTierMeta {
     badgeLabel = 'Master Tier';
   } else if (isPremium) {
     badgeVariant = 'warning';
-    badgeLabel = stats?.tierName || 'Premium';
+    badgeLabel = tierName;
     badgeHasDot = true;
   }
 
   const upgradeTitle =
-    stats?.tier === 0
+    tier === 0
       ? 'Unlock Instant Delivery & Unlimited Feeds'
       : 'Ready to scale up your server?';
 
   const upgradeDesc =
-    stats?.tier === 0
+    tier === 0
       ? 'Get 2-minute refresh speeds, role mentions, and custom embed branding.'
       : 'Upgrade to higher tier for even faster intervals and massive monitor limits.';
 
   const planStatusDescription = isMaster
     ? 'Unlimited capacity & 1-minute speed'
-    : `${stats?.maxMonitors || 2} feeds • ${stats?.refreshInterval || 20}m refresh`;
+    : `${effectiveMaxMonitors} feeds • ${minInterval}m refresh`;
 
-  const planActionLabel = stats?.tier === 0 && !isMaster ? 'Upgrade Plan' : undefined;
-  const upgradeButtonLabel = stats?.tier === 0 ? 'Upgrade Now' : 'View Plans';
-  const canUpgrade = !isMaster && (stats?.tier ?? 0) < 3;
+  const planActionLabel = tier === 0 && !isMaster ? 'Upgrade Plan' : undefined;
+  const upgradeButtonLabel = tier === 0 ? 'Upgrade Now' : 'View Plans';
+  const canUpgrade = !isMaster && tier < 3;
 
   return {
     isMaster,

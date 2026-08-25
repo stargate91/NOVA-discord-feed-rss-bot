@@ -45,7 +45,6 @@ function SettingsContent() {
     parsedBranding,
     isServerPremium,
     activeTierLevel,
-    currentTierConfig,
     isIntervalLocked,
     canUseTemplates,
     canUseBranding,
@@ -233,7 +232,7 @@ function SettingsContent() {
               </div>
               <div className={styles["status-info"]}>
                 <span className={styles["status-title"]}>
-                  {settings.isMaster ? "Master Access" : currentTierConfig?.name || "Free Plan"}
+                  {settings.isMaster ? "Master Access" : settings.features?.tierName || "Free Plan"}
                 </span>
                 <span className={styles["status-sub"]}>
                   {settings.isMaster ? "Lifetime Unlimited" : activeTierLevel > 0 ? "Active Subscription" : "Standard Tier"}

@@ -17,6 +17,7 @@ import {
   supportsCustomEmbedColor,
 } from '@/utils';
 import { useCreateMonitorWizard } from '@/hooks/use_create_monitor_wizard';
+import { GuildFeatures } from '@/types/guild';
 import styles from './create_monitor_modal.module.css';
 
 interface CreateMonitorModalProps {
@@ -26,6 +27,7 @@ interface CreateMonitorModalProps {
   onSuccess: () => void;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export default function CreateMonitorModal({ 
@@ -34,7 +36,8 @@ export default function CreateMonitorModal({
   onClose, 
   onSuccess, 
   tier = 0, 
-  isPremium = false 
+  isPremium = false,
+  features,
 }: CreateMonitorModalProps) {
   const {
     step,
@@ -75,6 +78,7 @@ export default function CreateMonitorModal({
     onSuccess,
     tier,
     isPremium,
+    features,
   });
 
   if (!isOpen) return null;

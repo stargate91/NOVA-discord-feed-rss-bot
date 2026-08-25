@@ -15,6 +15,7 @@ import {
   supportsCustomEmbedColor,
   supportsUpcomingGames,
 } from '@/utils';
+import { GuildFeatures } from '@/types/guild';
 import { useEditMonitor } from '@/hooks/use_edit_monitor';
 import styles from './edit_monitor_modal.module.css';
 
@@ -26,6 +27,7 @@ interface EditMonitorModalProps {
   onSave: (id: number, updateData: Partial<MonitorConfig> & Record<string, any>) => Promise<boolean | void>;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export default function EditMonitorModal({ 
@@ -35,7 +37,8 @@ export default function EditMonitorModal({
   onClose, 
   onSave, 
   tier = 0, 
-  isPremium = false 
+  isPremium = false,
+  features,
 }: EditMonitorModalProps) {
   const {
     formData,
@@ -60,6 +63,7 @@ export default function EditMonitorModal({
     onSave,
     tier,
     isPremium,
+    features,
   });
 
   if (!isOpen || !monitor) return null;

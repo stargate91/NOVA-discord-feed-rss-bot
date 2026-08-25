@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import monitorService from '@/services/monitor_service';
 import guildService from '@/services/guild_service';
+import settingsService from '@/services/settings_service';
 import { MonitorConfig } from '@/types/monitor';
+import { GuildFeatures } from '@/types/guild';
 import { PLATFORM_NAMES } from '@/constants/platforms';
 import { useToast } from '@/context/toast_context';
 
@@ -19,6 +21,7 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
   const [filter, setFilter] = useState('all');
   const [isPremium, setIsPremium] = useState(false);
   const [tier, setTier] = useState(0);
+  const [features, setFeatures] = useState<GuildFeatures | undefined>(undefined);
 
   // Multi-Selection State
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -74,17 +77,24 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     async function load() {
       if (!guildId) return;
       try {
-        const [fetchedMonitors, guilds] = await Promise.all([
+        const [fetchedMonitors, guilds, settingsData] = await Promise.all([
           monitorService.getMonitors(guildId),
-          guildService.getGuilds(),
+          guildService.getGuilds().catch(() => []),
+          settingsService.getSettings(guildId).catch(() => null),
         ]);
         if (ignore) return;
         setMonitors(fetchedMonitors);
 
-        const current = guilds.find((g: any) => String(g.id) === String(guildId));
-        if (current) {
-          setIsPremium(Boolean(current.isPremium || current.isMaster));
-          setTier(current.isMaster ? 0 : current.tier || 0);
+        if (settingsData?.features) {
+          setFeatures(settingsData.features);
+          setIsPremium(settingsData.features.isPremium);
+          setTier(settingsData.features.tier);
+        } else {
+          const current = guilds.find((g: any) => String(g.id) === String(guildId));
+          if (current) {
+            setIsPremium(Boolean(current.isPremium || current.isMaster));
+            setTier(current.isMaster ? 0 : current.tier || 0);
+          }
         }
       } catch (err: any) {
         console.error('Failed to load monitors:', err);
@@ -261,6 +271,7 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     setFilter,
     isPremium,
     tier,
+    features,
     platforms,
     platformCounts,
     filteredMonitors,

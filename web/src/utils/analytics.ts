@@ -65,29 +65,6 @@ export function formatPlatformBreakdown(
   });
 }
 
-/**
- * Formats a 7-day, 24-hour heatmap matrix
- */
-export function formatHeatmapMatrix(
-  data: Array<{ day: number; hour: number; count: number | string }>
-): number[][] {
-  const matrix = Array.from({ length: 7 }, () => Array(24).fill(0));
-
-  if (Array.isArray(data)) {
-    data.forEach((d) => {
-      const day = Number(d.day);
-      const hour = Number(d.hour);
-      const count = Number(d.count) || 0;
-
-      if (day >= 0 && day < 7 && hour >= 0 && hour < 24) {
-        matrix[day][hour] = count;
-      }
-    });
-  }
-
-  return matrix;
-}
-
 export interface GaugeMetrics {
   percentage: number;
   circumference: number;

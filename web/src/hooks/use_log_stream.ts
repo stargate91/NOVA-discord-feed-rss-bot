@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import devService from '@/services/dev_service';
+import { StructuredLogEntry } from '@/utils/log';
 
 export function useLogStream(pollIntervalMs: number = 3000) {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<StructuredLogEntry[]>([]);
   const [isLive, setIsLive] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import billingService from '@/services/billing_service';
 import settingsService from '@/services/settings_service';
 import { useToast } from '@/context/toast_context';
-import { findStripePriceId } from '@/utils/billing';
 
 export function useGuildBilling(guildId: string) {
   const { addToast } = useToast();
@@ -10,7 +9,6 @@ export function useGuildBilling(guildId: string) {
   const [billingInterval, setBillingInterval] = useState<'mo' | 'yr'>('mo');
   const [currentTier, setCurrentTier] = useState(0);
   const [isMaster, setIsMaster] = useState(false);
-  const [stripeConfig, setStripeConfig] = useState<any>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,15 +16,11 @@ export function useGuildBilling(guildId: string) {
     if (!guildId) return;
     let ignore = false;
 
-    Promise.all([
-      settingsService.getSettings(guildId),
-      billingService.getConfig(),
-    ])
-      .then(([sData, bConfig]) => {
+    settingsService.getSettings(guildId)
+      .then((sData) => {
         if (!ignore) {
           if (sData.tier !== undefined) setCurrentTier(sData.tier);
           if (sData.isMaster !== undefined) setIsMaster(sData.isMaster);
-          setStripeConfig(bConfig);
         }
       })
       .catch((err) => {
@@ -45,25 +39,13 @@ export function useGuildBilling(guildId: string) {
   }, [guildId, addToast]);
 
   const handlePurchaseClick = async (tier: number) => {
-    if (!stripeConfig?.products) {
-      addToast('Billing configuration not loaded. Please refresh.', 'error');
-      return;
-    }
-
-    const priceId = findStripePriceId(
-      stripeConfig.products,
-      tier,
-      billingInterval
-    );
-
-    if (!priceId) {
-      addToast('No Price ID found for this plan.', 'error');
-      return;
-    }
-
     setCheckoutLoading(tier);
     try {
-      const data = await billingService.createCheckoutSession(priceId, guildId);
+      const data = await billingService.createCheckoutSession({
+        tier,
+        interval: billingInterval,
+        guildId,
+      });
       if (data.url) {
         window.location.assign(data.url);
       } else {
@@ -82,7 +64,6 @@ export function useGuildBilling(guildId: string) {
     setBillingInterval,
     currentTier,
     isMaster,
-    stripeConfig,
     checkoutLoading,
     loading,
     handlePurchaseClick,

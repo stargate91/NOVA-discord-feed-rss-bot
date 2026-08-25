@@ -77,6 +77,7 @@ function AnalyticsContent() {
     chartData,
     trendData,
     formattedPlatforms,
+    heatmapMatrix,
   } = useGuildAnalytics(guildId);
 
   if (loading && !data) {
@@ -267,7 +268,7 @@ function AnalyticsContent() {
             </Text>
           </CardHeader>
           <CardContent>
-            <HeatmapChart data={data.heatmap || []} />
+            <HeatmapChart data={data.heatmap || []} matrixData={heatmapMatrix} />
           </CardContent>
         </Card>
 

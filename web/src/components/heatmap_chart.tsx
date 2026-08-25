@@ -3,6 +3,7 @@
 import React, { useMemo } from "react";
 import {
   HeatmapItem,
+  HeatmapMatrixResult,
   buildHeatmapGrid,
   getHeatmapCellColor,
   HEATMAP_DAYS,
@@ -14,15 +15,21 @@ import {
 } from "@/utils/heatmap";
 import styles from "./heatmap_chart.module.css";
 
-export type { HeatmapItem };
+export type { HeatmapItem, HeatmapMatrixResult };
 
 interface HeatmapChartProps {
-  data: HeatmapItem[];
+  data?: HeatmapItem[];
+  matrixData?: HeatmapMatrixResult;
 }
 
-export default function HeatmapChart({ data }: HeatmapChartProps) {
-  // Initialize grid with 0s
-  const grid = useMemo(() => buildHeatmapGrid(data), [data]);
+export default function HeatmapChart({ data = [], matrixData }: HeatmapChartProps) {
+  // Use precomputed matrixData from server or fallback to client-side build
+  const grid = useMemo(() => {
+    if (matrixData && Array.isArray(matrixData.matrix) && matrixData.matrix.length === 7) {
+      return matrixData;
+    }
+    return buildHeatmapGrid(data);
+  }, [data, matrixData]);
 
   return (
     <div className={styles["heatmap-container"]}>

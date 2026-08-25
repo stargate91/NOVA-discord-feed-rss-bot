@@ -1,5 +1,5 @@
 import api from './api_client';
-import { DiscordChannel, DiscordRole, GuildInfo, GuildSettings } from '@/types/guild';
+import { DiscordChannel, DiscordRole, GuildInfo, GuildSettings, GuildFeatures } from '@/types/guild';
 
 export const guildService = {
   async getGuilds(): Promise<Array<GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }>> {
@@ -19,6 +19,11 @@ export const guildService = {
   async getSettings(guildId: string): Promise<GuildSettings> {
     if (!guildId) throw new Error('Guild ID is required');
     return api.get<GuildSettings>(`/api/guilds/${guildId}/settings`);
+  },
+
+  async getFeatures(guildId: string): Promise<GuildFeatures> {
+    if (!guildId) throw new Error('Guild ID is required');
+    return api.get<GuildFeatures>(`/api/guilds/${guildId}/features`);
   },
 
   async updateSettings(guildId: string, settings: Partial<GuildSettings>): Promise<GuildSettings> {

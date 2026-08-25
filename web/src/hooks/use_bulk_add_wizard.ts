@@ -9,6 +9,8 @@ import {
   buildBulkAddPayload,
 } from '@/utils/bulk_import';
 
+import { GuildFeatures } from '@/types/guild';
+
 export interface BulkAddResult {
   successCount: number;
   errorCount: number;
@@ -21,6 +23,7 @@ export interface UseBulkAddWizardOptions {
   onSuccess?: () => void;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export function useBulkAddWizard(
@@ -39,10 +42,11 @@ export function useBulkAddWizard(
     onSuccess,
     tier = 0,
     isPremium = false,
+    features,
   } = options;
 
-  const isMaster = isPremium && tier === 0;
-  const isTierEligible = isMaster || (isPremium && tier >= 2);
+  const isMaster = features?.isMaster ?? (isPremium && tier === 0);
+  const isTierEligible = features?.canBulkImport ?? (isMaster || (isPremium && tier >= 2));
   const { addToast } = useToast();
 
   const [step, setStep] = useState(1);

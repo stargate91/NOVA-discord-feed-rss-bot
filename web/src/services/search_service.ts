@@ -18,10 +18,24 @@ export interface PlatformSearchResult {
   type?: string;
 }
 
+export interface ResolvedSourceResult {
+  type: string;
+  canonicalId: string;
+  name: string;
+  apiUrl: string;
+  suggestedName?: string;
+  extra?: Record<string, any>;
+}
+
 export const searchService = {
   async resolveYouTube(input: string): Promise<YouTubeResolvedChannel> {
     if (!input.trim()) throw new Error('Input is required');
     return api.get<YouTubeResolvedChannel>(`/api/search/youtube?input=${encodeURIComponent(input.trim())}`);
+  },
+
+  async resolveSource(input: string, type?: string): Promise<ResolvedSourceResult> {
+    if (!input.trim()) throw new Error('Input is required');
+    return api.post<ResolvedSourceResult>('/api/search/resolve', { input: input.trim(), type });
   },
 
   async searchPlatform(platform: string, query: string): Promise<PlatformSearchResult[]> {
@@ -32,3 +46,4 @@ export const searchService = {
 };
 
 export default searchService;
+

@@ -3,8 +3,8 @@ import { notifyBotOfChange } from "@/lib/bot_sync";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { query } from "@/lib/db";
-import fs from 'fs';
-import path from 'path';
+import { resolveSource } from "@/lib/source_resolver";
+import { isMasterGuild } from "@/lib/config";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -24,16 +24,7 @@ export async function POST(req: NextRequest) {
     const tier = guild?.tier || 0;
 
     // Check if master guild
-    let isMaster = false;
-    try {
-      const configPath = path.resolve(process.cwd(), '../config.json');
-      if (fs.existsSync(configPath)) {
-        const rawData = fs.readFileSync(configPath, 'utf8');
-        const sanitizedData = rawData.replace(/:\s*([0-9]{15,})/g, ': "$1"');
-        const config = JSON.parse(sanitizedData);
-        isMaster = (config.master_guilds || {}).hasOwnProperty(String(guildId));
-      }
-    } catch (e) { /* ignore config errors */ }
+    const isMaster = isMasterGuild(guildId);
 
     if (!isMaster && (!isPremium || tier < 2)) {
       return NextResponse.json({ error: 'Professional tier required for Bulk Import.' }, { status: 403 });
@@ -49,36 +40,9 @@ export async function POST(req: NextRequest) {
 
     for (let source of sources) {
       try {
-        let name = source;
-        let apiUrl = source;
-
-        // Basic naming logic based on type
-        if (type === 'youtube') {
-          if (source.includes('youtube.com/')) {
-             const parts = source.split('/');
-             name = parts[parts.length - 1].replace('@', '');
-          } else {
-             name = source.replace('@', '');
-          }
-        } 
-        else if (type === 'stream') { // Twitch
-          if (source.includes('twitch.tv/')) {
-            name = source.split('twitch.tv/')[1].split('/')[0];
-          }
-          apiUrl = `https://www.twitch.tv/${name}`;
-        }
-        else if (type === 'kick') {
-           if (source.includes('kick.com/')) {
-             name = source.split('kick.com/')[1].split('/')[0];
-           }
-           apiUrl = `https://kick.com/${name}`;
-        }
-        else if (type === 'github') {
-           if (source.includes('github.com/')) {
-             name = source.split('github.com/')[1].split('/').slice(0, 2).join('/');
-           }
-           apiUrl = `https://github.com/${name}`;
-        }
+        const resolved = resolveSource(source, type);
+        const name = resolved.name;
+        const apiUrl = resolved.apiUrl;
 
         // Construct extra_settings JSON
         const extraSettings: Record<string, any> = {
@@ -87,21 +51,18 @@ export async function POST(req: NextRequest) {
           target_roles: roleIds,
           embed_color: embedColor || (type === 'youtube' ? null : '#3d3f45'),
           send_initial_alert: sendInitialAlert ?? false,
-          custom_image: customImage && (isMaster || isPremium || tier >= 1) ? customImage : undefined
+          custom_image: customImage && (isMaster || isPremium || tier >= 1) ? customImage : undefined,
+          ...resolved.extra,
         };
 
-        // For YouTube, also provide channel_id which the monitor specifically looks for
-        if (type === 'youtube') {
-           extraSettings.channel_id = name;
-           if (use_native_player !== undefined) {
-             extraSettings.use_native_player = use_native_player;
-           }
+        if (type === 'youtube' && use_native_player !== undefined) {
+          extraSettings.use_native_player = use_native_player;
         }
 
-        // Check for duplicates in this guild by searching in extra_settings text
+        // Check for duplicates in this guild
         const dupCheck = await query(
-          "SELECT id FROM monitors WHERE guild_id = $1::bigint AND type = $2 AND extra_settings LIKE $3",
-          [guildId, type, `%${apiUrl}%`]
+          "SELECT id FROM monitors WHERE guild_id = $1::bigint AND type = $2 AND (extra_settings LIKE $3 OR name = $4)",
+          [guildId, type, `%${apiUrl}%`, name]
         );
 
         if (dupCheck.rows.length > 0) {

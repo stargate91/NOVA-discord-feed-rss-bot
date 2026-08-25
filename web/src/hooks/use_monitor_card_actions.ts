@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useConfig } from '@/hooks/use_config';
 import { MonitorConfig } from '@/types/monitor';
+import { GuildFeatures } from '@/types/guild';
 import monitorService from '@/services/monitor_service';
 
 interface UseMonitorCardActionsProps {
@@ -8,6 +9,7 @@ interface UseMonitorCardActionsProps {
   onToggle: (id: number, enabled: boolean) => Promise<void>;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export function useMonitorCardActions({
@@ -15,6 +17,7 @@ export function useMonitorCardActions({
   onToggle,
   tier = 0,
   isPremium = false,
+  features,
 }: UseMonitorCardActionsProps) {
   const { getTierConfig, hasFeature } = useConfig();
   const [toggleLoading, setToggleLoading] = useState(false);
@@ -27,9 +30,8 @@ export function useMonitorCardActions({
   const [repostCount, setRepostCount] = useState(1);
   const [purgeAmount, setPurgeAmount] = useState(50);
 
-  const currentTier = getTierConfig(tier, isPremium);
-  const canRepost = hasFeature(tier, isPremium, 'repost');
-  const maxPurge = currentTier.max_purge || 10;
+  const canRepost = features ? features.canRepost : hasFeature(tier, isPremium, 'repost');
+  const maxPurge = features ? features.maxPurge : (getTierConfig(tier, isPremium).max_purge || 10);
   const maxPurgeInputLimit = Math.min(100, maxPurge);
 
   const handleRepostChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

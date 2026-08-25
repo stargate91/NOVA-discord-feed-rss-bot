@@ -5,6 +5,7 @@ import MultiSelect from './multi_select';
 import { X, AlertCircle, Info } from 'lucide-react';
 import ColorPicker from './color_picker';
 import { useBulkEdit } from '@/hooks/use_bulk_edit';
+import { GuildFeatures } from '@/types/guild';
 import styles from './bulk_edit_modal.module.css';
 
 interface BulkEditModalProps {
@@ -15,6 +16,7 @@ interface BulkEditModalProps {
   guildId: string;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export default function BulkEditModal({ 
@@ -24,7 +26,8 @@ export default function BulkEditModal({
   monitorCount, 
   guildId, 
   tier = 0, 
-  isPremium = false 
+  isPremium = false,
+  features,
 }: BulkEditModalProps) {
   const {
     formData,
@@ -36,7 +39,7 @@ export default function BulkEditModal({
     toggleField,
     updateField,
     handleSubmit,
-  } = useBulkEdit(guildId, isOpen, tier, isPremium, onSave, onClose);
+  } = useBulkEdit(guildId, isOpen, tier, isPremium, onSave, onClose, features);
 
   if (!isOpen) return null;
 

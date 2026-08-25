@@ -33,6 +33,28 @@ export interface GuildInfo {
   [key: string]: any;
 }
 
+export interface GuildFeatures {
+  tier: number;
+  tierName: string;
+  isMaster: boolean;
+  isPremium: boolean;
+  maxMonitors: number;
+  minRefreshInterval: number;
+  maxPurge: number;
+  maxChannels: number;
+  maxPings: number;
+  canCustomColor: boolean;
+  canAlertTemplate: boolean;
+  canCustomTemplate: boolean;
+  canGenreFilter: boolean;
+  canTmdbLanguageFilter: boolean;
+  canRemoveBranding: boolean;
+  canBulkImport: boolean;
+  canBulkDelete: boolean;
+  canRepost: boolean;
+  features: string[];
+}
+
 export interface GuildSettings {
   guild_id?: string;
   language?: string;
@@ -46,6 +68,7 @@ export interface GuildSettings {
   refresh_interval?: number;
   isMaster?: boolean;
   hasStripeSubscription?: boolean;
+  features?: GuildFeatures;
   [key: string]: any;
 }
 
@@ -64,3 +87,4 @@ export interface GuildPermissions {
   };
   bot_in_guild: boolean;
 }
+

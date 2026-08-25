@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import guildService from '@/services/guild_service';
 import { useToast } from '@/context/toast_context';
+import { GuildFeatures } from '@/types/guild';
 
 export interface BulkEditFormData {
   target_channels: string[];
@@ -22,7 +23,8 @@ export function useBulkEdit(
   tier: number = 0,
   isPremium: boolean = false,
   onSave?: (updateData: Record<string, any>) => Promise<void | boolean>,
-  onClose?: () => void
+  onClose?: () => void,
+  features?: GuildFeatures
 ) {
   const { addToast } = useToast();
   const { data: session } = useSession();
@@ -46,7 +48,9 @@ export function useBulkEdit(
     custom_image: '',
   });
 
-  const isLocked = !isMasterUser && !isPremium && tier < 2;
+  const isLocked = features
+    ? !features.canBulkImport
+    : (!isMasterUser && !isPremium && tier < 2);
 
   useEffect(() => {
     if (!isOpen || !guildId) return;

@@ -1,20 +1,40 @@
+export interface TrendData {
+  growthRate: number;
+  value: number;
+  isPositive: boolean;
+  currentPosts: number;
+  previousPosts: number;
+}
+
+export interface HeatmapMatrixData {
+  matrix: number[][];
+  max: number;
+}
+
 export interface PlatformStat {
+  id?: string;
   platform: string;
   count: number;
+  name?: string;
   displayName: string;
   percentage?: number;
 }
 
 export interface AnalyticsData {
   totalPosts: number;
+  previousPeriodPosts?: number;
   activeMonitors: number;
   platformCount: number;
   platforms: PlatformStat[];
   history: Array<{ date: string; count: number | string }>;
   heatmap?: Array<{ day: number; hour: number; count: number }>;
+  heatmapMatrix?: HeatmapMatrixData;
+  trend?: TrendData;
+  maxAllowedDays?: number;
   tier?: number;
   isMaster?: boolean;
   isPremium?: boolean;
+  features?: any;
   [key: string]: any;
 }
 
@@ -34,24 +54,11 @@ const analyticsService = {
     }
 
     const json = await res.json();
-    
-    // Process platform data for display
-    if (json && json.platforms) {
-      json.platforms = json.platforms.map((p: any) => ({
-        ...p,
-        count: parseInt(p.count, 10),
-        displayName: p.platform
-          .split('_')
-          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ')
-      }));
-    }
-    
     return json;
   },
 
   /**
-   * Helper to determine the tier limit for analytics range.
+   * Helper to determine the tier limit for analytics range (fallback when maxAllowedDays not in response).
    */
   getTierLimit(tier: number): number {
     if (tier >= 3) return 999;
@@ -62,3 +69,4 @@ const analyticsService = {
 };
 
 export default analyticsService;
+

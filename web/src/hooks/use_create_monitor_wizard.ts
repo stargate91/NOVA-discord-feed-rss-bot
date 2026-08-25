@@ -5,7 +5,7 @@ import searchService from '@/services/search_service';
 import guildService from '@/services/guild_service';
 import monitorService from '@/services/monitor_service';
 import { PlatformMetadata } from '@/types/monitor';
-import { DiscordChannel, DiscordRole } from '@/types/guild';
+import { GuildFeatures, DiscordChannel, DiscordRole } from '@/types/guild';
 import {
   buildCreateMonitorPayload,
   validateMonitorForm,
@@ -21,6 +21,7 @@ interface UseCreateMonitorWizardProps {
   onSuccess: () => void;
   tier?: number;
   isPremium?: boolean;
+  features?: GuildFeatures;
 }
 
 export function useCreateMonitorWizard({
@@ -30,13 +31,25 @@ export function useCreateMonitorWizard({
   onSuccess,
   tier = 0,
   isPremium = false,
+  features,
 }: UseCreateMonitorWizardProps) {
   const { hasFeature } = useConfig();
   const { addToast } = useToast();
 
   const isLocked = useCallback(
-    (featureName: string) => !hasFeature(tier, isPremium, featureName),
-    [hasFeature, tier, isPremium]
+    (featureName: string) => {
+      if (features) {
+        if (featureName === 'custom_color') return !features.canCustomColor;
+        if (featureName === 'alert_template') return !features.canAlertTemplate;
+        if (featureName === 'custom_template') return !features.canCustomTemplate;
+        if (featureName === 'genre_filter') return !features.canGenreFilter;
+        if (featureName === 'tmdb_language_filter') return !features.canTmdbLanguageFilter;
+        if (featureName === 'remove_branding') return !features.canRemoveBranding;
+        return !features.features.includes(featureName);
+      }
+      return !hasFeature(tier, isPremium, featureName);
+    },
+    [features, hasFeature, tier, isPremium]
   );
 
   const [step, setStep] = useState(1);

@@ -4,7 +4,7 @@ import React from "react";
 import { Terminal, RefreshCw, Trash2, Maximize2, Minimize2 } from "lucide-react";
 import { IconButton, Button } from "@/components/ui";
 import { useLogStream } from "@/hooks/use_log_stream";
-import { parseLogLine, getLogModifierClass } from "@/utils";
+import { StructuredLogEntry, getLogModifierClass } from "@/utils/log";
 import styles from "./log_streamer.module.css";
 
 export default function LogStreamer() {
@@ -21,15 +21,13 @@ export default function LogStreamer() {
     clearLogs,
   } = useLogStream(3000);
 
-  const renderLogLine = (line: string) => {
-    const parsed = parseLogLine(line);
-    if (!parsed) return null;
-
-    const lineClass = getLogModifierClass(parsed.modifier, styles);
+  const renderLogLine = (log: StructuredLogEntry, index: number) => {
+    const lineClass = getLogModifierClass(log.modifier || log.level, styles);
+    const key = `${log.timestamp || ''}-${index}-${(log.raw || log.message || '').slice(0, 20)}`;
 
     return (
-      <div key={line} className={[styles["log-line"], lineClass].filter(Boolean).join(" ")}>
-        <span>{parsed.text}</span>
+      <div key={key} className={[styles["log-line"], lineClass].filter(Boolean).join(" ")}>
+        <span>{log.raw || log.message}</span>
       </div>
     );
   };
@@ -105,7 +103,7 @@ export default function LogStreamer() {
             </span>
           </div>
         ) : (
-          logs.map((line) => renderLogLine(line))
+          logs.map((log, index) => renderLogLine(log, index))
         )}
       </div>
     </div>
