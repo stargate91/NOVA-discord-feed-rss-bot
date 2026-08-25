@@ -30,10 +30,10 @@ async def force_sync():
                     guild.id
                 )
                 if res == "INSERT 0 1":
-                    print(f" -> REGISTERED NEW GUILD!")
+                    print(" -> REGISTERED NEW GUILD!")
                     synced += 1
                 else:
-                    print(f" -> Already in DB.")
+                    print(" -> Already in DB.")
             
             print(f"\nSUCCESS: Synced {synced} new guilds.")
             await conn.close()

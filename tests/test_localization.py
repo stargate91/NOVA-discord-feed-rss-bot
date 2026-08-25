@@ -1,5 +1,4 @@
 import unittest
-import os
 from services.localization_service import LocalizationService
 
 class TestLocalizationService(unittest.TestCase):

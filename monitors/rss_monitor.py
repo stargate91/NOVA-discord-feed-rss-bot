@@ -1,15 +1,13 @@
-import discord
 import re
 import asyncio
+import calendar
 from core.base_monitor import BaseMonitor
 from logger import log
-import calendar
+from db import monitor_repo
 from ui import generate_news_layout
 
 # Standard User-Agent to avoid being blocked by WordPress/Cloudflare
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-
-from db import monitor_repo
 
 class RSSMonitor(BaseMonitor):
     def __init__(self, bot, config):

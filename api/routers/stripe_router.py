@@ -126,9 +126,12 @@ async def create_checkout(
             break
 
     if not price_id:
-        if tier == 1: price_id = os.getenv(f"STRIPE_PRICE_TIER1_{interval.upper()}")
-        elif tier == 2: price_id = os.getenv(f"STRIPE_PRICE_TIER2_{interval.upper()}")
-        elif tier == 3: price_id = os.getenv(f"STRIPE_PRICE_TIER3_{interval.upper()}")
+        if tier == 1:
+            price_id = os.getenv(f"STRIPE_PRICE_TIER1_{interval.upper()}")
+        elif tier == 2:
+            price_id = os.getenv(f"STRIPE_PRICE_TIER2_{interval.upper()}")
+        elif tier == 3:
+            price_id = os.getenv(f"STRIPE_PRICE_TIER3_{interval.upper()}")
 
     if not price_id:
         log.error(f"[CHECKOUT] Price not found for Tier {tier}, Interval {interval}")

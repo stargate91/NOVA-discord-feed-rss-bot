@@ -1,6 +1,6 @@
 import unittest
 import time
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import MagicMock, AsyncMock
 from monitors.youtube_monitor import YouTubeMonitor
 from monitors.epic_games_monitor import EpicGamesMonitor
 from monitors.movie_monitor import MovieMonitor

@@ -1,4 +1,3 @@
-import aiohttp
 from clients import http_client
 from logger import log
 

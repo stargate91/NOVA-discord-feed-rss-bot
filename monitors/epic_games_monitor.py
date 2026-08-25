@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from core.base_monitor import BaseMonitor
 from logger import log
 from db import monitor_repo

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from logger import log
-from db.connection import get_pool, _fetch, _fetchrow, _execute
+from db.connection import _fetch, _fetchrow, _execute
 
 async def add_premium_days(guild_id: int, days: int):
     """Adds premium days to a guild. If already has premium, it stacks."""

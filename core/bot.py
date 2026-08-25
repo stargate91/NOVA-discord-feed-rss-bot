@@ -1,14 +1,10 @@
-import asyncio
-import logging
-import discord
 import json
 import os
-import re
+import discord
 from discord.ext import commands
 from discord import app_commands
 from logger import log
 from db import guild_repo, monitor_repo, bot_settings_repo
-from datetime import datetime
 
 class FeedBot(commands.Bot):
     def __init__(self, config):
@@ -129,7 +125,7 @@ class FeedBot(commands.Bot):
 
 
     async def on_ready(self):
-        log.info(f"--- FEED BOT ONLINE ---")
+        log.info("--- FEED BOT ONLINE ---")
         log.info(f"Identity: {self.user} (ID: {self.user.id})")
         log.info(f"Prefix: {self.command_prefix}")
         log.info(f"Intents - Message Content: {self.intents.message_content}")
@@ -160,7 +156,7 @@ class FeedBot(commands.Bot):
         if synced > 0:
             log.info(f"Successfully synced {synced} new guilds to database.")
         
-        log.info(f"------------------------")
+        log.info("------------------------")
 
     async def on_guild_join(self, guild):
         """Called when the bot joins a new guild."""

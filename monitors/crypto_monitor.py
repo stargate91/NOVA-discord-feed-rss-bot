@@ -1,15 +1,10 @@
-import aiohttp
 import discord
-import json
 import os
 import time
 from logger import log
 from core.base_monitor import BaseMonitor
 from db import monitor_repo
-from core.emojis import (
-    STATUS_SUCCESS, STATUS_ERROR,
-    CRYPTO_UP, CRYPTO_DOWN, CRYPTO_BULLET_FILLED, CRYPTO_BULLET_EMPTY, CRYPTO_CHART_COLORFUL
-)
+from core.emojis import CRYPTO_UP, CRYPTO_DOWN
 
 class CryptoMonitor(BaseMonitor):
     def __init__(self, bot, m_config):
@@ -27,7 +22,8 @@ class CryptoMonitor(BaseMonitor):
 
     def _parse_targets(self, input_str):
         targets = {}
-        if not input_str: return targets
+        if not input_str:
+            return targets
         parts = [p.strip() for p in input_str.split(",")]
         for p in parts:
             if ":" in p:
@@ -298,16 +294,7 @@ class CryptoMonitor(BaseMonitor):
         if mock_header == "ui_crypto_mock_header":
             mock_header = " `[ MOCK ALERT SIMULÁCIÓ ]` "
             
-        # 1. Format the alert message (same logic as _send_alert)
-        alert_msg = self.get_alert_message({
-            "name": sym,
-            "price": f"{current_price:,.2f}",
-            "threshold": f"{threshold:,.2f}",
-            "direction": dir_emoji,
-            "percent": percent_str
-        })
-        
-        # 2. Format the layout message (same logic as _send_alert)
+        # Format the layout message (same logic as _send_alert)
         msg = self.bot.get_feedback("new_crypto_alert", guild_id=self.guild_id).format(
             name=sym,
             price=f"{current_price:,.2f}",

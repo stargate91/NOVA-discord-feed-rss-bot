@@ -1,8 +1,6 @@
 import discord
 import random
-import asyncio
 from discord.ext import commands, tasks
-from discord import app_commands
 from logger import log
 from db import bot_settings_repo
 

@@ -1,7 +1,6 @@
 import json
-from datetime import datetime
 from logger import log
-from db.connection import get_pool, _fetch, _fetchrow, _execute
+from db.connection import _fetch, _fetchrow, _execute
 
 async def get_guild_settings(guild_id: int) -> dict:
     """Retrieve settings for a specific guild."""

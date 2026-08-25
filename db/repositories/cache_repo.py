@@ -1,4 +1,4 @@
-from db.connection import get_pool, _fetchrow, _fetchval, _execute
+from db.connection import _fetchrow, _fetchval, _execute
 
 async def get_steam_cached_id(query: str) -> str | None:
     """Retrieve cached Steam App ID for a query."""

@@ -1,5 +1,4 @@
 import aiohttp
-import discord
 from core.base_monitor import BaseMonitor
 from logger import log
 from db import monitor_repo, cache_repo
@@ -163,10 +162,12 @@ class SteamNewsMonitor(BaseMonitor):
             url = self._get_api_url(20)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, headers={"User-Agent": USER_AGENT}) as response:
-                    if response.status != 200: return []
+                    if response.status != 200:
+                        return []
                     data = await response.json()
                     feed = data.get("appnews", {}).get("newsitems", [])
-                    if not feed: return []
+                    if not feed:
+                        return []
                     
                     official_items = [item for item in feed if item.get("feed_type") == 1]
                     

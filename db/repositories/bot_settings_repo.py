@@ -1,4 +1,4 @@
-from db.connection import get_pool, _fetch, _fetchrow, _execute
+from db.connection import _fetch, _fetchrow, _execute
 
 async def get_bot_setting(key: str, default=None):
     """Retrieve a global bot setting from the database."""

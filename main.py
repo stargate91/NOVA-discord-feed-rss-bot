@@ -1,10 +1,8 @@
 import asyncio
 import os
-import asyncpg
-from dotenv import load_dotenv
 from logger import log, setup_logging
 from core.config import BotConfig
-from db import create_db_pool, set_pool, init_db, close
+from db import create_db_pool, init_db, close
 from core.bot import FeedBot
 
 async def main():
@@ -22,7 +20,7 @@ async def main():
             return
 
         try:
-            pool = await create_db_pool(
+            await create_db_pool(
                 dsn,
                 min_size=2,
                 max_size=20,

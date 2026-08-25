@@ -1,10 +1,8 @@
-import discord
 import aiohttp
+from datetime import datetime
 from core.base_monitor import BaseMonitor
 from logger import log
 from db import monitor_repo
-import asyncio
-from datetime import datetime, timezone
 
 class GitHubMonitor(BaseMonitor):
     def __init__(self, bot, config):
@@ -72,7 +70,8 @@ class GitHubMonitor(BaseMonitor):
         all_candidates = []
         for release in releases:
             release_id = str(release.get("id"))
-            if not release_id: continue
+            if not release_id:
+                continue
             
             all_candidates.append(release)
 

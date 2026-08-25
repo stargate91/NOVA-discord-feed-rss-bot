@@ -13,7 +13,8 @@ def slugify(text: str) -> str:
 
 def clean_html(text: str) -> str:
     """Removes HTML tags and cleans up content."""
-    if not text: return ""
+    if not text:
+        return ""
     
     # Remove raw Steam image placeholders that leak into text
     text = re.sub(r'\{STEAM_CLAN_IMAGE\}[^\s"\'\[\]<>]+', '', text)
@@ -30,7 +31,8 @@ def clean_html(text: str) -> str:
 
 def extract_image_url(text: str) -> str | None:
     """Extracts the first image URL found in HTML or BBCode tags."""
-    if not text: return None
+    if not text:
+        return None
     
     url = None
     # Try HTML <img> tag

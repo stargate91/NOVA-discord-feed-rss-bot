@@ -1,6 +1,5 @@
 import unittest
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, patch
 from db import billing_repo
 
 class TestBillingRepo(unittest.IsolatedAsyncioTestCase):
@@ -32,7 +31,7 @@ class TestBillingRepo(unittest.IsolatedAsyncioTestCase):
     async def test_redeem_code_success(self):
         """Verify successful redemption updates usage, logs redemption, and grants premium."""
         with patch("db.billing_repo._fetchrow", new_callable=AsyncMock) as mock_fetch, \
-             patch("db.billing_repo._execute", new_callable=AsyncMock) as mock_exec, \
+             patch("db.billing_repo._execute", new_callable=AsyncMock), \
              patch("db.billing_repo.add_premium_days", new_callable=AsyncMock) as mock_add_days:
 
             mock_fetch.return_value = (30, 10, 3, 2, False)

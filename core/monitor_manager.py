@@ -68,9 +68,12 @@ class MonitorManager:
             old_states = {}
             for m in self.monitors:
                 state = {}
-                if hasattr(m, 'is_live'): state['is_live'] = m.is_live
-                if hasattr(m, 'is_first_run'): state['is_first_run'] = m.is_first_run
-                if state: old_states[m.id] = state
+                if hasattr(m, 'is_live'):
+                    state['is_live'] = m.is_live
+                if hasattr(m, 'is_first_run'):
+                    state['is_first_run'] = m.is_first_run
+                if state:
+                    old_states[m.id] = state
 
             db_monitors = await monitor_repo.get_all_monitors()
             new_monitors = []
@@ -90,8 +93,10 @@ class MonitorManager:
 
                     if monitor.id in old_states:
                         state = old_states[monitor.id]
-                        if 'is_live' in state: monitor.is_live = state['is_live']
-                        if 'is_first_run' in state: monitor.is_first_run = state['is_first_run']
+                        if 'is_live' in state:
+                            monitor.is_live = state['is_live']
+                        if 'is_first_run' in state:
+                            monitor.is_first_run = state['is_first_run']
                         monitor.is_silent_start = True
 
                     new_monitors.append(monitor)
@@ -99,7 +104,8 @@ class MonitorManager:
             # Announce new assignments if not startup
             if not is_startup:
                 for m in new_monitors:
-                    if not m.enabled: continue
+                    if not m.enabled:
+                        continue
                     old_chans = old_assignments.get(m.id, set())
                     new_chans = set(m.target_channels)
                     added_chans = new_chans - old_chans
