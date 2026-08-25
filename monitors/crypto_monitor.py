@@ -32,8 +32,11 @@ class CryptoMonitor(BaseMonitor):
         for p in parts:
             if ":" in p:
                 sym, val = p.split(":", 1)
+                sym = sym.upper().strip()
+                if not sym:
+                    continue
                 try:
-                    targets[sym.upper().strip()] = float(val.strip())
+                    targets[sym] = float(val.strip())
                 except ValueError:
                     continue
         return targets

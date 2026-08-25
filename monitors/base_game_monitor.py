@@ -1,4 +1,5 @@
 from datetime import datetime
+from logger import log
 from core.base_monitor import BaseMonitor
 from db import monitor_repo
 from providers import GamerPowerClient
@@ -13,12 +14,16 @@ class BaseGameGiveawayMonitor(BaseMonitor):
         self.platform_emoji = platform_emoji
         self.gamerpower_platform = gamerpower_platform
         self.client = GamerPowerClient()
+        
+        # Resolve include_dlc flag from config or extra_settings
+        extra = config.get("extra_settings", {}) if isinstance(config.get("extra_settings"), dict) else {}
+        self.include_dlc = config.get("include_dlc", False) or extra.get("include_dlc", False)
 
     def get_shared_key(self) -> str:
         return f"{self.gamerpower_platform}_free_giveaways"
 
     async def fetch_new_items(self) -> list[dict]:
-        """Fetch giveaways for the platform from GamerPower."""
+        """Fetch giveaways for the platform from GamerPower and apply DLC filter."""
         shared_key = self.get_shared_key()
         data = None
         if self.bot and hasattr(self.bot, "monitor_manager") and self.bot.monitor_manager:
@@ -32,11 +37,12 @@ class BaseGameGiveawayMonitor(BaseMonitor):
         if not isinstance(data, list):
             return []
 
+        include_dlc = getattr(self, "include_dlc", False)
         all_candidates = []
         for game in data:
-            # We filter for actual full games by default
             giveaway_type = game.get("type", "").lower()
-            if giveaway_type and giveaway_type != "game":
+            # Filter for full games unless DLC inclusion is enabled
+            if not include_dlc and giveaway_type and giveaway_type != "game":
                 continue
             all_candidates.append(game)
 
@@ -126,7 +132,15 @@ class BaseGameGiveawayMonitor(BaseMonitor):
         if not data or not isinstance(data, list):
             return []
 
-        games = data[:count]
+        include_dlc = getattr(self, "include_dlc", False)
+        filtered = []
+        for game in data:
+            giveaway_type = game.get("type", "").lower()
+            if not include_dlc and giveaway_type and giveaway_type != "game":
+                continue
+            filtered.append(game)
+
+        games = filtered[:count]
         formatted = []
         for game in games:
             raw_title = game.get("title", self.bot.get_feedback("default_unknown", guild_id=self.guild_id))
