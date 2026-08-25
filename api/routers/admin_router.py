@@ -14,21 +14,28 @@ async def get_logs_endpoint(
     search: str | None = Query(default=None),
 ):
     """Retrieve filtered structured log records from the in-memory ring buffer for Dev Panel."""
+    # Normalize when invoked directly in tests without FastAPI DI
+    eff_limit = 100 if not isinstance(limit, int) else limit
+    eff_level = None if not isinstance(level, str) else level
+    eff_guild_id = None if not isinstance(guild_id, int) else guild_id
+    eff_platform = None if not isinstance(platform, str) else platform
+    eff_search = None if not isinstance(search, str) else search
+
     logs = get_recent_logs(
-        limit=limit,
-        level=level,
-        guild_id=guild_id,
-        platform=platform,
-        search=search
+        limit=eff_limit,
+        level=eff_level,
+        guild_id=eff_guild_id,
+        platform=eff_platform,
+        search=eff_search
     )
     return {
         "count": len(logs),
         "filters": {
-            "level": level,
-            "guild_id": guild_id,
-            "platform": platform,
-            "search": search,
-            "limit": limit
+            "level": eff_level,
+            "guild_id": eff_guild_id,
+            "platform": eff_platform,
+            "search": eff_search,
+            "limit": eff_limit
         },
         "logs": logs
     }

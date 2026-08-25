@@ -10,7 +10,7 @@ class MetricsService:
     """
 
     def __init__(self):
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._counters: dict[str, dict[tuple, float]] = {}
         self._gauges: dict[str, dict[tuple, float]] = {}
         self._timings: dict[str, dict[tuple, list[float]]] = {}

@@ -9,7 +9,6 @@ class TestDatabaseHealthResilienceFlowIntegration(unittest.IsolatedAsyncioTestCa
         self.bot = MagicMock()
         self.bot.config = {}
         setup_webhook_bot(self.bot)
-        self.client = TestClient(app)
 
     async def test_database_pool_lifecycle_and_resilience(self):
         """Test database connection pool lifecycle: uninitialized error -> pool assignment -> execution -> graceful shutdown."""
@@ -51,9 +50,10 @@ class TestDatabaseHealthResilienceFlowIntegration(unittest.IsolatedAsyncioTestCa
 
     def test_healthcheck_endpoint_availability(self):
         """Test FastAPI /health diagnostic endpoint."""
-        resp = self.client.get("/health")
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["status"], "ok")
+        with TestClient(app) as client:
+            resp = client.get("/health")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json()["status"], "ok")
 
 if __name__ == "__main__":
     unittest.main()

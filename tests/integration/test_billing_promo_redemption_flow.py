@@ -53,8 +53,8 @@ class TestBillingPromoRedemptionFlowIntegration(unittest.IsolatedAsyncioTestCase
                 guild_id, tier = args[0], args[1]
                 guild_settings_db[guild_id]["tier"] = tier
 
-        with patch("db.billing_repo._fetchrow", side_effect=mock_fetchrow), \
-             patch("db.billing_repo._execute", side_effect=mock_execute):
+        with patch.object(billing_repo, "_fetchrow", side_effect=mock_fetchrow), \
+             patch.object(billing_repo, "_execute", side_effect=mock_execute):
 
             # --- REDEMPTION 1: Guild 100 redeems PROMO30 (+30 days, tier 3) ---
             success, msg = await billing_repo.redeem_code("PROMO30", guild_id=100)

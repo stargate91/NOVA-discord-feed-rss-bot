@@ -97,7 +97,7 @@ class RingBufferLogHandler(logging.Handler):
         super().__init__()
         self.capacity = capacity
         self.buffer = deque(maxlen=capacity)
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def emit(self, record: logging.LogRecord):
         entry = {
@@ -242,6 +242,8 @@ def setup_logging(level_name: str = "INFO"):
         respect_handler_level=True
     )
     _log_listener.start()
+    if hasattr(_log_listener, "_thread") and _log_listener._thread:
+        _log_listener._thread.daemon = True
 
     # Register automatic cleanup on process termination
     atexit.register(stop_logging)
@@ -250,5 +252,8 @@ def stop_logging():
     """Flush pending log records and stop the background logging worker thread."""
     global _log_listener
     if _log_listener is not None:
-        _log_listener.stop()
+        try:
+            _log_listener.stop()
+        except Exception:
+            pass
         _log_listener = None
