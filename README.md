@@ -270,4 +270,6 @@ python -m pytest tests/test_structured_logging_and_metrics.py
 
 ## License
 
-This project is licensed under the MIT License.
+Copyright (c) 2026. All Rights Reserved.
+
+This repository and its source code are proprietary. Viewing the codebase is permitted for review purposes, but no part of this project may be copied, modified, distributed, sublicensed, or used commercially without prior explicit written permission from the copyright owner.
