@@ -1,38 +1,19 @@
 import time
 from abc import ABC, abstractmethod
-import discord
 from logger import log
 from db import monitor_repo
-
-# In-memory blacklist for deleted/inaccessible Discord channels
-_DEAD_CHANNELS: dict[int, float] = {}
-DEAD_CHANNEL_TTL: float = 3600.0  # 1 hour
-
-def is_channel_dead(channel_id: int) -> bool:
-    """Check if a channel ID is marked as deleted/dead within TTL."""
-    if not channel_id:
-        return True
-    exp = _DEAD_CHANNELS.get(channel_id)
-    if exp is None:
-        return False
-    if time.time() < exp:
-        return True
-    # Expired from blacklist
-    del _DEAD_CHANNELS[channel_id]
-    return False
-
-def mark_channel_dead(channel_id: int, ttl: float = DEAD_CHANNEL_TTL):
-    """Mark a channel ID as dead for a specific TTL duration."""
-    if channel_id:
-        _DEAD_CHANNELS[channel_id] = time.time() + ttl
-
-def get_dead_channel_count() -> int:
-    """Return count of active dead channels."""
-    now = time.time()
-    return sum(1 for exp in _DEAD_CHANNELS.values() if now < exp)
+from models import BroadcastPayload
+from services import (
+    BaseDeliveryAdapter,
+    DiscordDeliveryAdapter,
+    is_channel_dead,
+    mark_channel_dead,
+    get_dead_channel_count,
+    _DEAD_CHANNELS
+)
 
 class BaseMonitor(ABC):
-    def __init__(self, bot, config):
+    def __init__(self, bot, config, delivery_adapter: BaseDeliveryAdapter | None = None):
         self.bot = bot
         self.config = config
         self.id = config.get("id")
@@ -45,6 +26,13 @@ class BaseMonitor(ABC):
         self.target_roles = config.get("target_roles", [])
         self.guild_id = config.get("guild_id", 0)
         self.send_initial_alert = config.get("send_initial_alert", False)
+        
+        if delivery_adapter is not None:
+            self.delivery_adapter = delivery_adapter
+        elif bot and isinstance(getattr(bot, "delivery_adapter", None), BaseDeliveryAdapter):
+            self.delivery_adapter = bot.delivery_adapter
+        else:
+            self.delivery_adapter = DiscordDeliveryAdapter(bot)
 
     @property
     def ping_role(self):
@@ -122,10 +110,21 @@ class BaseMonitor(ABC):
         
         return custom if custom else default_url
 
-    async def check_for_updates(self):
-        """Perform the check for updates. Deprecated in favor of fetch_new_items."""
+    @abstractmethod
+    async def fetch_new_items(self) -> list:
+        """Fetch newly discovered items or events from the external source."""
         pass
-    
+
+    @abstractmethod
+    def get_item_id(self, item) -> str:
+        """Return a unique string ID for a given feed item to use for deduplication."""
+        pass
+
+    @abstractmethod
+    async def process_item(self, item):
+        """Build layout/embed and dispatch the notification to Discord channel(s)."""
+        pass
+
     @abstractmethod
     async def get_latest_item(self):
         """Fetch the most recent item and return its (content, embed, view) without posting or marking as published."""
@@ -144,7 +143,7 @@ class BaseMonitor(ABC):
             return
         records = []
         for item in items:
-            item_id = self.get_item_id(item) if hasattr(self, "get_item_id") else None
+            item_id = self.get_item_id(item)
             if item_id:
                 title = item.get("title") if isinstance(item, dict) else str(item_id)
                 thumb = item.get("thumbnail") or item.get("thumbnail_url") if isinstance(item, dict) else None
@@ -170,69 +169,19 @@ class BaseMonitor(ABC):
             return None
         return [item]
 
-    async def send_update(self, content=None, embed=None, view=None):
-        """Send an update to the configured Discord channel(s) with dead-channel protection."""
-        if not self.target_channels:
-            log.warning(f"No target channels configured for monitor: {self.name}")
-            return
-
-        for ch_id in self.target_channels:
-            if not ch_id:
-                continue
-
-            # Skip known dead/deleted channels to avoid Discord API 404/403 spam
-            if is_channel_dead(ch_id):
-                log.debug(f"[BaseMonitor] Skipping dead/blacklisted channel {ch_id} for {self.name}")
-                continue
-
-            channel = self.bot.get_channel(ch_id)
-            if not channel:
-                try:
-                    channel = await self.bot.fetch_channel(ch_id)
-                except discord.NotFound as enf:
-                    if enf.code == 10003: # Unknown Channel (deleted)
-                        log.warning(f"Channel {ch_id} for {self.name} is DELETED (10003). Blacklisting for 1h.")
-                        mark_channel_dead(ch_id)
-                        continue
-                    log.error(f"Could not fetch channel {ch_id} for {self.name}: {enf}")
-                    continue
-                except discord.Forbidden:
-                    log.warning(f"Missing permissions (403 Forbidden) for channel {ch_id} on {self.name}. Blacklisting for 1h.")
-                    mark_channel_dead(ch_id)
-                    continue
-                except Exception as e:
-                    log.error(f"Could not fetch channel {ch_id} for {self.name}: {e}")
-                    continue
-
-            if channel:
-                try:
-                    if content is None and embed is None and view is None:
-                        continue # Skip empty updates to prevent 50006 errors
-                        
-                    # Logic to handle Discord Components V2 (LayoutView)
-                    # V2 messages (IS_COMPONENTS_V2 flag) cannot have the 'content' field.
-                    # If we have both content and a V2 view, we send them as two separate messages.
-                    is_v2 = view and (hasattr(view, "_is_v2") or type(view).__name__ == "LayoutView")
-                    
-                    if is_v2 and content:
-                        # Message 1: Alert Text (and URL)
-                        # We suppress embeds so Discord doesn't generate a native embed if a URL is present
-                        await channel.send(content=content, suppress_embeds=True)
-                        # Message 2: The V2 Layout
-                        await channel.send(view=view)
-                    else:
-                        await channel.send(content=content, embed=embed, view=view)
-                        
-                    log.info(f"Published update for {self.name} on channel {channel.name}", extra={'guild_id': self.guild_id})
-                    await monitor_repo.increment_post_stat(self.guild_id, self.platform)
-                    await monitor_repo.update_last_post_at(self.id)
-                except discord.NotFound:
-                    log.warning(f"Channel {ch_id} was deleted during send for {self.name}. Blacklisting.")
-                    mark_channel_dead(ch_id)
-                except discord.Forbidden:
-                    log.warning(f"Missing send permissions in channel {ch_id} for {self.name}. Blacklisting.")
-                    mark_channel_dead(ch_id)
-                except Exception as e:
-                    log.error(f"Failed to send update to channel {ch_id} for {self.name}: {e}", extra={'guild_id': self.guild_id})
-            else:
-                log.warning(f"Could not find channel {ch_id} for {self.name}", extra={'guild_id': self.guild_id})
+    async def send_update(self, content=None, embed=None, view=None) -> bool:
+        """Send an update via the configured delivery adapter."""
+        payload = BroadcastPayload(
+            content=content,
+            embed=embed,
+            view=view,
+            guild_id=self.guild_id
+        )
+        return await self.delivery_adapter.deliver(
+            payload=payload,
+            target_channels=self.target_channels,
+            guild_id=self.guild_id,
+            platform=self.platform,
+            monitor_id=self.id,
+            monitor_name=self.name
+        )

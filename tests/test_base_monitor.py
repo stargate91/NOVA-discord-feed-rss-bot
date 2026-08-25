@@ -6,6 +6,15 @@ class DummyMonitor(BaseMonitor):
     def __init__(self, bot, config):
         super().__init__(bot, config)
 
+    async def fetch_new_items(self) -> list:
+        return [{"id": "dummy_1", "title": "Dummy Item"}]
+
+    def get_item_id(self, item) -> str:
+        return str(item.get("id"))
+
+    async def process_item(self, item):
+        pass
+
     async def get_latest_item(self):
         return {"id": "dummy_1", "title": "Dummy Item"}
 
@@ -69,6 +78,17 @@ class TestBaseMonitor(unittest.TestCase):
         config_no_custom = {}
         monitor_default = DummyMonitor(self.bot, config_no_custom)
         self.assertEqual(monitor_default.get_image_url("https://default.com/image.png"), "https://default.com/image.png")
+
+    def test_abstract_methods_enforced(self):
+        """Verify that BaseMonitor cannot be instantiated directly or with missing abstract methods."""
+        with self.assertRaises(TypeError):
+            BaseMonitor(self.bot, {"id": 1})
+
+        class IncompleteMonitor(BaseMonitor):
+            pass
+
+        with self.assertRaises(TypeError):
+            IncompleteMonitor(self.bot, {"id": 2})
 
 if __name__ == "__main__":
     unittest.main()

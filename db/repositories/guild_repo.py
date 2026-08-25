@@ -1,8 +1,9 @@
 import json
 from logger import log
 from db.connection import _fetch, _fetchrow, _execute
+from models import GuildSettings
 
-async def get_guild_settings(guild_id: int) -> dict:
+async def get_guild_settings(guild_id: int) -> GuildSettings:
     """Retrieve settings for a specific guild."""
     q = """
         SELECT language, admin_role_id, alert_templates, premium_until, refresh_interval, 
@@ -18,34 +19,36 @@ async def get_guild_settings(guild_id: int) -> dict:
                 templates = json.loads(row[2])
             except Exception as e:
                 log.warning(f"[GuildRepo] Failed to parse alert_templates JSON for guild {guild_id}: {e}")
-        return {
-            "language": row[0] or "en",
-            "admin_role_id": row[1] or 0,
-            "alert_templates": templates,
-            "premium_until": row[3],
-            "refresh_interval": row[4],
-            "tier": row[5] or 0,
-            "stripe_subscription_id": row[6],
-            "custom_branding": row[7],
-            "is_active": row[8] if row[8] is not None else True,
-            "is_master": row[9] or False,
-            "is_premium": row[10] or False
-        }
-    return {
-        "language": "en",
-        "admin_role_id": 0,
-        "alert_templates": {},
-        "premium_until": None,
-        "refresh_interval": None,
-        "tier": 0,
-        "stripe_subscription_id": None,
-        "custom_branding": None,
-        "is_active": True,
-        "is_master": False,
-        "is_premium": False
-    }
+        return GuildSettings(
+            guild_id=guild_id,
+            language=row[0] or "en",
+            admin_role_id=row[1] or 0,
+            alert_templates=templates,
+            premium_until=row[3],
+            refresh_interval=row[4],
+            tier=row[5] or 0,
+            stripe_subscription_id=row[6],
+            custom_branding=row[7],
+            is_active=row[8] if row[8] is not None else True,
+            is_master=row[9] or False,
+            is_premium=row[10] or False
+        )
+    return GuildSettings(
+        guild_id=guild_id,
+        language="en",
+        admin_role_id=0,
+        alert_templates={},
+        premium_until=None,
+        refresh_interval=None,
+        tier=0,
+        stripe_subscription_id=None,
+        custom_branding=None,
+        is_active=True,
+        is_master=False,
+        is_premium=False
+    )
 
-async def get_all_guild_settings() -> list:
+async def get_all_guild_settings() -> list[GuildSettings]:
     """Fetch settings for all guilds (used for cache warming)."""
     q = """
         SELECT guild_id, language, admin_role_id, alert_templates, premium_until, 
@@ -61,19 +64,19 @@ async def get_all_guild_settings() -> list:
                 templates = json.loads(row[3])
             except Exception as e:
                 log.warning(f"[GuildRepo] Failed to parse alert_templates JSON for guild {row[0]}: {e}")
-        results.append({
-            "guild_id": row[0],
-            "language": row[1] or "en",
-            "admin_role_id": row[2] or 0,
-            "alert_templates": templates,
-            "premium_until": row[4],
-            "tier": row[5] or 0,
-            "stripe_subscription_id": row[6],
-            "custom_branding": row[7],
-            "is_active": row[8] if row[8] is not None else True,
-            "is_master": row[9] or False,
-            "is_premium": row[10] or False
-        })
+        results.append(GuildSettings(
+            guild_id=row[0],
+            language=row[1] or "en",
+            admin_role_id=row[2] or 0,
+            alert_templates=templates,
+            premium_until=row[4],
+            tier=row[5] or 0,
+            stripe_subscription_id=row[6],
+            custom_branding=row[7],
+            is_active=row[8] if row[8] is not None else True,
+            is_master=row[9] or False,
+            is_premium=row[10] or False
+        ))
     return results
 
 async def update_guild_settings(
@@ -146,16 +149,17 @@ async def update_guild_settings(
     )
 
     if bot and hasattr(bot, "guild_settings_cache"):
-        bot.guild_settings_cache[guild_id] = {
-            "language": lang,
-            "admin_role_id": a_role,
-            "alert_templates": templates,
-            "premium_until": p_until,
-            "refresh_interval": r_int,
-            "tier": g_tier,
-            "stripe_subscription_id": sub_id,
-            "custom_branding": custom_branding
-        }
+        bot.guild_settings_cache[guild_id] = GuildSettings(
+            guild_id=guild_id,
+            language=lang,
+            admin_role_id=a_role,
+            alert_templates=templates if isinstance(templates, dict) else {},
+            premium_until=p_until,
+            refresh_interval=r_int,
+            tier=g_tier,
+            stripe_subscription_id=sub_id,
+            custom_branding=custom_branding
+        )
         log.info(f"Updated guild settings cache for {guild_id}")
 
 async def ensure_guild_active(guild_id: int):

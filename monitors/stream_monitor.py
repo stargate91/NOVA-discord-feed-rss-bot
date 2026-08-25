@@ -63,6 +63,11 @@ class BaseStreamMonitor(BaseMonitor):
     async def _fetch_platform_data(self) -> dict | None:
         raise NotImplementedError
 
+    def get_item_id(self, stream_data: dict) -> str:
+        """Return unique ID for the stream instance."""
+        started_at = stream_data.get("started_at") if isinstance(stream_data, dict) else int(time.time())
+        return f"{self.platform}:{self.stream_username}:{started_at}"
+
     async def process_item(self, stream_data: dict):
         await self._send_live_notification(stream_data)
 

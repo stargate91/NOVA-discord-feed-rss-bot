@@ -29,38 +29,34 @@ class MaintenanceService:
                 else:
                     return True, "Currently OFFLINE."
 
-            if hasattr(monitor, 'fetch_new_items'):
-                all_items = await monitor.fetch_new_items()
-                new_items = []
-                if all_items:
-                    for item in all_items:
-                        item_id = monitor.get_item_id(item)
-                        if item_id:
-                            is_pub = await monitor_repo.is_published(item_id, monitor.platform, monitor.guild_id)
-                            if not is_pub:
-                                new_items.append(item)
+            all_items = await monitor.fetch_new_items()
+            new_items = []
+            if all_items:
+                for item in all_items:
+                    item_id = monitor.get_item_id(item)
+                    if item_id:
+                        is_pub = await monitor_repo.is_published(item_id, monitor.platform, monitor.guild_id)
+                        if not is_pub:
+                            new_items.append(item)
 
-                if new_items:
-                    for item in new_items:
-                        await monitor.process_item(item)
-                    await monitor.mark_items_published(new_items)
+            if new_items:
+                for item in new_items:
+                    await monitor.process_item(item)
+                await monitor.mark_items_published(new_items)
 
-                    count = len(new_items)
-                    first = new_items[0]
-                    title = first.get('title') or first.get('name') or first.get('symbol')
+                count = len(new_items)
+                first = new_items[0]
+                title = first.get('title') or first.get('name') or first.get('symbol')
 
-                    if monitor.platform == 'crypto' and first.get('price'):
-                        msg = f"Price Alert! {title} is at ${first.get('price')}!"
-                    elif title:
-                        msg = f"Found {count} new update(s)! Latest: {title}"
-                    else:
-                        msg = f"Found {count} new update(s)!"
-                    return True, msg
+                if monitor.platform == 'crypto' and first.get('price'):
+                    msg = f"Price Alert! {title} is at ${first.get('price')}!"
+                elif title:
+                    msg = f"Found {count} new update(s)! Latest: {title}"
                 else:
-                    return True, "Checked successfully. No new updates found."
+                    msg = f"Found {count} new update(s)!"
+                return True, msg
             else:
-                await monitor.check_for_updates()
-                return True, "Manual check complete."
+                return True, "Checked successfully. No new updates found."
         except Exception as e:
             log.error(f"Error during manual check for {monitor.name}: {e}")
             return False, f"Check error: {str(e)}"

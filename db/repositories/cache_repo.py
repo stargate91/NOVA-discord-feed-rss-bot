@@ -1,4 +1,5 @@
 from db.connection import _fetchrow, _fetchval, _execute
+from models import YouTubeCacheItem
 
 async def get_steam_cached_id(query: str) -> str | None:
     """Retrieve cached Steam App ID for a query."""
@@ -17,16 +18,16 @@ async def cache_steam_id(query: str, appid: str, title: str):
     """
     await _execute(q, query.lower().strip(), str(appid), title)
 
-async def get_youtube_cached_id(query: str) -> dict | None:
+async def get_youtube_cached_id(query: str) -> YouTubeCacheItem | None:
     """Retrieve cached YouTube channel info for a query."""
     q = "SELECT channel_id, title, thumbnail FROM youtube_cache WHERE query = $1"
     row = await _fetchrow(q, query.lower().strip())
     if row:
-        return {
-            "channel_id": row[0],
-            "title": row[1],
-            "thumbnail": row[2]
-        }
+        return YouTubeCacheItem(
+            channel_id=row[0],
+            title=row[1],
+            thumbnail=row[2]
+        )
     return None
 
 async def cache_youtube_channel(query: str, channel_id: str, title: str, thumbnail: str = None):

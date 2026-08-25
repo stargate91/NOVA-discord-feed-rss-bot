@@ -31,28 +31,26 @@ class FeedBot(commands.Bot):
         self.guild_settings_cache = {}
         
         # Domain Services
-        from services import LocalizationService, EntitlementService, PermissionService, CryptoService
+        from services import (
+            LocalizationService,
+            EntitlementService,
+            PermissionService,
+            CryptoService,
+            DiscordDeliveryAdapter,
+            NotificationService
+        )
         self.i18n = LocalizationService(self)
         self.entitlements = EntitlementService(self, config)
         self.permissions = PermissionService(self, config)
         self.crypto_service = CryptoService(self)
+        self.delivery_adapter = DiscordDeliveryAdapter(self)
+        self.notifications = NotificationService(self, self.delivery_adapter)
 
     async def reload_guild_settings_cache(self):
         """Reload all guild settings from DB into the local memory cache."""
         try:
             settings_list = await guild_repo.get_all_guild_settings()
-            new_cache = {}
-            for s in settings_list:
-                new_cache[s["guild_id"]] = {
-                    "language": s.get("language", "en"),
-                    "admin_role_id": s.get("admin_role_id", 0),
-                    "alert_templates": s.get("alert_templates", {}),
-                    "premium_until": s.get("premium_until"),
-                    "tier": s.get("tier", 0),
-                    "stripe_subscription_id": s.get("stripe_subscription_id"),
-                    "custom_branding": s.get("custom_branding")
-                }
-            self.guild_settings_cache = new_cache
+            self.guild_settings_cache = {s.guild_id: s for s in settings_list if s.guild_id is not None}
             log.info(f"Guild settings cache reloaded. ({len(self.guild_settings_cache)} guilds)")
             return True
         except Exception as e:

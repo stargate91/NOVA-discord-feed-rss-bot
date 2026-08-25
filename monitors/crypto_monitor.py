@@ -273,6 +273,11 @@ class CryptoMonitor(BaseMonitor):
             "view": view
         }
 
+    async def get_latest_item(self):
+        """Fetch the current status summary or latest alert event."""
+        summary = await self.get_status_summary()
+        return summary if summary else {"empty": True}
+
     async def get_preview(self):
         """Show a simulated alert for one of the coins."""
         if not self.targets:

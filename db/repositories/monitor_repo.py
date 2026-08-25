@@ -2,8 +2,9 @@ import json
 from datetime import datetime, timedelta
 from logger import log
 from db.connection import get_pool, _fetch, _fetchrow, _execute
+from models import MonitorConfig
 
-async def get_all_monitors() -> list:
+async def get_all_monitors() -> list[MonitorConfig]:
     """Fetch all monitors from database and format extra settings."""
     q = "SELECT id, guild_id, type, name, discord_channel_id, ping_role_id, enabled, extra_settings, last_post_at FROM monitors"
     rows = await _fetch(q)
@@ -41,10 +42,10 @@ async def get_all_monitors() -> list:
             else:
                 m["target_roles"] = []
 
-        monitors.append(m)
+        monitors.append(MonitorConfig(**m))
     return monitors
 
-async def get_monitors_for_guild(guild_id: int) -> list:
+async def get_monitors_for_guild(guild_id: int) -> list[MonitorConfig]:
     """Fetch all monitors for a specific guild."""
     q = "SELECT id, type, name, discord_channel_id, ping_role_id, enabled, extra_settings, last_post_at FROM monitors WHERE guild_id = $1"
     rows = await _fetch(q, guild_id)
@@ -82,7 +83,7 @@ async def get_monitors_for_guild(guild_id: int) -> list:
             else:
                 m["target_roles"] = []
 
-        monitors.append(m)
+        monitors.append(MonitorConfig(**m))
     return monitors
 
 async def update_last_post_at(monitor_id: int):

@@ -1,11 +1,12 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from logger import log
 from db.connection import _fetch, _fetchrow, _execute
+from models import PaymentHistoryRecord, RedeemResult
 
 async def add_premium_days(guild_id: int, days: int):
     """Adds premium days to a guild. If already has premium, it stacks."""
     res = await _fetchrow("SELECT premium_until FROM guild_settings WHERE guild_id = $1", guild_id)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     if not res:
         new_expiry = now + timedelta(days=days)
@@ -35,35 +36,35 @@ async def log_payment(guild_id: int, session_id: str, price_id: str, amount: int
     """
     await _execute(q, guild_id, session_id, price_id, amount, currency, status)
 
-async def get_payment_history(guild_id: int) -> list:
+async def get_payment_history(guild_id: int) -> list[PaymentHistoryRecord]:
     """Fetch payment history for a specific guild."""
     q = "SELECT id, stripe_session_id, price_id, amount_cents, currency, status, created_at FROM payment_history WHERE guild_id = $1 ORDER BY created_at DESC"
     rows = await _fetch(q, guild_id)
     return [
-        {
-            "id": r[0],
-            "stripe_session_id": r[1],
-            "price_id": r[2],
-            "amount_cents": r[3],
-            "currency": r[4],
-            "status": r[5],
-            "created_at": r[6]
-        }
+        PaymentHistoryRecord(
+            id=r[0],
+            stripe_session_id=r[1],
+            price_id=r[2],
+            amount_cents=r[3],
+            currency=r[4],
+            status=r[5],
+            created_at=r[6]
+        )
         for r in rows
     ]
 
-async def redeem_code(code: str, guild_id: int):
+async def redeem_code(code: str, guild_id: int) -> RedeemResult:
     """Redeem a premium promo code for a guild."""
     res = await _fetchrow("SELECT duration_days, max_uses, used_count, tier, is_revoked FROM premium_codes WHERE code = $1", code)
     if not res:
-        return False, "Invalid promo code."
+        return RedeemResult(success=False, message="Invalid promo code.")
 
     duration_days, max_uses, used_count, tier, is_revoked = res
     if is_revoked:
-        return False, "This promo code has been revoked."
+        return RedeemResult(success=False, message="This promo code has been revoked.")
 
     if used_count >= max_uses:
-        return False, "This promo code has reached its maximum uses."
+        return RedeemResult(success=False, message="This promo code has reached its maximum uses.")
 
     # Update code usage
     await _execute("UPDATE premium_codes SET used_count = used_count + 1 WHERE code = $1", code)
@@ -74,4 +75,9 @@ async def redeem_code(code: str, guild_id: int):
     if tier:
         await _execute("UPDATE guild_settings SET tier = $2 WHERE guild_id = $1", guild_id, tier)
 
-    return True, f"Successfully redeemed code for {duration_days} days of Tier {tier} premium!"
+    return RedeemResult(
+        success=True,
+        message=f"Successfully redeemed code for {duration_days} days of Tier {tier} premium!",
+        duration_days=duration_days,
+        tier=tier
+    )

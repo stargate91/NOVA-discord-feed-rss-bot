@@ -1,4 +1,5 @@
 from datetime import datetime
+from models import TierLimits
 
 class EntitlementService:
     """Service responsible for subscription tiers, limits, refresh intervals, and feature entitlement."""
@@ -42,9 +43,9 @@ class EntitlementService:
 
         return False
 
-    def get_guild_tier_limits(self, guild_id: int) -> tuple[int, int, int, int, int]:
+    def get_guild_tier_limits(self, guild_id: int) -> TierLimits:
         """
-        Returns (min_refresh_interval, max_monitors, max_channels, max_pings, max_purge)
+        Returns TierLimits (min_refresh_interval, max_monitors, max_channels, max_pings, max_purge)
         from config based on guild tier.
         """
         settings = self._get_guild_settings(guild_id)
@@ -57,12 +58,12 @@ class EntitlementService:
         tier_config = self.config.get("tier_config", {})
         config = tier_config.get(str(tier), tier_config.get("0", {}))
 
-        return (
-            config.get("min_refresh_interval", 20),
-            config.get("max_monitors", 2),
-            config.get("max_channels", 1),
-            config.get("max_pings", 1),
-            config.get("max_purge", 10)
+        return TierLimits(
+            min_refresh_interval=config.get("min_refresh_interval", 20),
+            max_monitors=config.get("max_monitors", 2),
+            max_channels=config.get("max_channels", 1),
+            max_pings=config.get("max_pings", 1),
+            max_purge=config.get("max_purge", 10)
         )
 
     def has_feature(self, guild_id: int, feature_name: str) -> bool:

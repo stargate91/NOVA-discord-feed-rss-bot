@@ -1,4 +1,5 @@
 from db.connection import _fetch, _fetchrow, _execute
+from models import BotStatus
 
 async def get_bot_setting(key: str, default=None):
     """Retrieve a global bot setting from the database."""
@@ -16,11 +17,11 @@ async def set_bot_setting(key: str, value):
     """
     await _execute(q, key, str(value))
 
-async def get_bot_statuses() -> list:
+async def get_bot_statuses() -> list[BotStatus]:
     """Retrieve all configurable bot presence statuses."""
     q = "SELECT id, type, status_text FROM bot_statuses"
     rows = await _fetch(q)
-    return [{"id": r[0], "type": r[1], "text": r[2]} for r in rows]
+    return [BotStatus(id=r[0], type=r[1], text=r[2]) for r in rows]
 
 async def add_bot_status(activity_type: str, text: str):
     """Add a new bot presence status."""

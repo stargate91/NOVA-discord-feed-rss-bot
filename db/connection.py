@@ -1,7 +1,30 @@
 import asyncpg
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession, AsyncEngine
 from logger import log
+from db.schema import Base
 
 _pool = None
+_async_engine: AsyncEngine | None = None
+_async_session_maker: async_sessionmaker[AsyncSession] | None = None
+
+def get_async_engine(dsn: str | None = None) -> AsyncEngine:
+    """Get or create the global SQLAlchemy async engine."""
+    global _async_engine
+    if _async_engine is None:
+        target_dsn = dsn or "postgresql+asyncpg://postgres:postgres@localhost/feedbot"
+        if target_dsn.startswith("postgresql://"):
+            target_dsn = target_dsn.replace("postgresql://", "postgresql+asyncpg://", 1)
+        _async_engine = create_async_engine(target_dsn, echo=False)
+    return _async_engine
+
+def get_async_session_maker(dsn: str | None = None) -> async_sessionmaker[AsyncSession]:
+    """Get or create the global SQLAlchemy async session factory."""
+    global _async_session_maker
+    if _async_session_maker is None:
+        engine = get_async_engine(dsn)
+        _async_session_maker = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    return _async_session_maker
 
 async def create_db_pool(
     dsn: str,
@@ -13,6 +36,8 @@ async def create_db_pool(
 ) -> asyncpg.Pool:
     """Create and register a fine-tuned asyncpg connection pool."""
     global _pool
+    # Initialize SQLAlchemy async engine alongside asyncpg pool
+    get_async_session_maker(dsn)
     _pool = await asyncpg.create_pool(
         dsn,
         min_size=min_size,
@@ -34,10 +59,14 @@ async def get_pool() -> asyncpg.Pool:
     return _pool
 
 async def close():
-    global _pool
+    global _pool, _async_engine, _async_session_maker
     if _pool:
         await _pool.close()
         _pool = None
+    if _async_engine:
+        await _async_engine.dispose()
+        _async_engine = None
+        _async_session_maker = None
     log.info("Database connection pool closed.")
 
 async def _fetch(query: str, *args):

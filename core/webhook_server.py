@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routers import stripe_router, monitor_router, guild_router
+from api.routers import stripe_router, monitor_router, guild_router, admin_router
 
 app = FastAPI(title="Nova Webhook & Internal API Server")
 
@@ -7,6 +7,7 @@ app = FastAPI(title="Nova Webhook & Internal API Server")
 app.include_router(stripe_router)
 app.include_router(monitor_router)
 app.include_router(guild_router)
+app.include_router(admin_router)
 
 @app.get("/health")
 async def health():
