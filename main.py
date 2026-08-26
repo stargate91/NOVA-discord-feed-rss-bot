@@ -1,6 +1,5 @@
 import asyncio
 import os
-import sys
 import argparse
 from logger import log, setup_logging
 from core.config import BotConfig
@@ -11,11 +10,11 @@ from workers import run_api_worker, run_feed_worker, run_gateway_worker
 async def run_monolith():
     """Default Standalone Mode: Runs Bot, Webhook Server, and Ingestion in a single unified process."""
     setup_logging()
-    
+
     try:
         # Load configuration
         config = BotConfig.load()
-        
+
         # Initialize Database
         dsn = config.get("database_url")
         if not dsn:
@@ -36,7 +35,7 @@ async def run_monolith():
         except Exception as e:
             log.critical(f"Failed to connect to PostgreSQL: {e}")
             return
-        
+
         token = config.get("token")
         if not token:
             log.critical("No BOT_TOKEN found! Please set it in .env or config.json.")
@@ -44,17 +43,17 @@ async def run_monolith():
 
         # Initialize Bot
         bot = FeedBot(config)
-        
+
         # Initialize Webhook Server
         from core.webhook_server import app, setup_webhook_bot
         import uvicorn
-        
+
         setup_webhook_bot(bot)
-        
+
         # Start Webhook Server in background
         web_config = uvicorn.Config(
-            app, 
-            host=os.getenv("WEBHOOK_HOST", "0.0.0.0"), 
+            app,
+            host=os.getenv("WEBHOOK_HOST", "0.0.0.0"),
             port=int(os.getenv("WEBHOOK_PORT", 8080)),
             log_level="error"
         )
@@ -65,7 +64,7 @@ async def run_monolith():
         # Start Bot
         async with bot:
             await bot.start(token)
-            
+
     except KeyboardInterrupt:
         log.info("Shutdown requested via KeyboardInterrupt.")
     except Exception as e:

@@ -1,0 +1,111 @@
+version: '3.8'
+
+# ==============================================================================
+# Nova Discord Feed Bot — STAGING Environment Compose Specification
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Database (Staging)
+  # ----------------------------------------------------------------------------
+  postgres_staging:
+    image: postgres:16-alpine
+    container_name: nova_postgres_staging
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nova_staging_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nova_staging_pass_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-feed_bot_staging}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nova_staging_user} -d ${POSTGRES_DB:-feed_bot_staging}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    networks:
+      - nova-staging-net
+
+  # ----------------------------------------------------------------------------
+  # Redis Queue (Staging)
+  # ----------------------------------------------------------------------------
+  redis_staging:
+    image: redis:7-alpine
+    container_name: nova_redis_staging
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    networks:
+      - nova-staging-net
+
+  # ----------------------------------------------------------------------------
+  # Nova Bot Monolith / Gateway Worker (Staging)
+  # ----------------------------------------------------------------------------
+  bot_staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nova_bot_staging
+    restart: unless-stopped
+    depends_on:
+      postgres_staging:
+        condition: service_healthy
+      redis_staging:
+        condition: service_healthy
+    env_file:
+      - .env.staging
+    environment:
+      - ENVIRONMENT=staging
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-nova_staging_user}:${POSTGRES_PASSWORD:-nova_staging_pass_secret}@postgres_staging:5432/${POSTGRES_DB:-feed_bot_staging}
+      - REDIS_URL=redis://redis_staging:6379/0
+      - WEBHOOK_HOST=0.0.0.0
+      - WEBHOOK_PORT=8080
+    ports:
+      - "8081:8080"
+    volumes:
+      - bot_staging_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+    networks:
+      - nova-staging-net
+
+volumes:
+  postgres_staging_data:
+    driver: local
+  redis_staging_data:
+    driver: local
+  bot_staging_data:
+    driver: local
+
+networks:
+  nova-staging-net:
+    driver: bridge

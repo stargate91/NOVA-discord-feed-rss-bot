@@ -31,7 +31,7 @@ class TestRSSMonitor(unittest.IsolatedAsyncioTestCase):
 
         # (2026, 8, 25, 12, 0, 0, 1, 237, 0)
         time_struct = time.gmtime(1787659200)
-        
+
         # published_parsed
         e1 = {"published_parsed": time_struct}
         self.assertEqual(monitor._extract_timestamp(e1), 1787659200)

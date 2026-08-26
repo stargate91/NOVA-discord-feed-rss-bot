@@ -41,7 +41,7 @@ class TestGuildLifecycleAndPermissionsFlowIntegration(unittest.IsolatedAsyncioTe
 
         # 2. Verify cache was seeded with default values
         self.assertIn(5001, self.bot.guild_settings_cache)
-        self.assertEqual(self.bot.guild_settings_cache[5001]["language"], "hu")
+        self.assertEqual(self.bot.guild_settings_cache[5001]["language"], "en")
         self.assertEqual(self.bot.guild_settings_cache[5001]["tier"], 0)
 
         # 3. Simulate Member with Admin permissions

@@ -169,3 +169,15 @@ flowchart LR
     EvictLRU -- Yes --> Sweep[Sweep Expired / LRU 10%] --> DoneFail([Fail Safe])
     EvictLRU -- No --> DoneFail
 ```
+
+---
+
+## 5. Architecture Decision Records (ADRs)
+
+Key architectural decisions and design rationales are formally documented in the [docs/adr/](file:///e:/projects/repos/bots/nova/docs/adr/) directory:
+
+- **[ADR-0001: Hybrid Database Access (asyncpg & SQLAlchemy)](file:///e:/projects/repos/bots/nova/docs/adr/0001-hybrid-database-access-asyncpg-and-sqlalchemy.md)**: Documents why the system uses SQLAlchemy + Alembic for declarative schema and migrations, while leveraging raw asyncpg for high-throughput hot-path deduplication and bulk ingestion.
+- **[ADR-0002: Decoupled Microservices & Worker Architecture](file:///e:/projects/repos/bots/nova/docs/adr/0002-decoupled-microservices-and-worker-architecture.md)**: Details the separation of Gateway, Feed Pipeline, and REST API workers via async message queues.
+- **[ADR-0003: Thread-Safe Bounded LRU Caching](file:///e:/projects/repos/bots/nova/docs/adr/0003-thread-safe-bounded-lru-caching.md)**: Rationale for strict cache bounds and `threading.RLock` synchronization.
+- **[ADR-0004: Centralized Composition Root & Cog Decomposition](file:///e:/projects/repos/bots/nova/docs/adr/0004-composition-root-and-dependency-injection.md)**: Decoupling of `FeedBot` into `BotContainer` and dedicated lifecycle cogs.
+- **[ADR-0005: In-Memory Dead Channel Circuit Breaker](file:///e:/projects/repos/bots/nova/docs/adr/0005-resilient-dead-channel-circuit-breaker.md)**: Rationale for in-memory channel blacklisting to protect Discord API rate limits.

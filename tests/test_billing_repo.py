@@ -30,8 +30,15 @@ class TestBillingRepo(unittest.IsolatedAsyncioTestCase):
 
     async def test_redeem_code_success(self):
         """Verify successful redemption updates usage, logs redemption, and grants premium."""
+        from contextlib import asynccontextmanager
+
+        @asynccontextmanager
+        async def dummy_tx():
+            yield
+
         with patch("db.billing_repo._fetchrow", new_callable=AsyncMock) as mock_fetch, \
              patch("db.billing_repo._execute", new_callable=AsyncMock), \
+             patch("db.billing_repo.transaction", side_effect=dummy_tx), \
              patch("db.billing_repo.add_premium_days", new_callable=AsyncMock) as mock_add_days:
 
             mock_fetch.return_value = (30, 10, 3, 2, False)

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nova-gateway
+  namespace: nova-bot
+  labels:
+    app.kubernetes.io/name: nova-gateway
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: 1  # Standard Discord Gateway socket (or 1 per Shard ID)
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nova-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nova-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: ghcr.io/stargate91/nova-feed-bot:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "workers.gateway_worker"]
+          envFrom:
+            - configMapRef:
+                name: nova-config
+            - secretRef:
+                name: nova-secrets
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1536Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false

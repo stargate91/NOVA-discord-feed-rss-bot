@@ -7,9 +7,8 @@ from services import (
     DiscordDeliveryAdapter,
     NotificationService,
     is_channel_dead,
-    mark_channel_dead,
-    _DEAD_CHANNELS
 )
+from services.discord_delivery_adapter import _DEAD_CHANNELS
 from core.base_monitor import BaseMonitor
 
 class CustomMockAdapter(BaseDeliveryAdapter):

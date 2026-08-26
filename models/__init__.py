@@ -1,4 +1,4 @@
-from models.base import DomainModel
+from models.base import DomainModel, ServiceResult
 from models.guild import GuildSettings, TierLimits, GuildPermissionResponse
 from models.monitor import MonitorConfig, PublishedRecord
 from models.feed import FeedItem, BroadcastPayload
@@ -15,6 +15,7 @@ from models.api import (
 
 __all__ = [
     "DomainModel",
+    "ServiceResult",
     "GuildSettings",
     "TierLimits",
     "GuildPermissionResponse",

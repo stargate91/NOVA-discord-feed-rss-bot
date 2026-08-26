@@ -53,7 +53,14 @@ class TestBillingPromoRedemptionFlowIntegration(unittest.IsolatedAsyncioTestCase
                 guild_id, tier = args[0], args[1]
                 guild_settings_db[guild_id]["tier"] = tier
 
+        from contextlib import asynccontextmanager
+
+        @asynccontextmanager
+        async def dummy_tx():
+            yield
+
         with patch.object(billing_repo, "_fetchrow", side_effect=mock_fetchrow), \
+             patch.object(billing_repo, "transaction", side_effect=dummy_tx), \
              patch.object(billing_repo, "_execute", side_effect=mock_execute):
 
             # --- REDEMPTION 1: Guild 100 redeems PROMO30 (+30 days, tier 3) ---

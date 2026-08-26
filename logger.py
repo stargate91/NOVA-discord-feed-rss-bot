@@ -47,7 +47,7 @@ class ColoredFormatter(logging.Formatter):
             logging.ERROR: Fore.RED,
             logging.CRITICAL: Fore.RED + Style.BRIGHT,
         }
-        
+
         # Build contextual tags string
         tags = []
         if getattr(record, 'guild_id', None):
@@ -62,10 +62,10 @@ class ColoredFormatter(logging.Formatter):
         tag_str = f" {' '.join(tags)}" if tags else ""
         color = level_colors.get(record.levelno, Fore.WHITE)
         record.levelname = f"{color}{record.levelname}{Style.RESET_ALL}"
-        
+
         if record.levelno >= logging.WARNING:
             record.msg = f"{Style.BRIGHT}{record.msg}{Style.RESET_ALL}"
-            
+
         orig_fmt = self._fmt
         self._fmt = orig_fmt.replace("%(message)s", f"{tag_str} %(message)s")
         result = super().format(record)
@@ -233,10 +233,10 @@ def setup_logging(level_name: str = "INFO"):
 
     # 1. Plain Text File Handler
     file_handler = TimedRotatingFileHandler(
-        "data/feed_bot.log", 
-        when="midnight", 
-        interval=1, 
-        backupCount=7, 
+        "data/feed_bot.log",
+        when="midnight",
+        interval=1,
+        backupCount=7,
         encoding="utf-8"
     )
     file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
@@ -271,8 +271,6 @@ def setup_logging(level_name: str = "INFO"):
         respect_handler_level=True
     )
     _log_listener.start()
-    if hasattr(_log_listener, "_thread") and _log_listener._thread:
-        _log_listener._thread.daemon = True
 
     # Register automatic cleanup on process termination
     atexit.register(stop_logging)

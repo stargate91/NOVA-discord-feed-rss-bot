@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from logger import log
 from db.connection import get_pool, _fetch, _fetchrow, _execute
 from models import MonitorConfig
@@ -49,7 +49,7 @@ async def get_monitors_for_guild(guild_id: int) -> list[MonitorConfig]:
 async def update_last_post_at(monitor_id: int):
     """Update the last_post_at timestamp for a monitor."""
     q = "UPDATE monitors SET last_post_at = $1 WHERE id = $2"
-    await _execute(q, datetime.now(), int(monitor_id))
+    await _execute(q, datetime.now(timezone.utc), int(monitor_id))
 
 async def update_monitor_name(monitor_id: int, new_name: str):
     """Update a monitor's display name."""
@@ -103,7 +103,7 @@ async def mark_as_published(
 ):
     """Record an item as published in the published_entries_v2 table."""
     if published_at is None:
-        published_at = datetime.now()
+        published_at = datetime.now(timezone.utc)
 
     q = """
         INSERT INTO published_entries_v2 (entry_id, platform, guild_id, feed_url, published_at, title, thumbnail_url, author_name) 
@@ -119,7 +119,7 @@ async def mark_as_published_bulk(entries: list[dict]):
     """Record multiple items as published in bulk using executemany."""
     if not entries:
         return
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     pool = await get_pool()
     q = """
         INSERT INTO published_entries_v2 (entry_id, platform, guild_id, feed_url, published_at, title, thumbnail_url, author_name)
@@ -161,7 +161,7 @@ async def reset_all_history():
 
 async def cleanup_old_history(days: int = 60) -> int:
     """Delete published entries older than the retention threshold (default: 60 days)."""
-    cutoff = datetime.now() - timedelta(days=days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     q = "DELETE FROM published_entries_v2 WHERE published_at < $1"
     res = await _execute(q, cutoff)
     try:
@@ -174,7 +174,7 @@ async def cleanup_old_history(days: int = 60) -> int:
 
 async def increment_post_stat(guild_id: int, platform: str):
     """Increment the daily post counter for a guild/platform."""
-    now_date = datetime.now().date()
+    now_date = datetime.now(timezone.utc).date()
     q = """
         INSERT INTO monitor_stats_daily (date, guild_id, platform, post_count)
         VALUES ($1, $2, $3, 1)
@@ -184,7 +184,7 @@ async def increment_post_stat(guild_id: int, platform: str):
     await _execute(q, now_date, guild_id, platform)
 
 # Explicit whitelist of tables permitted for factory reset
-ALLOWED_RESET_TABLES = (
+ALLOWED_RESET_TABLES = frozenset({
     "published_entries_v2",
     "monitors",
     "guild_settings",
@@ -194,23 +194,17 @@ ALLOWED_RESET_TABLES = (
     "monitor_stats_daily",
     "youtube_cache",
     "steam_cache",
-)
+})
 
-async def factory_reset_tables():
-    """Truncate all data tables for a clean slate using static SQL."""
-    q = """
-        TRUNCATE TABLE 
-            published_entries_v2, 
-            monitors, 
-            guild_settings, 
-            premium_codes, 
-            announcements, 
-            bot_statuses, 
-            monitor_stats_daily,
-            youtube_cache,
-            steam_cache
-        CASCADE
-    """
+async def factory_reset_tables(tables: set[str] | tuple[str, ...] | list[str] | None = None):
+    """Truncate data tables for a clean slate using validated runtime whitelist."""
+    target_tables = set(tables) if tables is not None else set(ALLOWED_RESET_TABLES)
+    invalid_tables = target_tables - ALLOWED_RESET_TABLES
+    if invalid_tables:
+        raise ValueError(f"Unauthorized table(s) requested for factory reset: {invalid_tables}")
+
+    sanitized_table_list = ", ".join(sorted(target_tables))
+    q = f"TRUNCATE TABLE {sanitized_table_list} CASCADE"
     await _execute(q)
 
 __all__ = [

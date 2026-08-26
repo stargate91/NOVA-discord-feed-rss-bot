@@ -8,8 +8,7 @@ from services.discord_delivery_adapter import (
     DiscordDeliveryAdapter,
     is_channel_dead,
     mark_channel_dead,
-    get_dead_channel_count,
-    _DEAD_CHANNELS
+    get_dead_channel_count
 )
 from services.notification_service import NotificationService
 from services.metrics_service import MetricsService, metrics
@@ -44,5 +43,4 @@ __all__ = [
     "is_channel_dead",
     "mark_channel_dead",
     "get_dead_channel_count",
-    "_DEAD_CHANNELS",
 ]

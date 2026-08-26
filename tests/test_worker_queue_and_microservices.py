@@ -1,9 +1,7 @@
 import unittest
-import asyncio
 from unittest.mock import MagicMock, AsyncMock
 from models import BroadcastPayload
 from services import (
-    BaseNotificationQueue,
     MemoryNotificationQueue,
     get_notification_queue,
     QueueDeliveryAdapter,

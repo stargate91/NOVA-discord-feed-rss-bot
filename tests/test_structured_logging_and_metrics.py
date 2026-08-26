@@ -1,6 +1,6 @@
 import unittest
 from logger import log, log_context, get_recent_logs, _ring_buffer_handler
-from services.metrics_service import MetricsService, metrics
+from services.metrics_service import MetricsService
 from api.routers.admin_router import (
     get_logs_endpoint,
     get_metrics_summary_endpoint,
@@ -18,7 +18,7 @@ class TestStructuredLoggingAndMetrics(unittest.IsolatedAsyncioTestCase):
 
         logs = get_recent_logs(limit=10)
         self.assertGreaterEqual(len(logs), 1)
-        found = next((l for l in logs if "Testing context injection" in l["message"]), None)
+        found = next((entry for entry in logs if "Testing context injection" in entry["message"]), None)
         self.assertIsNotNone(found)
         self.assertEqual(found["guild_id"], 98765)
         self.assertEqual(found["platform"], "twitch")

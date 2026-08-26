@@ -3,7 +3,6 @@ import os
 from logger import log, setup_logging
 from core.config import BotConfig
 from db import create_db_pool, init_db, close, monitor_repo
-from engine.pipeline import FeedPipeline
 from core.monitor_factory import MonitorFactory
 from services import get_notification_queue, QueueDeliveryAdapter
 

@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+from typing import Any
 from logger import log
 from db.connection import _fetch, _fetchrow, _execute
 from models import GuildSettings
@@ -81,17 +83,34 @@ async def get_all_guild_settings() -> list[GuildSettings]:
 
 async def update_guild_settings(
     guild_id: int,
-    lang=None,
-    a_role=None,
-    templates=None,
-    p_until=None,
-    r_int=None,
-    g_tier=None,
-    sub_id=None,
-    bot=None,
-    custom_branding=None
+    language: str | None = None,
+    admin_role_id: int | None = None,
+    alert_templates: dict | str | None = None,
+    premium_until: datetime | None = None,
+    refresh_interval: int | None = None,
+    tier: int | None = None,
+    stripe_subscription_id: str | None = None,
+    bot: Any | None = None,
+    custom_branding: dict | str | None = None,
+    # Backward-compatibility alias kwargs
+    lang: str | None = None,
+    a_role: int | None = None,
+    templates: dict | str | None = None,
+    p_until: datetime | None = None,
+    r_int: int | None = None,
+    g_tier: int | None = None,
+    sub_id: str | None = None,
 ):
     """Upsert guild settings and update in-memory cache if bot instance is supplied."""
+    # Resolve aliases
+    language = language or lang
+    admin_role_id = admin_role_id if admin_role_id is not None else a_role
+    alert_templates = alert_templates if alert_templates is not None else templates
+    premium_until = premium_until if premium_until is not None else p_until
+    refresh_interval = refresh_interval if refresh_interval is not None else r_int
+    tier = tier if tier is not None else g_tier
+    stripe_subscription_id = stripe_subscription_id if stripe_subscription_id is not None else sub_id
+
     curr = {}
     if bot and hasattr(bot, "guild_settings_cache"):
         curr = bot.guild_settings_cache.get(guild_id, {})
@@ -105,21 +124,21 @@ async def update_guild_settings(
         if row:
             curr = dict(row)
 
-    lang = lang if lang is not None else curr.get("language", "en")
-    a_role = a_role if a_role is not None else curr.get("admin_role_id", 0)
+    language = language if language is not None else curr.get("language", "en")
+    admin_role_id = admin_role_id if admin_role_id is not None else curr.get("admin_role_id", 0)
 
-    if templates is None:
-        templates = curr.get("alert_templates", {})
-    elif isinstance(templates, str):
+    if alert_templates is None:
+        alert_templates = curr.get("alert_templates", {})
+    elif isinstance(alert_templates, str):
         try:
-            templates = json.loads(templates)
+            alert_templates = json.loads(alert_templates)
         except Exception:
-            templates = {}
+            alert_templates = {}
 
-    p_until = p_until if p_until is not None else curr.get("premium_until", None)
-    r_int = r_int if r_int is not None else curr.get("refresh_interval", 20)
-    g_tier = g_tier if g_tier is not None else curr.get("tier", 0)
-    sub_id = sub_id if sub_id is not None else curr.get("stripe_subscription_id", None)
+    premium_until = premium_until if premium_until is not None else curr.get("premium_until", None)
+    refresh_interval = refresh_interval if refresh_interval is not None else curr.get("refresh_interval", 20)
+    tier = tier if tier is not None else curr.get("tier", 0)
+    stripe_subscription_id = stripe_subscription_id if stripe_subscription_id is not None else curr.get("stripe_subscription_id", None)
     custom_branding = custom_branding if custom_branding is not None else curr.get("custom_branding", {})
 
     q = """

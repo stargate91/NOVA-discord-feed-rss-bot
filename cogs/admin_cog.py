@@ -9,13 +9,13 @@ def is_admin():
         if not ctx.bot.is_bot_admin(ctx.author):
             await ctx.send(ctx.bot.get_feedback("error_no_permission", guild_id=ctx.guild.id))
             return False
-            
+
         master_guilds = ctx.bot.config.get("master_guilds", {})
         if str(ctx.guild.id) in master_guilds:
             admin_ch_id = master_guilds.get(str(ctx.guild.id), 0)
             if admin_ch_id != 0 and ctx.channel.id != admin_ch_id:
                 return False
-            
+
         return True
     return commands.check(predicate)
 
@@ -39,7 +39,7 @@ class AdminCog(commands.Cog):
     async def sync(self, ctx, spec: str | None = None):
         """[Admin] Sync slash commands manually (guild/global/copy)."""
         await ctx.send(self.bot.get_feedback("syncing_wait"))
-        
+
         if spec == "global":
             synced = await self.bot.tree.sync()
             msg = self.bot.get_feedback("sync_success_global", count=len(synced))
@@ -65,17 +65,17 @@ class AdminCog(commands.Cog):
         self.bot.tree.clear_commands(guild=ctx.guild)
         await self.bot.tree.sync(guild=ctx.guild)
         await ctx.send(self.bot.get_feedback("clear_commands_success"))
-        
+
     # --- Slash Commands ---
-    
+
     @app_commands.command(name="dashboard", description="Manage your bot settings and monitors")
     async def show_dashboard(self, interaction: discord.Interaction):
         """Sends a link to the web dashboard and support server."""
         await interaction.response.defer(ephemeral=True)
-        
+
         from ui import generate_dashboard_layout
         layout = generate_dashboard_layout(self.bot, interaction.guild_id)
-        
+
         await interaction.followup.send(view=layout, ephemeral=True)
 
 async def setup(bot):

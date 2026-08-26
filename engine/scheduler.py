@@ -1,11 +1,22 @@
 import asyncio
 import time
 from logger import log
+from core.constants import (
+    DEFAULT_MAX_POLLING_CONCURRENCY,
+    DEFAULT_FEED_POLL_INTERVAL_SECONDS,
+    DEFAULT_DATA_RETENTION_DAYS,
+)
 
 class PollingScheduler:
     """Orchestrates bounded concurrent polling of active monitors with dynamic, tier-based intervals and daily retention cleanup."""
 
-    def __init__(self, bot, pipeline, get_monitors_callback, max_concurrency: int = 15):
+    def __init__(
+        self,
+        bot,
+        pipeline,
+        get_monitors_callback,
+        max_concurrency: int = DEFAULT_MAX_POLLING_CONCURRENCY,
+    ):
         self.bot = bot
         self.pipeline = pipeline
         self.get_monitors = get_monitors_callback
@@ -91,9 +102,9 @@ class PollingScheduler:
                 self.last_retention_cleanup = now
                 asyncio.create_task(self._run_retention_cleanup())
 
-            # Heartbeat tick: sleep 60 seconds
+            # Heartbeat tick: sleep configured poll interval
             try:
-                await asyncio.sleep(60)
+                await asyncio.sleep(DEFAULT_FEED_POLL_INTERVAL_SECONDS)
             except asyncio.CancelledError:
                 break
 
@@ -117,6 +128,6 @@ class PollingScheduler:
         """Clean up old publication history in the background once a day."""
         try:
             from db import monitor_repo
-            await monitor_repo.cleanup_old_history(days=60)
+            await monitor_repo.cleanup_old_history(days=DEFAULT_DATA_RETENTION_DAYS)
         except Exception as e:
             log.error(f"[Scheduler] Daily retention cleanup failed: {e}")

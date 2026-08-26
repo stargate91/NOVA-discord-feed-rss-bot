@@ -1,0 +1,298 @@
+{"timestamp": "2026-08-26T23:32:48.459007+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:32:48.508072+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:32:48.509855+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:32:48.511511+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:32:48.513163+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:32:48.524146+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:32:48.566272+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:32:48.568647+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2493800193328'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.3, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:32:48.739300+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:33:52.443160+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:33:55.388278+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: EN)."}
+{"timestamp": "2026-08-26T23:33:55.388515+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:33:55.409524+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:33:57.905891+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:34:00.460777+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:34:00.522610+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:34:00.522797+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:34:00.522932+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:34:00.523048+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:34:00.537864+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:34:00.656324+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:34:00.682084+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='1490730708544'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:34:00.934206+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:34:25.152239+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:34:25.153073+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:34:25.153287+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:34:25.181837+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: EN)."}
+{"timestamp": "2026-08-26T23:34:25.182072+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:34:25.205498+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:34:25.205722+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:34:25.205850+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:34:25.205965+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:34:25.206075+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:34:25.230398+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:34:25.230558+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:34:25.233130+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:34:25.234393+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:34:25.269948+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:34:25.270586+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:34:25.316172+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:34:25.375559+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:34:25.375779+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:34:25.375931+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:34:25.376034+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:34:25.389426+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:34:25.424926+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:34:25.428298+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2624529054224'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:34:25.598965+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:36:23.143786+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:36:23.144907+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:36:23.145492+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:36:23.171951+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: EN)."}
+{"timestamp": "2026-08-26T23:36:23.172166+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:36:23.195318+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:36:23.195509+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:36:23.195838+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:36:23.195969+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:36:23.196052+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:36:23.219679+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:36:23.219954+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:36:23.224073+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:36:23.225489+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:36:23.232956+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:36:23.233424+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:36:23.279138+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:36:23.331674+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:36:23.331821+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:36:23.331911+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:36:23.331985+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:36:23.346517+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:36:23.384586+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:36:23.388861+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2343285805408'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.3, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:36:23.555210+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:37:22.203291+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:37:22.204137+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:37:22.204495+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:37:22.227683+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: EN)."}
+{"timestamp": "2026-08-26T23:37:22.227892+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:37:22.248616+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:37:22.248836+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:37:22.249082+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:37:22.249195+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:37:22.249296+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:37:22.268834+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:37:22.269112+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:37:22.272948+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:37:22.274153+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:37:22.280467+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:37:22.281003+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:37:22.329417+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:37:22.381812+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:37:22.381997+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:37:22.382109+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:37:22.382261+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:37:22.393984+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:37:22.431291+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:37:22.434175+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='1539398504800'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:37:22.607186+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:40:04.271535+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:40:04.272375+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:40:04.272589+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:40:04.301202+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='1823036721872'>)."}
+{"timestamp": "2026-08-26T23:40:04.301430+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:40:04.328441+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:40:04.328660+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:40:04.328883+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:40:04.329145+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:40:04.329285+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:40:04.351665+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:40:04.351900+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:40:04.354860+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:40:04.356593+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:40:04.363646+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:40:04.364228+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:40:04.417577+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:40:04.480989+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:40:04.481232+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:40:04.481333+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:40:04.481414+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:40:04.495923+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:40:04.544137+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:40:04.551251+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='1823053277776'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.3, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:40:04.734339+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:42:01.164259+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:42:01.164767+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:42:01.164886+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:42:01.191282+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='2300511919744'>)."}
+{"timestamp": "2026-08-26T23:42:01.191470+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:42:01.211047+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:42:01.211246+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:42:01.211354+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:42:01.211566+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:42:01.211656+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:42:01.232499+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:42:01.232700+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:42:01.235280+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:42:01.236901+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:42:01.242712+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:42:01.243255+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:42:01.293891+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:42:01.345740+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:42:01.345890+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:42:01.345978+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:42:01.346053+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:42:01.358725+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:42:01.390565+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:42:01.394061+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2300510647504'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.3, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:42:01.562189+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:42:29.550021+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:42:29.550720+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:42:29.550901+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:42:29.575058+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='2179922447728'>)."}
+{"timestamp": "2026-08-26T23:42:29.575229+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:42:29.594745+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:42:29.594931+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:42:29.595165+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:42:29.595245+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:42:29.595321+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:42:29.617387+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:42:29.617549+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:42:29.620731+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:42:29.622357+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:42:29.629082+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:42:29.629656+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:42:29.677789+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:42:29.740745+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:42:29.741006+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:42:29.741182+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:42:29.741315+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:42:29.753317+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:42:29.792671+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:42:29.795545+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2179921524928'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:42:29.956516+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:43:54.883895+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:43:54.884482+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:43:54.884613+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:43:54.910065+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='1923605365488'>)."}
+{"timestamp": "2026-08-26T23:43:54.910223+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:43:54.927737+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:43:54.927896+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:43:54.928002+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:43:54.928225+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:43:54.928338+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:43:54.948782+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:43:54.948966+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:43:54.951164+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:43:54.952495+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:43:54.959206+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:43:54.959701+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:43:55.006541+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:43:55.065271+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:43:55.065464+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:43:55.065594+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:43:55.065724+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:43:55.080573+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:43:55.131522+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:43:55.136310+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='1923604908752'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.3, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:43:55.306784+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:45:01.999595+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:45:02.000103+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:45:02.000222+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:45:02.025451+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='2231582566992'>)."}
+{"timestamp": "2026-08-26T23:45:02.025634+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:45:02.045545+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:45:02.045810+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:45:02.046131+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:45:02.046236+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:45:02.046399+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:45:02.065533+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:45:02.065675+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:45:02.068370+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:45:02.070498+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:45:02.077018+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:45:02.077793+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:45:02.126937+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:45:02.186660+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:45:02.186852+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:45:02.186987+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:45:02.187108+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:45:02.200696+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:45:02.241919+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:45:02.244625+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2231582558592'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:45:02.419651+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:47:58.240387+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:47:58.241210+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:47:58.241393+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:47:58.264553+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='1887454772064'>)."}
+{"timestamp": "2026-08-26T23:47:58.264703+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:47:58.286627+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:47:58.286856+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:47:58.287201+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:47:58.287343+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:47:58.287456+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:47:58.309494+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:47:58.309650+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:47:58.311689+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:47:58.312816+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:47:58.318785+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:47:58.319437+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:47:58.373129+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:47:58.427018+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:47:58.427265+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:47:58.427469+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:47:58.427621+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:47:58.441617+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:47:58.475475+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:47:58.478196+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='1887455317024'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:47:58.637033+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:49:12.192179+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:49:12.192750+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:49:12.192977+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:49:12.219092+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='2789379664128'>)."}
+{"timestamp": "2026-08-26T23:49:12.219358+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:49:12.240438+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:49:12.240587+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:49:12.240826+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:49:12.240928+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:49:12.241049+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:49:12.258659+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:49:12.258819+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:49:12.261175+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:49:12.262520+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:49:12.267891+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:49:12.268694+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:49:12.316839+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:49:12.385048+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:49:12.385314+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:49:12.385496+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:49:12.385651+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:49:12.398374+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:49:12.439047+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:49:12.441981+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2789379656064'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.2, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:49:12.606737+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:50:35.901850+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] Starting standalone API microservice..."}
+{"timestamp": "2026-08-26T23:50:35.902600+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server listening on 0.0.0.0:8080"}
+{"timestamp": "2026-08-26T23:50:35.902849+00:00", "level": "INFO", "logger": "FeedBot", "message": "[API Worker] API Server terminated."}
+{"timestamp": "2026-08-26T23:50:35.927909+00:00", "level": "INFO", "logger": "FeedBot", "message": "Loaded 17 language packs (Default: <MagicMock name='mock.config.default_language.upper()' id='2682497366880'>)."}
+{"timestamp": "2026-08-26T23:50:35.928072+00:00", "level": "INFO", "logger": "FeedBot", "message": "Guild settings cache reloaded. (0 guilds)"}
+{"timestamp": "2026-08-26T23:50:35.945706+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Starting standalone feed ingestion worker..."}
+{"timestamp": "2026-08-26T23:50:35.945849+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion engine ready (Queue: MemoryNotificationQueue, Poll interval: 1s)"}
+{"timestamp": "2026-08-26T23:50:35.946076+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Polling 0 active monitors..."}
+{"timestamp": "2026-08-26T23:50:35.946160+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Shutdown signal received."}
+{"timestamp": "2026-08-26T23:50:35.946232+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Feed Worker] Ingestion worker closed."}
+{"timestamp": "2026-08-26T23:50:35.965119+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Starting Discord Gateway microservice..."}
+{"timestamp": "2026-08-26T23:50:35.965277+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway ready (Queue: MemoryNotificationQueue)"}
+{"timestamp": "2026-08-26T23:50:35.968024+00:00", "level": "INFO", "logger": "FeedBot", "message": "CryptoService stopped."}
+{"timestamp": "2026-08-26T23:50:35.969279+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Started consuming from queue 'discord_notifications'"}
+{"timestamp": "2026-08-26T23:50:35.975166+00:00", "level": "INFO", "logger": "FeedBot", "message": "[Gateway Worker] Gateway worker closed."}
+{"timestamp": "2026-08-26T23:50:35.975634+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueConsumerWorker] Worker loop terminated."}
+{"timestamp": "2026-08-26T23:50:36.030726+00:00", "level": "INFO", "logger": "FeedBot", "message": "API Release event triggered", "guild_id": 777, "platform": "github"}
+{"timestamp": "2026-08-26T23:50:36.092433+00:00", "level": "INFO", "logger": "FeedBot", "message": "YouTube video discovered", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:50:36.092624+00:00", "level": "WARNING", "logger": "FeedBot", "message": "YouTube quota high", "guild_id": 100, "platform": "youtube"}
+{"timestamp": "2026-08-26T23:50:36.092725+00:00", "level": "INFO", "logger": "FeedBot", "message": "Steam game sale", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:50:36.092810+00:00", "level": "ERROR", "logger": "FeedBot", "message": "Steam API timeout", "guild_id": 200, "platform": "steam"}
+{"timestamp": "2026-08-26T23:50:36.105742+00:00", "level": "INFO", "logger": "FeedBot", "message": "Testing context injection into log stream", "guild_id": 98765, "monitor_id": 42, "platform": "twitch", "latency_ms": 12.3}
+{"timestamp": "2026-08-26T23:50:36.147867+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for YT Monitor to 1 channels", "guild_id": 999, "monitor_id": null, "platform": "youtube", "event": "notification_enqueued"}
+{"timestamp": "2026-08-26T23:50:36.151972+00:00", "level": "INFO", "logger": "FeedBot", "message": "Published update for YT Monitor on channel <MagicMock name='mock.get_channel().name' id='2682497879072'>", "guild_id": 999, "monitor_id": null, "platform": "youtube", "channel_id": 1010, "latency_ms": 0.3, "event": "notification_delivered"}
+{"timestamp": "2026-08-26T23:50:36.319370+00:00", "level": "INFO", "logger": "FeedBot", "message": "[QueueDeliveryAdapter] Enqueued notification for Nova Releases to 2 channels", "guild_id": 1234, "monitor_id": 99, "platform": "github", "event": "notification_enqueued"}

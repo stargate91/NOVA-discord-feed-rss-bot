@@ -8,7 +8,7 @@ class GitHubMonitor(BaseMonitor):
     def __init__(self, bot, config):
         super().__init__(bot, config)
         raw_path = config.get("repo_path") or config.get("repo")  # owner/repo or url
-        
+
         # Handle full URL input
         if isinstance(raw_path, str) and "github.com/" in raw_path:
             try:
@@ -18,7 +18,7 @@ class GitHubMonitor(BaseMonitor):
                 self.repo_path = raw_path
         else:
             self.repo_path = raw_path
-            
+
         self.api_url = f"https://api.github.com/repos/{self.repo_path}/releases"
 
     def get_shared_key(self):
@@ -34,12 +34,12 @@ class GitHubMonitor(BaseMonitor):
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "Discord-Feed-Bot"
         }
-        
+
         token = self.bot.config.get("github_token")
         if token:
             headers["Authorization"] = f"Bearer {token}"
             log.debug(f"Using GitHub token for {self.repo_path}")
-        
+
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(self.api_url, headers=headers) as response:
@@ -72,7 +72,7 @@ class GitHubMonitor(BaseMonitor):
             release_id = str(release.get("id"))
             if not release_id:
                 continue
-            
+
             all_candidates.append(release)
 
         return list(reversed(all_candidates))
@@ -114,11 +114,11 @@ class GitHubMonitor(BaseMonitor):
         releases = await self.fetch_releases()
         if not releases:
             return [{"empty": True}]
-        
+
         # Newest are first in GitHub API, take top N and reverse for chronological order
         latest = releases[:count]
         latest.reverse()
-        
+
         results = []
         for release in latest:
             results.append(self._format_release(release))
@@ -132,18 +132,18 @@ class GitHubMonitor(BaseMonitor):
         body = release.get("body", "")
         published_at = release.get("published_at")
         author = release.get("author", {}).get("login", "Unknown")
-        
+
         # Truncate body if needed
         if len(body) > 1000:
             body = body[:997] + "..."
-            
+
         alert_text = self.get_alert_message({
             "name": self.repo_path,
             "title": name,
             "url": html_url,
             "author": author
         })
-        
+
         ts = None
         if published_at:
             try:
@@ -152,7 +152,7 @@ class GitHubMonitor(BaseMonitor):
                 ts = int(dt.timestamp())
             except (ValueError, TypeError) as e:
                 log.debug(f"[GitHubMonitor] Could not parse published_at '{published_at}': {e}")
-                
+
         from ui import generate_github_layout
         content, layout = generate_github_layout(
             bot=self.bot,
@@ -167,7 +167,7 @@ class GitHubMonitor(BaseMonitor):
             accent_color=self.get_color(0x24292e),
             image_url=self.get_image_url()
         )
-        
+
         return {
             "content": content,
             "embed": None,

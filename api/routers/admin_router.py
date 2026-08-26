@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends, status
+from fastapi import APIRouter, Query, Depends
 from fastapi.responses import PlainTextResponse
 from logger import get_recent_logs
 from services.metrics_service import metrics
@@ -64,10 +64,13 @@ async def get_metrics_summary_endpoint(
     "/metrics",
     response_class=PlainTextResponse,
     summary="Prometheus metrics exporter",
-    description="Prometheus text exposition format endpoint for scraping telemetry metrics.",
+    description="Prometheus text exposition format endpoint for scraping telemetry metrics (Secured via Webhook Secret / Bearer token).",
     include_in_schema=True
 )
-async def prometheus_metrics_endpoint(_rate_limited: bool = Depends(rate_limit)):
+async def prometheus_metrics_endpoint(
+    authorized: bool = Depends(verify_webhook_secret),
+    _rate_limited: bool = Depends(rate_limit)
+):
     return PlainTextResponse(
         content=metrics.export_prometheus(),
         media_type="text/plain; version=0.0.4"

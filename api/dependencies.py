@@ -56,10 +56,12 @@ def get_stripe_config(request: Request) -> dict:
     return getattr(request.app.state, 'stripe_config', {})
 
 def verify_webhook_secret(
-    x_webhook_secret: str | None = Header(default=None, alias="X-Webhook-Secret")
+    x_webhook_secret: str | None = Header(default=None, alias="X-Webhook-Secret"),
+    authorization: str | None = Header(default=None, alias="Authorization")
 ) -> bool:
     """
-    Validate internal RPC/webhook authorization secret header.
+    Validate internal RPC/webhook authorization secret header or Bearer token.
+    - Supports 'X-Webhook-Secret' and standard 'Authorization: Bearer <secret>' headers.
     - Uses constant-time comparison (hmac.compare_digest) against timing side-channel attacks.
     - Enforces fail-closed security: rejects requests if WEBHOOK_SECRET is unset (unless in explicit test mode).
     """
@@ -75,16 +77,20 @@ def verify_webhook_secret(
             detail="Server authentication misconfigured: WEBHOOK_SECRET not set."
         )
 
-    if not x_webhook_secret:
+    token = x_webhook_secret
+    if not token and authorization and authorization.startswith("Bearer "):
+        token = authorization[7:].strip()
+
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing 'X-Webhook-Secret' authentication header."
+            detail="Missing 'X-Webhook-Secret' or 'Authorization: Bearer' authentication header."
         )
 
-    if not hmac.compare_digest(x_webhook_secret.encode("utf-8"), expected_secret.encode("utf-8")):
+    if not hmac.compare_digest(token.encode("utf-8"), expected_secret.encode("utf-8")):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid webhook secret."
+            detail="Invalid webhook secret or bearer token."
         )
 
     return True

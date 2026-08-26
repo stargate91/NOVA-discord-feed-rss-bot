@@ -45,7 +45,7 @@ class BotConfig:
     permission_config: dict = field(default_factory=dict)
     tier_config: dict = field(default_factory=dict)
     stripe_config: dict = field(default_factory=dict)
-    
+
     # Secrets & API credentials
     token: str | None = None
     database_url: str | None = None
@@ -91,6 +91,15 @@ class BotConfig:
         youtube_api_key = os.getenv("YOUTUBE_API_KEY") or raw_config.get("youtube_api_key")
         webhook_secret = os.getenv("WEBHOOK_SECRET") or raw_config.get("webhook_secret")
 
+        # Resolve Stripe configuration with env fallback
+        stripe_cfg = raw_config.get("stripe_config", {})
+        stripe_cfg.setdefault("success_url", os.getenv("STRIPE_SUCCESS_URL", "https://novafeeds.xyz/dashboard?payment=success"))
+        stripe_cfg.setdefault("cancel_url", os.getenv("STRIPE_CANCEL_URL", "https://novafeeds.xyz/premium"))
+        if os.getenv("STRIPE_SUCCESS_URL"):
+            stripe_cfg["success_url"] = os.getenv("STRIPE_SUCCESS_URL")
+        if os.getenv("STRIPE_CANCEL_URL"):
+            stripe_cfg["cancel_url"] = os.getenv("STRIPE_CANCEL_URL")
+
         # Update raw_config with env overrides for dict compatibility
         raw_config.update({
             "token": token,
@@ -104,6 +113,7 @@ class BotConfig:
             "github_token": github_token,
             "youtube_api_key": youtube_api_key,
             "webhook_secret": webhook_secret,
+            "stripe_config": stripe_cfg,
         })
 
         return cls(
@@ -154,3 +164,11 @@ class BotConfig:
     def to_dict(self) -> dict[str, Any]:
         """Convert configuration to dictionary."""
         return dict(self._raw_data)
+
+    def save(self, config_file: str = "config.json"):
+        """Persist configuration to disk without transient secrets or runtime caches."""
+        save_data = self.to_dict()
+        for key in ("token", "database_path", "refresh_interval_minutes", "presence_interval_seconds", "monitors", "admin_channel_id"):
+            save_data.pop(key, None)
+        with open(config_file, "w", encoding="utf-8") as f:
+            json.dump(save_data, f, indent=4, ensure_ascii=False)

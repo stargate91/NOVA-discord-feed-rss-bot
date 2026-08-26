@@ -124,7 +124,7 @@ class RSSMonitor(BaseMonitor):
         entry_title = entry.get("title", self.bot.get_feedback("monitor_rss_fallback_title", guild_id=self.guild_id))
         author_name = self._extract_author(entry)
         published_ts = self._extract_timestamp(entry)
-        
+
         raw_img = self._extract_image(entry)
         img_url = self.get_image_url(raw_img)
 

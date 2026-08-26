@@ -9,7 +9,7 @@ class TestLocalizationService(unittest.TestCase):
     def test_load_all_17_locales(self):
         """Verify that all 17 target language packs are loaded."""
         expected_locales = [
-            "cs", "de", "en", "es", "fr", "hu", "it", 
+            "cs", "de", "en", "es", "fr", "hu", "it",
             "ja", "ko", "nl", "pl", "pt", "ru", "sv", "tr", "zh", "zh-tw"
         ]
         for lang in expected_locales:
@@ -28,10 +28,16 @@ class TestLocalizationService(unittest.TestCase):
             self.assertEqual(extra, set(), f"Locale '{lang_code}' has unexpected extra keys: {extra}")
 
     def test_get_feedback_default_resolution(self):
-        """Test fallback to Hungarian/English when no guild language is specified."""
-        res = self.service.get_feedback("default_unknown")
-        # Default fallback is HU if not configured
-        self.assertEqual(res, "Ismeretlen")
+        """Test default resolution to configured default language (EN / HU)."""
+        # Default fallback is EN
+        res_default = self.service.get_feedback("default_unknown")
+        self.assertEqual(res_default, "Unknown")
+
+        # Explicit default_lang override
+        hu_service = LocalizationService(default_lang="hu")
+        hu_service.load_locales(locales_dir="locales")
+        res_hu = hu_service.get_feedback("default_unknown")
+        self.assertEqual(res_hu, "Ismeretlen")
 
     def test_get_feedback_forced_language(self):
         """Test explicit language override in get_feedback."""

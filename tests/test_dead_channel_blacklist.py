@@ -5,8 +5,7 @@ from services.discord_delivery_adapter import (
     mark_channel_dead,
     get_dead_channel_count,
     cleanup_dead_channels,
-    _DEAD_CHANNELS,
-    MAX_DEAD_CHANNELS
+    _DEAD_CHANNELS
 )
 
 class TestDeadChannelBlacklist(unittest.TestCase):

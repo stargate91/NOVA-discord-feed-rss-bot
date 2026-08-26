@@ -1,4 +1,3 @@
-import time
 from abc import ABC, abstractmethod
 from logger import log
 from db import monitor_repo
@@ -8,8 +7,7 @@ from services import (
     DiscordDeliveryAdapter,
     is_channel_dead,
     mark_channel_dead,
-    get_dead_channel_count,
-    _DEAD_CHANNELS
+    get_dead_channel_count
 )
 
 class BaseMonitor(ABC):
@@ -26,7 +24,7 @@ class BaseMonitor(ABC):
         self.target_roles = config.get("target_roles", [])
         self.guild_id = config.get("guild_id", 0)
         self.send_initial_alert = config.get("send_initial_alert", False)
-        
+
         if delivery_adapter is not None:
             self.delivery_adapter = delivery_adapter
         elif bot and isinstance(getattr(bot, "delivery_adapter", None), BaseDeliveryAdapter):
@@ -49,27 +47,27 @@ class BaseMonitor(ABC):
             template = self.bot.get_alert_template(self.guild_id, self.platform)
             if not template:
                 return self.ping_role
-            
+
             # Extract variables safely
             v = variables or {}
-            
+
             # Map standard fields
             title = v.get("title", "")
             url = v.get("url", "")
             author = v.get("author") or v.get("name") or self.name
             role = self.ping_role
-            
+
             # Global clean replacers
             res = template.replace("{role}", role)
             res = res.replace("{author}", author)
             res = res.replace("{name}", author)
             res = res.replace("{title}", title)
             res = res.replace("{url}", url)
-            
+
             # Custom tags
             for key, val in v.items():
                 res = res.replace(f"{{{key}}}", str(val))
-                
+
             return res.strip()
         except Exception as e:
             log.error(f"Error parsing alert template: {e}")
@@ -99,7 +97,7 @@ class BaseMonitor(ABC):
             except (ValueError, TypeError):
                 pass
         return default_hex
-        
+
     def get_image_url(self, default_url=None):
         """Get the image URL, prioritizing the custom image if configured."""
         custom = self.config.get("custom_image")
@@ -107,7 +105,7 @@ class BaseMonitor(ABC):
             extra = self.config.get("extra_settings", {})
             if isinstance(extra, dict):
                 custom = extra.get("custom_image")
-        
+
         return custom if custom else default_url
 
     @abstractmethod
@@ -185,3 +183,10 @@ class BaseMonitor(ABC):
             monitor_id=self.id,
             monitor_name=self.name
         )
+
+__all__ = [
+    "BaseMonitor",
+    "is_channel_dead",
+    "mark_channel_dead",
+    "get_dead_channel_count",
+]

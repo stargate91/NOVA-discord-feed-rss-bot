@@ -115,5 +115,22 @@ class TestFastAPIEndpoints(unittest.TestCase):
         resp_small = self.client.get("/checkout?guild_id=123&tier=1")
         self.assertEqual(resp_small.status_code, 422)
 
+    def test_prometheus_metrics_endpoint_auth(self):
+        """Verify /metrics requires auth and accepts both X-Webhook-Secret and Bearer token."""
+        # Unauthorized without headers
+        resp_unauth = self.client.get("/metrics")
+        self.assertEqual(resp_unauth.status_code, 401)
+
+        # Authorized with X-Webhook-Secret
+        resp_secret = self.client.get("/metrics", headers=self.auth_headers)
+        self.assertEqual(resp_secret.status_code, 200)
+        self.assertIn("process_uptime_seconds", resp_secret.text)
+
+        # Authorized with Authorization: Bearer <secret>
+        bearer_headers = {"Authorization": "Bearer test_secret_123"}
+        resp_bearer = self.client.get("/metrics", headers=bearer_headers)
+        self.assertEqual(resp_bearer.status_code, 200)
+        self.assertIn("process_uptime_seconds", resp_bearer.text)
+
 if __name__ == "__main__":
     unittest.main()

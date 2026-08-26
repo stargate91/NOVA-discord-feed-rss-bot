@@ -27,8 +27,7 @@ Thank you for your interest in contributing to the Nova project! This document p
 
 3. Install development dependencies:
    ```bash
-   pip install -r requirements.txt
-   pip install coverage ruff
+   pip install -r requirements-dev.txt
    ```
 
 4. Prepare your environment file:
@@ -88,14 +87,17 @@ To add a new platform feed monitor (e.g. Reddit, TikTok, Bluesky):
 
 ## 4. Testing & Code Quality
 
-Always run the full test suite and verify code coverage before opening a pull request:
+Always run the full test suite, linter, and verify code coverage before opening a pull request:
 
 ```bash
-# Run all unit and integration tests
-python -m unittest discover -s tests
+# Run all unit and integration tests with pytest
+pytest -v
+
+# Run linter
+ruff check .
 
 # Run tests with code coverage report
-coverage run -m unittest discover -s tests
+coverage run -m pytest -v
 coverage report -m
 ```
 

@@ -1,7 +1,6 @@
 import time
 import threading
 from contextlib import contextmanager
-from typing import Optional
 
 class MetricsService:
     """
@@ -83,7 +82,7 @@ class MetricsService:
         """Export high-level telemetry summary dictionary for Dev Panel dashboard widgets."""
         with self._lock:
             uptime_seconds = time.time() - self._start_time
-            
+
             # Aggregate counters
             counters_summary = {}
             for name, series in self._counters.items():

@@ -4,11 +4,15 @@ from logger import log
 from db import monitor_repo
 from models import BroadcastPayload
 from services.delivery_adapter import BaseDeliveryAdapter
+from core.constants import (
+    DEFAULT_DEAD_CHANNEL_TTL_SECONDS,
+    MAX_DEAD_CHANNELS_CAPACITY,
+)
 
 # In-memory blacklist for deleted/inaccessible Discord channels
 _DEAD_CHANNELS: dict[int, float] = {}
-DEAD_CHANNEL_TTL: float = 3600.0  # 1 hour
-MAX_DEAD_CHANNELS: int = 5000     # Maximum blacklist capacity to prevent memory leaks
+DEAD_CHANNEL_TTL: float = float(DEFAULT_DEAD_CHANNEL_TTL_SECONDS)  # 1 hour
+MAX_DEAD_CHANNELS: int = MAX_DEAD_CHANNELS_CAPACITY                # Maximum blacklist capacity
 
 def cleanup_dead_channels() -> int:
     """Evict all expired channels from the dead channel blacklist."""

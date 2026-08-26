@@ -2,7 +2,7 @@ import unittest
 import discord
 from unittest.mock import MagicMock, AsyncMock, patch
 from monitors.youtube_monitor import YouTubeMonitor
-from core.base_monitor import is_channel_dead
+from services import is_channel_dead
 
 class TestDeadChannelIsolationIntegration(unittest.IsolatedAsyncioTestCase):
     def setUp(self):

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nova-bot
+  labels:
+    app.kubernetes.io/name: nova-feed-bot
+    app.kubernetes.io/part-of: nova-ecosystem

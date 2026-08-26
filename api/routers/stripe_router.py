@@ -4,7 +4,8 @@ import stripe
 from fastapi import APIRouter, Request, Header, HTTPException, Depends, Query, status
 from fastapi.responses import RedirectResponse
 from logger import log
-from db import guild_repo
+from db import billing_repo, guild_repo
+from db.connection import transaction
 from api.dependencies import get_bot, get_stripe_config, rate_limit
 
 router = APIRouter(tags=["Stripe Billing"])
@@ -29,14 +30,15 @@ async def stripe_webhook(
     if not stripe_signature:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Missing 'stripe-signature' header."
+            detail="Missing stripe-signature header"
         )
 
-    payload = await request.body()
-
     try:
+        raw_body = await request.body()
         event = stripe.Webhook.construct_event(
-            payload, stripe_signature, STRIPE_WEBHOOK_SECRET
+            raw_body,
+            stripe_signature,
+            STRIPE_WEBHOOK_SECRET
         )
     except ValueError as e:
         log.error(f"[STRIPE] Invalid payload: {e}")
@@ -50,6 +52,7 @@ async def stripe_webhook(
     # --------------------------------------------------------------------------
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
+        session_id = session.get('id')
         guild_id_str = session.get('client_reference_id')
         if not guild_id_str:
             log.error("[STRIPE] Missing client_reference_id (Guild ID) in session.")
@@ -57,6 +60,11 @@ async def stripe_webhook(
 
         guild_id = int(guild_id_str)
         subscription_id = session.get('subscription')
+
+        # Idempotency check: avoid double processing on duplicate webhook delivery
+        if session_id and await billing_repo.is_session_processed(session_id):
+            log.info(f"[STRIPE] Webhook session '{session_id}' already processed for guild {guild_id}. Skipping duplicate.")
+            return {"status": "already_processed"}
 
         # Retrieve full line items to identify purchased price ID
         full_session = stripe.checkout.Session.retrieve(session['id'], expand=['line_items'])
@@ -73,16 +81,28 @@ async def stripe_webhook(
 
         # Apply +2 days grace period to prevent abrupt cutoff on renewal lag
         expiry = datetime.now() + timedelta(days=days + 2)
+        amount_cents = session.get('amount_total', 0)
+        currency = session.get('currency', 'usd')
 
-        # Update database and invalidate local guild settings cache
-        await guild_repo.update_guild_settings(
-            guild_id=guild_id,
-            tier=tier,
-            premium_until=expiry,
-            stripe_subscription_id=subscription_id,
-            bot=bot
-        )
-        log.info(f"[STRIPE] Activated Tier {tier} for guild {guild_id} (Sub: {subscription_id})")
+        # Atomic transaction boundary for payment audit logging and subscription activation
+        async with transaction():
+            if session_id:
+                await billing_repo.log_payment(
+                    guild_id=guild_id,
+                    session_id=session_id,
+                    price_id=price_id,
+                    amount=amount_cents,
+                    currency=currency,
+                    status="completed"
+                )
+            await guild_repo.update_guild_settings(
+                guild_id=guild_id,
+                tier=tier,
+                premium_until=expiry,
+                stripe_subscription_id=subscription_id,
+                bot=bot
+            )
+        log.info(f"[STRIPE] Activated Tier {tier} for guild {guild_id} (Sub: {subscription_id}, Payment logged: {session_id})")
 
     # --------------------------------------------------------------------------
     # Event 2: Customer Subscription Updated (Tier change or billing interval renewal)

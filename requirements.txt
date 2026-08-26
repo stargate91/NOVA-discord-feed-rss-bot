@@ -1,30 +1,28 @@
+# ==============================================================================
+# Nova Discord Feed Bot — Production Runtime Dependencies
+# ==============================================================================
+
 # Core Bot & Discord Gateway
 discord.py>=2.3.0
 python-dotenv>=1.0.0
 colorama>=0.4.6
 
-# Feed Parsing & Networking
+# Feed Ingestion & Network
 feedparser>=6.0.10
 aiohttp>=3.9.0
-httpx>=0.27.0
 
-# API Server & Webhooks
+# REST API & Webhooks
 fastapi>=0.110.0
 uvicorn>=0.28.0
 stripe>=8.0.0
 
-# Database, Declarative ORM & Migrations
+# Database & Declarative ORM
 asyncpg>=0.29.0
 SQLAlchemy>=2.0.28
 alembic>=1.13.1
 
-# Domain Models & Validation
+# Domain Models & Telemetry
 pydantic>=2.6.0
 pydantic-settings>=2.2.0
-
-# Distributed Queue & Worker Pool (Optional for Redis cluster mode)
 redis>=5.0.0
-
-# Testing & Verification
-pytest>=8.0.0
-pytest-asyncio>=0.23.0
+prometheus-client>=0.20.0

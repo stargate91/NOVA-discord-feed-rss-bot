@@ -36,3 +36,21 @@ class DomainModel(BaseModel):
     def to_dict(self) -> dict[str, Any]:
         """Serialize domain model to standard dict."""
         return self.model_dump()
+
+class ServiceResult(DomainModel):
+    """
+    Standard domain result pattern for service and repository operations.
+    Supports unpacking (success, message = result) for seamless backwards compatibility,
+    as well as truthiness evaluation (if result: ...).
+    """
+    success: bool
+    message: str = ""
+    data: dict[str, Any] | None = None
+    error_code: str | None = None
+
+    def __iter__(self):
+        yield self.success
+        yield self.message
+
+    def __bool__(self) -> bool:
+        return self.success

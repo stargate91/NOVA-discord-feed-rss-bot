@@ -3,7 +3,7 @@ from models import TierLimits
 
 class EntitlementService:
     """Service responsible for subscription tiers, limits, refresh intervals, and feature entitlement."""
-    
+
     def __init__(self, bot=None, config: dict | None = None):
         self.bot = bot
         self._config = config or {}

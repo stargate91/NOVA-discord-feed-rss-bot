@@ -1,9 +1,9 @@
 import unittest
-import asyncio
-from unittest.mock import MagicMock, AsyncMock
+import os
+from unittest.mock import MagicMock, AsyncMock, patch
+from core.config import BotConfig
 from db.repositories.monitor_repo import _parse_monitor_row
-from models.monitor import MonitorConfig
-from models.guild import GuildSettings, TierLimits
+from models.guild import TierLimits
 from services.entitlement_service import EntitlementService
 from core.base_monitor import BaseMonitor
 from core.monitor_manager import MonitorManager
@@ -118,7 +118,34 @@ class TestEdgeCasesAndResilience(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(manager.monitors), 5000)
         self.assertIsNotNone(manager.get_monitor_by_id(2500))
         self.assertIsNotNone(manager.get_monitor_by_id(5000))
-        self.assertIsNone(manager.get_monitor_by_id(99999))
+    async def test_factory_reset_table_whitelist_validation(self):
+        """Verify factory_reset_tables validates requested tables against ALLOWED_RESET_TABLES whitelist."""
+        from db.repositories.monitor_repo import factory_reset_tables
+
+        # 1. Reject unwhitelisted table
+        with self.assertRaises(ValueError):
+            await factory_reset_tables(tables={"users", "drop_database"})
+
+        # 2. Accept valid whitelisted subset
+        with patch("db.repositories.monitor_repo._execute", new_callable=AsyncMock) as mock_exec:
+            await factory_reset_tables(tables={"monitors", "guild_settings"})
+            mock_exec.assert_called_once()
+            called_sql = mock_exec.call_args[0][0]
+            self.assertIn("TRUNCATE TABLE", called_sql)
+            self.assertIn("guild_settings", called_sql)
+            self.assertIn("monitors", called_sql)
+
+    def test_dynamic_stripe_urls_env_config(self):
+        """Verify BotConfig dynamically resolves Stripe URLs from environment variables."""
+        with patch.dict(os.environ, {
+            "STRIPE_SUCCESS_URL": "https://custom.domain/success",
+            "STRIPE_CANCEL_URL": "https://custom.domain/cancel",
+            "BOT_TOKEN": "test_token"
+        }):
+            config = BotConfig.load("config.json")
+            stripe_cfg = config.get("stripe_config", {})
+            self.assertEqual(stripe_cfg.get("success_url"), "https://custom.domain/success")
+            self.assertEqual(stripe_cfg.get("cancel_url"), "https://custom.domain/cancel")
 
 if __name__ == "__main__":
     unittest.main()

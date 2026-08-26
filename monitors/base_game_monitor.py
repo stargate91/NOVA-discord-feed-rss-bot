@@ -14,7 +14,7 @@ class BaseGameGiveawayMonitor(BaseMonitor):
         self.platform_emoji = platform_emoji
         self.gamerpower_platform = gamerpower_platform
         self.client = GamerPowerClient()
-        
+
         # Resolve include_dlc flag from config or extra_settings
         extra = config.get("extra_settings", {}) if isinstance(config.get("extra_settings"), dict) else {}
         self.include_dlc = config.get("include_dlc", False) or extra.get("include_dlc", False)

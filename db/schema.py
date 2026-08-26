@@ -25,7 +25,7 @@ class GuildSettingsTable(Base):
     admin_role_id: Mapped[int] = mapped_column(BigInteger, default=0)
     alert_templates: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     premium_until: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    refresh_interval: Mapped[int] = mapped_column(Integer, default=20)
+    refresh_interval: Mapped[int] = mapped_column(Integer, default=20, index=True)
     tier: Mapped[int] = mapped_column(Integer, default=0)
     stripe_subscription_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -38,13 +38,17 @@ class MonitorTable(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     guild_id: Mapped[int] = mapped_column(BigInteger, nullable=False, index=True)
-    type: Mapped[str] = mapped_column(String(50), nullable=False)
+    type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     discord_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)
     ping_role_id: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     extra_settings: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     last_post_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (
+        Index("idx_monitors_guild_type", "guild_id", "type"),
+    )
 
 class PublishedEntryTable(Base):
     __tablename__ = "published_entries_v2"

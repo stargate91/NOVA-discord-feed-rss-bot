@@ -96,5 +96,30 @@ class TestSharedDataCache(unittest.TestCase):
         self.assertIn(3, gcache)
         self.assertIn(4, gcache)
 
+    def test_bounded_guild_settings_cache_multithreaded_safety(self):
+        """Verify BoundedGuildSettingsCache is thread-safe under concurrent multi-threaded writes and reads."""
+        from concurrent.futures import ThreadPoolExecutor
+
+        cache = BoundedGuildSettingsCache(max_size=50)
+
+        def worker(worker_id: int):
+            for i in range(100):
+                gid = (worker_id * 100) + i
+                cache[gid] = GuildSettings(guild_id=gid, tier=i % 4)
+                _ = cache.get(gid)
+                if gid in cache:
+                    _ = cache[gid]
+                if i % 10 == 0:
+                    cache.pop(gid, None)
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = [executor.submit(worker, w) for w in range(8)]
+            for f in futures:
+                f.result()
+
+        # Cache must strictly stay within bounds and remain consistent
+        self.assertLessEqual(len(cache), 50)
+        self.assertEqual(cache.max_size, 50)
+
 if __name__ == "__main__":
     unittest.main()

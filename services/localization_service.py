@@ -2,16 +2,26 @@ import os
 import json
 import re
 from logger import log
+from core.constants import DEFAULT_LANGUAGE
 
 _EMOJI_PATTERN = re.compile(r"(<a?:[a-zA-Z0-9_]+:[0-9]+>)")
 
 class LocalizationService:
     """Service responsible for loading, formatting, and retrieving localized messages."""
-    
-    def __init__(self, bot=None):
+
+    def __init__(self, bot=None, default_lang: str | None = None):
         self.bot = bot
+        self._default_lang = default_lang
         self.locales: dict[str, dict] = {}
         self.default_language_data: dict = {}
+
+    @property
+    def default_language(self) -> str:
+        if self._default_lang:
+            return self._default_lang
+        if self.bot and hasattr(self.bot, "config"):
+            return getattr(self.bot.config, "default_language", DEFAULT_LANGUAGE)
+        return DEFAULT_LANGUAGE
 
     def load_locales(self, locales_dir: str = "locales"):
         """Load all language JSON files from the locales directory."""
@@ -24,9 +34,9 @@ class LocalizationService:
                             self.locales[lang_code] = json.load(f)
                     except Exception as e:
                         log.error(f"Failed to load language file {filename}: {e}")
-        
-        self.default_language_data = self.locales.get("en", {})
-        log.info(f"Loaded {len(self.locales)} language packs (Default: EN).")
+
+        self.default_language_data = self.locales.get(self.default_language, self.locales.get("en", {}))
+        log.info(f"Loaded {len(self.locales)} language packs (Default: {self.default_language.upper()}).")
 
     def get_feedback(self, key: str, guild_id: int | None = None, force_lang: str | None = None, **kwargs) -> str:
         """
@@ -34,8 +44,8 @@ class LocalizationService:
         Resolution priority:
         1. Explicit force_lang
         2. Configured guild language
-        3. Fallback to 'hu' (Hungarian for feeds/cards)
-        4. English default
+        3. Configured bot default fallback language
+        4. English master fallback
         """
         guild_id = guild_id or 0
         settings = {}
@@ -47,11 +57,11 @@ class LocalizationService:
         else:
             lang_code = settings.get("language")
             if not lang_code:
-                lang_code = "hu"
+                lang_code = self.default_language
 
         lang_data = self.locales.get(lang_code, self.locales.get("en", self.default_language_data))
         text = lang_data.get(key, self.default_language_data.get(key, key))
-        
+
         if not isinstance(text, str):
             return text
 

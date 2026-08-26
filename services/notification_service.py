@@ -12,7 +12,7 @@ class NotificationService:
     def __init__(self, bot=None, default_adapter: BaseDeliveryAdapter | None = None):
         self.bot = bot
         self._adapters: dict[str, BaseDeliveryAdapter] = {}
-        
+
         # Set up default Discord adapter
         discord_adapter = default_adapter or DiscordDeliveryAdapter(bot)
         self.register_adapter("discord", discord_adapter)
