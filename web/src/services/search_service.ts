@@ -1,4 +1,5 @@
 import api from './api_client';
+import { getPlatformSearchDomain } from '@/utils/platform';
 
 export interface YouTubeResolvedChannel {
   id: string;
@@ -44,7 +45,7 @@ export const searchService = {
 
   async searchPlatform(platform: string, query: string): Promise<PlatformSearchResult[]> {
     if (!query.trim()) return [];
-    const searchDomain = platform === 'steam_news' ? 'steam' : platform;
+    const searchDomain = getPlatformSearchDomain(platform);
     return api.get<PlatformSearchResult[]>(`/api/search/${searchDomain}?q=${encodeURIComponent(query.trim())}`);
   }
 };

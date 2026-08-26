@@ -105,6 +105,7 @@ export function resolveGuildFeatures(
     canBulkImport: checkFeature("bulk_import", fallbackTierDef.canBulkImport),
     canBulkDelete: checkFeature("bulk_delete", fallbackTierDef.canBulkDelete),
     canRepost: checkFeature("repost", fallbackTierDef.canRepost),
+    canNativePlayer: checkFeature("native_player", fallbackTierDef.hasNativePlayer),
     features: isMasterResult ? ["*"] : rawFeatures,
   };
 }

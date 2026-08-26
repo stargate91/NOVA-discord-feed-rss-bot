@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { X, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import CryptoPairsEditor from './crypto_pairs_editor';
 import MonitorFormFields from './monitor_form_fields';
 import { Modal } from '@/components/ui';
@@ -56,34 +56,28 @@ export default function EditMonitorModal({
       isOpen={isOpen}
       onClose={onClose}
       size="lg"
-      showCloseButton={false}
+      title={
+        <div className={styles["header-row"]}>
+          <div className={styles["platform-icon-wrap"]}>
+            <Image 
+              src={getPlatformLogo(monitor.type)} 
+              alt="" 
+              width={32} 
+              height={32} 
+              unoptimized 
+            />
+          </div>
+          <div className={styles["header-text"]}>
+            <h3 className={styles["modal-title"]}>Edit Monitor</h3>
+            <p className={styles["modal-subtitle"]}>
+              {monitor.name}{' '}
+              <span className={styles["type-pill"]}>{monitor.type}</span>
+            </p>
+          </div>
+        </div>
+      }
     >
-      <div className={styles["modal-header"]}>
-        <div className={styles["platform-icon-wrap"]}>
-          <Image 
-            src={getPlatformLogo(monitor.type)} 
-            alt="" 
-            width={32} 
-            height={32} 
-            unoptimized 
-          />
-        </div>
-        <div className={styles["header-text"]}>
-          <h3 className={styles["modal-title"]}>Edit Monitor</h3>
-          <p className={styles["modal-subtitle"]}>
-            {monitor.name} 
-            <span className={styles["type-pill"]}>{monitor.type}</span>
-          </p>
-        </div>
-        <button 
-          type="button" 
-          className={styles["modal-close-btn"]} 
-          onClick={onClose}
-          aria-label="Close dialog"
-        >
-          <X size={20} />
-        </button>
-      </div>
+
 
       <form onSubmit={handleSubmit} className={styles["form-body"]}>
         <div className={styles["form-group"]}>

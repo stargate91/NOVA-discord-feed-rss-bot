@@ -32,49 +32,61 @@ export function getPlatformColor(type: string | undefined | null): string {
   return item ? item.color : '#0284c7';
 }
 
+export type PlatformCapability =
+  | 'supportsNativePlayer'
+  | 'supportsLiveAlerts'
+  | 'supportsMediaFilters'
+  | 'supportsUpcomingGames'
+  | 'supportsAutocomplete'
+  | 'supportsPatchFilter'
+  | 'isCrypto'
+  | 'isGlobal';
+
+/**
+ * Checks if a platform has a specific capability declared in its registry definition.
+ */
+export function hasPlatformCapability(
+  platformId: string | undefined | null,
+  capability: PlatformCapability
+): boolean {
+  if (!platformId) return false;
+  const item = getPlatformRegistryItem(platformId);
+  return Boolean(item?.[capability]);
+}
+
 /**
  * Checks if a platform supports native Discord video player embedding.
  */
 export function supportsNativePlayer(platformId: string | undefined | null): boolean {
-  if (!platformId) return false;
-  const item = getPlatformRegistryItem(platformId);
-  return Boolean(item?.supportsNativePlayer);
+  return hasPlatformCapability(platformId, 'supportsNativePlayer');
 }
 
 /**
  * Checks if a platform supports live/initial alert notifications.
  */
 export function supportsLiveAlerts(platformId: string | undefined | null): boolean {
-  if (!platformId) return false;
-  const item = getPlatformRegistryItem(platformId);
-  return Boolean(item?.supportsLiveAlerts);
+  return hasPlatformCapability(platformId, 'supportsLiveAlerts');
 }
 
 /**
  * Checks if a platform supports TMDB media genre & language filters.
  */
 export function supportsMediaFilters(platformId: string | undefined | null): boolean {
-  if (!platformId) return false;
-  const item = getPlatformRegistryItem(platformId);
-  return Boolean(item?.supportsMediaFilters);
+  return hasPlatformCapability(platformId, 'supportsMediaFilters');
 }
 
 /**
  * Checks if a platform supports upcoming/free game notifications.
  */
 export function supportsUpcomingGames(platformId: string | undefined | null): boolean {
-  if (!platformId) return false;
-  const item = getPlatformRegistryItem(platformId);
-  return Boolean(item?.supportsUpcomingGames);
+  return hasPlatformCapability(platformId, 'supportsUpcomingGames');
 }
 
 /**
  * Checks if a platform supports search autocomplete in form inputs.
  */
 export function supportsAutocomplete(platformId: string | undefined | null): boolean {
-  if (!platformId) return false;
-  const item = getPlatformRegistryItem(platformId);
-  return Boolean(item?.supportsAutocomplete);
+  return hasPlatformCapability(platformId, 'supportsAutocomplete');
 }
 
 /**
@@ -96,22 +108,38 @@ export function supportsCustomEmbedColor(
  * Checks if a platform is crypto coin / price alert based.
  */
 export function isCryptoPlatform(platformId: string | undefined | null): boolean {
-  if (!platformId) return false;
-  const item = getPlatformRegistryItem(platformId);
-  return Boolean(item?.isCrypto);
+  return hasPlatformCapability(platformId, 'isCrypto');
 }
 
 /**
- * Formats subtitle text for autocomplete dropdown items based on platform.
+ * Checks if a platform supports patch/update only filtering (e.g. Steam news).
+ */
+export function supportsPatchFilter(platformId: string | undefined | null): boolean {
+  return hasPlatformCapability(platformId, 'supportsPatchFilter');
+}
+
+/**
+ * Formats subtitle text for autocomplete dropdown items based on platform metadata or available item properties.
  */
 export function formatAutocompleteSubtitle(
   platformId: string | undefined | null,
   item: { id?: string | number; stars?: number; [key: string]: any }
 ): string {
   if (!item) return '';
-  const normId = normalizePlatformId(platformId);
-  if (normId === 'github') {
-    return `⭐ ${item.stars ?? 0} - ${item.id ?? ''}`;
+  if (item.stars !== undefined && item.stars !== null) {
+    return `⭐ ${item.stars.toLocaleString()} - ${item.id ?? ''}`;
   }
   return `ID: ${item.id ?? ''}`;
 }
+
+/**
+ * Resolves the backend search endpoint domain for a given platform.
+ * e.g. 'steam_news' -> 'steam'
+ */
+export function getPlatformSearchDomain(platformId: string | undefined | null): string {
+  if (!platformId) return '';
+  const norm = normalizePlatformId(platformId);
+  if (norm === 'steam_news' || norm === 'steam_free') return 'steam';
+  return norm;
+}
+

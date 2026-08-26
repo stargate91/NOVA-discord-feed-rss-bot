@@ -49,6 +49,7 @@ export interface PlatformRegistryItem {
   supportsMediaFilters?: boolean;
   supportsUpcomingGames?: boolean;
   supportsAutocomplete?: boolean;
+  supportsPatchFilter?: boolean;
   tags: string[];
   inCarousel?: boolean;
   carouselName?: string;
@@ -142,6 +143,7 @@ export const PLATFORM_REGISTRY: Record<KnownPlatformId, PlatformRegistryItem> = 
     bulkPlaceholder: '730\nhttps://store.steampowered.com/app/730',
     bulkHint: 'App IDs or Store URLs',
     supportsAutocomplete: true,
+    supportsPatchFilter: true,
     tags: ['{name}', '{author}', '{title}'],
     inCarousel: true,
   },

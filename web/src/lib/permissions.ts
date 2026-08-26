@@ -1,6 +1,7 @@
 import pool from "./db";
 import { GuildInfo, GuildPermissions } from "@/types/guild";
 import { MemoryCache } from "./cache";
+import { sanitizeGuildId, hasGuildManagementPermission } from "@/utils/discord";
 
 // In-memory cache for user guilds to prevent Discord rate limits (429)
 const guildCache = new MemoryCache(30000); // 30 seconds
@@ -65,7 +66,7 @@ export async function canManageGuild(session: any, guildId: string | number): Pr
   if (session.user?.role === "master") return true;
 
   if (!guildId) return false;
-  const cleanGuildId = String(guildId).trim();
+  const cleanGuildId = sanitizeGuildId(guildId);
   const userId = session.user?.id;
 
   // 2. Try Authoritative Check via Bot first
@@ -92,16 +93,7 @@ export async function canManageGuild(session: any, guildId: string | number): Pr
   if (userGuilds) {
     const guild = userGuilds.find(g => String(g.id) === cleanGuildId);
     if (guild) {
-      const perms = BigInt(guild.permissions || "0");
-      const isAdmin = (perms & BigInt(0x8)) === BigInt(0x8);
-      const isManageGuild = (perms & BigInt(0x20)) === BigInt(0x20);
-      const isManageChannels = (perms & BigInt(0x10)) === BigInt(0x10);
-      const isManageWebhooks = (perms & BigInt(0x20000000)) === BigInt(0x20000000);
-      const isAuditLog = (perms & BigInt(0x80)) === BigInt(0x80);
-      const isOwner = Boolean(guild.owner);
-
-      const allowed = isOwner || isAdmin || isManageGuild || isManageChannels || isManageWebhooks || isAuditLog;
-
+      const allowed = hasGuildManagementPermission(guild.permissions, Boolean(guild.owner));
       if (allowed) {
         return true;
       }

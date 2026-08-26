@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BulkPlatformMetadata } from '@/types/monitor';
 import { useToast } from '@/context/toast_context';
 import { useGuildContext } from '@/context/guild_context';
 import { useGuildChannelsAndRoles } from '@/hooks/use_guild_channels_and_roles';
 import { useMonitorMutations } from '@/hooks/use_monitor_mutations';
+import { useMonitorFormState } from '@/hooks/use_monitor_form_state';
 import {
+  BulkAddFormData,
+  INITIAL_BULK_ADD_DATA,
   parseSourcesList,
   validateBulkAddInputs,
   buildBulkAddPayload,
-} from '@/utils/bulk_import';
-
-import { GuildFeatures } from '@/types/guild';
+} from '@/utils/monitor_form';
 
 export interface BulkAddResult {
   successCount: number;
@@ -22,9 +23,6 @@ export interface UseBulkAddWizardOptions {
   guildId: string;
   isOpen: boolean;
   onSuccess?: () => void;
-  tier?: number;
-  isPremium?: boolean;
-  features?: GuildFeatures;
 }
 
 export function useBulkAddWizard(
@@ -37,56 +35,58 @@ export function useBulkAddWizard(
       ? { guildId: guildIdOrOptions, isOpen: isOpenProp, onSuccess: onSuccessProp }
       : guildIdOrOptions;
 
-  const {
-    guildId,
-    isOpen,
-    onSuccess,
-  } = options;
+  const { guildId, isOpen, onSuccess } = options;
 
   const mutations = useMonitorMutations();
-  const { isMaster, isLocked, tierContext } = useGuildContext();
+  const { isMaster, isLocked } = useGuildContext();
   const isTierEligible = !isLocked('bulk_import');
   const { addToast } = useToast();
 
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState<BulkPlatformMetadata | null>(null);
-  const [inputList, setInputList] = useState('');
-  const [targetChannels, setTargetChannels] = useState<string[]>([]);
-  const [targetRoles, setTargetRoles] = useState<string[]>([]);
-  const [embedColor, setEmbedColor] = useState('#3d3f45');
+  const [results, setResults] = useState<BulkAddResult | null>(null);
+
+  const {
+    formData,
+    setFormData,
+    updateField,
+    updateFields,
+    toggleField,
+    handleColorChange,
+    resetForm,
+  } = useMonitorFormState<BulkAddFormData>({
+    initialData: INITIAL_BULK_ADD_DATA,
+    isLocked,
+  });
+
   const { channels, roles, channelOptions, roleOptions } = useGuildChannelsAndRoles(guildId, isOpen);
 
-  const [results, setResults] = useState<BulkAddResult | null>(null);
-  const [sendInitialAlert, setSendInitialAlert] = useState(false);
-  const [useNativePlayer, setUseNativePlayer] = useState(false);
-  const [customImage, setCustomImage] = useState('');
-
-  const resetState = () => {
+  const resetState = useCallback(() => {
     setStep(1);
     setSelectedPlatform(null);
-    setInputList('');
-    setTargetChannels([]);
-    setTargetRoles([]);
     setResults(null);
-    setCustomImage('');
-    setSendInitialAlert(false);
-    setUseNativePlayer(false);
-  };
+    resetForm(INITIAL_BULK_ADD_DATA);
+  }, [resetForm]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (step === 1 && !selectedPlatform) return;
     setStep((prev) => prev + 1);
-  };
+  }, [step, selectedPlatform]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setStep((prev) => prev - 1);
-  };
+  }, []);
 
-  const handleSubmit = async () => {
+  const handlePlatformSelect = useCallback((platform: BulkPlatformMetadata) => {
+    setSelectedPlatform(platform);
+    updateField('embed_color', platform.color || '#3d3f45');
+  }, [updateField]);
+
+  const handleSubmit = useCallback(async () => {
     if (!selectedPlatform) return;
 
-    const items = parseSourcesList(inputList);
-    const validation = validateBulkAddInputs(items, targetChannels);
+    const items = parseSourcesList(formData.sources_input);
+    const validation = validateBulkAddInputs(items, formData.target_channels);
     if (!validation.isValid) {
       addToast(validation.errorMessage!, 'error', validation.errorTitle);
       return;
@@ -96,12 +96,12 @@ export function useBulkAddWizard(
       guildId,
       platformId: selectedPlatform.id,
       sources: items,
-      targetChannels,
-      targetRoles,
-      embedColor,
-      sendInitialAlert,
-      useNativePlayer,
-      customImage,
+      targetChannels: formData.target_channels,
+      targetRoles: formData.target_roles,
+      embedColor: formData.embed_color,
+      sendInitialAlert: formData.send_initial_alert,
+      useNativePlayer: formData.use_native_player,
+      customImage: formData.custom_image,
     });
 
     const data = await mutations.bulkAddMonitors(payload);
@@ -110,36 +110,29 @@ export function useBulkAddWizard(
       setStep(3);
       if (onSuccess) onSuccess();
     }
-  };
+  }, [selectedPlatform, formData, guildId, mutations, onSuccess, addToast]);
 
   return {
     step,
     setStep,
     selectedPlatform,
     setSelectedPlatform,
-    inputList,
-    setInputList,
-    targetChannels,
-    setTargetChannels,
-    targetRoles,
-    setTargetRoles,
-    embedColor,
-    setEmbedColor,
+    formData,
+    setFormData,
+    updateField,
+    updateFields,
+    toggleField,
+    handleColorChange,
+    handlePlatformSelect,
     channels,
     roles,
     channelOptions,
     roleOptions,
     processing: mutations.bulkProcessing,
-
     results,
-    sendInitialAlert,
-    setSendInitialAlert,
-    useNativePlayer,
-    setUseNativePlayer,
-    customImage,
-    setCustomImage,
     isMaster,
     isTierEligible,
+    isLocked,
     handleNext,
     handleBack,
     handleSubmit,
@@ -147,3 +140,4 @@ export function useBulkAddWizard(
   };
 }
 
+export default useBulkAddWizard;

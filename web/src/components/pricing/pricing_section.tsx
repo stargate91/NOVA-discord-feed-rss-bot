@@ -11,8 +11,9 @@ import {
 import { PricingCard } from './pricing_card';
 import { PremiumComparisonTable } from './premium_comparison_table';
 import { TIERS, TierItem } from '@/constants/tiers';
-import { BillingInterval } from '@/hooks/use_pricing_plan_selection';
+import { BillingInterval } from '@/hooks/use_billing';
 import styles from './pricing_section.module.css';
+
 
 export interface PricingSectionProps {
   billingInterval: BillingInterval;

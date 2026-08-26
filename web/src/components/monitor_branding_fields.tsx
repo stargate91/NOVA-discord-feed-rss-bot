@@ -31,7 +31,7 @@ export const MonitorBrandingFields: React.FC<MonitorBrandingFieldsProps> = ({
   disabledImage = false,
 }) => {
   const colorLocked = isLocked('custom_color');
-  const imageLocked = isLocked('custom_color');
+  const imageLocked = isLocked('remove_branding');
 
   return (
     <>

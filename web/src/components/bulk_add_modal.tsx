@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X, Zap, Check, AlertCircle, ChevronRight, ChevronLeft, RefreshCw, Shield } from "lucide-react";
+import { Zap, Check, AlertCircle, ChevronRight, ChevronLeft, RefreshCw, Shield } from "lucide-react";
 import MonitorDeliveryFields from './monitor_delivery_fields';
 import MonitorBrandingFields from './monitor_branding_fields';
 import MonitorToggleOptions from './monitor_toggle_options';
@@ -31,25 +31,14 @@ export default function BulkAddModal({
   const {
     step,
     selectedPlatform,
-    setSelectedPlatform,
-    inputList,
-    setInputList,
-    targetChannels,
-    setTargetChannels,
-    targetRoles,
-    setTargetRoles,
-    embedColor,
-    setEmbedColor,
+    formData,
+    updateField,
+    handleColorChange,
+    handlePlatformSelect,
     channelOptions,
     roleOptions,
     processing,
     results,
-    sendInitialAlert,
-    setSendInitialAlert,
-    useNativePlayer,
-    setUseNativePlayer,
-    customImage,
-    setCustomImage,
     isTierEligible,
     handleNext,
     handleBack,
@@ -66,38 +55,27 @@ export default function BulkAddModal({
     onClose();
   };
 
-  const isFormValid = inputList.trim().length > 0 && targetChannels.length > 0;
+  const isFormValid = formData.sources_input.trim().length > 0 && formData.target_channels.length > 0;
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleModalClose}
-      title=""
+      title={
+        <div className={styles["header-left"]}>
+          <div className={styles["header-icon"]}>
+            <Zap size={20} />
+          </div>
+          <div>
+            <h3 className={styles["header-title"]}>Bulk Add Monitors</h3>
+            <p className={styles["header-subtitle"]}>Quickly set up multiple sources at once</p>
+          </div>
+        </div>
+      }
       size="md"
       className={styles["bulk-modal-custom"]}
     >
       <div className={styles["modal-shell"]}>
-        {/* Header */}
-        <div className={styles["modal-header-custom"]}>
-          <div className={styles["header-left"]}>
-            <div className={styles["header-icon"]}>
-              <Zap size={20} />
-            </div>
-            <div>
-              <h3 className={styles["header-title"]}>Bulk Add Monitors</h3>
-              <p className={styles["header-subtitle"]}>Quickly set up multiple sources at once</p>
-            </div>
-          </div>
-          <button 
-            type="button" 
-            onClick={handleModalClose}
-            className={styles["close-btn"]}
-            aria-label="Close modal"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
         {/* Tier Lock Gate */}
         {!isTierEligible && !guildLoading ? (
           <div className={styles["tier-gate"]}>
@@ -152,10 +130,7 @@ export default function BulkAddModal({
                     <button
                       key={p.id}
                       type="button"
-                      onClick={() => {
-                        setSelectedPlatform(p);
-                        setEmbedColor(p.color);
-                      }}
+                      onClick={() => handlePlatformSelect(p)}
                       className={`${styles["platform-card"]} ${selectedPlatform?.id === p.id ? styles["selected"] : ''}`}
                     >
                       <div className={styles["platform-card-header"]}>
@@ -184,8 +159,8 @@ export default function BulkAddModal({
                     <textarea
                       id="bulk-source-input"
                       placeholder={selectedPlatform.placeholder}
-                      value={inputList}
-                      onChange={(e) => setInputList(e.target.value)}
+                      value={formData.sources_input}
+                      onChange={(e) => updateField('sources_input', e.target.value)}
                       className={`ui-input ${styles["bulk-textarea"]}`}
                     />
                   </div>
@@ -193,29 +168,29 @@ export default function BulkAddModal({
                   <MonitorDeliveryFields
                     guildChannels={channelOptions}
                     guildRoles={roleOptions}
-                    targetChannels={targetChannels}
-                    targetRoles={targetRoles}
-                    onChangeChannels={setTargetChannels}
-                    onChangeRoles={setTargetRoles}
+                    targetChannels={formData.target_channels}
+                    targetRoles={formData.target_roles}
+                    onChangeChannels={(val) => updateField('target_channels', val)}
+                    onChangeRoles={(val) => updateField('target_roles', val)}
                     className={styles["form-grid-2"]}
                   />
 
                   <MonitorBrandingFields
                     platformId={selectedPlatform.id}
-                    embedColor={embedColor}
-                    onChangeColor={setEmbedColor}
-                    customImage={customImage}
-                    onChangeCustomImage={setCustomImage}
-                    useNativePlayer={useNativePlayer}
+                    embedColor={formData.embed_color}
+                    onChangeColor={handleColorChange}
+                    customImage={formData.custom_image}
+                    onChangeCustomImage={(url) => updateField('custom_image', url)}
+                    useNativePlayer={formData.use_native_player}
                     isLocked={isLocked}
                   />
 
                   <MonitorToggleOptions
                     platformId={selectedPlatform.id}
-                    sendInitialAlert={sendInitialAlert}
-                    onChangeSendInitialAlert={setSendInitialAlert}
-                    useNativePlayer={useNativePlayer}
-                    onChangeUseNativePlayer={setUseNativePlayer}
+                    sendInitialAlert={formData.send_initial_alert}
+                    onChangeSendInitialAlert={(val) => updateField('send_initial_alert', val)}
+                    useNativePlayer={formData.use_native_player}
+                    onChangeUseNativePlayer={(val) => updateField('use_native_player', val)}
                     isLocked={isLocked}
                   />
                 </div>
@@ -326,3 +301,4 @@ export default function BulkAddModal({
     </Modal>
   );
 }
+

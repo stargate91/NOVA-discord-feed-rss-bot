@@ -17,6 +17,7 @@ import {
   Text,
 } from '@/components/ui';
 import { GUIDE_STEPS, renderGuideStepIcon } from '@/constants/guide';
+import { getGuildDashboardRoute } from '@/utils/navigation';
 import styles from './guide.module.css';
 
 function GuideContent() {
@@ -28,25 +29,27 @@ function GuideContent() {
       {/* ── Page Header ── */}
       <PageHeader
         title="Quick Start Guide"
-        description="Follow these 4 simple steps to set up automated high-fidelity feeds for your server."
+        description="Master the features and set up powerful automated monitoring pipelines."
         badge={
-          <Badge variant="primary" size="sm" icon={<Sparkles size={12} />}>
-            ONBOARDING
+          <Badge variant="warning" size="sm" icon={<Sparkles size={12} />}>
+            Interactive Checklist
           </Badge>
         }
       />
 
-      {/* ── Steps List ── */}
+      {/* ── Guide Steps List ── */}
       <div className={styles['steps-list']}>
         {GUIDE_STEPS.map((step) => (
           <div key={step.id} className={styles['step-card']}>
             <div className={styles['step-header']}>
-              <div className={styles['step-icon-box']}>
-                {renderGuideStepIcon(step.iconName, 22)}
+              <div className={styles['step-icon-wrap']}>
+                {renderGuideStepIcon(step.iconName)}
               </div>
-              <div className={styles['step-title-wrap']}>
-                <span className={styles['step-num']}>Step 0{step.id}</span>
-                <h3 className={styles['step-title']}>{step.title}</h3>
+              <div className={styles['step-titles']}>
+                <span className={styles['step-num']}>{String(step.id).padStart(2, '0')}</span>
+                <Text as="h3" size="lg" weight="semibold">
+                  {step.title}
+                </Text>
               </div>
             </div>
 
@@ -69,7 +72,7 @@ function GuideContent() {
             </div>
 
             <div className={styles['step-actions']}>
-              <Link href={`/dashboard/${guildId}/${step.pathSuffix}`}>
+              <Link href={getGuildDashboardRoute(guildId, step.pathSuffix)}>
                 <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
                   {step.linkText}
                 </Button>

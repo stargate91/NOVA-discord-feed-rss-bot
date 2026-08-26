@@ -10,15 +10,15 @@ import { PlatformMetadata } from '@/types/monitor';
 import { useCryptoPairs } from './use_crypto_pairs';
 import { TierFeatureName } from '@/utils/tier_limits';
 
-export interface UseMonitorFormStateOptions<T extends MonitorFormData = MonitorFormData> {
+export interface UseMonitorFormStateOptions<T extends Record<string, any> = MonitorFormData> {
   initialData?: T;
   isLocked?: (featureName: TierFeatureName) => boolean;
 }
 
-export function useMonitorFormState<T extends MonitorFormData = MonitorFormData>(
+export function useMonitorFormState<T extends Record<string, any> = MonitorFormData>(
   options: UseMonitorFormStateOptions<T> = {}
 ) {
-  const { initialData = INITIAL_MONITOR_FORM_DATA as T, isLocked } = options;
+  const { initialData = INITIAL_MONITOR_FORM_DATA as unknown as T, isLocked } = options;
 
   const [formData, setFormData] = useState<T>(initialData);
 
@@ -35,13 +35,32 @@ export function useMonitorFormState<T extends MonitorFormData = MonitorFormData>
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
+  const updateFields = useCallback((fields: Partial<T>) => {
+    setFormData((prev) => ({ ...prev, ...fields }));
+  }, []);
+
   const updateMultiField = useCallback(<K extends keyof T>(field: K, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
-  const toggleField = useCallback(<K extends keyof T>(field: K, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: checked }));
+  const toggleField = useCallback(<K extends keyof T>(field: K, checked?: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: checked !== undefined ? checked : !prev[field],
+    }));
   }, []);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value, type } = e.target;
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    },
+    []
+  );
 
   const handleColorChange = useCallback((color: string) => {
     if (!isLocked || !isLocked('custom_color')) {
@@ -67,7 +86,7 @@ export function useMonitorFormState<T extends MonitorFormData = MonitorFormData>
   }, [setCryptoPairs, resetCryptoPairs]);
 
   const validate = useCallback((platform: PlatformMetadata | null): string | null => {
-    return validateMonitorForm(formData, platform, cryptoPairs);
+    return validateMonitorForm(formData as unknown as MonitorFormData, platform, cryptoPairs);
   }, [formData, cryptoPairs]);
 
   const resetForm = useCallback((customData?: T) => {
@@ -78,7 +97,9 @@ export function useMonitorFormState<T extends MonitorFormData = MonitorFormData>
   return {
     formData,
     setFormData,
+    handleChange,
     updateField,
+    updateFields,
     updateMultiField,
     toggleField,
     handleColorChange,

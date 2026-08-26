@@ -129,7 +129,7 @@ export function useMonitorMutations(): UseMonitorMutationsReturn {
       return res;
     } catch (err: unknown) {
       console.error('Failed to bulk add monitors:', err);
-      toast.error(err, 'Failed to process bulk add.', 'Processing Failed');
+      toast.error(err, TOAST_MESSAGES.MONITOR.BULK_ADD_ERROR, 'Processing Failed');
       return null;
     } finally {
       setBulkProcessing(false);
@@ -163,10 +163,8 @@ export function useMonitorMutations(): UseMonitorMutationsReturn {
     if (monitorIds.length === 0) return false;
     setBulkProcessing(true);
     try {
-      await Promise.all(
-        monitorIds.map((id) => monitorService.toggleMonitor(id, enable))
-      );
-      toast.success(`${monitorIds.length} monitor(s) ${enable ? 'resumed' : 'paused'}`);
+      await monitorService.bulkToggle(guildId, monitorIds, enable ? 'resume' : 'pause');
+      toast.success(TOAST_MESSAGES.MONITOR.BULK_TOGGLE_SUCCESS(monitorIds.length, enable));
       return true;
     } catch (err: unknown) {
       console.error('Failed to bulk toggle monitors:', err);

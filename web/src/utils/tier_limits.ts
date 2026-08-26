@@ -43,6 +43,7 @@ export type TierFeatureName =
   | 'bulk_import'
   | 'bulk_delete'
   | 'repost'
+  | 'native_player'
   | (string & {});
 
 export interface ClientTierContext {
@@ -210,6 +211,62 @@ export function getDashboardTierMeta(stats: any): DashboardTierMeta {
   };
 }
 
+export interface TierBadgeProps {
+  variant: 'master' | 'warning' | 'neutral';
+  label: string;
+  dot: boolean;
+  isMaster: boolean;
+}
+
+/**
+ * Single source of truth for generating PageHeader / Card badge properties across all pages.
+ */
+export function getTierBadgeProps(input?: ClientTierContextInput | null): TierBadgeProps {
+  const ctx = resolveClientTierContext(input);
+  if (ctx.isMaster) {
+    return {
+      variant: 'master',
+      label: 'Master Tier',
+      dot: false,
+      isMaster: true,
+    };
+  }
+  if (ctx.isPremium || ctx.effectiveTier > 0) {
+    return {
+      variant: 'warning',
+      label: ctx.tierName || `Tier ${ctx.effectiveTier} Active`,
+      dot: true,
+      isMaster: false,
+    };
+  }
+  return {
+    variant: 'neutral',
+    label: 'Free Plan',
+    dot: false,
+    isMaster: false,
+  };
+}
+
+export interface TierPlanStatusInfo {
+  title: string;
+  subtitle: string;
+}
+
+/**
+ * Single source of truth for generating plan title and status descriptions.
+ */
+export function getTierPlanStatusInfo(input?: ClientTierContextInput | null): TierPlanStatusInfo {
+  const ctx = resolveClientTierContext(input);
+  const title = ctx.isMaster ? 'Master Access' : ctx.tierName || 'Free Plan';
+  const subtitle = ctx.isMaster
+    ? 'Lifetime Unlimited'
+    : ctx.effectiveTier > 0
+    ? 'Active Subscription'
+    : 'Standard Tier';
+
+  return { title, subtitle };
+}
+
 /**
  * Single Source of Truth helper for checking whether a specific feature is locked for a server.
  */
@@ -232,6 +289,7 @@ export function isFeatureLocked(
     if (featureName === 'bulk_import') return !features.canBulkImport;
     if (featureName === 'bulk_delete') return !features.canBulkDelete;
     if (featureName === 'repost') return !features.canRepost;
+    if (featureName === 'native_player') return features.canNativePlayer !== undefined ? !features.canNativePlayer : !features.canCustomColor;
     if (features.features?.includes('*') || features.features?.includes(featureName)) return false;
     return !features.features?.includes(featureName);
   }
@@ -251,6 +309,7 @@ export function isFeatureLocked(
   if (featureName === 'bulk_import') return !tierDef.canBulkImport;
   if (featureName === 'bulk_delete') return !tierDef.canBulkDelete;
   if (featureName === 'repost') return !tierDef.canRepost;
+  if (featureName === 'native_player') return !tierDef.hasNativePlayer;
 
   return true;
 }

@@ -67,7 +67,7 @@ export const MonitorToggleOptions: React.FC<MonitorToggleOptionsProps> = ({
               Bypass the custom layout and let Discord embed the video directly.
             </p>
           </div>
-          {isLocked("custom_color") ? (
+          {isLocked("native_player") ? (
             <div className={styles["hint-badge"]}>
               <Info size={12} /> Starter Tier+
             </div>

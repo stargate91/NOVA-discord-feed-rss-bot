@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { X, ChevronRight, ChevronLeft, Info } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Info } from 'lucide-react';
 import CryptoPairsEditor from './crypto_pairs_editor';
 import MonitorFormFields from './monitor_form_fields';
 import { Modal } from '@/components/ui';
@@ -68,22 +68,14 @@ export default function CreateMonitorModal({
       isOpen={isOpen}
       onClose={handleClose}
       size="lg"
-      showCloseButton={false}
-    >
-      <div className={styles["modal-header"]}>
+      title={
         <div>
           <h3 className={styles["modal-title"]}>Add New Monitor</h3>
           <p className={styles["modal-subtitle"]}>Choose a platform to start</p>
         </div>
-        <button 
-          type="button" 
-          className={styles["modal-close-btn"]} 
-          onClick={handleClose}
-          aria-label="Close modal"
-        >
-          <X size={20} />
-        </button>
-      </div>
+      }
+    >
+
 
       {step === 1 ? (
         <div className={styles["platform-grid"]}>

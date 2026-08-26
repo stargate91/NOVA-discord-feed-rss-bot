@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getGuildDashboardRoute } from "@/utils/navigation";
 
 export default async function GuildPremiumRedirect({
   params,
@@ -6,5 +7,5 @@ export default async function GuildPremiumRedirect({
   params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
-  redirect(`/dashboard/${guildId}/billing`);
+  redirect(getGuildDashboardRoute(guildId, 'billing'));
 }

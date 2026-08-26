@@ -7,7 +7,7 @@ import { DiscordSelectOption, formatChannelOptions, formatRoleOptions } from '@/
 import { ClientTierContext, resolveClientTierContext, TierFeatureName } from '@/utils/tier_limits';
 import guildService from '@/services/guild_service';
 
-export interface GuildContextType {
+export interface GuildContextType extends ClientTierContext {
   guildId: string;
   guild: (GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }) | null;
   settings: GuildSettings | null;
@@ -16,22 +16,6 @@ export interface GuildContextType {
   channelOptions: DiscordSelectOption[];
   roleOptions: DiscordSelectOption[];
   tierContext: ClientTierContext;
-  isLocked: (featureName: TierFeatureName) => boolean;
-  isPremium: boolean;
-  isMaster: boolean;
-  effectiveTier: number;
-  tierName: string;
-  features?: GuildFeatures;
-  maxMonitors: number;
-  minRefreshInterval: number;
-  maxPurge: number;
-  maxChannels: number;
-  maxPings: number;
-  maxAnalyticsDays: number;
-  isIntervalAllowed: (intervalMinutes: number) => boolean;
-  isIntervalLocked: (intervalMinutes: number) => boolean;
-  isAnalyticsRangeAllowed: (days: number | string) => boolean;
-  isAnalyticsRangeLocked: (days: number | string) => boolean;
   loading: boolean;
   channelsLoading: boolean;
   refreshGuild: () => Promise<void>;
@@ -160,22 +144,7 @@ export function GuildProvider({ guildId, initialIsMaster = false, children }: Gu
     channelOptions,
     roleOptions,
     tierContext,
-    isLocked: tierContext.isLocked,
-    isIntervalAllowed: tierContext.isIntervalAllowed,
-    isIntervalLocked: tierContext.isIntervalLocked,
-    isAnalyticsRangeAllowed: tierContext.isAnalyticsRangeAllowed,
-    isAnalyticsRangeLocked: tierContext.isAnalyticsRangeLocked,
-    isPremium: tierContext.isPremium,
-    isMaster: tierContext.isMaster,
-    effectiveTier: tierContext.effectiveTier,
-    tierName: tierContext.tierName,
-    features: tierContext.features,
-    maxMonitors: tierContext.maxMonitors,
-    minRefreshInterval: tierContext.minRefreshInterval,
-    maxPurge: tierContext.maxPurge,
-    maxChannels: tierContext.maxChannels,
-    maxPings: tierContext.maxPings,
-    maxAnalyticsDays: tierContext.maxAnalyticsDays,
+    ...tierContext,
     loading,
     channelsLoading,
     refreshGuild: () => loadData(true),
@@ -202,3 +171,22 @@ export function useGuildContext(): GuildContextType {
 export function useOptionalGuildContext(): GuildContextType | null {
   return useContext(GuildContext);
 }
+
+/**
+ * Returns true if the active GuildProvider matches the given target guild ID.
+ */
+export function useIsCurrentGuild(targetGuildId?: string | number | null): boolean {
+  const ctx = useContext(GuildContext);
+  if (!ctx || !targetGuildId) return false;
+  return String(ctx.guildId) === String(targetGuildId);
+}
+
+/**
+ * Returns matching GuildContext if active provider matches the given guild ID, or null otherwise.
+ */
+export function useMatchingGuildContext(targetGuildId?: string | number | null): GuildContextType | null {
+  const ctx = useContext(GuildContext);
+  if (!ctx || !targetGuildId || String(ctx.guildId) !== String(targetGuildId)) return null;
+  return ctx;
+}
+

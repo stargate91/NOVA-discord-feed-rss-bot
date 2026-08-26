@@ -51,3 +51,36 @@ export function formatShortDate(dateInput?: string | number | Date | null): stri
   });
 }
 
+/**
+ * Formats a date to a human-readable relative time string (e.g. "just now", "5m ago", "2h ago", "3d ago").
+ */
+export function formatRelativeTime(dateInput?: string | number | Date | null): string {
+  if (!dateInput) return '';
+  const date = typeof dateInput === 'object' && dateInput instanceof Date ? dateInput : new Date(dateInput);
+  if (isNaN(date.getTime())) return '';
+
+  const now = Date.now();
+  const diffInSeconds = Math.floor((now - date.getTime()) / 1000);
+
+  if (diffInSeconds < 30) {
+    return 'just now';
+  }
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds}s ago`;
+  }
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes}m ago`;
+  }
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours}h ago`;
+  }
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) {
+    return `${diffInDays}d ago`;
+  }
+  return formatShortDate(date);
+}
+
+

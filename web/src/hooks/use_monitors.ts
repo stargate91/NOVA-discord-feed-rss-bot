@@ -6,6 +6,7 @@ import { useToast } from '@/context/toast_context';
 import { useGuildContext } from '@/context/guild_context';
 import { TOAST_MESSAGES } from '@/constants/toasts';
 import { useMonitorMutations } from './use_monitor_mutations';
+import { useListSelection } from './use_list_selection';
 
 interface UseMonitorsOptions {
   initialAddOpen?: boolean;
@@ -20,10 +21,6 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-
-  // Multi-Selection State
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [selectionMode, setSelectionMode] = useState(false);
 
   // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(Boolean(options?.initialAddOpen));
@@ -47,18 +44,6 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     }
     return counts;
   }, [monitors]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('add') || url.searchParams.has('bulk')) {
-        url.searchParams.delete('add');
-        url.searchParams.delete('bulk');
-        const newUrl = url.pathname + (url.search ? url.search : '');
-        window.history.replaceState({}, '', newUrl);
-      }
-    }
-  }, []);
 
   const reloadMonitors = useCallback(async () => {
     if (!guildId) return;
@@ -93,6 +78,28 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
   }, [guildId, toast]);
 
   const mutations = useMonitorMutations();
+
+  const filteredMonitors = useMemo(() => {
+    return monitors.filter((m) => {
+      const matchesSearch =
+        m.name.toLowerCase().includes(search.toLowerCase()) ||
+        String(m.id).includes(search);
+      const matchesPlatform = filter === 'all' || m.type === filter;
+      return matchesSearch && matchesPlatform;
+    });
+  }, [monitors, search, filter]);
+
+  // Centralized List Selection for Monitored Items
+  const {
+    selectedIds,
+    setSelectedIds,
+    selectionMode,
+    setSelectionMode,
+    handleSelect: handleSelectMonitor,
+    handleSelectAll,
+    isAllSelected,
+    selectAllButtonLabel,
+  } = useListSelection<number>(filteredMonitors);
 
   const handleToggle = async (id: number, enabled: boolean) => {
     const success = await mutations.toggleMonitor(id, enabled);
@@ -168,7 +175,6 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     }
   };
 
-
   const handleOpenEdit = (monitor: MonitorConfig) => {
     setEditingMonitor(monitor);
     setIsEditModalOpen(true);
@@ -179,34 +185,6 @@ export function useMonitors(guildId: string, options?: UseMonitorsOptions) {
     setEditingMonitor(null);
   };
 
-  const filteredMonitors = useMemo(() => {
-    return monitors.filter((m) => {
-      const matchesSearch =
-        m.name.toLowerCase().includes(search.toLowerCase()) ||
-        String(m.id).includes(search);
-      const matchesPlatform = filter === 'all' || m.type === filter;
-      return matchesSearch && matchesPlatform;
-    });
-  }, [monitors, search, filter]);
-
-  const handleSelectMonitor = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedIds.length === filteredMonitors.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(filteredMonitors.map((m) => m.id));
-    }
-  };
-
-  const isAllSelected =
-    filteredMonitors.length > 0 && selectedIds.length === filteredMonitors.length;
-
-  const selectAllButtonLabel = isAllSelected ? 'Deselect All' : 'Select All';
 
   const getPlatformCount = useCallback(
     (p: string) => platformCounts[p] || 0,

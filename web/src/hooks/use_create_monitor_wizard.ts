@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/context/toast_context';
 import { useGuildContext } from '@/context/guild_context';
-import { useClickOutside } from '@/hooks/use_click_outside';
+import { useDropdown } from '@/hooks/use_dropdown';
 import { useGuildChannelsAndRoles } from '@/hooks/use_guild_channels_and_roles';
 import { usePlatformSearch } from '@/hooks/use_platform_search';
 import { useMonitorFormState } from '@/hooks/use_monitor_form_state';
@@ -20,10 +20,8 @@ interface UseCreateMonitorWizardProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  tier?: number;
-  isPremium?: boolean;
-  features?: GuildFeatures;
 }
+
 
 export function useCreateMonitorWizard({
   guildId,
@@ -69,20 +67,31 @@ export function useCreateMonitorWizard({
     clear: clearSearch,
   } = usePlatformSearch(selectedPlatform?.id);
 
-  const [isDropdownDismissed, setIsDropdownDismissed] = useState(false);
-  const showAutoDropdown = autoResults.length > 0 && !isDropdownDismissed;
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const {
+    isOpen: isAutoDropdownOpen,
+    setIsOpen: setIsAutoDropdownOpen,
+    closeDropdown: closeAutoDropdown,
+    dropdownRef,
+  } = useDropdown({ initialOpen: false });
 
-  useClickOutside(dropdownRef, () => setIsDropdownDismissed(true), showAutoDropdown);
+  useEffect(() => {
+    if (autoResults.length > 0) {
+      setIsAutoDropdownOpen(true);
+    } else {
+      setIsAutoDropdownOpen(false);
+    }
+  }, [autoResults, setIsAutoDropdownOpen]);
+
+  const showAutoDropdown = autoResults.length > 0 && isAutoDropdownOpen;
 
   const resetState = useCallback(() => {
     setStep(1);
     setSelectedPlatform(null);
     resetForm();
     clearSearch();
-    setIsDropdownDismissed(false);
+    closeAutoDropdown();
     setResolvedChannel(null);
-  }, [clearSearch, resetForm]);
+  }, [clearSearch, resetForm, closeAutoDropdown]);
 
   const handleClose = useCallback(() => {
     resetState();
@@ -120,8 +129,8 @@ export function useCreateMonitorWizard({
   const selectAutocompleteItem = useCallback((item: { id: string; name: string }) => {
     setFormData((prev) => ({ ...prev, platform_input: item.id, name: item.name }));
     setAutoQuery(item.id);
-    setIsDropdownDismissed(true);
-  }, [setAutoQuery, setFormData]);
+    closeAutoDropdown();
+  }, [setAutoQuery, setFormData, closeAutoDropdown]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();

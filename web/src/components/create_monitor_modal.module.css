@@ -1,3 +1,5 @@
+@import './modal_shared.module.css';
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -76,58 +78,11 @@
   }
 }
 
-.platform-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  border-radius: var(--radius-xl);
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  cursor: pointer;
-  transition: var(--transition-fast);
-  text-align: left;
-  color: var(--text-primary);
-  font: inherit;
-}
-
-.platform-card:hover {
-  border-color: var(--border-accent);
-  background: var(--bg-card-hover);
-  transform: translateX(0.25rem);
-}
-
-.platform-icon-wrap {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 .platform-info {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0;
-}
-
-.platform-name {
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-}
-
-.platform-desc {
-  font-size: var(--text-2xs);
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .platform-arrow {
@@ -200,23 +155,4 @@
   font-size: var(--text-2xs);
   color: var(--status-success);
   font-weight: var(--font-weight-bold);
-}
-
-.modal-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-sm);
-  padding: var(--space-xl);
-  border-top: 1px solid var(--border-subtle);
-}
-
-.btn-secondary {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
-}
-
-.btn-secondary:hover {
-  background: var(--bg-card-hover);
 }

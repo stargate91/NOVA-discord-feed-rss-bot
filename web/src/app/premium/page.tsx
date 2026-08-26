@@ -9,7 +9,7 @@ import {
   Badge,
 } from "@/components/ui";
 import { PricingSection } from "@/components/pricing";
-import { usePricingPlanSelection } from "@/hooks/use_pricing_plan_selection";
+import { useBilling } from "@/hooks/use_billing";
 import styles from "./premium.module.css";
 
 export default function PublicPremiumPage() {
@@ -21,7 +21,7 @@ export default function PublicPremiumPage() {
     handlePurchaseClick,
     getTierPrice,
     tiers,
-  } = usePricingPlanSelection();
+  } = useBilling();
 
   return (
     <PublicLayout session={session}>

@@ -81,6 +81,9 @@ export function useDevControls() {
           setAnnouncements(fetchedAnnouncements);
       } catch (err) {
         console.error('Error fetching dev data:', err);
+        if (!ignore) {
+          toast.error(err, TOAST_MESSAGES.DEV.LOAD_ERROR);
+        }
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -89,7 +92,7 @@ export function useDevControls() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [toast]);
 
   // --- Keys ---
   const handleGenerate = async () => {
@@ -106,12 +109,12 @@ export function useDevControls() {
       const newKeys = await devService.getKeys();
       setKeys(newKeys);
     } catch (err: unknown) {
+      console.error('Failed to generate key:', err);
       toast.error(err, TOAST_MESSAGES.DEV.KEY_GENERATE_ERROR);
     } finally {
       setGenerating(false);
     }
   };
-
 
   const handleDeleteKey = async (code: string) => {
     try {
@@ -119,7 +122,8 @@ export function useDevControls() {
       setKeys((prev) => prev.filter((k) => k.code !== code));
       toast.info(TOAST_MESSAGES.DEV.KEY_DELETED);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to delete key:', err);
+      toast.error(err, TOAST_MESSAGES.DEV.KEY_DELETE_ERROR);
     }
   };
 
@@ -131,7 +135,8 @@ export function useDevControls() {
       );
       toast.warning(TOAST_MESSAGES.DEV.KEY_REVOKED);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to revoke key:', err);
+      toast.error(err, TOAST_MESSAGES.DEV.KEY_REVOKE_ERROR);
     }
   };
 
@@ -153,7 +158,8 @@ export function useDevControls() {
       setStatuses(fetchedStatuses);
       toast.success(TOAST_MESSAGES.DEV.STATUS_ADDED);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to add status:', err);
+      toast.error(err, TOAST_MESSAGES.DEV.STATUS_ADD_ERROR);
     } finally {
       setStatusLoading(false);
     }
@@ -165,7 +171,8 @@ export function useDevControls() {
       setStatuses((prev) => prev.filter((s) => s.id !== id));
       toast.info(TOAST_MESSAGES.DEV.STATUS_DELETED);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to delete status:', err);
+      toast.error(err, TOAST_MESSAGES.DEV.STATUS_DELETE_ERROR);
     }
   };
 
@@ -180,7 +187,8 @@ export function useDevControls() {
       setAnnouncements(fetchedAnnouncements);
       toast.success(TOAST_MESSAGES.DEV.ANNOUNCEMENT_SENT);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to send announcement:', err);
+      toast.error(err, TOAST_MESSAGES.DEV.ANNOUNCEMENT_SEND_ERROR);
     } finally {
       setAnnounceLoading(false);
     }
@@ -192,7 +200,8 @@ export function useDevControls() {
       setAnnouncements((prev) => prev.filter((a) => a.id !== id));
       toast.info(TOAST_MESSAGES.DEV.ANNOUNCEMENT_DELETED);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to delete announcement:', err);
+      toast.error(err, TOAST_MESSAGES.DEV.ANNOUNCEMENT_DELETE_ERROR);
     }
   };
 

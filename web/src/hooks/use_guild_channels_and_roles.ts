@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import guildService from '@/services/guild_service';
 import { DiscordChannel, DiscordRole } from '@/types/guild';
-import { useOptionalGuildContext } from '@/context/guild_context';
+import { useMatchingGuildContext } from '@/context/guild_context';
 import {
   DiscordSelectOption,
   formatChannelOptions,
@@ -25,9 +25,8 @@ export function useGuildChannelsAndRoles(
   guildId: string,
   enabled: boolean = true
 ): UseGuildChannelsAndRolesResult {
-  const guildCtx = useOptionalGuildContext();
-
-  const isContextMatch = Boolean(guildCtx && String(guildCtx.guildId) === String(guildId));
+  const guildCtx = useMatchingGuildContext(guildId);
+  const isContextMatch = Boolean(guildCtx);
 
   const [fallbackChannels, setFallbackChannels] = useState<DiscordChannel[]>([]);
   const [fallbackRoles, setFallbackRoles] = useState<DiscordRole[]>([]);
@@ -69,8 +68,14 @@ export function useGuildChannelsAndRoles(
     };
   }, [guildId, enabled, isContextMatch]);
 
-  const fallbackChannelOptions = useMemo(() => formatChannelOptions(fallbackChannels), [fallbackChannels]);
-  const fallbackRoleOptions = useMemo(() => formatRoleOptions(fallbackRoles), [fallbackRoles]);
+  const fallbackChannelOptions = useMemo(
+    () => (isContextMatch ? [] : formatChannelOptions(fallbackChannels)),
+    [fallbackChannels, isContextMatch]
+  );
+  const fallbackRoleOptions = useMemo(
+    () => (isContextMatch ? [] : formatRoleOptions(fallbackRoles)),
+    [fallbackRoles, isContextMatch]
+  );
 
   if (isContextMatch && guildCtx) {
     return {

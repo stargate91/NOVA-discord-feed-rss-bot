@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { MonitorConfig } from '@/types/monitor';
 import { PLATFORM_NAMES } from '@/constants/platforms';
-import { getPlatformLogo, formatMonitorDate } from '@/utils';
+import { getPlatformLogo, formatMonitorDate, getGuildDashboardRoute } from '@/utils';
 import { useMonitorCardActions } from '@/hooks/use_monitor_card_actions';
 import {
   Badge,
@@ -29,8 +29,6 @@ export interface MonitorCardProps {
   onToggle: (id: number, enabled: boolean) => Promise<void>;
   onDelete: (id: number) => void;
   onEdit: (monitor: MonitorConfig) => void;
-  isPremium?: boolean;
-  tier?: number;
   isSelected?: boolean;
   onSelect: (id: number) => void;
   selectionMode?: boolean;
@@ -41,8 +39,6 @@ export default function MonitorCard({
   onToggle,
   onDelete,
   onEdit,
-  isPremium = false,
-  tier = 0,
   isSelected = false,
   onSelect,
   selectionMode = false,
@@ -60,6 +56,7 @@ export default function MonitorCard({
     canRepost,
     maxPurge,
     maxPurgeInputLimit,
+    isPremium,
     handleToggle,
     handleCardKeyDown,
     runAction,
@@ -67,6 +64,7 @@ export default function MonitorCard({
     monitor,
     onToggle,
   });
+
 
   return (
     <div
@@ -268,7 +266,7 @@ export default function MonitorCard({
             <p className={styles['upgrade-caption']}>
               Upgrade to{' '}
               <Link
-                href={`/dashboard/${monitor.guild_id}/billing`}
+                href={getGuildDashboardRoute(String(monitor.guild_id), 'billing')}
                 className={styles['upgrade-link']}
               >
                 Premium

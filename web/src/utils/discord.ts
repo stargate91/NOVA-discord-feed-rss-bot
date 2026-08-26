@@ -1,6 +1,17 @@
 import { GuildInfo } from '@/types/guild';
 
 /**
+ * Sanitizes and normalizes a Discord ID (removes hyphens, non-numeric characters, and whitespace).
+ */
+export function sanitizeDiscordId(id: string | number | null | undefined): string {
+  if (id === null || id === undefined) return '';
+  return String(id).replace(/[^0-9]/g, '').trim();
+}
+
+export const sanitizeGuildId = sanitizeDiscordId;
+export const cleanDiscordId = sanitizeDiscordId;
+
+/**
  * Generates Discord Guild Icon URL from guild ID and icon hash.
  */
 export function getGuildIconUrl(guildId: string, iconHash: string | null, size = 64): string | null {
@@ -58,21 +69,41 @@ export function getGuildInitials(name?: string, maxLength = 2): string {
     .toUpperCase();
 }
 
+export interface EnrichedGuildInfo extends GuildInfo {
+  hasBot: boolean;
+  bot_in_guild: boolean;
+  botInviteUrl: string;
+}
+
+/**
+ * Normalizes guild info ensuring boolean hasBot/bot_in_guild and valid botInviteUrl.
+ */
+export function normalizeGuildInfo(
+  guild: GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }
+): EnrichedGuildInfo {
+  const hasBot = Boolean(guild.hasBot || guild.bot_in_guild);
+  return {
+    ...guild,
+    hasBot,
+    bot_in_guild: hasBot,
+    botInviteUrl: getBotInviteUrl(guild.id),
+  };
+}
+
 /**
  * Filters and sorts Discord guilds (guilds with bot present first, then alphabetically).
  */
 export function filterAndSortGuilds(
   guilds: Array<GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }>,
   searchQuery: string
-): Array<GuildInfo & { hasBot?: boolean; bot_in_guild?: boolean }> {
+): EnrichedGuildInfo[] {
   const query = searchQuery.toLowerCase().trim();
   return guilds
+    .map(normalizeGuildInfo)
     .filter((g) => g.name.toLowerCase().includes(query))
     .sort((a, b) => {
-      const aHas = Boolean(a.hasBot || a.bot_in_guild);
-      const bHas = Boolean(b.hasBot || b.bot_in_guild);
-      if (aHas === bHas) return a.name.localeCompare(b.name);
-      return bHas ? 1 : -1;
+      if (a.hasBot === b.hasBot) return a.name.localeCompare(b.name);
+      return b.hasBot ? 1 : -1;
     });
 }
 
@@ -105,5 +136,78 @@ export function formatRoleOptions(
   }));
 }
 
+/**
+ * Discord Permissions Bitfield Constants
+ */
+export const DISCORD_PERMISSIONS = {
+  ADMINISTRATOR: 0x8n, // 8n (1n << 3n)
+  MANAGE_GUILD: 0x20n, // 32n (1n << 5n)
+  MANAGE_CHANNELS: 0x10n, // 16n (1n << 4n)
+  VIEW_AUDIT_LOG: 0x80n, // 128n (1n << 7n)
+  MANAGE_WEBHOOKS: 0x20000000n, // 536870912n (1n << 29n)
+} as const;
 
+export interface GuildPermissionFlags {
+  isOwner: boolean;
+  isAdmin: boolean;
+  isManageGuild: boolean;
+  isManageChannels: boolean;
+  isManageWebhooks: boolean;
+  isAuditLog: boolean;
+  canManage: boolean;
+}
 
+/**
+ * Parses Discord permissions bitfield and checks if user has server management access.
+ */
+export function parseGuildPermissions(
+  permissions: string | number | bigint | undefined | null,
+  isOwner: boolean = false
+): GuildPermissionFlags {
+  if (isOwner) {
+    return {
+      isOwner: true,
+      isAdmin: true,
+      isManageGuild: true,
+      isManageChannels: true,
+      isManageWebhooks: true,
+      isAuditLog: true,
+      canManage: true,
+    };
+  }
+
+  let perms = 0n;
+  try {
+    perms = BigInt(permissions || '0');
+  } catch {
+    perms = 0n;
+  }
+
+  const isAdmin = (perms & DISCORD_PERMISSIONS.ADMINISTRATOR) === DISCORD_PERMISSIONS.ADMINISTRATOR;
+  const isManageGuild = (perms & DISCORD_PERMISSIONS.MANAGE_GUILD) === DISCORD_PERMISSIONS.MANAGE_GUILD;
+  const isManageChannels = (perms & DISCORD_PERMISSIONS.MANAGE_CHANNELS) === DISCORD_PERMISSIONS.MANAGE_CHANNELS;
+  const isManageWebhooks = (perms & DISCORD_PERMISSIONS.MANAGE_WEBHOOKS) === DISCORD_PERMISSIONS.MANAGE_WEBHOOKS;
+  const isAuditLog = (perms & DISCORD_PERMISSIONS.VIEW_AUDIT_LOG) === DISCORD_PERMISSIONS.VIEW_AUDIT_LOG;
+
+  const canManage = isOwner || isAdmin || isManageGuild || isManageChannels || isManageWebhooks || isAuditLog;
+
+  return {
+    isOwner,
+    isAdmin,
+    isManageGuild,
+    isManageChannels,
+    isManageWebhooks,
+    isAuditLog,
+    canManage,
+  };
+}
+
+/**
+ * Checks if a user has permission to manage a Discord server.
+ */
+export function hasGuildManagementPermission(
+  permissions: string | number | bigint | undefined | null,
+  isOwner: boolean = false
+): boolean {
+  return parseGuildPermissions(permissions, isOwner).canManage;
+}

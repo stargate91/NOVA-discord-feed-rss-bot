@@ -1,0 +1,208 @@
+/* ── Shared Modal Design System Tokens & Classes ── */
+
+/* ── Wizard Stepper ── */
+.wizard-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  opacity: 0.45;
+  transition: opacity var(--transition-fast);
+}
+
+.step-item.active {
+  opacity: 1;
+}
+
+.step-number {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-item.active .step-number {
+  background: var(--accent-light);
+  border-color: var(--accent-light);
+  color: var(--text-inverse);
+}
+
+.step-text {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+  margin-inline: var(--space-md);
+}
+
+/* ── Platform Selection Grid & Cards ── */
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-sm);
+}
+
+.platform-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  width: 100%;
+}
+
+.platform-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  transform: translateY(-1px);
+}
+
+.platform-card.selected,
+.platform-card.active {
+  background: var(--bg-surface);
+  border-color: var(--accent-light);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.platform-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-2xs);
+}
+
+.platform-icon-wrap {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+}
+
+.platform-name {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+}
+
+.platform-desc {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  line-height: var(--leading-normal);
+  margin: 0;
+}
+
+/* ── Tier Lock Gate Overlay ── */
+.tier-gate {
+  padding: var(--space-3xl) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+}
+
+.gate-icon-wrap {
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--status-warning);
+  margin-bottom: var(--space-xs);
+}
+
+.gate-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.gate-desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  max-width: 28rem;
+  line-height: var(--leading-relaxed);
+  margin: 0;
+}
+
+.gate-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.gate-upgrade-btn {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.gate-cancel-btn {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+/* ── Standard Modal Footer & Actions ── */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-left: auto;
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}

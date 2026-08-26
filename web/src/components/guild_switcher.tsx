@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useSyncExternalStore } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Globe } from "lucide-react";
 import { GuildAvatar } from "@/components/ui";
 import { useGuildSwitch } from "@/hooks/use_guild_switch";
+import { useIsMounted } from "@/hooks";
 import styles from "./guild_switcher.module.css";
 
 interface GuildSwitcherProps {
   isMaster?: boolean;
 }
 
-const emptySubscribe = () => () => {};
-
 export default function GuildSwitcher({ isMaster: _isMaster }: GuildSwitcherProps) {
-  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const mounted = useIsMounted();
   const router = useRouter();
 
   const {

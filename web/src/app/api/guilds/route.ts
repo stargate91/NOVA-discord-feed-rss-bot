@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { getUserGuilds } from "@/lib/permissions";
 import { GuildInfo } from "@/types/guild";
+import { parseGuildPermissions } from "@/utils/discord";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -91,9 +92,7 @@ export async function GET() {
       .map((guild): GuildInfo | null => {
         try {
           const isOwner = Boolean(guild.owner);
-          const perms = BigInt(guild.permissions || "0");
-          const isAdmin = (perms & BigInt(0x8)) === BigInt(0x8);
-          const isManageGuild = (perms & BigInt(0x20)) === BigInt(0x20);
+          const perms = parseGuildPermissions(guild.permissions, isOwner);
           
           const guildIdStr = String(guild.id);
           const botData = botGuildsMap[guildIdStr];
@@ -114,9 +113,9 @@ export async function GET() {
             hasBot,
             isPremium,
             isMaster,
-            isOwner,
-            isAdmin,
-            canManage: isOwner || isAdmin || isManageGuild
+            isOwner: perms.isOwner,
+            isAdmin: perms.isAdmin,
+            canManage: perms.canManage
           };
         } catch (err) {
           console.error(`[API/Guilds] Error processing guild ${guild.id}:`, err);

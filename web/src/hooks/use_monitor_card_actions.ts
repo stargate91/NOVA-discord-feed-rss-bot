@@ -1,15 +1,11 @@
 import { useState, useCallback } from 'react';
 import { MonitorConfig } from '@/types/monitor';
-import { GuildFeatures } from '@/types/guild';
 import { useGuildContext } from '@/context/guild_context';
 import { useMonitorMutations } from './use_monitor_mutations';
 
 interface UseMonitorCardActionsProps {
   monitor: MonitorConfig;
   onToggle: (id: number, enabled: boolean) => Promise<void>;
-  tier?: number;
-  isPremium?: boolean;
-  features?: GuildFeatures;
 }
 
 export function useMonitorCardActions({
@@ -26,7 +22,8 @@ export function useMonitorCardActions({
   const [purgeAmount, setPurgeAmount] = useState(50);
 
   const mutations = useMonitorMutations();
-  const { isLocked, maxPurge } = useGuildContext();
+  const { isLocked, maxPurge, isPremium, effectiveTier } = useGuildContext();
+
   const canRepost = !isLocked('repost');
   const maxPurgeInputLimit = Math.min(100, maxPurge);
 
@@ -102,11 +99,14 @@ export function useMonitorCardActions({
     canRepost,
     maxPurge,
     maxPurgeInputLimit,
+    isPremium,
+    effectiveTier,
     handleToggle,
     handleCardKeyDown,
     runAction,
   };
 }
+
 
 export default useMonitorCardActions;
 

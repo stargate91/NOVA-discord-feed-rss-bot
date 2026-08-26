@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useSyncExternalStore } from "react";
+import React from "react";
 import Link from "next/link";
-import { LayoutDashboard, Monitor, BarChart2, Settings, Crown, HelpCircle } from "lucide-react";
+import { RAW_NAV_ITEMS } from "@/constants/navigation";
 import { useNavigation } from "@/hooks/use_navigation";
+import { useIsMounted } from "@/hooks";
 
 interface NavLinksProps {
   session?: any;
@@ -11,21 +12,25 @@ interface NavLinksProps {
   onItemClick?: () => void;
 }
 
-const emptySubscribe = () => () => {};
-
 export default function NavLinks({ session, isMaster = false, onItemClick }: NavLinksProps) {
-  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const mounted = useIsMounted();
   const { navItems } = useNavigation(session, isMaster);
 
   if (!mounted) {
     return (
       <ul className="nav-links">
-        <li><div className="nav-link skeleton"><LayoutDashboard size={20} className="nav-icon" /><span className="link-text">Dashboard</span></div></li>
-        <li><div className="nav-link skeleton"><Monitor size={20} className="nav-icon" /><span className="link-text">Monitors</span></div></li>
-        <li><div className="nav-link skeleton"><BarChart2 size={20} className="nav-icon" /><span className="link-text">Analytics</span></div></li>
-        <li><div className="nav-link skeleton"><Settings size={20} className="nav-icon" /><span className="link-text">Settings</span></div></li>
-        <li><div className="nav-link premium-link skeleton"><Crown size={20} className="nav-icon" /><span className="link-text">Billing</span></div></li>
-        <li><div className="nav-link skeleton"><HelpCircle size={20} className="nav-icon" /><span className="link-text">FAQ</span></div></li>
+        {RAW_NAV_ITEMS.filter((item) => !item.requiresMaster).map((item) => {
+          const Icon = item.icon;
+          const extraClass = item.isPremium ? "premium-link" : "";
+          return (
+            <li key={item.id}>
+              <div className={`nav-link skeleton ${extraClass}`.trim()}>
+                <Icon size={20} className="nav-icon" />
+                <span className="link-text">{item.label}</span>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     );
   }

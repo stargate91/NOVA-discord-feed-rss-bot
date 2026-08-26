@@ -10,7 +10,8 @@ import {
   Stack,
 } from '@/components/ui';
 import { PricingSection } from '@/components/pricing';
-import { useGuildBilling } from '@/hooks/use_guild_billing';
+import { useBilling } from '@/hooks/use_billing';
+import { getTierBadgeProps } from '@/utils/tier_limits';
 import styles from './billing.module.css';
 
 function GuildBillingContent() {
@@ -27,7 +28,7 @@ function GuildBillingContent() {
     handlePurchaseClick,
     getTierPrice,
     tiers,
-  } = useGuildBilling(guildId);
+  } = useBilling({ guildId });
 
   if (loading) {
     return (
@@ -37,6 +38,8 @@ function GuildBillingContent() {
     );
   }
 
+  const badgeProps = getTierBadgeProps({ tier: currentTier, isMaster });
+
   return (
     <div className={styles['billing-container']}>
       {/* ── Page Header ── */}
@@ -44,19 +47,14 @@ function GuildBillingContent() {
         title="Server Subscription & Plans"
         description="Upgrade your feed delivery speed, increase monitor quotas, and unlock white-label branding."
         badge={
-          isMaster ? (
-            <Badge variant="master" size="sm" icon={<ShieldCheck size={12} />}>
-              Master Tier
-            </Badge>
-          ) : currentTier > 0 ? (
-            <Badge variant="warning" size="sm" dot>
-              Tier {currentTier} Active
-            </Badge>
-          ) : (
-            <Badge variant="neutral" size="sm">
-              Free Tier
-            </Badge>
-          )
+          <Badge
+            variant={badgeProps.variant}
+            size="sm"
+            dot={badgeProps.dot}
+            icon={badgeProps.isMaster ? <ShieldCheck size={12} /> : undefined}
+          >
+            {badgeProps.label}
+          </Badge>
         }
       />
 

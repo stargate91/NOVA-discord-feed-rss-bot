@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { useClickOutside, useEscapeKey } from '@/hooks';
+import React from 'react';
+import { useDropdown } from '@/hooks/use_dropdown';
 import styles from './dropdown.module.css';
 
 export interface DropdownProps {
@@ -17,20 +17,16 @@ export function Dropdown({
   align = 'right',
   className,
 }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
-  useEscapeKey(() => setIsOpen(false), isOpen);
+  const { isOpen, closeDropdown, toggleDropdown, dropdownRef } = useDropdown<HTMLDivElement>();
 
   return (
     <div ref={dropdownRef} className={[styles['dropdown-root'], className].filter(Boolean).join(' ')}>
       <div 
-        onClick={() => setIsOpen(!isOpen)} 
+        onClick={toggleDropdown} 
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
             e.preventDefault();
-            setIsOpen(prev => !prev);
+            toggleDropdown();
           }
         }}
         role="button" 
@@ -50,9 +46,9 @@ export function Dropdown({
           ]
             .filter(Boolean)
             .join(' ')}
-          onClick={() => setIsOpen(false)}
+          onClick={closeDropdown}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') setIsOpen(false);
+            if (e.key === 'Escape') closeDropdown();
           }}
           tabIndex={-1}
         >
@@ -62,6 +58,7 @@ export function Dropdown({
     </div>
   );
 }
+
 
 export interface DropdownItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;

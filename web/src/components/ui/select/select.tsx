@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { useClickOutside, useEscapeKey } from '@/hooks';
+import { useDropdown } from '@/hooks/use_dropdown';
 import { SelectOption } from '@/types/ui';
 import styles from './select.module.css';
 
@@ -29,29 +29,26 @@ export function Select<T = string>({
   className,
   id,
 }: SelectProps<T>) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const { isOpen, setIsOpen, closeDropdown, toggleDropdown, dropdownRef } = useDropdown<HTMLDivElement>();
 
   const selectedOption = options.find(
     (opt) => (opt.value !== undefined ? opt.value : opt.id) === value
   );
 
-  useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
-  useEscapeKey(() => setIsOpen(false), isOpen);
-
   const handleSelect = (option: SelectOption<T>) => {
     if (option.disabled) return;
     const selectedVal = option.value !== undefined ? option.value : (option.id as unknown as T);
     onChange(selectedVal);
-    setIsOpen(false);
+    closeDropdown();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (!disabled) setIsOpen(!isOpen);
+      if (!disabled) toggleDropdown();
     }
   };
+
 
   return (
     <div

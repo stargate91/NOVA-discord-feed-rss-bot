@@ -15,4 +15,5 @@ export * from './branding';
 export * from './bulk_import';
 export * from './id';
 export * from './toast';
+export * from './billing';
 

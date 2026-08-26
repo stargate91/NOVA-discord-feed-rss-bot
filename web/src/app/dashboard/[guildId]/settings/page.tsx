@@ -26,7 +26,7 @@ import TemplateEditor from "@/components/template_editor";
 import { getGuildDashboardRoute } from "@/utils/navigation";
 import CustomRoleSelect from "@/components/custom_role_select";
 import { BOT_LANGUAGES } from "@/constants";
-import { formatExpiryDate } from "@/utils";
+import { formatExpiryDate, getTierBadgeProps, getTierPlanStatusInfo } from "@/utils";
 import { useGuildSettings } from "@/hooks/use_guild_settings";
 import styles from "./settings.module.css";
 
@@ -67,6 +67,9 @@ function SettingsContent() {
     );
   }
 
+  const badgeProps = getTierBadgeProps(settings);
+  const statusInfo = getTierPlanStatusInfo(settings);
+
   return (
     <div className={styles["settings-container"]}>
       {/* ── Page Header ── */}
@@ -74,8 +77,13 @@ function SettingsContent() {
         title="Server Settings"
         description="Configure bot behavior, permissions, and custom message formats."
         badge={
-          <Badge variant="primary" size="sm">
-            {settings.isMaster ? "Master Tier" : isServerPremium ? "Premium Active" : "Free Plan"}
+          <Badge
+            variant={badgeProps.variant}
+            size="sm"
+            dot={badgeProps.dot}
+            icon={badgeProps.isMaster ? <Shield size={12} /> : undefined}
+          >
+            {badgeProps.label}
           </Badge>
         }
         actions={
@@ -233,10 +241,10 @@ function SettingsContent() {
               </div>
               <div className={styles["status-info"]}>
                 <span className={styles["status-title"]}>
-                  {settings.isMaster ? "Master Access" : settings.features?.tierName || "Free Plan"}
+                  {statusInfo.title}
                 </span>
                 <span className={styles["status-sub"]}>
-                  {settings.isMaster ? "Lifetime Unlimited" : activeTierLevel > 0 ? "Active Subscription" : "Standard Tier"}
+                  {statusInfo.subtitle}
                 </span>
               </div>
             </div>
@@ -259,7 +267,7 @@ function SettingsContent() {
                 Manage Stripe Subscription
               </Button>
             ) : (
-              <Link href={`/dashboard/${guildId}/billing`} className={styles["upgrade-link"]}>
+              <Link href={getGuildDashboardRoute(guildId, 'billing')} className={styles["upgrade-link"]}>
                 <Button variant={activeTierLevel > 0 ? "secondary" : "primary"} size="md" fullWidth>
                   {activeTierLevel > 0 ? "Upgrade / Manage Plan" : "Upgrade to Premium"}
                 </Button>

@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { GuildSettings } from '@/types/guild';
 import { useToast } from '@/context/toast_context';
 import { useGuildContext } from '@/context/guild_context';
-import { useGuildBilling } from '@/hooks/use_guild_billing';
+import { useBilling } from '@/hooks/use_billing';
 import { TOAST_MESSAGES } from '@/constants/toasts';
 import { parseCustomBranding, updateBrandingField } from '@/utils/branding';
 
@@ -25,7 +25,7 @@ export function useGuildSettings(guildId: string) {
   const { showSuccess } = toast;
   const guildCtx = useGuildContext();
   const { tierContext, roles: guildRoles, refreshGuild, updateGuildSettings } = guildCtx;
-  const billing = useGuildBilling(guildId);
+  const billing = useBilling({ guildId });
 
   const [saving, setSaving] = useState(false);
 

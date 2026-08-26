@@ -19,6 +19,7 @@ import UsageIndicator from "@/components/usage_indicator";
 import QuickActions from "@/components/quick_actions";
 import DashboardOnboardingCard from "@/components/dashboard_onboarding_card";
 import { getGuildDashboardData } from "@/lib/server/dashboard";
+import { getGuildDashboardRoute } from "@/utils/navigation";
 import styles from "./dashboard.module.css";
 
 interface GuildDashboardPageProps {
@@ -100,7 +101,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
             value={stats?.tierName || "Free"}
             description={planStatusDescription}
             actionButton={planActionLabel}
-            actionHref={`/dashboard/${guildId}/billing`}
+            actionHref={getGuildDashboardRoute(guildId, 'billing')}
             icon={Award}
           />
         </Grid>
@@ -154,7 +155,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
                       {upgradeDesc}
                     </p>
                   </div>
-                  <Link href={`/dashboard/${guildId}/billing`}>
+                  <Link href={getGuildDashboardRoute(guildId, 'billing')}>
                     <Button
                       variant="primary"
                       size="md"

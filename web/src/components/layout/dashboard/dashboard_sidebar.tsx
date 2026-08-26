@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useSyncExternalStore } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PanelLeftClose, PanelLeft } from 'lucide-react';
@@ -9,6 +9,7 @@ import { IconButton } from '@/components/ui';
 import GuildSwitcher from '@/components/guild_switcher';
 import NavLinks from '@/components/nav_links';
 import LogoutButton from '@/components/logout_button';
+import { useIsMounted } from '@/hooks';
 
 export interface DashboardSidebarProps {
   session?: any;
@@ -18,8 +19,6 @@ export interface DashboardSidebarProps {
   className?: string;
 }
 
-const emptySubscribe = () => () => {};
-
 export function DashboardSidebar({
   session,
   isMaster = false,
@@ -27,7 +26,7 @@ export function DashboardSidebar({
   onToggleCollapse,
   className,
 }: DashboardSidebarProps) {
-  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const mounted = useIsMounted();
 
   return (
     <aside

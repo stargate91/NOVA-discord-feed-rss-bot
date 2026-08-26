@@ -265,13 +265,12 @@ function MonitorsContent() {
               onToggle={handleToggle}
               onDelete={handleRequestDelete}
               onEdit={handleOpenEdit}
-              isPremium={isPremium}
-              tier={tier}
               isSelected={selectedIds.includes(monitor.id)}
               onSelect={handleSelectMonitor}
               selectionMode={selectionMode}
             />
           ))}
+
         </div>
       )}
 

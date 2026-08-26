@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useSyncExternalStore, useRef } from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { useEscapeKey, useBodyScrollLock } from '@/hooks';
+import { useEscapeKey, useBodyScrollLock, useIsMounted } from '@/hooks';
 import styles from './modal.module.css';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -21,8 +21,6 @@ export interface ModalProps {
   footer?: React.ReactNode;
 }
 
-const emptySubscribe = () => () => {};
-
 export function Modal({
   isOpen,
   onClose,
@@ -35,11 +33,7 @@ export function Modal({
   className,
   footer,
 }: ModalProps) {
-  const mounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
+  const mounted = useIsMounted();
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useBodyScrollLock(isOpen);

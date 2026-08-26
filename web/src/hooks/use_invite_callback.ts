@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getGuildDashboardRoute } from '@/utils/navigation';
 
 export function useInviteCallback() {
   const router = useRouter();
@@ -8,7 +9,7 @@ export function useInviteCallback() {
 
   useEffect(() => {
     if (guildId) {
-      router.push(`/dashboard/${guildId}`);
+      router.push(getGuildDashboardRoute(guildId));
     } else {
       router.push('/servers');
     }

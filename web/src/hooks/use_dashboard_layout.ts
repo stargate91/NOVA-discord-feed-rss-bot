@@ -1,11 +1,10 @@
-import { useState, useSyncExternalStore, useCallback } from 'react';
-
-const emptySubscribe = () => () => {};
+import { useState, useCallback } from 'react';
+import { useIsClient } from './use_is_mounted';
 
 export const SIDEBAR_COLLAPSED_STORAGE_KEY = 'nova_sidebar_collapsed';
 
 export function useDashboardLayout() {
-  const isClient = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const isClient = useIsClient();
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import searchService, { PlatformSearchResult } from '@/services/search_service';
+import { supportsAutocomplete } from '@/utils/platform';
+import { extractErrorMessage } from '@/utils/toast';
 
 export function usePlatformSearch(platformId?: string, debounceMs: number = 350) {
   const [query, setQuery] = useState('');
@@ -8,8 +10,7 @@ export function usePlatformSearch(platformId?: string, debounceMs: number = 350)
   const [isResolving, setIsResolving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const supportedPlatforms = ['steam_news', 'twitch', 'github'];
-  const isValidPlatform = Boolean(platformId && supportedPlatforms.includes(platformId));
+  const isValidPlatform = Boolean(platformId && supportsAutocomplete(platformId));
   const isQueryValid = query.trim().length >= 3;
 
   useEffect(() => {
@@ -26,10 +27,11 @@ export function usePlatformSearch(platformId?: string, debounceMs: number = 350)
         if (!ignore) {
           setResults(Array.isArray(data) ? data : []);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!ignore) {
-          console.warn(`[usePlatformSearch] Search failed for ${platformId}:`, err?.message);
-          setError(err?.message || 'Search failed');
+          const msg = extractErrorMessage(err, 'Search failed');
+          console.warn(`[usePlatformSearch] Search failed for ${platformId}:`, msg);
+          setError(msg);
           setResults([]);
         }
       } finally {
@@ -54,8 +56,9 @@ export function usePlatformSearch(platformId?: string, debounceMs: number = 350)
     try {
       const data = await searchService.resolveYouTube(input.trim());
       return data;
-    } catch (err: any) {
-      setError(err?.message || 'Could not find YouTube channel');
+    } catch (err: unknown) {
+      const msg = extractErrorMessage(err, 'Could not find YouTube channel');
+      setError(msg);
       throw err;
     } finally {
       setIsResolving(false);

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import devService from '@/services/dev_service';
 import { StructuredLogEntry } from '@/utils/log';
+import { extractErrorMessage } from '@/utils/toast';
 
 export function useLogStream(pollIntervalMs: number = 3000) {
   const [logs, setLogs] = useState<StructuredLogEntry[]>([]);
@@ -9,6 +10,14 @@ export function useLogStream(pollIntervalMs: number = 3000) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current && !error) {
@@ -19,63 +28,55 @@ export function useLogStream(pollIntervalMs: number = 3000) {
   const fetchLogs = useCallback(async () => {
     try {
       const data = await devService.getLogs(100);
+      if (!isMountedRef.current) return;
+
       if (data.logs) {
         setLogs(data.logs);
         setError(null);
       } else if (data.error) {
         setError(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      if (!isMountedRef.current) return;
       console.error('Failed to fetch logs:', err);
-      setError(err?.message || String(err));
+      setError(extractErrorMessage(err, 'Failed to fetch logs'));
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     let ignore = false;
 
-    const runFetch = async () => {
-      try {
-        const data = await devService.getLogs(100);
-        if (!ignore) {
-          if (data.logs) {
-            setLogs(data.logs);
-            setError(null);
-          } else if (data.error) {
-            setError(data.error);
-          }
-        }
-      } catch (err: any) {
-        if (!ignore) {
-          console.error('Failed to fetch logs:', err);
-          setError(err?.message || String(err));
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
+    const load = async () => {
+      if (!ignore) {
+        await fetchLogs();
       }
     };
 
-    runFetch();
+    load();
 
     let interval: ReturnType<typeof setInterval> | undefined;
     if (isLive) {
-      interval = setInterval(runFetch, pollIntervalMs);
+      interval = setInterval(() => {
+        if (!ignore) {
+          fetchLogs();
+        }
+      }, pollIntervalMs);
     }
 
     return () => {
       ignore = true;
       if (interval) clearInterval(interval);
     };
-  }, [isLive, pollIntervalMs]);
+  }, [isLive, pollIntervalMs, fetchLogs]);
 
-  const clearLogs = () => {
+  const clearLogs = useCallback(() => {
     setLogs([]);
     setError(null);
-  };
+  }, []);
 
   return {
     logs,
