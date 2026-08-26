@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ChevronRight, ChevronLeft, Info } from 'lucide-react';
 import CryptoPairsEditor from './crypto_pairs_editor';
 import MonitorFormFields from './monitor_form_fields';
-import { Modal } from '@/components/ui';
+import { Modal, Button } from '@/components/ui';
 import { PLATFORMS } from '@/constants';
 import {
   supportsAutocomplete,
@@ -201,14 +201,16 @@ export default function CreateMonitorModal({
                   )}
 
                   {supportsNativePlayer(selectedPlatform.id) && (
-                    <button
+                    <Button
                       type="button"
+                      variant="secondary"
+                      size="sm"
                       onClick={handleYouTubeResolve}
-                      className="ui-btn"
-                      disabled={resolving || !formData.platform_input}
+                      isLoading={resolving}
+                      disabled={!formData.platform_input}
                     >
-                      {resolving ? 'Checking...' : (resolvedChannel ? 'Change' : 'Verify')}
-                    </button>
+                      {resolvedChannel ? 'Change' : 'Verify'}
+                    </Button>
                   )}
                 </div>
                 
@@ -250,20 +252,21 @@ export default function CreateMonitorModal({
           )}
 
           <div className={styles["modal-footer"]}>
-            <button 
+            <Button 
               type="button" 
-              className={`ui-btn ${styles["btn-secondary"]}`} 
+              variant="secondary" 
               onClick={() => setStep(1)}
+              leftIcon={<ChevronLeft size={18} />}
             >
-              <ChevronLeft size={18} /> Back
-            </button>
-            <button 
+              Back
+            </Button>
+            <Button 
               type="submit" 
-              className="ui-btn ui-btn-primary" 
-              disabled={creating}
+              variant="primary" 
+              isLoading={creating}
             >
-              {creating ? 'Creating...' : 'Create Monitor'}
-            </button>
+              Create Monitor
+            </Button>
           </div>
         </form>
       )}

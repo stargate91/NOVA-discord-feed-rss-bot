@@ -19,7 +19,7 @@ import UsageIndicator from "@/components/usage_indicator";
 import QuickActions from "@/components/quick_actions";
 import DashboardOnboardingCard from "@/components/dashboard_onboarding_card";
 import { getGuildDashboardData } from "@/lib/server/dashboard";
-import { getGuildDashboardRoute } from "@/utils/navigation";
+import { getGuildDashboardRoute, formatNumber } from "@/utils";
 import styles from "./dashboard.module.css";
 
 interface GuildDashboardPageProps {
@@ -92,7 +92,7 @@ export default async function GuildDashboardPage({ params }: GuildDashboardPageP
           />
           <StatCard
             title="Messages Sent"
-            value={stats ? stats.totalPosts.toLocaleString() : "0"}
+            value={formatNumber(stats?.totalPosts)}
             description="Lifetime delivered notifications"
             icon={Send}
           />

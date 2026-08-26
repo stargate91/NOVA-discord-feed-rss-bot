@@ -7,7 +7,7 @@ import { Zap, Check, AlertCircle, ChevronRight, ChevronLeft, RefreshCw, Shield }
 import MonitorDeliveryFields from './monitor_delivery_fields';
 import MonitorBrandingFields from './monitor_branding_fields';
 import MonitorToggleOptions from './monitor_toggle_options';
-import { Modal } from '@/components/ui';
+import { Modal, Button } from '@/components/ui';
 import { BULK_PLATFORMS } from '@/constants/platforms';
 import { getGuildDashboardRoute } from '@/utils';
 import { useBulkAddWizard } from '@/hooks/use_bulk_add_wizard';
@@ -93,13 +93,13 @@ export default function BulkAddModal({
               >
                 Upgrade to Professional
               </Link>
-              <button 
+              <Button 
                 type="button" 
+                variant="secondary" 
                 onClick={handleModalClose}
-                className={`ui-btn ${styles["gate-cancel-btn"]}`}
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
@@ -239,62 +239,58 @@ export default function BulkAddModal({
           {!guildLoading && isTierEligible && step < 3 && (
             <>
               {step > 1 && (
-                <button 
+                <Button 
                   type="button" 
-                  className={`ui-btn ${styles["btn-secondary"]}`} 
+                  variant="secondary" 
                   onClick={handleBack} 
                   disabled={processing}
+                  leftIcon={<ChevronLeft size={18} />}
                 >
-                  <ChevronLeft size={18} /> Back
-                </button>
+                  Back
+                </Button>
               )}
               <div className={styles["footer-actions"]}>
-                <button 
+                <Button 
                   type="button" 
-                  className={`ui-btn ${styles["btn-secondary"]}`} 
+                  variant="secondary" 
                   onClick={handleModalClose} 
                   disabled={processing}
                 >
                   Cancel
-                </button>
+                </Button>
                 {step === 1 ? (
-                  <button 
+                  <Button 
                     type="button" 
-                    className="ui-btn ui-btn-primary" 
+                    variant="primary" 
                     onClick={handleNext} 
                     disabled={!selectedPlatform}
+                    rightIcon={<ChevronRight size={18} />}
                   >
-                    Next <ChevronRight size={18} />
-                  </button>
+                    Next
+                  </Button>
                 ) : (
-                  <button 
+                  <Button 
                     type="button" 
-                    className="ui-btn ui-btn-primary" 
+                    variant="primary" 
                     onClick={handleSubmit} 
-                    disabled={processing || !isFormValid}
+                    isLoading={processing}
+                    disabled={!isFormValid}
+                    leftIcon={!processing ? <Zap size={18} /> : undefined}
                   >
-                    {processing ? (
-                      <>
-                        <RefreshCw size={18} className="animate-spin" /> Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Zap size={18} /> Create Monitors
-                      </>
-                    )}
-                  </button>
+                    Create Monitors
+                  </Button>
                 )}
               </div>
             </>
           )}
           {(!isTierEligible || step === 3) && (
-            <button 
+            <Button 
               type="button" 
-              className="ui-btn ui-btn-primary" 
+              variant="primary" 
               onClick={handleModalClose}
             >
               Close
-            </button>
+            </Button>
           )}
         </div>
       </div>

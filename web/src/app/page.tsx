@@ -32,7 +32,7 @@ import {
 } from "@/components/ui";
 import PlatformCarousel from "@/components/platform_carousel";
 import LiveTicker from "@/components/live_ticker";
-import DiscordV2Preview from "@/components/discord_v2_preview";
+import DiscordEmbedPreview from "@/components/discord_embed_preview";
 import AuthErrorNotification from "@/components/auth_error_notification";
 import { LANDING_FEATURES, renderLandingFeatureIcon } from "@/constants/landing";
 import { getBotInviteUrl } from "@/utils";
@@ -180,7 +180,20 @@ export default async function LandingPage() {
             </div>
 
             <div className={styles["showcase-preview-wrapper"]}>
-              <DiscordV2Preview />
+              <DiscordEmbedPreview
+                botName="Nova"
+                botAvatar="/nova_v2.jpg"
+                channelName="neural-transmission"
+                authorName="Nova Cybernetics"
+                platformIcon="https://cdn.discordapp.com/emojis/1495845103447576807.png"
+                title="Project Awakening: First Neural Sync with a Class-4 Android"
+                embedColor="var(--status-error)"
+                mediaImage="/nova_thumbnail.jpg"
+                publishedAt={new Date()}
+                buttonText="View on YouTube"
+                footerText="Nova"
+                enableScanline
+              />
             </div>
           </div>
         </section>

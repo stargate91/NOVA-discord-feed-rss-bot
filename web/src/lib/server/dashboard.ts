@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Session } from "next-auth";
 import pool from "@/lib/db";
 import { isMasterGuild, resolveGuildFeatures } from "@/lib/config";
 import { GuildFeatures } from "@/types/guild";
@@ -57,7 +58,7 @@ export async function getGlobalDashboardStats(): Promise<GlobalDashboardStats> {
   }
 }
 
-export async function getGuildDashboardStats(guildId: string | number, session: any): Promise<GuildDashboardStats | null> {
+export async function getGuildDashboardStats(guildId: string | number, session: Session | null): Promise<GuildDashboardStats | null> {
   if (!session) return null;
   const cleanId = sanitizeGuildId(guildId);
 
@@ -132,7 +133,7 @@ export async function getGuildDashboardStats(guildId: string | number, session: 
 
 export async function getGuildDashboardData(
   guildId: string,
-  session: any
+  session: Session | null
 ): Promise<GuildDashboardData> {
   if (!session) {
     redirect('/');

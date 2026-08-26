@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { usePathname, useParams, useSearchParams } from 'next/navigation';
+import { Session } from 'next-auth';
 import { LucideIcon } from 'lucide-react';
 import { RAW_NAV_ITEMS, RawNavItem } from '@/constants/navigation';
 import { getGuildDashboardRoute } from '@/utils/navigation';
@@ -9,7 +10,7 @@ export interface NavLinkItem extends RawNavItem {
   isActive: boolean;
 }
 
-export function useNavigation(session?: any, isMaster = false) {
+export function useNavigation(session?: Session | null, isMaster = false) {
   const pathname = usePathname();
   const params = useParams();
   const searchParams = useSearchParams();

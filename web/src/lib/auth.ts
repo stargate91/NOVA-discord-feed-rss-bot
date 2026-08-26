@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, Session } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import fs from "fs";
 import path from "path";
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
 };
 
 export interface GuildDashboardAuthResult {
-  session: any;
+  session: Session;
   guildId: string;
   isMaster: boolean;
 }
@@ -79,15 +79,17 @@ export async function requireGuildDashboardAuth(
 
   if (!session) {
     redirect("/");
+    throw new Error("Unauthorized");
   }
 
   const { guildId } = await paramsPromise;
 
   if (!guildId) {
     redirect("/servers");
+    throw new Error("Guild ID required");
   }
 
-  const isMaster = (session?.user as any)?.role === "master";
+  const isMaster = session.user?.role === "master";
 
   return {
     session,

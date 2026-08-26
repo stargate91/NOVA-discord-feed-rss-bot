@@ -41,7 +41,7 @@ export function GuildProvider({ guildId, initialIsMaster = false, children }: Gu
   const [loading, setLoading] = useState(true);
   const [channelsLoading, setChannelsLoading] = useState(true);
 
-  const isMasterUser = initialIsMaster || (session?.user as any)?.role === 'master';
+  const isMasterUser = initialIsMaster || session?.user?.role === 'master';
 
   const loadChannelsAndRoles = useCallback(async (force = false) => {
     if (!guildId) return;
@@ -81,35 +81,8 @@ export function GuildProvider({ guildId, initialIsMaster = false, children }: Gu
 
   useEffect(() => {
     if (!guildId) return;
-
-    let isMounted = true;
-    Promise.all([
-      guildService.getGuilds().catch(() => []),
-      guildService.getSettings(guildId).catch(() => null),
-      guildService.getChannels(guildId).catch(() => []),
-      guildService.getRoles(guildId).catch(() => []),
-    ])
-      .then(([guildsList, sData, cData, rData]) => {
-        if (!isMounted) return;
-        const current = guildsList.find((g) => String(g.id) === String(guildId)) || null;
-        setGuild(current);
-        setSettings(sData);
-        setChannels(cData || []);
-        setRoles(rData || []);
-        setChannelsLoading(false);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (!isMounted) return;
-        console.error('[GuildProvider] Failed to load guild data:', err);
-        setChannelsLoading(false);
-        setLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [guildId]);
+    loadData(false);
+  }, [guildId, loadData]);
 
   const updateSettingsState = useCallback((updated: Partial<GuildSettings>) => {
     setSettings((prev) => (prev ? { ...prev, ...updated } : (updated as GuildSettings)));

@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
+import { Session } from 'next-auth';
 import { signIn, signOut } from 'next-auth/react';
 import { getUserDisplayName, getUserDisplayEmail } from '@/utils/user';
 import { useDropdown } from './use_dropdown';
 
 export interface UseLoginButtonOptions {
-  session?: any;
+  session?: Session | null;
   loginCallbackUrl?: string;
   logoutCallbackUrl?: string;
 }

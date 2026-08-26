@@ -8,7 +8,6 @@ export interface UseColorPickerOptions {
 }
 
 export function useColorPicker({ value, onChange, disabled = false }: UseColorPickerOptions) {
-  const [prevValue, setPrevValue] = useState(value);
   const [hsv, setHsv] = useState(() =>
     value && /^#[0-9A-F]{3,6}$/i.test(value) ? hexToHsv(value) : { h: 260, s: 70, v: 70 }
   );
@@ -16,12 +15,11 @@ export function useColorPicker({ value, onChange, disabled = false }: UseColorPi
   const svPanelRef = useRef<HTMLDivElement | null>(null);
   const hueSliderRef = useRef<HTMLDivElement | null>(null);
 
-  if (value !== prevValue) {
-    setPrevValue(value);
+  useEffect(() => {
     if (value && /^#[0-9A-F]{3,6}$/i.test(value)) {
       setHsv(hexToHsv(value));
     }
-  }
+  }, [value]);
 
   const updateColor = useCallback(
     (newHsv: { h: number; s: number; v: number }) => {

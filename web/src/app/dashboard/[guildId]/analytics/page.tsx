@@ -45,6 +45,7 @@ import LiveTicker from "@/components/live_ticker";
 import { ANALYTICS_RANGE_LABELS, ANALYTICS_PIE_COLORS } from "@/constants/analytics";
 import { useGuildAnalytics } from "@/hooks/use_guild_analytics";
 import { formatChartTooltip } from "@/utils/analytics";
+import { formatNumber } from "@/utils";
 import styles from "./analytics.module.css";
 
 // Custom Chart Tooltip
@@ -142,7 +143,7 @@ function AnalyticsContent() {
       <Grid columns={4} gap="lg">
         <StatCard
           title="Total Messages"
-          value={data.totalPosts.toLocaleString()}
+          value={formatNumber(data.totalPosts)}
           description="Overall delivered posts"
           trend={trendData}
           icon={TrendingUp}
@@ -205,7 +206,7 @@ function AnalyticsContent() {
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => value.toLocaleString()}
+                  tickFormatter={(value) => formatNumber(value)}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Area

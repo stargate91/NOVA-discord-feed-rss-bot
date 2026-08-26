@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AlertCircle, Info } from 'lucide-react';
-import { Modal } from '@/components/ui';
+import { Modal, Button } from '@/components/ui';
 import { useBulkEdit } from '@/hooks/use_bulk_edit';
 import MonitorDeliveryFields from './monitor_delivery_fields';
 import MonitorBrandingFields from './monitor_branding_fields';
@@ -57,13 +57,13 @@ export default function BulkEditModal({
           <p className={styles["locked-desc"]}>
             Tidying up many monitors at once is a professional-grade tool. Upgrade your server to unlock bulk editing.
           </p>
-          <button 
+          <Button 
             type="button" 
-            className="ui-btn ui-btn-primary" 
+            variant="primary" 
             onClick={onClose}
           >
             I Understand
-          </button>
+          </Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className={styles["modal-body-form"]}>
@@ -187,20 +187,20 @@ export default function BulkEditModal({
           </div>
 
           <div className={styles["modal-footer"]}>
-            <button 
+            <Button 
               type="button" 
-              className={`ui-btn ${styles["btn-secondary"]}`} 
+              variant="secondary" 
               onClick={onClose}
             >
               Cancel
-            </button>
-            <button 
+            </Button>
+            <Button 
               type="submit" 
-              className="ui-btn ui-btn-primary" 
-              disabled={loading}
+              variant="primary" 
+              isLoading={loading}
             >
-              {loading ? 'Updating...' : `Apply to ${monitorCount} Monitors`}
-            </button>
+              {`Apply to ${monitorCount} Monitors`}
+            </Button>
           </div>
         </form>
       )}

@@ -1,4 +1,6 @@
+import { Session } from 'next-auth';
 import { GuildFeatures } from '@/types/guild';
+import { UserRole } from '@/types/auth';
 import { TIER_DEFINITIONS, MASTER_TIER_LIMITS } from '@/constants/tiers';
 
 export interface DashboardTierMeta {
@@ -22,8 +24,8 @@ export interface ClientTierContextInput {
   isPremium?: boolean | null;
   isMaster?: boolean | null;
   tierName?: string | null;
-  userRole?: string | null;
-  session?: any;
+  userRole?: UserRole | null;
+  session?: Session | null;
   isLifetime?: boolean | null;
   refreshInterval?: number | null;
   maxMonitors?: number | null;

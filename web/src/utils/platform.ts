@@ -3,6 +3,7 @@ import {
   normalizePlatformId,
   getPlatformRegistryItem,
 } from '@/constants/platforms';
+import { formatNumber } from './number';
 
 export interface PlatformConfig {
   id: string;
@@ -127,7 +128,7 @@ export function formatAutocompleteSubtitle(
 ): string {
   if (!item) return '';
   if (item.stars !== undefined && item.stars !== null) {
-    return `⭐ ${item.stars.toLocaleString()} - ${item.id ?? ''}`;
+    return `⭐ ${formatNumber(item.stars)} - ${item.id ?? ''}`;
   }
   return `ID: ${item.id ?? ''}`;
 }

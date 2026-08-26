@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Info } from 'lucide-react';
 import CryptoPairsEditor from './crypto_pairs_editor';
 import MonitorFormFields from './monitor_form_fields';
-import { Modal } from '@/components/ui';
+import { Modal, Button } from '@/components/ui';
 import { MonitorConfig, UpdateMonitorPayload } from '@/types/monitor';
 import { getPlatformLogo, isCryptoPlatform } from '@/utils';
 import { useEditMonitor } from '@/hooks/use_edit_monitor';
@@ -123,20 +123,21 @@ export default function EditMonitorModal({
         />
 
         <div className={styles["modal-footer"]}>
-          <button 
+          <Button 
             type="button" 
-            className={`ui-btn ${styles["btn-secondary"]}`} 
+            variant="secondary" 
             onClick={onClose}
           >
             Cancel
-          </button>
-          <button 
+          </Button>
+          <Button 
             type="submit" 
-            className="ui-btn ui-btn-primary" 
-            disabled={saving || loadingData}
+            variant="primary" 
+            isLoading={saving}
+            disabled={loadingData}
           >
-            {saving ? 'Saving...' : 'Update Monitor'}
-          </button>
+            Update Monitor
+          </Button>
         </div>
       </form>
     </Modal>

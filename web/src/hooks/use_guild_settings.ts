@@ -22,25 +22,21 @@ const DEFAULT_SETTINGS: GuildSettings = {
 export function useGuildSettings(guildId: string) {
   const router = useRouter();
   const toast = useToast();
-  const { showSuccess } = toast;
   const guildCtx = useGuildContext();
   const { tierContext, roles: guildRoles, refreshGuild, updateGuildSettings } = guildCtx;
   const billing = useBilling({ guildId });
 
   const [saving, setSaving] = useState(false);
-
-  const [prevContextSettings, setPrevContextSettings] = useState(guildCtx.settings);
   const [settings, setSettings] = useState<GuildSettings>(() => ({
     ...DEFAULT_SETTINGS,
     ...(guildCtx.settings || {}),
   }));
 
-  if (guildCtx.settings !== prevContextSettings) {
-    setPrevContextSettings(guildCtx.settings);
+  useEffect(() => {
     if (guildCtx.settings) {
       setSettings(guildCtx.settings);
     }
-  }
+  }, [guildCtx.settings]);
 
   useEffect(() => {
     if (!guildId) {
@@ -66,7 +62,6 @@ export function useGuildSettings(guildId: string) {
     setSaving(true);
     try {
       await updateGuildSettings(settings);
-      showSuccess();
       toast.success(TOAST_MESSAGES.SETTINGS.UPDATE_SUCCESS);
       await refreshGuild();
     } catch (error: unknown) {

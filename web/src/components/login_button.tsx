@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
+import { Session } from "next-auth";
 import { LogOut, ChevronDown } from "lucide-react";
 import { Button, Avatar } from "@/components/ui";
 import { useLoginButton } from "@/hooks/use_login_button";
 import styles from "./login_button.module.css";
 
 interface LoginButtonProps {
-  session?: any;
+  session?: Session | null;
   isMobile?: boolean;
 }
 

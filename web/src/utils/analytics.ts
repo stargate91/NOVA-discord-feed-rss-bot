@@ -1,4 +1,5 @@
 import { PLATFORM_NAMES } from '@/constants/platforms';
+import { formatNumber } from './number';
 
 export interface HistoryPoint {
   date: string;
@@ -146,6 +147,6 @@ export function formatChartTooltip(
   const numValue = Number(rawValue) || 0;
   return {
     label: label ? String(label) : '',
-    formattedValue: `${numValue.toLocaleString()} Posts`,
+    formattedValue: `${formatNumber(numValue)} Posts`,
   };
 }
