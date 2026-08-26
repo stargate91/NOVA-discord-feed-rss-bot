@@ -42,13 +42,19 @@ export function CardHeader({
   );
 }
 
+export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  icon?: React.ReactNode;
+}
+
 export function CardTitle({
   children,
+  icon,
   className,
   ...props
-}: React.HTMLAttributes<HTMLHeadingElement>) {
+}: CardTitleProps) {
   return (
     <h3 className={[styles['card-title'], className].filter(Boolean).join(' ')} {...props}>
+      {icon && <span className={styles['card-title-icon']}>{icon}</span>}
       {children}
     </h3>
   );

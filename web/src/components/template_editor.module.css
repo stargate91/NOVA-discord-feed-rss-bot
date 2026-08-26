@@ -111,3 +111,24 @@
   border-color: var(--accent-primary);
   box-shadow: var(--glow-accent-sm);
 }
+
+.tags-hint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.preview-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--accent-light);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.preview-wrapper {
+  margin-top: var(--space-md);
+}

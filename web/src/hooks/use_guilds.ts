@@ -79,7 +79,10 @@ export function useGuilds(options: UseGuildsOptions = {}): UseGuildsReturn {
   }, [status, options.autoFetch]);
 
   const effectiveLoading = status === 'loading' || (status === 'authenticated' && loading);
-  const effectiveGuilds = status === 'authenticated' ? guilds : [];
+  const effectiveGuilds = useMemo(
+    () => (status === 'authenticated' ? guilds : []),
+    [status, guilds]
+  );
 
   const activeGuilds = useMemo(
     () => effectiveGuilds.filter((g) => g.hasBot),

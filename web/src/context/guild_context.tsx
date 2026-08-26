@@ -80,9 +80,36 @@ export function GuildProvider({ guildId, initialIsMaster = false, children }: Gu
   }, [guildId, loadChannelsAndRoles]);
 
   useEffect(() => {
+    let ignore = false;
     if (!guildId) return;
-    loadData(false);
-  }, [guildId, loadData]);
+
+    const fetchData = async () => {
+      try {
+        const [guildsList, sData] = await Promise.all([
+          guildService.getGuilds(false).catch(() => []),
+          guildService.getSettings(guildId, false).catch(() => null),
+          loadChannelsAndRoles(false),
+        ]);
+        if (!ignore) {
+          const current = guildsList.find((g) => String(g.id) === String(guildId)) || null;
+          setGuild(current);
+          setSettings(sData);
+        }
+      } catch (err) {
+        console.error('[GuildProvider] Failed to load guild data:', err);
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      ignore = true;
+    };
+  }, [guildId, loadChannelsAndRoles]);
 
   const updateSettingsState = useCallback((updated: Partial<GuildSettings>) => {
     setSettings((prev) => (prev ? { ...prev, ...updated } : (updated as GuildSettings)));

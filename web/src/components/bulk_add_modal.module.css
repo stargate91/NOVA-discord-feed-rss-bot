@@ -75,7 +75,7 @@
   gap: var(--space-md);
 }
 
-@media (max-width: 640px) {
+@media (width <= 40rem) {
   .form-grid-2 {
     grid-template-columns: 1fr;
   }

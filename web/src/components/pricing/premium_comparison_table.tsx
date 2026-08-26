@@ -1,13 +1,21 @@
 import React from 'react';
 import { Check, X, Zap, Shield, BarChart3, Settings } from 'lucide-react';
 import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui';
+import {
   COMPARISON_TIERS,
   COMPARISON_CATEGORIES,
 } from '@/constants/tiers';
 import { parseComparisonCellValue } from '@/utils';
 import styles from './premium_comparison_table.module.css';
 
-const CATEGORY_ICONS = {
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   Zap: <Zap size={16} />,
   Settings: <Settings size={16} />,
   Shield: <Shield size={16} />,
@@ -48,52 +56,66 @@ function ComparisonCell({ value, isHighlighted }: ComparisonCellProps) {
 export function PremiumComparisonTable() {
   return (
     <div className={styles['comparison-container']}>
-      <div className={styles['table-header-row']}>
-        <div className={styles['feature-col-title']}>Features</div>
-        {COMPARISON_TIERS.map((t, i) => (
-          <div
-            key={i}
-            className={[
-              styles['tier-col-title'],
-              i === 3 && styles.ultimate,
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            {t}
-          </div>
-        ))}
-      </div>
+      <Table striped size="md" className={styles['comparison-table']}>
+        <TableHeader>
+          <TableRow hoverable={false}>
+            <TableHead className={styles['feature-col-title']}>Features</TableHead>
+            {COMPARISON_TIERS.map((t, i) => (
+              <TableHead
+                key={i}
+                className={[
+                  styles['tier-col-title'],
+                  i === 3 && styles.ultimate,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {t}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
 
-      {COMPARISON_CATEGORIES.map((cat, catIdx) => (
-        <div key={catIdx} className={styles['category-group']}>
-          <div className={styles['category-title']}>
-            {CATEGORY_ICONS[cat.iconName]}
-            <span>{cat.name}</span>
-          </div>
-          {cat.features.map((feat, featIdx) => (
-            <div key={featIdx} className={styles['feature-row']}>
-              <div className={styles['feature-name']}>{feat.name}</div>
-              {feat.values.map((val, valIdx) => (
-                <div
-                  key={valIdx}
-                  className={[
-                    styles['value-cell'],
-                    feat.highlight?.includes(valIdx) && styles.highlighted,
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+        <TableBody>
+          {COMPARISON_CATEGORIES.map((cat, catIdx) => (
+            <React.Fragment key={catIdx}>
+              <TableRow hoverable={false} className={styles['category-row']}>
+                <TableCell
+                  colSpan={COMPARISON_TIERS.length + 1}
+                  className={styles['category-title-cell']}
                 >
-                  <ComparisonCell
-                    value={val}
-                    isHighlighted={feat.highlight?.includes(valIdx)}
-                  />
-                </div>
+                  <div className={styles['category-title']}>
+                    {CATEGORY_ICONS[cat.iconName]}
+                    <span>{cat.name}</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+
+              {cat.features.map((feat, featIdx) => (
+                <TableRow key={featIdx}>
+                  <TableCell className={styles['feature-name']}>{feat.name}</TableCell>
+                  {feat.values.map((val, valIdx) => (
+                    <TableCell
+                      key={valIdx}
+                      className={[
+                        styles['value-cell'],
+                        feat.highlight?.includes(valIdx) && styles.highlighted,
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    >
+                      <ComparisonCell
+                        value={val}
+                        isHighlighted={feat.highlight?.includes(valIdx)}
+                      />
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </div>
+            </React.Fragment>
           ))}
-        </div>
-      ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

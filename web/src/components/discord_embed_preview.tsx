@@ -81,6 +81,7 @@ export function DiscordEmbedPreview({
             <div className={styles['embed-container']}>
               <div
                 className={styles['embed-stripe']}
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{ backgroundColor: embedColor || 'var(--status-error)' }}
               />
               <div className={styles['embed-content']}>

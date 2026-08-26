@@ -1,0 +1,108 @@
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  backdrop-filter: blur(var(--blur-md));
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  transition: var(--transition-fast);
+  position: relative;
+  width: 100%;
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 0.125rem;
+}
+
+.alert-info {
+  background: var(--status-info-bg);
+  border-color: var(--status-info-border);
+  color: var(--text-primary);
+}
+
+.alert-info .alert-icon {
+  color: var(--accent-light);
+}
+
+.alert-warning {
+  background: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
+  color: var(--text-primary);
+}
+
+.alert-warning .alert-icon {
+  color: var(--status-warning);
+}
+
+.alert-error {
+  background: var(--status-error-bg);
+  border-color: var(--status-error-border);
+  color: var(--text-primary);
+}
+
+.alert-error .alert-icon {
+  color: var(--status-error);
+}
+
+.alert-success {
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
+  color: var(--text-primary);
+}
+
+.alert-success .alert-icon {
+  color: var(--status-success);
+}
+
+.alert-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.alert-title {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: var(--leading-snug);
+}
+
+.alert-content {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.alert-action {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.alert-close-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-3xs);
+  margin: -0.25rem -0.25rem -0.25rem auto;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.alert-close-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-hover);
+}

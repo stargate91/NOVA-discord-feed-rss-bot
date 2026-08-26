@@ -51,12 +51,22 @@
 }
 
 .card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   line-height: var(--leading-snug);
   letter-spacing: var(--tracking-tight);
+}
+
+.card-title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
 }
 
 .card-description {

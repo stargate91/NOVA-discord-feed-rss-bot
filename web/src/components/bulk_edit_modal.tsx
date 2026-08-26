@@ -87,7 +87,7 @@ export default function BulkEditModal({
                 Update Target Channels
               </label>
             </div>
-            <div className={styles["checkbox-header"]} style={{ marginTop: '0.35rem' }}>
+            <div className={`${styles["checkbox-header"]} ${styles["checkbox-header-spaced"]}`}>
               <input 
                 id="bulk-edit-use-roles"
                 type="checkbox" 
@@ -162,7 +162,7 @@ export default function BulkEditModal({
                 Update Embed Color
               </label>
             </div>
-            <div className={styles["checkbox-header"]} style={{ marginTop: '0.35rem' }}>
+            <div className={`${styles["checkbox-header"]} ${styles["checkbox-header-spaced"]}`}>
               <input 
                 id="bulk-edit-use-image"
                 type="checkbox" 

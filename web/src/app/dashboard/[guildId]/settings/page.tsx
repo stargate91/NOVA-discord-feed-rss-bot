@@ -20,8 +20,12 @@ import {
   Badge,
   Input,
   Spinner,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
 } from "@/components/ui";
-import SettingCard from "@/components/setting_card";
 import TemplateEditor from "@/components/template_editor";
 import { getGuildDashboardRoute } from "@/utils/navigation";
 import CustomRoleSelect from "@/components/custom_role_select";
@@ -103,125 +107,134 @@ function SettingsContent() {
         {/* ── Main Settings Column ── */}
         <div className={styles["settings-main"]}>
           {/* 1. Bot Language */}
-          <SettingCard
-            title="Bot Language"
-            description="Select the language used for automated messages and bot interfaces."
-            icon={Globe}
-          >
-            <div className={styles["language-grid"]}>
-              {BOT_LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  type="button"
-                  className={[
-                    styles["lang-btn"],
-                    settings.language === lang.code && styles.active,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => handleLanguageChange(lang.code)}
-                >
-                  <span className={styles["flag-emoji"]}>{lang.flag}</span>
-                  <span>{lang.nativeName}</span>
-                </button>
-              ))}
-            </div>
-          </SettingCard>
-
-          {/* 2. Admin Role */}
-          <SettingCard
-            title="Admin Role"
-            description="Members with this role can manage bot monitors and configure server settings."
-            icon={Shield}
-          >
-            <CustomRoleSelect
-              roles={guildRoles}
-              value={settings.admin_role_id || "0"}
-              onChange={handleRoleChange}
-            />
-          </SettingCard>
-
-          {/* 3. Refresh Interval */}
-          <SettingCard
-            title="Refresh Interval"
-            description="Set how frequently the bot checks for new content. Higher tiers unlock faster intervals."
-            icon={Clock}
-          >
-            <div className={styles["speed-chips"]}>
-              {[20, 10, 5, 2, 1].map((val) => {
-                const locked = isIntervalLocked(val);
-                return (
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle icon={<Globe size={18} />}>Bot Language</CardTitle>
+              <CardDescription>Select the language used for automated messages and bot interfaces.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={styles["language-grid"]}>
+                {BOT_LANGUAGES.map((lang) => (
                   <button
-                    key={val}
+                    key={lang.code}
                     type="button"
                     className={[
-                      styles["speed-chip"],
-                      settings.refresh_interval === val && styles.active,
-                      locked && styles.locked,
+                      styles["lang-btn"],
+                      settings.language === lang.code && styles.active,
                     ]
                       .filter(Boolean)
                       .join(" ")}
-                    onClick={() => !locked && handleIntervalChange(val)}
-                    title={locked ? "Upgrade tier to unlock faster refresh rates" : undefined}
+                    onClick={() => handleLanguageChange(lang.code)}
                   >
-                    {locked && <Lock size={12} />}
-                    <span>{val} {val === 1 ? "min" : "mins"}</span>
+                    <span className={styles["flag-emoji"]}>{lang.flag}</span>
+                    <span>{lang.nativeName}</span>
                   </button>
-                );
-              })}
-            </div>
-          </SettingCard>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 2. Admin Role */}
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle icon={<Shield size={18} />}>Admin Role</CardTitle>
+              <CardDescription>Members with this role can manage bot monitors and configure server settings.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CustomRoleSelect
+                roles={guildRoles}
+                value={settings.admin_role_id || "0"}
+                onChange={handleRoleChange}
+              />
+            </CardContent>
+          </Card>
+
+          {/* 3. Refresh Interval */}
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle icon={<Clock size={18} />}>Refresh Interval</CardTitle>
+              <CardDescription>Set how frequently the bot checks for new content. Higher tiers unlock faster intervals.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={styles["speed-chips"]}>
+                {[20, 10, 5, 2, 1].map((val) => {
+                  const locked = isIntervalLocked(val);
+                  return (
+                    <button
+                      key={val}
+                      type="button"
+                      className={[
+                        styles["speed-chip"],
+                        settings.refresh_interval === val && styles.active,
+                        locked && styles.locked,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => !locked && handleIntervalChange(val)}
+                      title={locked ? "Upgrade tier to unlock faster refresh rates" : undefined}
+                    >
+                      {locked && <Lock size={12} />}
+                      <span>{val} {val === 1 ? "min" : "mins"}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* 4. Custom Alert Templates */}
-          <SettingCard
-            title="Custom Alert Templates"
-            description="Personalize notification formatting using custom markdown and platform tags."
-            icon={MessageSquare}
-          >
-            <TemplateEditor
-              templates={settings.alert_templates || {}}
-              onUpdate={handleTemplateUpdate}
-              isLocked={!canUseTemplates}
-              guildId={guildId}
-            />
-          </SettingCard>
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle icon={<MessageSquare size={18} />}>Custom Alert Templates</CardTitle>
+              <CardDescription>Personalize notification formatting using custom markdown and platform tags.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TemplateEditor
+                templates={settings.alert_templates || {}}
+                onUpdate={handleTemplateUpdate}
+                isLocked={!canUseTemplates}
+                guildId={guildId}
+              />
+            </CardContent>
+          </Card>
 
           {/* 5. Custom Branding */}
-          <SettingCard
-            title="Custom Branding"
-            description="Override bot footer branding in Discord feeds (Ultimate Tier feature)."
-            icon={Zap}
-          >
-            {!canUseBranding ? (
-              <div className={styles["lock-overlay"]}>
-                <Lock size={28} className={styles["lock-icon"]} />
-                <p className="text-body-sm">
-                  White-label branding requires <strong>Ultimate Tier</strong>.
-                </p>
-                <Link href={getGuildDashboardRoute(guildId, 'billing')}>
-                  <Button variant="primary" size="sm">
-                    Upgrade Now
-                  </Button>
-                </Link>
-
-              </div>
-            ) : (
-              <div className={styles["branding-wrapper"]}>
-                <Input
-                  label="Custom Footer Text"
-                  placeholder="e.g. Powered by MyCommunity"
-                  value={parsedBranding.footer_text || ""}
-                  onChange={(e) => handleBrandingChange("footer_text", e.target.value)}
-                />
-                <Input
-                  label="Custom Footer Icon URL"
-                  placeholder="https://..."
-                  value={parsedBranding.footer_icon_url || ""}
-                  onChange={(e) => handleBrandingChange("footer_icon_url", e.target.value)}
-                />
-              </div>
-            )}
-          </SettingCard>
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle icon={<Zap size={18} />}>Custom Branding</CardTitle>
+              <CardDescription>Override bot footer branding in Discord feeds (Ultimate Tier feature).</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!canUseBranding ? (
+                <div className={styles["lock-overlay"]}>
+                  <Lock size={28} className={styles["lock-icon"]} />
+                  <p className="text-body-sm">
+                    White-label branding requires <strong>Ultimate Tier</strong>.
+                  </p>
+                  <Link href={getGuildDashboardRoute(guildId, 'billing')}>
+                    <Button variant="primary" size="sm">
+                      Upgrade Now
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className={styles["branding-wrapper"]}>
+                  <Input
+                    label="Custom Footer Text"
+                    placeholder="e.g. Powered by MyCommunity"
+                    value={parsedBranding.footer_text || ""}
+                    onChange={(e) => handleBrandingChange("footer_text", e.target.value)}
+                  />
+                  <Input
+                    label="Custom Footer Icon URL"
+                    placeholder="https://..."
+                    value={parsedBranding.footer_icon_url || ""}
+                    onChange={(e) => handleBrandingChange("footer_icon_url", e.target.value)}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* ── Right Sidebar: Status & Redeem ── */}

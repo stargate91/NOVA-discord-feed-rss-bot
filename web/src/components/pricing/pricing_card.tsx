@@ -3,7 +3,17 @@
 import React from 'react';
 import { Check, ChevronRight } from 'lucide-react';
 import styles from './pricing_card.module.css';
-import { Button, Divider } from '@/components/ui';
+import {
+  Button,
+  Divider,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Badge,
+} from '@/components/ui';
 import { TierFeature } from '@/constants/tiers';
 import { calculatePricingCardState } from '@/utils/pricing_helpers';
 
@@ -49,7 +59,8 @@ export function PricingCard({
   });
 
   return (
-    <div
+    <Card
+      variant={isPopular ? 'neon' : 'elevated'}
       className={[
         styles['pricing-card'],
         isPopular && styles.popular,
@@ -58,43 +69,49 @@ export function PricingCard({
         .join(' ')}
     >
       {isPopular && (
-        <span className={styles['popular-badge']}>Most Popular</span>
+        <div className={styles['popular-badge-wrap']}>
+          <Badge variant="primary" size="sm" dot>
+            Most Popular
+          </Badge>
+        </div>
       )}
 
-      <div className={styles['pricing-header']}>
-        <h3 className={styles['pricing-title']}>{title}</h3>
-        <p className={styles['pricing-desc']}>{description}</p>
-      </div>
+      <CardHeader className={styles['pricing-header']}>
+        <CardTitle className={styles['pricing-title']}>{title}</CardTitle>
+        <CardDescription className={styles['pricing-desc']}>{description}</CardDescription>
+      </CardHeader>
 
-      <div className={styles['pricing-price-wrapper']}>
-        {!isFree && <span className={styles['price-currency']}>€</span>}
-        <span className={styles['price-amount']}>{price}</span>
-        {!isFree && (
-          <span className={styles['price-interval']}>/{interval}</span>
-        )}
-      </div>
+      <CardContent className={styles['pricing-content']}>
+        <div className={styles['pricing-price-wrapper']}>
+          {!isFree && <span className={styles['price-currency']}>€</span>}
+          <span className={styles['price-amount']}>{price}</span>
+          {!isFree && (
+            <span className={styles['price-interval']}>/{interval}</span>
+          )}
+        </div>
 
-      <Divider variant="subtle" />
+        <Divider variant="subtle" />
 
-      <ul className={styles['feature-list']}>
-        {features.map((feature, idx) => (
-          <li
-            key={idx}
-            className={[
-              styles['feature-item'],
-              feature.highlight && styles.highlight,
-              feature.disabled && styles.disabled,
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            <Check size={16} className={styles['feature-icon']} />
-            <span>{feature.text}</span>
-          </li>
-        ))}
-      </ul>
+        <ul className={styles['feature-list']}>
+          {features.map((feature, idx) => (
+            <li
+              key={idx}
+              className={[
+                styles['feature-item'],
+                feature.highlight && styles.highlight,
+                feature.disabled && styles.disabled,
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <Check size={16} className={styles['feature-icon']} />
+              <span>{feature.text}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
 
-      <div className={styles['pricing-action']}>
+      <CardFooter className={styles['pricing-action']}>
         <Button
           variant={buttonVariant}
           size="lg"
@@ -114,8 +131,8 @@ export function PricingCard({
         >
           {buttonLabel}
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }
 

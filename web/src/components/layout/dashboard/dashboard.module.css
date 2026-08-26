@@ -91,6 +91,17 @@
   border-top: 1px solid var(--border-subtle);
 }
 
+.sidebar-logout-btn {
+  width: 100%;
+  justify-content: flex-start;
+  color: var(--text-secondary);
+}
+
+.sidebar-footer .sidebar-logout-btn:hover {
+  background: var(--status-error-bg);
+  color: var(--status-error);
+}
+
 /* ── Dashboard Main Area ── */
 .dashboard-main {
   display: flex;

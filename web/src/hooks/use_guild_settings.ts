@@ -27,16 +27,18 @@ export function useGuildSettings(guildId: string) {
   const billing = useBilling({ guildId });
 
   const [saving, setSaving] = useState(false);
+  const [prevContextSettings, setPrevContextSettings] = useState(guildCtx.settings);
   const [settings, setSettings] = useState<GuildSettings>(() => ({
     ...DEFAULT_SETTINGS,
     ...(guildCtx.settings || {}),
   }));
 
-  useEffect(() => {
+  if (guildCtx.settings !== prevContextSettings) {
+    setPrevContextSettings(guildCtx.settings);
     if (guildCtx.settings) {
       setSettings(guildCtx.settings);
     }
-  }, [guildCtx.settings]);
+  }
 
   useEffect(() => {
     if (!guildId) {

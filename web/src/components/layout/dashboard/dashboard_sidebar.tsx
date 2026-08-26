@@ -3,12 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PanelLeftClose, PanelLeft } from 'lucide-react';
+import { PanelLeftClose, PanelLeft, LogOut } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import styles from './dashboard.module.css';
-import { IconButton } from '@/components/ui';
+import { IconButton, Button } from '@/components/ui';
 import GuildSwitcher from '@/components/guild_switcher';
 import NavLinks from '@/components/nav_links';
-import LogoutButton from '@/components/logout_button';
 import { useIsMounted } from '@/hooks';
 
 export interface DashboardSidebarProps {
@@ -81,7 +81,17 @@ export function DashboardSidebar({
       </nav>
 
       <div className={styles['sidebar-footer']}>
-        <LogoutButton />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          fullWidth
+          leftIcon={<LogOut size={18} />}
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className={styles['sidebar-logout-btn']}
+        >
+          {!isCollapsed && 'Logout'}
+        </Button>
       </div>
     </aside>
   );

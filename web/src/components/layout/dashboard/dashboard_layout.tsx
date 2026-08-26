@@ -1,13 +1,14 @@
 "use client";
 
 import React from 'react';
+import { LogOut } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import styles from './dashboard.module.css';
 import { DashboardSidebar } from './dashboard_sidebar';
 import { DashboardHeader } from './dashboard_header';
-import { Drawer, Stack } from '@/components/ui';
+import { Drawer, Stack, Button } from '@/components/ui';
 import GuildSwitcher from '@/components/guild_switcher';
 import NavLinks from '@/components/nav_links';
-import LogoutButton from '@/components/logout_button';
 import { useDashboardLayout } from '@/hooks/use_dashboard_layout';
 
 export interface DashboardLayoutProps {
@@ -65,7 +66,17 @@ export function DashboardLayout({
           >
             <NavLinks session={session} isMaster={isMaster} />
           </nav>
-          <LogoutButton />
+          <Button
+            type="button"
+            variant="ghost"
+            size="md"
+            fullWidth
+            leftIcon={<LogOut size={18} />}
+            onClick={() => signOut({ callbackUrl: '/' })}
+            className={styles['sidebar-logout-btn']}
+          >
+            Logout
+          </Button>
         </Stack>
       </Drawer>
 

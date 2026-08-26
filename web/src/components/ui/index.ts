@@ -24,3 +24,5 @@ export * from './checkbox';
 export * from './empty_state';
 export * from './floating_action_bar';
 export * from './avatar';
+export * from './alert';
+

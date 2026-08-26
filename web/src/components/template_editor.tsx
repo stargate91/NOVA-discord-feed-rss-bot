@@ -101,21 +101,12 @@ export default function TemplateEditor({
       </div>
 
       <div className={styles['tags-hint']}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div className={styles['tags-hint-header']}>
           <span className="text-caption">Available dynamic variables:</span>
           <button
             type="button"
             onClick={() => setShowLivePreview(!showLivePreview)}
-            className="text-caption"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--accent-light)',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-            }}
+            className={`text-caption ${styles['preview-toggle-btn']}`}
           >
             {showLivePreview ? <EyeOff size={14} /> : <Eye size={14} />}
             {showLivePreview ? 'Hide Live Preview' : 'Show Live Preview'}
@@ -144,7 +135,7 @@ export default function TemplateEditor({
       />
 
       {showLivePreview && (
-        <div style={{ marginTop: 'var(--space-md)' }}>
+        <div className={styles['preview-wrapper']}>
           <DiscordEmbedPreview
             botName="Nova"
             channelName="announcements"
