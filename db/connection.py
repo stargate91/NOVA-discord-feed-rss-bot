@@ -1,10 +1,12 @@
+import time
 import asyncpg
 from typing import AsyncGenerator
+from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession, AsyncEngine
 from logger import log
 from db.schema import Base
 
-_pool = None
+_pool: asyncpg.Pool | None = None
 _async_engine: AsyncEngine | None = None
 _async_session_maker: async_sessionmaker[AsyncSession] | None = None
 
@@ -48,17 +50,20 @@ async def create_db_pool(
     )
     return _pool
 
-async def set_pool(pool: asyncpg.Pool):
+async def set_pool(pool: asyncpg.Pool | None):
+    """Set the active pool (primarily used for test mocking)."""
     global _pool
     _pool = pool
 
 async def get_pool() -> asyncpg.Pool:
+    """Retrieve active asyncpg connection pool or raise exception if uninitialized."""
     global _pool
     if not _pool:
         raise Exception("Database pool is not initialized.")
     return _pool
 
 async def close():
+    """Gracefully close the asyncpg connection pool and dispose SQLAlchemy async engine."""
     global _pool, _async_engine, _async_session_maker
     if _pool:
         await _pool.close()
@@ -69,145 +74,145 @@ async def close():
         _async_session_maker = None
     log.info("Database connection pool closed.")
 
-async def _fetch(query: str, *args):
+@asynccontextmanager
+async def get_connection() -> AsyncGenerator[asyncpg.Connection, None]:
+    """Acquire a dedicated asyncpg connection from the pool."""
     pool = await get_pool()
-    return await pool.fetch(query, *args)
+    async with pool.acquire() as conn:
+        yield conn
 
-async def _fetchrow(query: str, *args):
+@asynccontextmanager
+async def transaction() -> AsyncGenerator[asyncpg.Connection, None]:
+    """
+    Acquire a connection from the pool and start an atomic transaction.
+    Automatically commits on normal completion or rolls back if an exception is raised.
+    """
     pool = await get_pool()
-    return await pool.fetchrow(query, *args)
-
-async def _fetchval(query: str, *args):
-    pool = await get_pool()
-    return await pool.fetchval(query, *args)
-
-async def _execute(query: str, *args):
-    pool = await get_pool()
-    return await pool.execute(query, *args)
-
-async def init_db():
-    """Initialize the database and ensure all required tables and indexes exist."""
-    pool = await get_pool()
-    queries = [
-        # 1. Guild Settings
-        '''CREATE TABLE IF NOT EXISTS guild_settings (
-            guild_id BIGINT PRIMARY KEY,
-            language TEXT DEFAULT 'en',
-            admin_role_id BIGINT DEFAULT 0,
-            alert_templates TEXT,
-            premium_until TIMESTAMP,
-            refresh_interval INTEGER DEFAULT 20,
-            tier INTEGER DEFAULT 0,
-            stripe_subscription_id TEXT,
-            is_active BOOLEAN DEFAULT true,
-            is_master BOOLEAN DEFAULT false,
-            is_premium BOOLEAN DEFAULT false,
-            custom_branding TEXT
-        )''',
-        # 2. Monitors
-        '''CREATE TABLE IF NOT EXISTS monitors (
-            id SERIAL PRIMARY KEY,
-            guild_id BIGINT NOT NULL,
-            type TEXT NOT NULL,
-            name TEXT NOT NULL,
-            discord_channel_id BIGINT,
-            ping_role_id BIGINT,
-            enabled BOOLEAN DEFAULT true,
-            extra_settings TEXT,
-            last_post_at TIMESTAMP WITH TIME ZONE
-        )''',
-        # 3. Published Entries
-        '''CREATE TABLE IF NOT EXISTS published_entries_v2 (
-            entry_id TEXT NOT NULL,
-            platform TEXT NOT NULL,
-            guild_id BIGINT NOT NULL,
-            feed_url TEXT,
-            published_at TIMESTAMP,
-            title TEXT,
-            thumbnail_url TEXT,
-            author_name TEXT,
-            PRIMARY KEY (entry_id, platform, guild_id)
-        )''',
-        # 4. Bot Statuses
-        '''CREATE TABLE IF NOT EXISTS bot_statuses (
-            id SERIAL PRIMARY KEY,
-            type TEXT NOT NULL,
-            status_text TEXT NOT NULL
-        )''',
-        # 5. Global Bot Settings
-        '''CREATE TABLE IF NOT EXISTS bot_settings (
-            key TEXT PRIMARY KEY,
-            value TEXT
-        )''',
-        # 6. Premium Codes
-        '''CREATE TABLE IF NOT EXISTS premium_codes (
-            code VARCHAR(50) PRIMARY KEY,
-            duration_days INTEGER NOT NULL,
-            max_uses INTEGER DEFAULT 1,
-            used_count INTEGER DEFAULT 0,
-            tier INTEGER DEFAULT 3,
-            is_revoked BOOLEAN DEFAULT false,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )''',
-        # 7. Monitor Statistics
-        '''CREATE TABLE IF NOT EXISTS monitor_stats_daily (
-            date DATE NOT NULL,
-            guild_id BIGINT NOT NULL,
-            platform TEXT NOT NULL,
-            post_count INTEGER DEFAULT 0,
-            PRIMARY KEY (date, guild_id, platform)
-        )''',
-        # 8. Payment History
-        '''CREATE TABLE IF NOT EXISTS payment_history (
-            id SERIAL PRIMARY KEY,
-            guild_id BIGINT NOT NULL,
-            stripe_session_id TEXT UNIQUE,
-            price_id TEXT,
-            amount_cents INTEGER,
-            currency TEXT,
-            status TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )''',
-        # 9. Premium Redemptions
-        '''CREATE TABLE IF NOT EXISTS premium_redemptions (
-            id SERIAL PRIMARY KEY,
-            code VARCHAR(50),
-            guild_id BIGINT,
-            redeemed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )''',
-        # 10. Announcements
-        '''CREATE TABLE IF NOT EXISTS announcements (
-            id SERIAL PRIMARY KEY,
-            title TEXT NOT NULL,
-            content TEXT NOT NULL,
-            type TEXT DEFAULT 'info',
-            is_active BOOLEAN DEFAULT true,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            expires_at TIMESTAMP
-        )''',
-        # 11. YouTube Resolution Cache
-        '''CREATE TABLE IF NOT EXISTS youtube_cache (
-            query TEXT PRIMARY KEY,
-            channel_id TEXT NOT NULL,
-            title TEXT NOT NULL,
-            thumbnail TEXT,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )''',
-        # 12. Steam Resolution Cache
-        '''CREATE TABLE IF NOT EXISTS steam_cache (
-            query TEXT PRIMARY KEY,
-            appid TEXT NOT NULL,
-            title TEXT NOT NULL,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )''',
-        # Indexes
-        '''CREATE INDEX IF NOT EXISTS idx_published_entries_time ON published_entries_v2 (published_at DESC)''',
-        '''CREATE INDEX IF NOT EXISTS idx_monitors_guild ON monitors (guild_id)'''
-    ]
-
     async with pool.acquire() as conn:
         async with conn.transaction():
-            for q in queries:
-                await conn.execute(q)
+            yield conn
 
-    log.info("Database tables and indexes initialized.")
+SLOW_QUERY_THRESHOLD_MS: float = 100.0
+
+def _record_query_telemetry(operation: str, query: str, duration_sec: float):
+    """Record query metrics and emit slow query warnings if threshold exceeded."""
+    duration_ms = duration_sec * 1000.0
+    try:
+        from services.metrics_service import metrics
+        metrics.increment("db_queries_total", labels={"operation": operation})
+        metrics.observe_duration("db_query_duration_seconds", duration_sec, labels={"operation": operation})
+        if duration_ms > SLOW_QUERY_THRESHOLD_MS:
+            metrics.increment("db_slow_queries_total", labels={"operation": operation})
+            clean_q = " ".join(query.split())[:150]
+            log.warning(f"[DB Slow Query] {duration_ms:.1f}ms (threshold: {SLOW_QUERY_THRESHOLD_MS}ms) | Op: {operation} | SQL: {clean_q}")
+    except Exception:
+        pass
+
+async def _fetch(query: str, *args):
+    """Execute query and fetch all result rows with query timing and telemetry."""
+    pool = await get_pool()
+    t0 = time.perf_counter()
+    try:
+        return await pool.fetch(query, *args)
+    finally:
+        _record_query_telemetry("fetch", query, time.perf_counter() - t0)
+
+async def _fetchrow(query: str, *args):
+    """Execute query and fetch first result row with query timing and telemetry."""
+    pool = await get_pool()
+    t0 = time.perf_counter()
+    try:
+        return await pool.fetchrow(query, *args)
+    finally:
+        _record_query_telemetry("fetchrow", query, time.perf_counter() - t0)
+
+async def _fetchval(query: str, *args):
+    """Execute query and fetch a single scalar value with query timing and telemetry."""
+    pool = await get_pool()
+    t0 = time.perf_counter()
+    try:
+        return await pool.fetchval(query, *args)
+    finally:
+        _record_query_telemetry("fetchval", query, time.perf_counter() - t0)
+
+async def _execute(query: str, *args):
+    """Execute SQL query or command with query timing and telemetry."""
+    pool = await get_pool()
+    t0 = time.perf_counter()
+    try:
+        return await pool.execute(query, *args)
+    finally:
+        _record_query_telemetry("execute", query, time.perf_counter() - t0)
+
+async def check_db_health() -> dict:
+    """
+    Execute connection pool health probe and measure database query latency.
+    Returns health status, latency in milliseconds, and pool connection statistics.
+    """
+    try:
+        t0 = time.perf_counter()
+        val = await _fetchval("SELECT 1")
+        latency_ms = round((time.perf_counter() - t0) * 1000.0, 2)
+        pool_stats = get_pool_stats()
+        return {
+            "status": "healthy" if val == 1 else "degraded",
+            "latency_ms": latency_ms,
+            "pool": pool_stats
+        }
+    except Exception as e:
+        log.error(f"[DB Health] Health probe failed: {e}")
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "pool": get_pool_stats()
+        }
+
+def get_pool_stats() -> dict:
+    """Return runtime connection pool statistics for observability and monitoring."""
+    global _pool
+    if not _pool:
+        return {"initialized": False}
+    try:
+        size = _pool.get_size()
+        free_size = _pool.get_idle_size()
+        min_size = _pool.get_min_size()
+        max_size = _pool.get_max_size()
+        return {
+            "initialized": True,
+            "current_size": size,
+            "free_size": free_size,
+            "used_size": size - free_size,
+            "min_size": min_size,
+            "max_size": max_size,
+        }
+    except Exception:
+        return {"initialized": True}
+
+async def init_db():
+    """
+    Initialize database schema dynamically from SQLAlchemy declarative models (Base.metadata).
+    Consolidates schema to SQLAlchemy 2.0 / Alembic as the single source of truth,
+    eliminating redundant raw DDL string definitions.
+    """
+    engine = get_async_engine()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    log.info("Database schema initialized and verified against SQLAlchemy Base.metadata.")
+
+__all__ = [
+    "create_db_pool",
+    "get_pool",
+    "set_pool",
+    "init_db",
+    "close",
+    "get_connection",
+    "transaction",
+    "check_db_health",
+    "get_pool_stats",
+    "_fetch",
+    "_fetchrow",
+    "_fetchval",
+    "_execute",
+    "get_async_engine",
+    "get_async_session_maker",
+]

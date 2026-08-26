@@ -25,7 +25,13 @@ class EntitlementService:
         return str(guild_id) in master_guilds
 
     def is_premium(self, guild_id: int) -> bool:
-        """Check if a guild has premium status (via Tier or DB expiration or Master status)."""
+        """
+        Check if a guild has active premium status.
+        Evaluation order:
+          1. Master Guilds: Implicitly granted unlimited Ultimate (Tier 3) status forever.
+          2. Active Tier Level: Configured tier >= 1 in database/cache.
+          3. Legacy/Direct Expiration: Checks if premium_until timestamp is in the future.
+        """
         # 1. Master Guilds are automatically Premium Forever (Tier 3+)
         if self.is_master(guild_id):
             return True
@@ -45,13 +51,13 @@ class EntitlementService:
 
     def get_guild_tier_limits(self, guild_id: int) -> TierLimits:
         """
-        Returns TierLimits (min_refresh_interval, max_monitors, max_channels, max_pings, max_purge)
-        from config based on guild tier.
+        Resolve resource limits (refresh interval, max monitors/channels/pings/purges)
+        for a guild based on its active subscription tier configuration.
         """
         settings = self._get_guild_settings(guild_id)
         tier = settings.get("tier", 0)
 
-        # Legacy fallback if tier is 0 but premium_until is valid
+        # Legacy fallback if tier is 0 but premium_until timestamp is still active
         if tier == 0 and self.is_premium(guild_id):
             tier = 3
 
@@ -84,11 +90,11 @@ class EntitlementService:
 
     def get_guild_refresh_interval(self, guild_id: int) -> int:
         """Returns the configured refresh interval in minutes, validated against tier limits."""
-        min_m, _, _, _, _ = self.get_guild_tier_limits(guild_id)
+        limits = self.get_guild_tier_limits(guild_id)
         settings = self._get_guild_settings(guild_id)
 
         ri = settings.get("refresh_interval", 20)
         if ri is not None and isinstance(ri, (int, float)):
-            return max(min_m, int(ri))
+            return max(limits.min_refresh_interval, int(ri))
 
-        return max(min_m, 20)
+        return max(limits.min_refresh_interval, 20)

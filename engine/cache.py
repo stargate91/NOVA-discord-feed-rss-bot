@@ -1,5 +1,8 @@
 import time
+from typing import Any
+from collections import OrderedDict
 from logger import log
+from models.guild import GuildSettings
 
 class SharedDataCache:
     """
@@ -11,12 +14,12 @@ class SharedDataCache:
         self.default_ttl = default_ttl
         self.max_size = max_size
         # key -> (timestamp, data, ttl)
-        self._shared_cache: dict[str, tuple[float, any, int]] = {}
+        self._shared_cache: dict[str, tuple[float, Any, int]] = {}
         self.tmdb_genres_cache: dict[str, dict[int, str]] = {}
         self._last_auto_cleanup = time.time()
         self._cleanup_interval = 300  # Opportunistic cleanup every 5 minutes
 
-    def get_shared_data(self, key: str, max_age_seconds: int | None = None) -> any:
+    def get_shared_data(self, key: str, max_age_seconds: int | None = None) -> Any:
         """Get shared data from cache if it is still within the max_age threshold."""
         self._maybe_auto_cleanup()
 
@@ -28,9 +31,10 @@ class SharedDataCache:
             else:
                 # Expired on read - evict immediately
                 del self._shared_cache[key]
+            return None
         return None
 
-    def set_shared_data(self, key: str, data: any, ttl: int | None = None):
+    def set_shared_data(self, key: str, data: Any, ttl: int | None = None):
         """Store data in the shared cache with timestamp and enforce size limits."""
         self._maybe_auto_cleanup()
 
@@ -86,3 +90,45 @@ class SharedDataCache:
             "default_ttl": self.default_ttl,
             "tmdb_genre_sets": len(self.tmdb_genres_cache)
         }
+
+
+class BoundedGuildSettingsCache(OrderedDict[int, GuildSettings]):
+    """
+    Thread-safe, bounded LRU cache for Discord GuildSettings.
+    Prevents unbounded memory consumption in massive bot deployments (10k+ servers)
+    while preserving standard dictionary semantics and fast O(1) lookups.
+    """
+
+    def __init__(self, max_size: int = 5000):
+        super().__init__()
+        self.max_size = max_size
+
+    def __getitem__(self, key: int) -> GuildSettings:
+        val = super().__getitem__(key)
+        self.move_to_end(key)  # Mark as recently used
+        return val
+
+    def get(self, key: int, default: Any = None) -> Any:
+        if key in self:
+            return self[key]
+        return default
+
+    def __setitem__(self, key: int, value: GuildSettings):
+        if key in self:
+            self.move_to_end(key)
+        super().__setitem__(key, value)
+        if len(self) > self.max_size:
+            # Evict least-recently-used item
+            oldest_key, _ = self.popitem(last=False)
+            log.debug(f"[GuildSettingsCache] Evicted LRU guild {oldest_key} (capacity: {self.max_size})")
+
+    def stats(self) -> dict:
+        return {
+            "size": len(self),
+            "max_size": self.max_size,
+        }
+
+__all__ = [
+    "SharedDataCache",
+    "BoundedGuildSettingsCache",
+]

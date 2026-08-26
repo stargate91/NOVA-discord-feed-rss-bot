@@ -4,6 +4,14 @@ from models.monitor import MonitorConfig, PublishedRecord
 from models.feed import FeedItem, BroadcastPayload
 from models.billing import PaymentHistoryRecord, PromoCode, RedeemResult
 from models.bot import BotStatus, YouTubeCacheItem
+from models.api import (
+    HealthResponse,
+    ActionStatusResponse,
+    LogFilterModel,
+    LogsQueryResponse,
+    MetricsSummaryResponse,
+    GuildPermissionsResponse,
+)
 
 __all__ = [
     "DomainModel",
@@ -19,4 +27,10 @@ __all__ = [
     "RedeemResult",
     "BotStatus",
     "YouTubeCacheItem",
+    "HealthResponse",
+    "ActionStatusResponse",
+    "LogFilterModel",
+    "LogsQueryResponse",
+    "MetricsSummaryResponse",
+    "GuildPermissionsResponse",
 ]

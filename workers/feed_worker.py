@@ -3,8 +3,8 @@ import os
 from logger import log, setup_logging
 from core.config import BotConfig
 from db import create_db_pool, init_db, close, monitor_repo
-from engine.pipeline import PipelineEngine
-from engine.monitor_factory import MonitorFactory
+from engine.pipeline import FeedPipeline
+from core.monitor_factory import MonitorFactory
 from services import get_notification_queue, QueueDeliveryAdapter
 
 async def run_feed_worker(poll_interval: int = 60):
@@ -43,7 +43,7 @@ async def run_feed_worker(poll_interval: int = 60):
                         continue
                     try:
                         # Instantiate monitor with QueueDeliveryAdapter
-                        monitor = MonitorFactory.create_monitor(bot=None, config=m_config)
+                        monitor = MonitorFactory.create(bot=None, config=m_config)
                         if monitor:
                             monitor.delivery_adapter = delivery_adapter
                             new_items = await monitor.fetch_new_items()

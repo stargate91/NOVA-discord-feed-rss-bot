@@ -124,18 +124,38 @@ python main.py --mode=gateway
 
 ---
 
-## Installation & Setup
+## Installation & Deployment
 
-### Prerequisites
+### Quick Start with Docker & Docker Compose (Recommended)
 
-- Python 3.11 or higher
-- Node.js 20+ and npm
-- PostgreSQL 14+ database
-- Redis (Optional, required for distributed worker clusters)
+The easiest and most reliable way to run Nova in production with PostgreSQL and Redis:
+
+1. **Clone the repository and prepare environment configuration**:
+   ```bash
+   git clone https://github.com/stargate91/discord-feed-bot.git
+   cd discord-feed-bot
+   cp .env.example .env
+   # Edit .env with your BOT_TOKEN, WEBHOOK_SECRET, and API keys
+   ```
+
+2. **Start all services with Docker Compose**:
+   ```bash
+   docker compose up -d --build
+   ```
+   This starts:
+   - **PostgreSQL 16** (Database with persistent volume and healthcheck)
+   - **Redis 7** (Distributed queue & caching)
+   - **Nova Bot & API Server** (Multi-stage container with non-root security and `/health` probe)
+
+3. **Check container health & logs**:
+   ```bash
+   docker compose ps
+   docker compose logs -f bot
+   ```
 
 ---
 
-### Backend Setup
+### Manual Python Installation
 
 1. **Clone and create virtual environment**:
    ```bash
@@ -143,40 +163,24 @@ python main.py --mode=gateway
    cd discord-feed-bot
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
+   
+   # Install deterministic pinned dependencies:
+   pip install -r requirements.lock
    ```
 
 2. **Configure Environment Variables (`.env`)**:
-   ```ini
-   # Discord Bot
-   BOT_TOKEN=your_discord_bot_token_here
-
-   # Database
-   DATABASE_URL=postgresql://nova_user:nova_password@localhost:5432/nova_db
-
-   # Webhook & API Server
-   WEBHOOK_HOST=0.0.0.0
-   WEBHOOK_PORT=8080
-   WEBHOOK_SECRET=your_webhook_secret_key
-
-   # Message Queue (Optional: omit to use in-memory queue)
-   REDIS_URL=redis://localhost:6379/0
-
-   # Stripe Payments (Optional)
-   STRIPE_API_KEY=sk_test_...
-   STRIPE_WEBHOOK_SECRET=whsec_...
-
-   # Platform API Keys (Optional based on active monitors)
-   TWITCH_CLIENT_ID=...
-   TWITCH_CLIENT_SECRET=...
-   YOUTUBE_API_KEY=...
-   TMDB_API_KEY=...
-   GITHUB_TOKEN=...
+   ```bash
+   cp .env.example .env
    ```
 
-3. **Run Database Migrations**:
+3. **Run Database Migrations & Initial Setup**:
    ```bash
    alembic upgrade head
+   ```
+
+4. **Start Nova Bot**:
+   ```bash
+   python main.py --mode=all
    ```
 
 ---

@@ -5,6 +5,19 @@ from discord.ext import commands
 from discord import app_commands
 from logger import log
 from db import guild_repo, monitor_repo, bot_settings_repo
+from models import GuildSettings
+from core.monitor_manager import MonitorManager
+from core.monitor_factory import MonitorFactory
+from engine.cache import BoundedGuildSettingsCache
+from clients import http_client
+from services import (
+    LocalizationService,
+    EntitlementService,
+    PermissionService,
+    CryptoService,
+    DiscordDeliveryAdapter,
+    NotificationService
+)
 
 class FeedBot(commands.Bot):
     def __init__(self, config):
@@ -28,17 +41,9 @@ class FeedBot(commands.Bot):
         )
         self.config = config
         self.monitor_manager = None
-        self.guild_settings_cache = {}
+        self.guild_settings_cache = BoundedGuildSettingsCache(max_size=5000)
         
         # Domain Services
-        from services import (
-            LocalizationService,
-            EntitlementService,
-            PermissionService,
-            CryptoService,
-            DiscordDeliveryAdapter,
-            NotificationService
-        )
         self.i18n = LocalizationService(self)
         self.entitlements = EntitlementService(self, config)
         self.permissions = PermissionService(self, config)
@@ -46,11 +51,15 @@ class FeedBot(commands.Bot):
         self.delivery_adapter = DiscordDeliveryAdapter(self)
         self.notifications = NotificationService(self, self.delivery_adapter)
 
-    async def reload_guild_settings_cache(self):
-        """Reload all guild settings from DB into the local memory cache."""
+    async def reload_guild_settings_cache(self) -> bool:
+        """Reload all guild settings from DB into the bounded LRU cache."""
         try:
             settings_list = await guild_repo.get_all_guild_settings()
-            self.guild_settings_cache = {s.guild_id: s for s in settings_list if s.guild_id is not None}
+            cache = BoundedGuildSettingsCache(max_size=5000)
+            for s in settings_list:
+                if s.guild_id is not None:
+                    cache[s.guild_id] = s
+            self.guild_settings_cache = cache
             log.info(f"Guild settings cache reloaded. ({len(self.guild_settings_cache)} guilds)")
             return True
         except Exception as e:
@@ -64,12 +73,8 @@ class FeedBot(commands.Bot):
 
         # Load all guild settings into memory
         await self.reload_guild_settings_cache()
-
-        # Initialize Monitor Manager (Lazy import to avoid circular dependency)
-        from core.monitor_manager import MonitorManager
         
         # Load Global Settings from DB
-        # We override config values if they exist in the DB
         p_interval = await bot_settings_repo.get_bot_setting("presence_interval_seconds")
         if p_interval:
             self.config["presence_interval_seconds"] = int(p_interval)
@@ -90,12 +95,10 @@ class FeedBot(commands.Bot):
         # Start Crypto Service
         await self.crypto_service.start()
 
-
         # Load monitors from DB
-        from core.monitor_factory import create_monitor_instance
         db_monitors = await monitor_repo.get_all_monitors()
         for m_config in db_monitors:
-            monitor = create_monitor_instance(self, m_config)
+            monitor = MonitorFactory.create(self, m_config)
             if monitor:
                 self.monitor_manager.add_monitor(monitor)
             else:
@@ -106,7 +109,6 @@ class FeedBot(commands.Bot):
         
         # Override Tree Error Handler for Slash Commands
         self.tree.on_error = self.on_app_command_error
-
 
     async def load_all_extensions(self):
         """Locate and load all cogs from the cogs/ directory."""
@@ -120,7 +122,6 @@ class FeedBot(commands.Bot):
                     log.info(f"Loaded extension: {filename}")
                 except Exception as e:
                     log.error(f"Failed to load extension {filename}: {e}", exc_info=True)
-
 
     async def on_ready(self):
         log.info("--- FEED BOT ONLINE ---")
@@ -139,14 +140,15 @@ class FeedBot(commands.Bot):
                 await guild_repo.ensure_guild_active(guild.id)
                 # If a new row was inserted or if we just want to ensure cache is warm
                 if guild.id not in self.guild_settings_cache:
-                    self.guild_settings_cache[guild.id] = {
-                        "language": "hu",
-                        "admin_role_id": 0,
-                        "alert_templates": {},
-                        "premium_until": None,
-                        "tier": 0,
-                        "stripe_subscription_id": None
-                    }
+                    self.guild_settings_cache[guild.id] = GuildSettings(
+                        guild_id=guild.id,
+                        language="hu",
+                        admin_role_id=0,
+                        alert_templates={},
+                        premium_until=None,
+                        tier=0,
+                        stripe_subscription_id=None
+                    )
                     synced += 1
             except Exception as e:
                 log.error(f"Error syncing guild {guild.id}: {e}")
@@ -164,14 +166,15 @@ class FeedBot(commands.Bot):
             await guild_repo.ensure_guild_active(guild.id)
             # Update local cache with default settings
             if guild.id not in self.guild_settings_cache:
-                self.guild_settings_cache[guild.id] = {
-                    "language": "hu", # Default for new joins
-                    "admin_role_id": 0,
-                    "alert_templates": {},
-                    "premium_until": None,
-                    "tier": 0,
-                    "stripe_subscription_id": None
-                }
+                self.guild_settings_cache[guild.id] = GuildSettings(
+                    guild_id=guild.id,
+                    language="hu", # Default for new joins
+                    admin_role_id=0,
+                    alert_templates={},
+                    premium_until=None,
+                    tier=0,
+                    stripe_subscription_id=None
+                )
         except Exception as e:
             log.error(f"Error initializing guild settings for {guild.id}: {e}")
 
@@ -185,48 +188,43 @@ class FeedBot(commands.Bot):
         except Exception as e:
             log.error(f"Error marking guild {guild.id} as inactive: {e}")
 
-        # We keep the settings in DB for potential re-joins, but we could remove from cache
         if guild.id in self.guild_settings_cache:
             del self.guild_settings_cache[guild.id]
 
-    async def on_message(self, message):
-        """Process commands and filter logs."""
-        log.info(f"DEBUG: on_message triggered by {message.author}: {message.content[:50]}")
+    async def on_message(self, message: discord.Message):
+        """Process commands and enforce channel authorization constraints."""
         if message.author.bot:
             return
-        
-        prefix = self.command_prefix
-        suffix = self.config.get("command_suffix", "")
-        
-        if message.content.startswith(prefix):
-            # Handle Suffix (e.g., !sync_nova -> !sync)
-            if suffix:
-                parts = message.content.split(" ", 1)
-                command_part = parts[0]
-                if command_part.endswith(suffix):
-                    clean_command = command_part[:-len(suffix)]
-                    if len(parts) > 1:
-                        message.content = clean_command + " " + parts[1]
-                    else:
-                        message.content = clean_command
-                    log.info(f"Command cleaned: {command_part} -> {clean_command}")
 
+        prefix = self.command_prefix
+        if message.content.startswith(prefix):
             master_guilds = self.config.get("master_guilds", {})
-            
             if master_guilds and message.guild:
                 guild_id_str = str(message.guild.id)
                 if guild_id_str not in master_guilds:
                     log.info(f"Command ignored: Guild {guild_id_str} not in master_guilds list")
                     return
-                    
+
                 admin_channel_id = master_guilds.get(guild_id_str, 0)
                 if admin_channel_id != 0 and message.channel.id != admin_channel_id:
                     log.info(f"Command ignored: Channel {message.channel.id} is not the master admin channel ({admin_channel_id})")
                     return
-                
-                log.info(f"Processing admin command: {message.content} in #{message.channel.name}")
-        
+
         await self.process_commands(message)
+
+    async def process_commands(self, message: discord.Message):
+        """Process commands supporting configured suffix without mutating message.content."""
+        ctx = await self.get_context(message)
+        if ctx.command is None and ctx.invoked_with:
+            suffix = self.config.get("command_suffix", "")
+            if suffix and ctx.invoked_with.endswith(suffix):
+                real_name = ctx.invoked_with[:-len(suffix)]
+                cmd = self.get_command(real_name)
+                if cmd:
+                    ctx.command = cmd
+                    ctx.invoked_with = real_name
+
+        await self.invoke(ctx)
 
     # --- Domain Service Delegates (Backwards-compatibility & convenience) ---
 
@@ -296,6 +294,7 @@ class FeedBot(commands.Bot):
         """Cleanup before shutdown."""
         if hasattr(self, 'crypto_service') and self.crypto_service:
             await self.crypto_service.stop()
-        from clients import http_client
         await http_client.close()
         await super().close()
+
+__all__ = ["FeedBot"]

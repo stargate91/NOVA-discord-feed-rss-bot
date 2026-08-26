@@ -51,20 +51,28 @@ class MonitorManager:
         self.monitors.append(monitor_instance)
         log.info(f"Added monitor: {monitor_instance.name} ({monitor_instance.platform}) | Enabled: {monitor_instance.enabled}")
 
+    def get_monitor_by_id(self, monitor_id: int):
+        """Find an active monitor by its unique integer ID."""
+        return next((m for m in self.monitors if getattr(m, 'id', None) == monitor_id), None)
+
     async def sync_with_db(self, is_startup=False) -> bool:
-        """Reload all monitors and guild settings from database."""
+        """
+        Hot-reload all active monitors and guild settings from PostgreSQL into memory.
+        Preserves live runtime states (streamer live status, first-run flags) and dynamically
+        updates channel bindings without disconnecting or dropping background loops.
+        """
         log.info("Synchronizing monitors and guild settings with database...")
         await self.bot.reload_guild_settings_cache()
-        from core.monitor_factory import create_monitor_instance
+        from core.monitor_factory import MonitorFactory
 
         try:
-            # Track old assignments to detect new ones
+            # 1. Snapshot previous channel assignments to detect newly added channels
             old_assignments = {}
             if self.monitors:
                 for m in self.monitors:
                     old_assignments[m.id] = set(m.target_channels)
 
-            # Capture states of existing monitors to preserve them across sync
+            # 2. Snapshot runtime states of active monitors to avoid re-triggering initial alerts
             old_states = {}
             for m in self.monitors:
                 state = {}
@@ -75,6 +83,7 @@ class MonitorManager:
                 if state:
                     old_states[m.id] = state
 
+            # 3. Fetch latest monitor configurations from database
             db_monitors = await monitor_repo.get_all_monitors()
             new_monitors = []
             for m_config in db_monitors:
@@ -87,10 +96,11 @@ class MonitorManager:
                         extra = {}
 
                 full_config = {**m_config, **extra}
-                monitor = create_monitor_instance(self.bot, full_config)
+                monitor = MonitorFactory.create(self.bot, full_config)
                 if monitor:
                     monitor.is_silent_start = is_startup or not monitor.send_initial_alert
 
+                    # 4. Restore preserved states from pre-sync snapshot
                     if monitor.id in old_states:
                         state = old_states[monitor.id]
                         if 'is_live' in state:
@@ -101,7 +111,7 @@ class MonitorManager:
 
                     new_monitors.append(monitor)
 
-            # Announce new assignments if not startup
+            # 5. Localized welcome announcement for newly assigned channels
             if not is_startup:
                 for m in new_monitors:
                     if not m.enabled:
@@ -113,10 +123,8 @@ class MonitorManager:
                     for ch_id in added_chans:
                         asyncio.create_task(self.announce_monitor(m, ch_id))
 
-            # Atomic update of the monitor list
+            # 6. Atomic swap of the monitor list and reset scheduler caches
             self.monitors = new_monitors
-
-            # Reset scheduler timers to ensure freshness
             self.scheduler.group_last_checked.clear()
             self.scheduler.unshared_last_checked.clear()
 

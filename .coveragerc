@@ -1,0 +1,26 @@
+[run]
+branch = True
+source = .
+omit =
+    tests/*
+    migrations/*
+    web/*
+    scratch/*
+    .venv/*
+    venv/*
+
+[report]
+show_missing = True
+skip_covered = False
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self\.debug:
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    pass
+
+[html]
+directory = coverage_html_report

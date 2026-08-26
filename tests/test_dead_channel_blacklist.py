@@ -1,10 +1,12 @@
 import unittest
 import time
-from core.base_monitor import (
+from services.discord_delivery_adapter import (
     is_channel_dead,
     mark_channel_dead,
     get_dead_channel_count,
-    _DEAD_CHANNELS
+    cleanup_dead_channels,
+    _DEAD_CHANNELS,
+    MAX_DEAD_CHANNELS
 )
 
 class TestDeadChannelBlacklist(unittest.TestCase):
@@ -30,6 +32,18 @@ class TestDeadChannelBlacklist(unittest.TestCase):
         # Should now be expired and removed
         self.assertFalse(is_channel_dead(654321))
         self.assertEqual(get_dead_channel_count(), 0)
+
+    def test_cleanup_dead_channels_eviction(self):
+        """Verify explicit cleanup_dead_channels evicts all expired channels."""
+        mark_channel_dead(111, ttl=1)
+        mark_channel_dead(222, ttl=1)
+        mark_channel_dead(333, ttl=100)
+
+        time.sleep(1.1)
+        evicted = cleanup_dead_channels()
+        self.assertEqual(evicted, 2)
+        self.assertEqual(len(_DEAD_CHANNELS), 1)
+        self.assertIn(333, _DEAD_CHANNELS)
 
     def test_invalid_channel_id_handling(self):
         """Verify that None/0 channel IDs are handled safely."""

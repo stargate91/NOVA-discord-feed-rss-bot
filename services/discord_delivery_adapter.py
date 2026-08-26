@@ -8,6 +8,15 @@ from services.delivery_adapter import BaseDeliveryAdapter
 # In-memory blacklist for deleted/inaccessible Discord channels
 _DEAD_CHANNELS: dict[int, float] = {}
 DEAD_CHANNEL_TTL: float = 3600.0  # 1 hour
+MAX_DEAD_CHANNELS: int = 5000     # Maximum blacklist capacity to prevent memory leaks
+
+def cleanup_dead_channels() -> int:
+    """Evict all expired channels from the dead channel blacklist."""
+    now = time.time()
+    expired = [ch_id for ch_id, exp in _DEAD_CHANNELS.items() if now >= exp]
+    for ch_id in expired:
+        _DEAD_CHANNELS.pop(ch_id, None)
+    return len(expired)
 
 def is_channel_dead(channel_id: int) -> bool:
     """Check if a channel ID is marked as deleted/dead within TTL."""
@@ -18,14 +27,26 @@ def is_channel_dead(channel_id: int) -> bool:
         return False
     if time.time() < exp:
         return True
-    # Expired from blacklist
-    del _DEAD_CHANNELS[channel_id]
+    # Expired from blacklist - evict immediately
+    _DEAD_CHANNELS.pop(channel_id, None)
     return False
 
 def mark_channel_dead(channel_id: int, ttl: float = DEAD_CHANNEL_TTL):
-    """Mark a channel ID as dead for a specific TTL duration."""
-    if channel_id:
-        _DEAD_CHANNELS[channel_id] = time.time() + ttl
+    """Mark a channel ID as dead for a specific TTL duration, enforcing bounded capacity."""
+    if not channel_id:
+        return
+
+    # Enforce max capacity
+    if len(_DEAD_CHANNELS) >= MAX_DEAD_CHANNELS and channel_id not in _DEAD_CHANNELS:
+        cleanup_dead_channels()
+        if len(_DEAD_CHANNELS) >= MAX_DEAD_CHANNELS:
+            # Still full: evict earliest 10% expiring entries
+            sorted_by_exp = sorted(_DEAD_CHANNELS.items(), key=lambda item: item[1])
+            evict_count = max(1, len(sorted_by_exp) // 10)
+            for ch, _ in sorted_by_exp[:evict_count]:
+                _DEAD_CHANNELS.pop(ch, None)
+
+    _DEAD_CHANNELS[channel_id] = time.time() + ttl
 
 def get_dead_channel_count() -> int:
     """Return count of active dead channels."""

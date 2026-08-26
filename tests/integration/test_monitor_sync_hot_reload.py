@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import MagicMock, AsyncMock, patch
 from core.monitor_manager import MonitorManager
@@ -8,6 +9,7 @@ from core.webhook_server import app, setup_webhook_bot
 
 class TestMonitorSyncHotReloadIntegration(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
+        os.environ["WEBHOOK_SECRET"] = "test_secret"
         self.bot = MagicMock()
         self.bot.config = {"webhook_secret": "test_secret"}
         self.bot.has_feature.return_value = True
@@ -20,6 +22,9 @@ class TestMonitorSyncHotReloadIntegration(unittest.IsolatedAsyncioTestCase):
 
         setup_webhook_bot(self.bot)
         self.client = TestClient(app)
+
+    def tearDown(self):
+        os.environ.pop("WEBHOOK_SECRET", None)
 
     async def test_hot_reload_sync_and_state_preservation(self):
         """Test hot-reloading monitors from DB preserves live states and re-indexes scheduler without dropping connections."""
@@ -69,7 +74,8 @@ class TestMonitorSyncHotReloadIntegration(unittest.IsolatedAsyncioTestCase):
             mock_get_all.return_value = updated_db_monitors
 
             # 3. Web Dashboard triggers /monitors/sync endpoint
-            resp = self.client.post("/monitors/sync")
+            headers = {"X-Webhook-Secret": "test_secret"}
+            resp = self.client.post("/monitors/sync", headers=headers)
             self.assertEqual(resp.status_code, 200)
 
             # 4. Verify MonitorManager synchronized

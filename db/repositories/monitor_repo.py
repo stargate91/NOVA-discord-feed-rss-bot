@@ -4,87 +4,47 @@ from logger import log
 from db.connection import get_pool, _fetch, _fetchrow, _execute
 from models import MonitorConfig
 
+def _parse_monitor_row(row) -> MonitorConfig:
+    """Helper to parse a database row tuple into a validated MonitorConfig domain model."""
+    m = {
+        "id": row[0],
+        "guild_id": row[1],
+        "type": row[2],
+        "name": row[3],
+        "discord_channel_id": row[4],
+        "ping_role_id": row[5],
+        "enabled": bool(row[6]),
+        "last_post_at": row[8]
+    }
+    if row[7]:
+        try:
+            extra = json.loads(row[7])
+            if "extra_settings" in extra and isinstance(extra["extra_settings"], dict):
+                nested = extra.pop("extra_settings")
+                extra.update(nested)
+            m.update(extra)
+        except Exception as e:
+            log.warning(f"[MonitorRepo] Failed to parse extra_settings JSON for monitor {m['id']}: {e}")
+
+    if "target_channels" not in m or not m["target_channels"]:
+        m["target_channels"] = [m["discord_channel_id"]] if m["discord_channel_id"] else []
+
+    if "target_roles" not in m or not m["target_roles"]:
+        m["target_roles"] = [m["ping_role_id"]] if m["ping_role_id"] else []
+
+    return MonitorConfig(**m)
+
 async def get_all_monitors() -> list[MonitorConfig]:
-    """Fetch all monitors from database and format extra settings."""
+    """Fetch all monitors from database."""
     q = "SELECT id, guild_id, type, name, discord_channel_id, ping_role_id, enabled, extra_settings, last_post_at FROM monitors"
     rows = await _fetch(q)
-    monitors = []
-    for row in rows:
-        m = {
-            "id": row[0],
-            "guild_id": row[1],
-            "type": row[2],
-            "name": row[3],
-            "discord_channel_id": row[4],
-            "ping_role_id": row[5],
-            "enabled": bool(row[6]),
-            "last_post_at": row[8]
-        }
-        if row[7]:
-            try:
-                extra = json.loads(row[7])
-                if "extra_settings" in extra and isinstance(extra["extra_settings"], dict):
-                    nested = extra.pop("extra_settings")
-                    extra.update(nested)
-                m.update(extra)
-            except Exception as e:
-                log.warning(f"[MonitorRepo] Failed to parse extra_settings JSON for monitor {m['id']}: {e}")
-
-        if "target_channels" not in m or not m["target_channels"]:
-            if m["discord_channel_id"]:
-                m["target_channels"] = [m["discord_channel_id"]]
-            else:
-                m["target_channels"] = []
-
-        if "target_roles" not in m or not m["target_roles"]:
-            if m["ping_role_id"]:
-                m["target_roles"] = [m["ping_role_id"]]
-            else:
-                m["target_roles"] = []
-
-        monitors.append(MonitorConfig(**m))
-    return monitors
+    return [_parse_monitor_row(row) for row in rows]
 
 async def get_monitors_for_guild(guild_id: int) -> list[MonitorConfig]:
     """Fetch all monitors for a specific guild."""
-    q = "SELECT id, type, name, discord_channel_id, ping_role_id, enabled, extra_settings, last_post_at FROM monitors WHERE guild_id = $1"
+    q = "SELECT id, guild_id, type, name, discord_channel_id, ping_role_id, enabled, extra_settings, last_post_at FROM monitors WHERE guild_id = $1"
     rows = await _fetch(q, guild_id)
-    monitors = []
-    for row in rows:
-        m = {
-            "id": row[0],
-            "guild_id": guild_id,
-            "type": row[1],
-            "name": row[2],
-            "discord_channel_id": row[3],
-            "ping_role_id": row[4],
-            "enabled": bool(row[5]),
-            "last_post_at": row[7]
-        }
-        if row[6]:
-            try:
-                extra = json.loads(row[6])
-                if "extra_settings" in extra and isinstance(extra["extra_settings"], dict):
-                    nested = extra.pop("extra_settings")
-                    extra.update(nested)
-                m.update(extra)
-            except Exception as e:
-                log.warning(f"[MonitorRepo] Failed to parse extra_settings JSON for monitor {m['id']}: {e}")
-
-        if "target_channels" not in m or not m["target_channels"]:
-            if m["discord_channel_id"]:
-                m["target_channels"] = [m["discord_channel_id"]]
-            else:
-                m["target_channels"] = []
-
-        if "target_roles" not in m or not m["target_roles"]:
-            if m["ping_role_id"]:
-                m["target_roles"] = [m["ping_role_id"]]
-            else:
-                m["target_roles"] = []
-
-        monitors.append(MonitorConfig(**m))
-    return monitors
+    return [_parse_monitor_row(row) for row in rows]
 
 async def update_last_post_at(monitor_id: int):
     """Update the last_post_at timestamp for a monitor."""
@@ -223,16 +183,49 @@ async def increment_post_stat(guild_id: int, platform: str):
     """
     await _execute(q, now_date, guild_id, platform)
 
+# Explicit whitelist of tables permitted for factory reset
+ALLOWED_RESET_TABLES = (
+    "published_entries_v2",
+    "monitors",
+    "guild_settings",
+    "premium_codes",
+    "announcements",
+    "bot_statuses",
+    "monitor_stats_daily",
+    "youtube_cache",
+    "steam_cache",
+)
+
 async def factory_reset_tables():
-    """Truncate all data tables for a clean slate."""
-    tables = [
-        "published_entries_v2",
-        "monitors",
-        "guild_settings",
-        "premium_codes",
-        "announcements",
-        "bot_statuses",
-        "monitor_stats_daily"
-    ]
-    for table in tables:
-        await _execute(f"TRUNCATE TABLE {table} CASCADE")
+    """Truncate all data tables for a clean slate using static SQL."""
+    q = """
+        TRUNCATE TABLE 
+            published_entries_v2, 
+            monitors, 
+            guild_settings, 
+            premium_codes, 
+            announcements, 
+            bot_statuses, 
+            monitor_stats_daily,
+            youtube_cache,
+            steam_cache
+        CASCADE
+    """
+    await _execute(q)
+
+__all__ = [
+    "get_all_monitors",
+    "get_monitors_for_guild",
+    "update_last_post_at",
+    "update_monitor_name",
+    "update_monitor_channel_id",
+    "is_published",
+    "get_published_ids_bulk",
+    "mark_as_published",
+    "mark_as_published_bulk",
+    "reset_history",
+    "reset_all_history",
+    "cleanup_old_history",
+    "increment_post_stat",
+    "factory_reset_tables",
+]

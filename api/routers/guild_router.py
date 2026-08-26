@@ -1,16 +1,22 @@
-from fastapi import APIRouter, Depends
-from api.dependencies import get_bot, verify_webhook_secret
+from fastapi import APIRouter, Depends, Path
+from api.dependencies import get_bot, verify_webhook_secret, rate_limit
+from models.api import GuildPermissionsResponse
 
 router = APIRouter(tags=["Guilds"])
 
-@router.get("/guilds/{guild_id}/permissions/{user_id}")
+@router.get(
+    "/guilds/{guild_id}/permissions/{user_id}",
+    response_model=GuildPermissionsResponse,
+    summary="Get user permissions & guild tier",
+    description="Retrieve user administrative permissions, current guild tier, and enabled feature flags for web dashboard access."
+)
 async def get_permissions(
-    guild_id: int,
-    user_id: int,
+    guild_id: int = Path(..., description="Discord Guild ID"),
+    user_id: int = Path(..., description="Discord User ID"),
     bot = Depends(get_bot),
-    authorized: bool = Depends(verify_webhook_secret)
+    authorized: bool = Depends(verify_webhook_secret),
+    _rate_limited: bool = Depends(rate_limit),
 ):
-    """Retrieve user administrative permissions and guild tier info for dashboard."""
     guild = bot.get_guild(guild_id)
 
     # 1. Base Tier Info (from DB / cache)
@@ -38,11 +44,11 @@ async def get_permissions(
         if member:
             is_admin = bot.is_bot_admin(member)
 
-    return {
-        "is_admin": is_admin,
-        "tier": tier,
-        "tier_name": tier_info.get("name", "Unknown"),
-        "features": tier_info.get("features", []),
-        "limits": tier_info,
-        "bot_in_guild": bot_in_guild
-    }
+    return GuildPermissionsResponse(
+        is_admin=is_admin,
+        tier=tier,
+        tier_name=tier_info.get("name", "Unknown"),
+        features=tier_info.get("features", []),
+        limits=tier_info,
+        bot_in_guild=bot_in_guild
+    )

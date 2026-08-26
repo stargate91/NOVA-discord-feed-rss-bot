@@ -100,23 +100,21 @@ class RingBufferLogHandler(logging.Handler):
         self.lock = threading.RLock()
 
     def emit(self, record: logging.LogRecord):
-        entry = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "level": record.levelname,
-            "message": record.getMessage(),
-            "logger": record.name,
-            "guild_id": getattr(record, "guild_id", None),
-            "monitor_id": getattr(record, "monitor_id", None),
-            "platform": getattr(record, "platform", None),
-            "channel_id": getattr(record, "channel_id", None),
-            "latency_ms": getattr(record, "latency_ms", None),
-            "event": getattr(record, "event", None),
-        }
-        if record.exc_info:
-            entry["exception"] = self.format(record) if self.formatter else str(record.exc_info[1])
-
-        with self.lock:
-            self.buffer.append(entry)
+        try:
+            entry = {
+                "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                "level": record.levelname,
+                "logger": record.name,
+                "message": record.getMessage(),
+                "guild_id": getattr(record, "guild_id", None),
+                "platform": getattr(record, "platform", None),
+                "monitor_id": getattr(record, "monitor_id", None),
+                "latency_ms": getattr(record, "latency_ms", None),
+            }
+            with self.lock:
+                self.buffer.append(entry)
+        except Exception:
+            self.handleError(record)
 
     def get_logs(
         self,
@@ -126,48 +124,42 @@ class RingBufferLogHandler(logging.Handler):
         platform: str | None = None,
         search: str | None = None
     ) -> list[dict]:
-        """Retrieve and filter structured logs from the in-memory ring buffer."""
+        """Query and filter log entries from the ring buffer."""
         with self.lock:
-            logs = list(self.buffer)
+            entries = list(self.buffer)
 
-        # Reverse to get newest first
-        logs.reverse()
-
-        filtered = []
-        search_lower = search.lower() if search else None
-        level_upper = level.upper() if level else None
-
-        for item in logs:
-            if level_upper and item["level"] != level_upper:
+        results = []
+        for entry in reversed(entries):
+            if level and entry["level"].upper() != level.upper():
                 continue
-            if guild_id is not None and item.get("guild_id") != guild_id:
+            if guild_id and entry.get("guild_id") != guild_id:
                 continue
-            if platform and str(item.get("platform", "")).lower() != platform.lower():
+            if platform and entry.get("platform") != platform:
                 continue
-            if search_lower and search_lower not in item["message"].lower():
+            if search and search.lower() not in entry["message"].lower():
                 continue
 
-            filtered.append(item)
-            if len(filtered) >= limit:
+            results.append(entry)
+            if len(results) >= limit:
                 break
 
-        return filtered
+        return results
 
     def clear(self):
         with self.lock:
             self.buffer.clear()
 
-# Global logger & handlers
+
+# Initialize Global Logger and Shared Handlers
 log = logging.getLogger("FeedBot")
 log.setLevel(logging.INFO)
+_log_listener: QueueListener | None = None
 _ring_buffer_handler = RingBufferLogHandler(capacity=1000)
 _context_filter = ContextFilter()
 
-# Attach in-memory ring buffer and context filter immediately
+# Attach direct ring buffer handler and context filter immediately
 log.addHandler(_ring_buffer_handler)
 log.addFilter(_context_filter)
-
-_log_listener: QueueListener | None = None
 
 def get_recent_logs(
     limit: int = 100,
@@ -176,7 +168,7 @@ def get_recent_logs(
     platform: str | None = None,
     search: str | None = None
 ) -> list[dict]:
-    """Public helper for Dev Panel to retrieve recent structured logs."""
+    """Retrieve filtered log records from the in-memory Ring Buffer for the Web UI/Dev Panel."""
     return _ring_buffer_handler.get_logs(
         limit=limit,
         level=level,
@@ -185,15 +177,52 @@ def get_recent_logs(
         search=search
     )
 
+def init_sentry(dsn: str | None = None, environment: str | None = None) -> bool:
+    """
+    Initialize Sentry SDK for centralized error monitoring and alerting.
+    Safely no-ops if sentry_sdk is uninstalled or DSN is omitted.
+    """
+    sentry_dsn = dsn or os.getenv("SENTRY_DSN")
+    if not sentry_dsn:
+        return False
+
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.logging import LoggingIntegration
+
+        sentry_logging = LoggingIntegration(
+            level=logging.INFO,        # Capture info and above as breadcrumbs
+            event_level=logging.ERROR   # Send errors and criticals as Sentry events
+        )
+
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            environment=environment or os.getenv("ENVIRONMENT", "production"),
+            integrations=[sentry_logging],
+            traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1")),
+            send_default_pii=False,
+        )
+        log.info("[Sentry] Centralized error tracking initialized.")
+        return True
+    except ImportError:
+        log.warning("[Sentry] sentry-sdk package not installed. Sentry telemetry disabled.")
+        return False
+    except Exception as e:
+        log.error(f"[Sentry] Failed to initialize Sentry SDK: {e}")
+        return False
+
 def setup_logging(level_name: str = "INFO"):
     """
     Initialize non-blocking asynchronous logging with QueueHandler and background QueueListener.
-    Underlying destinations: Console, Rotating Text Log, and Structured JSON Lines Log.
+    Underlying destinations: Console, Rotating Text Log, Structured JSON Lines Log, and Sentry.
     The in-memory Ring Buffer remains directly attached to the logger for immediate Dev Panel queries.
     """
     global _log_listener, _ring_buffer_handler, _context_filter
     level = getattr(logging, level_name.upper(), logging.INFO)
     log.setLevel(level)
+
+    # Initialize Sentry error aggregation if configured
+    init_sentry()
 
     # Clean existing file/console handlers if re-initializing
     log.handlers = [_ring_buffer_handler]
@@ -257,3 +286,15 @@ def stop_logging():
         except Exception:
             pass
         _log_listener = None
+
+__all__ = [
+    "log",
+    "log_context",
+    "setup_logging",
+    "stop_logging",
+    "get_recent_logs",
+    "init_sentry",
+    "ColoredFormatter",
+    "JSONFormatter",
+    "RingBufferLogHandler",
+]

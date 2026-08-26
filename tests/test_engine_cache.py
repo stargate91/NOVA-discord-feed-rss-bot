@@ -1,6 +1,7 @@
 import unittest
 import time
-from engine.cache import SharedDataCache
+from engine.cache import SharedDataCache, BoundedGuildSettingsCache
+from models.guild import GuildSettings
 
 class TestSharedDataCache(unittest.TestCase):
     def setUp(self):
@@ -68,6 +69,32 @@ class TestSharedDataCache(unittest.TestCase):
         self.cache.clear()
         self.assertEqual(self.cache.size(), 0)
         self.assertEqual(len(self.cache.tmdb_genres_cache), 0)
+
+    def test_bounded_guild_settings_cache_lru(self):
+        """Verify BoundedGuildSettingsCache bounded size and LRU eviction."""
+        gcache = BoundedGuildSettingsCache(max_size=3)
+        g1 = GuildSettings(guild_id=1, language="en")
+        g2 = GuildSettings(guild_id=2, language="hu")
+        g3 = GuildSettings(guild_id=3, language="de")
+        g4 = GuildSettings(guild_id=4, language="fr")
+
+        gcache[1] = g1
+        gcache[2] = g2
+        gcache[3] = g3
+
+        self.assertEqual(len(gcache), 3)
+        self.assertEqual(gcache.get(1).language, "en")
+
+        # Access g1 to make it most recently used (g2 becomes LRU)
+        _ = gcache[1]
+
+        # Add 4th item -> should evict g2 (the LRU)
+        gcache[4] = g4
+        self.assertEqual(len(gcache), 3)
+        self.assertIn(1, gcache)
+        self.assertNotIn(2, gcache)
+        self.assertIn(3, gcache)
+        self.assertIn(4, gcache)
 
 if __name__ == "__main__":
     unittest.main()
