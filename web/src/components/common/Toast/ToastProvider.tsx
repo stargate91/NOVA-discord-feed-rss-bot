@@ -16,27 +16,42 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const show = useCallback((type: ToastType, message: string, title?: string, duration?: number) => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    const newToast: ToastItemType = { id, type, message, title, duration };
-    setToasts((prev) => [...prev.slice(-4), newToast]); // Keep max 5 visible
-  }, []);
+  const show = useCallback(
+    (type: ToastType, message: string, title?: string, duration?: number) => {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const newToast: ToastItemType = { id, type, message, title, duration };
+      setToasts((prev) => [...prev.slice(-4), newToast]); // Keep max 5 visible
+    },
+    []
+  );
 
-  const success = useCallback((message: string, title?: string, duration?: number) => {
-    show('success', message, title, duration);
-  }, [show]);
+  const success = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      show('success', message, title, duration);
+    },
+    [show]
+  );
 
-  const error = useCallback((message: string, title?: string, duration?: number) => {
-    show('error', message, title, duration);
-  }, [show]);
+  const error = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      show('error', message, title, duration);
+    },
+    [show]
+  );
 
-  const warning = useCallback((message: string, title?: string, duration?: number) => {
-    show('warning', message, title, duration);
-  }, [show]);
+  const warning = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      show('warning', message, title, duration);
+    },
+    [show]
+  );
 
-  const info = useCallback((message: string, title?: string, duration?: number) => {
-    show('info', message, title, duration);
-  }, [show]);
+  const info = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      show('info', message, title, duration);
+    },
+    [show]
+  );
 
   const value: ToastContextValue = useMemo(
     () => ({

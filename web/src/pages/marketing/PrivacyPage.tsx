@@ -9,10 +9,7 @@ export const PrivacyPage: React.FC = () => {
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO
-        title={t('legal.privacyTitle')}
-        description={t('legal.privacySubtitle')}
-      />
+      <SEO title={t('legal.privacyTitle')} description={t('legal.privacySubtitle')} />
 
       <Stack gap="5xl">
         <Stack align="center" gap="md">
@@ -41,9 +38,15 @@ export const PrivacyPage: React.FC = () => {
               <Stack gap="md">
                 <Text color="secondary">{t('legal.privacySection1Desc')}</Text>
                 <Stack as="ul" gap="xs">
-                  <Text as="li" size="sm" weight="semibold">• {t('legal.privacyGuildInfo')}</Text>
-                  <Text as="li" size="sm" weight="semibold">• {t('legal.privacyFeedInfo')}</Text>
-                  <Text as="li" size="sm" weight="semibold">• {t('legal.privacyMetadataInfo')}</Text>
+                  <Text as="li" size="sm" weight="semibold">
+                    • {t('legal.privacyGuildInfo')}
+                  </Text>
+                  <Text as="li" size="sm" weight="semibold">
+                    • {t('legal.privacyFeedInfo')}
+                  </Text>
+                  <Text as="li" size="sm" weight="semibold">
+                    • {t('legal.privacyMetadataInfo')}
+                  </Text>
                 </Stack>
               </Stack>
             </Card.Body>
@@ -71,4 +74,3 @@ export const PrivacyPage: React.FC = () => {
     </Container>
   );
 };
-

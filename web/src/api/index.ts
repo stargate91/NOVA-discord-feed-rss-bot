@@ -2,3 +2,5 @@ export * from './types';
 export * from './client';
 export * from './queryCache';
 export * from './useApiQuery';
+export * from './useApiMutation';
+export * from './circuitBreaker';

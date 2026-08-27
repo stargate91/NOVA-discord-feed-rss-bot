@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
+import { DISCORD_SUPPORT_SERVER_URL } from '../../constants';
 import { Container, Grid, Stack, Inline, Text } from '../../ui';
 import styles from './Footer.module.css';
 
@@ -24,7 +25,9 @@ export const Footer: React.FC = () => {
             <Stack gap="md">
               <Inline align="center" gap="md">
                 <img src="/images/logo.webp" alt="Nova Logo" className={styles.logo} />
-                <Text size="lg" weight="bold">{t('common.brandName')}</Text>
+                <Text size="lg" weight="bold">
+                  {t('common.brandName')}
+                </Text>
               </Inline>
               <Text size="sm" color="secondary" className={styles.desc}>
                 {t('home.heroDescription')}
@@ -37,11 +40,31 @@ export const Footer: React.FC = () => {
                 {t('common.footerResources')}
               </Text>
               <Stack as="ul" gap="xs" className={styles.linkList}>
-                <li><Link to={getLangPath('/docs')} className={styles.linkBtn}>{t('common.navDocs')}</Link></li>
-                <li><Link to={getLangPath('/premium')} className={styles.linkBtn}>{t('common.navPremium')}</Link></li>
-                <li><Link to={getLangPath('/changelog')} className={styles.linkBtn}>{t('common.navChangelog')}</Link></li>
-                <li><Link to={getLangPath('/support')} className={styles.linkBtn}>{t('common.navSupport')}</Link></li>
-                <li><Link to="/dev" className={styles.linkBtn}>{t('common.navDev')}</Link></li>
+                <li>
+                  <Link to={getLangPath('/docs')} className={styles.linkBtn}>
+                    {t('common.navDocs')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={getLangPath('/premium')} className={styles.linkBtn}>
+                    {t('common.navPremium')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={getLangPath('/changelog')} className={styles.linkBtn}>
+                    {t('common.navChangelog')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={getLangPath('/support')} className={styles.linkBtn}>
+                    {t('common.navSupport')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dev" className={styles.linkBtn}>
+                    {t('common.navDev')}
+                  </Link>
+                </li>
               </Stack>
             </Stack>
 
@@ -51,11 +74,19 @@ export const Footer: React.FC = () => {
                 {t('common.footerLegalSupport')}
               </Text>
               <Stack as="ul" gap="xs" className={styles.linkList}>
-                <li><Link to={getLangPath('/terms')} className={styles.linkBtn}>{t('legal.termsTitleHighlight')}</Link></li>
-                <li><Link to={getLangPath('/privacy')} className={styles.linkBtn}>{t('legal.privacyTitleHighlight')}</Link></li>
+                <li>
+                  <Link to={getLangPath('/terms')} className={styles.linkBtn}>
+                    {t('legal.termsTitleHighlight')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to={getLangPath('/privacy')} className={styles.linkBtn}>
+                    {t('legal.privacyTitleHighlight')}
+                  </Link>
+                </li>
                 <li>
                   <a
-                    href="https://discord.gg/PbvX3S7pXR"
+                    href={DISCORD_SUPPORT_SERVER_URL}
                     target="_blank"
                     rel="noreferrer"
                     className={styles.linkBtn}
@@ -70,12 +101,15 @@ export const Footer: React.FC = () => {
           <div className={styles.footerDivider} />
 
           <Inline justify="between" align="center" wrap gap="md">
-            <Text size="xs" color="muted">{t('common.copyright')}</Text>
-            <Text size="xs" color="muted">{t('common.version')}</Text>
+            <Text size="xs" color="muted">
+              {t('common.copyright')}
+            </Text>
+            <Text size="xs" color="muted">
+              {t('common.version')}
+            </Text>
           </Inline>
         </Stack>
       </Container>
     </footer>
   );
 };
-

@@ -1,4 +1,11 @@
-import type { HTMLAttributes, TableHTMLAttributes, TdHTMLAttributes, ThHTMLAttributes, ReactNode, MouseEvent } from 'react';
+import type {
+  HTMLAttributes,
+  TableHTMLAttributes,
+  TdHTMLAttributes,
+  ThHTMLAttributes,
+  ReactNode,
+  MouseEvent,
+} from 'react';
 import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Spinner } from '../Spinner/Spinner';
@@ -65,7 +72,12 @@ export const TableBody: React.FC<TableBodyProps> = ({ children, className = '', 
   </tbody>
 );
 
-export const TableRow: React.FC<TableRowProps> = ({ selected = false, children, className = '', ...rest }) => (
+export const TableRow: React.FC<TableRowProps> = ({
+  selected = false,
+  children,
+  className = '',
+  ...rest
+}) => (
   <tr className={`${styles.tr} ${selected ? styles.trSelected : ''} ${className}`} {...rest}>
     {children}
   </tr>
@@ -82,11 +94,12 @@ export const TableHead: React.FC<TableHeadProps> = ({
   onClick,
   ...rest
 }) => {
-  const alignClass = {
-    left: styles.alignLeft,
-    center: styles.alignCenter,
-    right: styles.alignRight,
-  }[align] || styles.alignLeft;
+  const alignClass =
+    {
+      left: styles.alignLeft,
+      center: styles.alignCenter,
+      right: styles.alignRight,
+    }[align] || styles.alignLeft;
 
   const handleClick = (e: MouseEvent<HTMLTableCellElement>) => {
     onClick?.(e);
@@ -120,7 +133,9 @@ export const TableHead: React.FC<TableHeadProps> = ({
     <th
       className={classes}
       onClick={handleClick}
-      aria-sort={sortDirection === 'asc' ? 'ascending' : sortDirection === 'desc' ? 'descending' : undefined}
+      aria-sort={
+        sortDirection === 'asc' ? 'ascending' : sortDirection === 'desc' ? 'descending' : undefined
+      }
       {...rest}
     >
       <div className={styles.thContent}>
@@ -138,18 +153,14 @@ export const TableCell: React.FC<TableCellProps> = ({
   className = '',
   ...rest
 }) => {
-  const alignClass = {
-    left: styles.alignLeft,
-    center: styles.alignCenter,
-    right: styles.alignRight,
-  }[align] || styles.alignLeft;
+  const alignClass =
+    {
+      left: styles.alignLeft,
+      center: styles.alignCenter,
+      right: styles.alignRight,
+    }[align] || styles.alignLeft;
 
-  const classes = [
-    styles.td,
-    alignClass,
-    checkbox ? styles.checkboxCell : '',
-    className,
-  ]
+  const classes = [styles.td, alignClass, checkbox ? styles.checkboxCell : '', className]
     .filter(Boolean)
     .join(' ');
 
@@ -180,18 +191,20 @@ export const Table = (({
   children,
   ...rest
 }) => {
-  const densityClass = {
-    compact: styles.compact,
-    normal: styles.normal,
-    spacious: styles.spacious,
-  }[density] || styles.normal;
+  const densityClass =
+    {
+      compact: styles.compact,
+      normal: styles.normal,
+      spacious: styles.spacious,
+    }[density] || styles.normal;
 
-  const variantClass = {
-    default: '',
-    striped: styles.striped,
-    bordered: styles.bordered,
-    glass: styles.glass,
-  }[variant] || '';
+  const variantClass =
+    {
+      default: '',
+      striped: styles.striped,
+      bordered: styles.bordered,
+      glass: styles.glass,
+    }[variant] || '';
 
   const tableClasses = [
     styles.table,
@@ -205,7 +218,9 @@ export const Table = (({
     .join(' ');
 
   return (
-    <div className={`${styles.container} ${styles.loadingContainer} ${variant === 'glass' ? styles.glass : ''} ${containerClassName}`}>
+    <div
+      className={`${styles.container} ${styles.loadingContainer} ${variant === 'glass' ? styles.glass : ''} ${containerClassName}`}
+    >
       {loading && (
         <div className={styles.loadingOverlay}>
           <Spinner size="md" />
@@ -214,9 +229,7 @@ export const Table = (({
       <table className={tableClasses} {...rest}>
         {children}
       </table>
-      {emptyState && !loading && (
-        <div className={styles.emptyState}>{emptyState}</div>
-      )}
+      {emptyState && !loading && <div className={styles.emptyState}>{emptyState}</div>}
     </div>
   );
 }) as TableCompound;
@@ -226,4 +239,3 @@ Table.Body = TableBody;
 Table.Row = TableRow;
 Table.Head = TableHead;
 Table.Cell = TableCell;
-

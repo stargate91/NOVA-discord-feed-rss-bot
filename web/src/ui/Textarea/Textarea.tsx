@@ -48,7 +48,8 @@ export const Textarea: React.FC<TextareaProps> = ({
   const currentValue = isControlled ? value : internalValue;
   const currentLength = String(currentValue ?? '').length;
 
-  const textareaId = id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const textareaId =
+    id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!isControlled) {
@@ -77,18 +78,20 @@ export const Textarea: React.FC<TextareaProps> = ({
     }
   };
 
-  const variantClass = {
-    default: styles.variantDefault,
-    filled: styles.variantFilled,
-    glass: styles.variantGlass,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      filled: styles.variantFilled,
+      glass: styles.variantGlass,
+    }[variant] || styles.variantDefault;
 
-  const resizeClass = {
-    none: styles.resizeNone,
-    vertical: styles.resizeVertical,
-    horizontal: styles.resizeHorizontal,
-    both: styles.resizeBoth,
-  }[resize] || styles.resizeVertical;
+  const resizeClass =
+    {
+      none: styles.resizeNone,
+      vertical: styles.resizeVertical,
+      horizontal: styles.resizeHorizontal,
+      both: styles.resizeBoth,
+    }[resize] || styles.resizeVertical;
 
   const wrapperClasses = [
     styles.controlWrapper,

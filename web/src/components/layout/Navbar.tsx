@@ -3,6 +3,7 @@ import { NavLink, Link, useParams } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import type { HealthStatus } from '../../types';
 import { useTranslation } from '../../i18n';
+import { ThemeToggle } from '../../theme';
 import { Badge, Button, Drawer, Stack } from '../../ui';
 import styles from './Navbar.module.css';
 
@@ -11,10 +12,7 @@ interface NavbarProps {
   loadingHealth: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  health,
-  loadingHealth,
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
   const { lang } = useParams<{ lang?: string }>();
   const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -81,12 +79,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Actions */}
         <div className={styles.actions}>
+          <ThemeToggle />
+
           {loadingHealth ? (
             <Badge variant="neutral">{t('common.checking')}</Badge>
           ) : isOnline ? (
-            <Badge variant="online" dot>{t('common.statusOnline')}</Badge>
+            <Badge variant="online" dot>
+              {t('common.statusOnline')}
+            </Badge>
           ) : (
-            <Badge variant="offline" dot>{t('common.statusOffline')}</Badge>
+            <Badge variant="offline" dot>
+              {t('common.statusOffline')}
+            </Badge>
           )}
 
           <Link to="/servers" onClick={closeMobileMenu}>
@@ -121,11 +125,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           </Link>
         }
         footer={
-          <Link to="/servers" onClick={closeMobileMenu} className={styles.dashboardLink}>
-            <Button variant="primary" size="lg" fullWidth>
-              {t('common.dashboard')}
-            </Button>
-          </Link>
+          <div className={styles.drawerFooter}>
+            <ThemeToggle />
+            <Link to="/servers" onClick={closeMobileMenu} className={styles.drawerDashboardLink}>
+              <Button variant="primary" size="lg" fullWidth>
+                {t('common.dashboard')}
+              </Button>
+            </Link>
+          </div>
         }
       >
         <Stack gap="xs">

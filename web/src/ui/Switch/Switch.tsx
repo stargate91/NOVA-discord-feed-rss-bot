@@ -6,7 +6,10 @@ import styles from './Switch.module.css';
 export type SwitchSize = 'sm' | 'md' | 'lg';
 export type SwitchColor = 'primary' | 'success' | 'danger';
 
-export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'> {
+export interface SwitchProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'size' | 'onChange'
+> {
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;
@@ -51,23 +54,26 @@ export const Switch: React.FC<SwitchProps> = ({
     onChange?.(nextChecked);
   };
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const colorClass = {
-    primary: '',
-    success: styles.colorSuccess,
-    danger: styles.colorDanger,
-  }[color] || '';
+  const colorClass =
+    {
+      primary: '',
+      success: styles.colorSuccess,
+      danger: styles.colorDanger,
+    }[color] || '';
 
-  const spinnerSize = {
-    sm: 8,
-    md: 10,
-    lg: 12,
-  }[size] || 10;
+  const spinnerSize =
+    {
+      sm: 8,
+      md: 10,
+      lg: 12,
+    }[size] || 10;
 
   const content = children ?? (
     <div className={styles.content}>

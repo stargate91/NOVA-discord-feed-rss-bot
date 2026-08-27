@@ -2,6 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import styles from './Drawer.module.css';
 
 export type DrawerPosition = 'left' | 'right' | 'top' | 'bottom';
@@ -41,6 +42,8 @@ export const Drawer: React.FC<DrawerProps> = ({
   id,
   ...rest
 }) => {
+  const drawerRef = useFocusTrap<HTMLDivElement>(open);
+
   useEffect(() => {
     if (!open) return;
 
@@ -62,20 +65,22 @@ export const Drawer: React.FC<DrawerProps> = ({
 
   if (!open) return null;
 
-  const positionClass = {
-    right: styles.posRight,
-    left: styles.posLeft,
-    top: styles.posTop,
-    bottom: styles.posBottom,
-  }[position] || styles.posRight;
+  const positionClass =
+    {
+      right: styles.posRight,
+      left: styles.posLeft,
+      top: styles.posTop,
+      bottom: styles.posBottom,
+    }[position] || styles.posRight;
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-    xl: styles.sizeXl,
-    full: styles.sizeFull,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
+      full: styles.sizeFull,
+    }[size] || styles.sizeMd;
 
   return createPortal(
     <>
@@ -85,6 +90,7 @@ export const Drawer: React.FC<DrawerProps> = ({
         aria-hidden="true"
       />
       <div
+        ref={drawerRef}
         id={id}
         role="dialog"
         aria-modal="true"
@@ -94,20 +100,14 @@ export const Drawer: React.FC<DrawerProps> = ({
         {(title || description || showCloseButton || headerActions) && (
           <div className={styles.header}>
             <div className={styles.titleArea}>
-              {title && (
-                typeof title === 'string' ? (
-                  <h3 className={styles.title}>{title}</h3>
-                ) : (
-                  title
-                )
-              )}
-              {description && (
-                typeof description === 'string' ? (
+              {title &&
+                (typeof title === 'string' ? <h3 className={styles.title}>{title}</h3> : title)}
+              {description &&
+                (typeof description === 'string' ? (
                   <p className={styles.description}>{description}</p>
                 ) : (
                   description
-                )
-              )}
+                ))}
             </div>
 
             <div className={styles.headerActions}>

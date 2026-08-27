@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import type { HealthStatus } from '../../types';
+import { useTranslation } from '../../i18n';
 import { ErrorBoundary } from '../common/ErrorBoundary';
 import { Container, Drawer } from '../../ui';
 import { DashboardSidebar } from './DashboardSidebar';
@@ -12,14 +13,16 @@ interface DashboardLayoutProps {
   loadingHealth: boolean;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  health,
-  loadingHealth,
-}) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ health, loadingHealth }) => {
+  const { t } = useTranslation();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   return (
     <div className={styles.layout}>
+      <a href="#dashboard-main-content" className="skipToContent">
+        {t('common.skipToContent')}
+      </a>
+
       {/* Desktop Persistent Sidebar */}
       <DashboardSidebar className={styles.desktopSidebar} />
 
@@ -42,7 +45,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           loadingHealth={loadingHealth}
           onMobileMenuClick={() => setIsMobileSidebarOpen(true)}
         />
-        <main className={styles.bodyContainer}>
+        <main id="dashboard-main-content" className={styles.bodyContainer} tabIndex={-1}>
           <Container maxWidth="xl" padding="lg">
             <ErrorBoundary name="Guild Dashboard">
               <Outlet />
@@ -53,4 +56,3 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     </div>
   );
 };
-

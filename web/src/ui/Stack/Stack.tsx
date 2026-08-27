@@ -4,18 +4,7 @@ import styles from './Stack.module.css';
 
 export type StackDirection = 'column' | 'row' | 'column-reverse' | 'row-reverse';
 export type StackGap =
-  | 'none'
-  | '3xs'
-  | '2xs'
-  | 'xs'
-  | 'sm'
-  | 'md'
-  | 'lg'
-  | 'xl'
-  | '2xl'
-  | '3xl'
-  | '4xl'
-  | '5xl';
+  'none' | '3xs' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 export type StackAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline';
 export type StackJustify = 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly';
 

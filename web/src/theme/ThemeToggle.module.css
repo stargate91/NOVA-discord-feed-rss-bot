@@ -1,0 +1,39 @@
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-glass-medium);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.toggleBtn:hover {
+  background: var(--bg-glass-card);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+  transform: translateY(-0.0625rem);
+}
+
+.toggleBtn:focus-visible {
+  border-color: var(--blue-500);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.toggleBtn:active .iconWrapper {
+  transform: scale(0.85);
+}

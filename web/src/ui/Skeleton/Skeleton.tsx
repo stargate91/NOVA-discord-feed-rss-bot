@@ -150,7 +150,11 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         />
       );
     }
-    return <div id={id} className={`${styles.textStack} ${className}`}>{lineElements}</div>;
+    return (
+      <div id={id} className={`${styles.textStack} ${className}`}>
+        {lineElements}
+      </div>
+    );
   }
 
   const classes = [

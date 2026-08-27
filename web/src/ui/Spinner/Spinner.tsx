@@ -29,29 +29,32 @@ export const Spinner: React.FC<SpinnerProps> = ({
   id,
   ...rest
 }) => {
-  const iconPixelSize = {
-    xs: 14,
-    sm: 18,
-    md: 24,
-    lg: 36,
-    xl: 48,
-  }[size] || 24;
+  const iconPixelSize =
+    {
+      xs: 14,
+      sm: 18,
+      md: 24,
+      lg: 36,
+      xl: 48,
+    }[size] || 24;
 
-  const sizeClass = {
-    xs: styles.sizeXs,
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-    xl: styles.sizeXl,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      xs: styles.sizeXs,
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    primary: styles.variantPrimary,
-    secondary: styles.variantSecondary,
-    white: styles.variantWhite,
-    success: styles.variantSuccess,
-    danger: styles.variantDanger,
-  }[variant] || styles.variantPrimary;
+  const variantClass =
+    {
+      primary: styles.variantPrimary,
+      secondary: styles.variantSecondary,
+      white: styles.variantWhite,
+      success: styles.variantSuccess,
+      danger: styles.variantDanger,
+    }[variant] || styles.variantPrimary;
 
   const posClass = labelPosition === 'bottom' ? styles.posBottom : styles.posRight;
 

@@ -5,7 +5,8 @@ import styles from './Card.module.css';
 
 export type CardGlow = 'none' | 'blue' | 'purple' | 'green' | 'danger';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg' | 'xl';
-export type CardVariant = 'default' | 'surface' | 'glass' | 'elevated' | 'ghost' | 'gradient-border';
+export type CardVariant =
+  'default' | 'surface' | 'glass' | 'elevated' | 'ghost' | 'gradient-border';
 export type CardBorderAccent = 'none' | 'left' | 'top';
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
@@ -46,36 +47,40 @@ export const CardRoot: React.FC<CardProps> = ({
   id,
   ...rest
 }) => {
-  const padClass = {
-    none: styles.padNone,
-    sm: styles.padSm,
-    md: styles.padMd,
-    lg: styles.padLg,
-    xl: styles.padXl,
-  }[padding] || styles.padLg;
+  const padClass =
+    {
+      none: styles.padNone,
+      sm: styles.padSm,
+      md: styles.padMd,
+      lg: styles.padLg,
+      xl: styles.padXl,
+    }[padding] || styles.padLg;
 
-  const glowClass = {
-    none: '',
-    blue: styles.glowBlue,
-    purple: styles.glowPurple,
-    green: styles.glowGreen,
-    danger: styles.glowDanger,
-  }[glow] || '';
+  const glowClass =
+    {
+      none: '',
+      blue: styles.glowBlue,
+      purple: styles.glowPurple,
+      green: styles.glowGreen,
+      danger: styles.glowDanger,
+    }[glow] || '';
 
-  const variantClass = {
-    default: '',
-    surface: styles.variantSurface,
-    glass: styles.variantGlass,
-    elevated: styles.variantElevated,
-    ghost: styles.variantGhost,
-    'gradient-border': styles.variantGradientBorder,
-  }[variant] || '';
+  const variantClass =
+    {
+      default: '',
+      surface: styles.variantSurface,
+      glass: styles.variantGlass,
+      elevated: styles.variantElevated,
+      ghost: styles.variantGhost,
+      'gradient-border': styles.variantGradientBorder,
+    }[variant] || '';
 
-  const accentClass = {
-    none: '',
-    left: styles.accentLeft,
-    top: styles.accentTop,
-  }[borderAccent] || '';
+  const accentClass =
+    {
+      none: '',
+      left: styles.accentLeft,
+      top: styles.accentTop,
+    }[borderAccent] || '';
 
   const classes = [
     styles.card,
@@ -99,8 +104,14 @@ export const CardRoot: React.FC<CardProps> = ({
       {hasMonolithicHeader && (
         <div className={`${styles.header} ${headerDivided ? styles.headerDivided : ''}`}>
           <div className={styles.titleGroup}>
-            {title && (typeof title === 'string' ? <h3 className={styles.title}>{title}</h3> : title)}
-            {descText && (typeof descText === 'string' ? <p className={styles.description}>{descText}</p> : descText)}
+            {title &&
+              (typeof title === 'string' ? <h3 className={styles.title}>{title}</h3> : title)}
+            {descText &&
+              (typeof descText === 'string' ? (
+                <p className={styles.description}>{descText}</p>
+              ) : (
+                descText
+              ))}
           </div>
           {action && <div className={styles.action}>{action}</div>}
         </div>
@@ -123,25 +134,41 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.header} ${divided ? styles.headerDivided : ''} ${className}`} {...rest}>{children}</div>;
+}) => (
+  <div className={`${styles.header} ${divided ? styles.headerDivided : ''} ${className}`} {...rest}>
+    {children}
+  </div>
+);
 
 export const CardTitle: React.FC<HTMLAttributes<HTMLHeadingElement>> = ({
   children,
   className = '',
   ...rest
-}) => <h3 className={`${styles.title} ${className}`} {...rest}>{children}</h3>;
+}) => (
+  <h3 className={`${styles.title} ${className}`} {...rest}>
+    {children}
+  </h3>
+);
 
 export const CardDescription: React.FC<HTMLAttributes<HTMLParagraphElement>> = ({
   children,
   className = '',
   ...rest
-}) => <p className={`${styles.description} ${className}`} {...rest}>{children}</p>;
+}) => (
+  <p className={`${styles.description} ${className}`} {...rest}>
+    {children}
+  </p>
+);
 
 export const CardBody: React.FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.body} ${className}`} {...rest}>{children}</div>;
+}) => (
+  <div className={`${styles.body} ${className}`} {...rest}>
+    {children}
+  </div>
+);
 
 export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
   divided?: boolean;
@@ -152,13 +179,21 @@ export const CardFooter: React.FC<CardFooterProps> = ({
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.footer} ${divided ? styles.footerDivided : ''} ${className}`} {...rest}>{children}</div>;
+}) => (
+  <div className={`${styles.footer} ${divided ? styles.footerDivided : ''} ${className}`} {...rest}>
+    {children}
+  </div>
+);
 
 export const CardActions: React.FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.action} ${className}`} {...rest}>{children}</div>;
+}) => (
+  <div className={`${styles.action} ${className}`} {...rest}>
+    {children}
+  </div>
+);
 
 /* --------------------------------------------------------------------------
    Compound Export
@@ -179,4 +214,3 @@ Card.Description = CardDescription;
 Card.Body = CardBody;
 Card.Footer = CardFooter;
 Card.Actions = CardActions;
-

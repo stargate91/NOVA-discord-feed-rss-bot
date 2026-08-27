@@ -23,7 +23,8 @@ export const guild = {
   metricDeliveredDesc: '0 failed or dropped notifications',
   monitoredPlatformsTitle: 'Monitored Platforms',
   monitoredPlatformsSubtitle: 'Live feed sources configured on this guild',
-  monitoredPlatformsDesc: 'YouTube, Twitch streams, and Epic Games alerts are actively scheduled with 2-minute polling intervals.',
+  monitoredPlatformsDesc:
+    'YouTube, Twitch streams, and Epic Games alerts are actively scheduled with 2-minute polling intervals.',
   configureChannelsBtn: 'Configure Channels & Feeds',
   planDetailsTitle: 'Guild Plan & Entitlements',
   planDetailsSubtitle: 'Current tier subscription details',
@@ -37,7 +38,8 @@ export const guild = {
 
   // Feeds
   feedsTitle: 'Feed Monitors',
-  feedsSubtitle: 'Configure automated stream drops, video uploads, game deals, and RSS feeds for Server {guildId}',
+  feedsSubtitle:
+    'Configure automated stream drops, video uploads, game deals, and RSS feeds for Server {guildId}',
   runTestBtn: 'Run Immediate Test',
   clearFormBtn: 'Clear Form',
   supportedIntegrations: 'Supported Platform Integrations:',
@@ -136,7 +138,8 @@ export const guild = {
   analyticsHealthQueueSpeed: 'Queue Ingestion Speed',
   analyticsHealthQueueSpeedValue: '1.4k events/sec',
   analyticsFeatureName: 'Historical 90-Day Analytics & Raw CSV Export',
-  analyticsFeatureDesc: 'Access deep longitudinal trends, audience peak engagement heatmaps, and export raw delivery audit logs directly to CSV/JSON.',
+  analyticsFeatureDesc:
+    'Access deep longitudinal trends, audience peak engagement heatmaps, and export raw delivery audit logs directly to CSV/JSON.',
   analyticsAuditExportTitle: 'Raw Audit Export & Longitudinal Metrics',
   analyticsAuditExportSubtitle: 'Ultimate & Master Tier Enterprise Exclusives',
   analyticsAuditArchiveReady: 'Full 90-day notification delivery archive is ready for export.',
@@ -144,7 +147,8 @@ export const guild = {
 
   // Premium
   premiumTitle: 'Guild Subscription & Premium',
-  premiumSubtitle: 'Manage tier status, monitor quotas, and redeem promo codes for Server {guildId}',
+  premiumSubtitle:
+    'Manage tier status, monitor quotas, and redeem promo codes for Server {guildId}',
   activePlanBadge: 'Active Plan: Plus Tier',
   currentSubscriptionTitle: 'Current Subscription',
   currentSubscriptionSubtitle: 'Active on this Discord guild',
@@ -160,11 +164,13 @@ export const guild = {
   promoCodeHint: "Try entering 'NOVA2026' for a 30-day trial",
   applyPromoBtn: 'Apply Key',
   partnershipBenefitsTitle: 'Exclusive Partnership Benefits',
-  partnershipBenefitsDesc: 'Server partners receive automated 5-second polling intervals and unlimited custom webhook branding.',
+  partnershipBenefitsDesc:
+    'Server partners receive automated 5-second polling intervals and unlimited custom webhook branding.',
 
   // Settings
   settingsTitle: 'Guild Settings',
-  settingsSubtitle: 'Configure bot language, timezone, audit logging, and global notification parameters for Guild {guildId}',
+  settingsSubtitle:
+    'Configure bot language, timezone, audit logging, and global notification parameters for Guild {guildId}',
   saveChangesBtn: 'Save Changes',
   localizationTitle: 'Localization & Regional',
   localizationSubtitle: 'Bot language and timestamp display',
@@ -179,10 +185,31 @@ export const guild = {
   auditLoggingTitle: 'Audit & Operational Logging',
   auditLoggingSubtitle: 'Where Nova posts internal diagnostic logs',
   errorChannelLabel: 'Diagnostic / Error Log Channel ID',
-  errorChannelHint: 'Nova will notify this channel if a feed destination is deleted or permissions are missing',
+  errorChannelHint:
+    'Nova will notify this channel if a feed destination is deleted or permissions are missing',
   errorChannelPlaceholder: 'e.g. 112233445566778899',
   debugLogsLabel: 'Verbose Shard Diagnostic Logs',
   debugLogsDesc: 'Include sub-second WebSocket handshake traces in audit channel',
   updateLogChannelBtn: 'Update Log Channel',
-} as const;
 
+  // Toasts & Dialogs
+  toastValidationWarning: 'Please enter a target username/channel and destination channel ID.',
+  toastValidationWarningTitle: 'Validation Warning',
+  toastMonitorSaved: 'Monitor for {targetId} ({type}) activated successfully!',
+  toastMonitorSavedTitle: 'Monitor Saved',
+  toastTestDispatched: 'Simulated delivery payload dispatched for {type} -> #{destChannel}',
+  toastTestDispatchedTitle: 'Feed Test Sent',
+  confirmClearForm: 'Are you sure you want to clear this monitor setup?',
+  toastFormCleared: 'Feed configuration form has been cleared.',
+  toastFormClearedTitle: 'Form Cleared',
+  toastSettingsSaved: 'Guild settings successfully saved and synchronized to Nova backend.',
+  toastSettingsSavedTitle: 'Settings Updated',
+  toastPromoRequired: 'Please enter a valid promo code.',
+  toastPromoRequiredTitle: 'Input Required',
+  toastPromoSuccess: 'Master Tier unlocked for 30 days!',
+  toastPromoSuccessTitle: 'Promo Code Applied',
+  toastPromoInvalid: 'Invalid or expired promo code. Please check spelling.',
+  toastPromoInvalidTitle: 'Validation Error',
+  toastCheckoutRedirect: 'Redirecting to secure Stripe checkout portal...',
+  toastCheckoutRedirectTitle: 'Stripe Billing',
+} as const;

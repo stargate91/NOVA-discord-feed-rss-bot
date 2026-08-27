@@ -2,7 +2,8 @@ export const home = {
   heroTag: 'Next-Generation Discord Notification Bot',
   heroTitle: 'Automate Everything with',
   heroTitleHighlight: 'Nova Feeds',
-  heroDescription: 'Lightning-fast social notifications, media drops, release alerts, and live stream updates for your Discord community. Powered by resilient asyncio worker architecture.',
+  heroDescription:
+    'Lightning-fast social notifications, media drops, release alerts, and live stream updates for your Discord community. Powered by resilient asyncio worker architecture.',
   ctaDiscord: 'Add to Discord',
   ctaDashboard: 'Open Dashboard',
 
@@ -19,7 +20,8 @@ export const home = {
 
   // Live Preview
   previewTitle: 'Interactive Live Preview',
-  previewSubtitle: 'See exactly how Nova formats rich Discord notifications for each supported service.',
+  previewSubtitle:
+    'See exactly how Nova formats rich Discord notifications for each supported service.',
   platformYoutube: 'YouTube',
   platformTwitch: 'Twitch',
   platformSteam: 'Steam Deals',
@@ -33,20 +35,56 @@ export const home = {
   embedDescription: 'Playing **VALORANT** • Ranked Games with the squad! Come join the stream.',
   embedFooter: 'Twitch Monitor • Nova feeds',
 
+  // YouTube Demo Embed
+  embedYoutubeTitle: '$1,000,000 Every 10 Seconds You Survive Inside a Circle!',
+  embedYoutubeDesc:
+    'The final 10 contestants face extreme obstacle challenges in the ultimate live event.',
+  embedYoutubeFieldChannel: 'Channel',
+  embedYoutubeFieldDuration: 'Video Duration',
+  embedYoutubeFieldUploadTime: 'Upload Time',
+  embedYoutubeFooter: 'YouTube Upload Notification • Nova Feeds',
+
+  // Steam Demo Embed
+  embedSteamTitle: 'FREE: Warhammer: Vermintide 2 is 100% OFF!',
+  embedSteamDesc:
+    'Grab Warhammer: Vermintide 2 for free on Steam during this limited-time 100% discount promotional giveaway!',
+  embedSteamOriginalPrice: 'Original Price',
+  embedSteamDiscountPrice: 'Discount Price',
+  embedSteamExpiry: 'Offer Expiry',
+  embedSteamFooter: 'Steam Price Drops • Nova Feeds',
+
+  // GitHub Demo Embed
+  embedGithubTitle: 'Release 0.115.0 · tiangolo/fastapi',
+  embedGithubDesc:
+    'New features: Support for Pydantic v2 recursive validation, performance improvements for async dependency injection.',
+  embedGithubFieldTag: 'Tag',
+  embedGithubFieldCommit: 'Commit Hash',
+  embedGithubFieldAssets: 'Assets',
+  embedGithubFooter: 'GitHub Releases • Nova Feeds',
+
+  // Twitch Fields
+  embedTwitchFieldCategory: 'Category',
+  embedTwitchFieldViewers: 'Viewer Count',
+  embedTwitchFieldUptime: 'Uptime',
+
   // Feature Highlights
   scaleSpeedTitle: 'Engineered for Scale & Speed',
-  scaleSpeedDesc: 'Built on a high-concurrency asyncio architecture designed to handle thousands of servers with zero dropped alerts.',
+  scaleSpeedDesc:
+    'Built on a high-concurrency asyncio architecture designed to handle thousands of servers with zero dropped alerts.',
   featureRealtimeTitle: 'Real-Time Polling',
   featureRealtimeSubtitle: 'Sub-minute synchronization',
-  featureRealtimeDesc: 'Dynamic shared caching and parallel scheduling guarantee your community never misses a stream start, game deal, or video upload.',
+  featureRealtimeDesc:
+    'Dynamic shared caching and parallel scheduling guarantee your community never misses a stream start, game deal, or video upload.',
 
   featureReliabilityTitle: 'Enterprise Reliability',
   featureReliabilitySubtitle: 'Dead channel protection',
-  featureReliabilityDesc: 'Zero message drop tolerance. If a channel lacks permissions or is deleted, Nova isolates the error without disrupting your entire feed schedule.',
+  featureReliabilityDesc:
+    'Zero message drop tolerance. If a channel lacks permissions or is deleted, Nova isolates the error without disrupting your entire feed schedule.',
 
   featureLayoutsTitle: 'Fully Customizable Layouts',
   featureLayoutsSubtitle: 'Tailored to each platform',
-  featureLayoutsDesc: 'Rich custom Discord embeds with high-resolution thumbnails, author avatars, score ratings, and custom ping roles for your members.',
+  featureLayoutsDesc:
+    'Rich custom Discord embeds with high-resolution thumbnails, author avatars, score ratings, and custom ping roles for your members.',
 
   // Stats & Performance
   statLatencyTitle: 'Average Delivery Latency',
@@ -64,18 +102,23 @@ export const home = {
 
   // FAQ
   faqTitle: 'Frequently Asked Questions',
-  faqSubtitle: 'Everything you need to know about setting up and operating Nova Feeds in your server.',
+  faqSubtitle:
+    'Everything you need to know about setting up and operating Nova Feeds in your server.',
   faq1Question: 'How fast does Nova notify my Discord server when a video or stream goes live?',
-  faq1Answer: 'For Twitch and Kick, Nova leverages persistent low-latency WebSockets delivering Discord alerts within 1 to 3 seconds of a broadcast starting. YouTube and RSS feeds are polled continuously in sub-60 second cycles.',
+  faq1Answer:
+    'For Twitch and Kick, Nova leverages persistent low-latency WebSockets delivering Discord alerts within 1 to 3 seconds of a broadcast starting. YouTube and RSS feeds are polled continuously in sub-60 second cycles.',
   faq2Question: 'What bot permissions does Nova require?',
-  faq2Answer: 'Nova only requests standard channel permissions: Send Messages, Embed Links, and Attach Files in the destination channels you select. We never ask for Administrator privileges.',
+  faq2Answer:
+    'Nova only requests standard channel permissions: Send Messages, Embed Links, and Attach Files in the destination channels you select. We never ask for Administrator privileges.',
   faq3Question: 'Can I customize the Discord embed layout and role mentions?',
-  faq3Answer: 'Yes! Every feed monitor can be configured with custom @role snowflake pings, custom embed colors, banner layouts, thumbnail styles, and localized timestamps.',
+  faq3Answer:
+    'Yes! Every feed monitor can be configured with custom @role snowflake pings, custom embed colors, banner layouts, thumbnail styles, and localized timestamps.',
   faq4Question: 'What happens if a destination channel is deleted or permissions are revoked?',
-  faq4Answer: "Nova includes dead channel isolation. If a Discord channel becomes unavailable, Nova marks the feed as paused and records an audit log without blocking your server's other active monitors.",
+  faq4Answer:
+    "Nova includes dead channel isolation. If a Discord channel becomes unavailable, Nova marks the feed as paused and records an audit log without blocking your server's other active monitors.",
 
   // CTA Superpower
   ctaSuperpowerTitle: 'Ready to superpower your Discord server?',
-  ctaSuperpowerDesc: 'Add Nova Feeds today and keep your community engaged with sub-second live notifications.',
+  ctaSuperpowerDesc:
+    'Add Nova Feeds today and keep your community engaged with sub-second live notifications.',
 } as const;
-

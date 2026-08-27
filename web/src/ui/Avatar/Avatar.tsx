@@ -52,20 +52,22 @@ export const Avatar: React.FC<AvatarProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  const sizeClass = {
-    xs: styles.sizeXs,
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-    xl: styles.sizeXl,
-    '2xl': styles.size2xl,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      xs: styles.sizeXs,
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
+      '2xl': styles.size2xl,
+    }[size] || styles.sizeMd;
 
-  const shapeClass = {
-    circle: styles.shapeCircle,
-    rounded: styles.shapeRounded,
-    square: styles.shapeSquare,
-  }[shape] || styles.shapeCircle;
+  const shapeClass =
+    {
+      circle: styles.shapeCircle,
+      rounded: styles.shapeRounded,
+      square: styles.shapeSquare,
+    }[shape] || styles.shapeCircle;
 
   const statusClass = status
     ? {
@@ -77,23 +79,17 @@ export const Avatar: React.FC<AvatarProps> = ({
       }[status] || ''
     : '';
 
-  const classes = [
-    styles.avatar,
-    sizeClass,
-    shapeClass,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const classes = [styles.avatar, sizeClass, shapeClass, className].filter(Boolean).join(' ');
 
-  const iconSize = {
-    xs: 10,
-    sm: 14,
-    md: 18,
-    lg: 24,
-    xl: 32,
-    '2xl': 42,
-  }[size] || 18;
+  const iconSize =
+    {
+      xs: 10,
+      sm: 14,
+      md: 18,
+      lg: 24,
+      xl: 32,
+      '2xl': 42,
+    }[size] || 18;
 
   const renderContent = () => {
     if (children) {
@@ -115,17 +111,15 @@ export const Avatar: React.FC<AvatarProps> = ({
       return <span className={styles.monogram}>{getInitials(name)}</span>;
     }
 
-    return (
-      <span className={styles.fallbackIcon}>
-        {fallbackIcon || <User size={iconSize} />}
-      </span>
-    );
+    return <span className={styles.fallbackIcon}>{fallbackIcon || <User size={iconSize} />}</span>;
   };
 
   return (
     <div id={id} className={classes} {...rest}>
       {renderContent()}
-      {status && <span className={`${styles.status} ${statusClass}`} aria-label={`Status: ${status}`} />}
+      {status && (
+        <span className={`${styles.status} ${statusClass}`} aria-label={`Status: ${status}`} />
+      )}
     </div>
   );
 };
@@ -145,20 +139,22 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
   const visibleChildren = max && max > 0 ? childArray.slice(0, max) : childArray;
   const overflowCount = max && total > max ? total - max : 0;
 
-  const sizeClass = {
-    xs: styles.sizeXs,
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-    xl: styles.sizeXl,
-    '2xl': styles.size2xl,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      xs: styles.sizeXs,
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
+      '2xl': styles.size2xl,
+    }[size] || styles.sizeMd;
 
-  const shapeClass = {
-    circle: styles.shapeCircle,
-    rounded: styles.shapeRounded,
-    square: styles.shapeSquare,
-  }[shape] || styles.shapeCircle;
+  const shapeClass =
+    {
+      circle: styles.shapeCircle,
+      rounded: styles.shapeRounded,
+      square: styles.shapeSquare,
+    }[shape] || styles.shapeCircle;
 
   return (
     <div id={id} className={`${styles.group} ${className}`} {...rest}>

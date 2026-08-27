@@ -1,4 +1,10 @@
-import type { ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, ReactNode, MouseEvent } from 'react';
+import type {
+  ButtonHTMLAttributes,
+  HTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  MouseEvent,
+} from 'react';
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import styles from './Dropdown.module.css';
@@ -235,7 +241,10 @@ export const DropdownSearch: React.FC<DropdownSearchProps> = ({
 /* --------------------------------------------------------------------------
    Dropdown.Item
    -------------------------------------------------------------------------- */
-export interface DropdownItemProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
+export interface DropdownItemProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'onClick'
+> {
   icon?: ReactNode;
   danger?: boolean;
   disabled?: boolean;

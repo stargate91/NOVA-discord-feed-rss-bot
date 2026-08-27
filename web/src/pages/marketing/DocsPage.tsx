@@ -9,10 +9,7 @@ export const DocsPage: React.FC = () => {
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO
-        title={t('docs.tag')}
-        description={t('docs.subtitle')}
-      />
+      <SEO title={t('docs.tag')} description={t('docs.subtitle')} />
 
       <Stack gap="5xl">
         <Stack align="center" gap="md">
@@ -35,9 +32,15 @@ export const DocsPage: React.FC = () => {
         {/* Tabs for Documentation Navigation */}
         <Tabs defaultValue="setup" variant="pill">
           <Tabs.List>
-            <Tabs.Tab value="setup" icon={<ShieldCheck size={16} />}>{t('docs.tabSetup')}</Tabs.Tab>
-            <Tabs.Tab value="feeds" icon={<Rss size={16} />}>{t('docs.tabFeeds')}</Tabs.Tab>
-            <Tabs.Tab value="commands" icon={<TerminalIcon size={16} />}>{t('docs.tabCommands')}</Tabs.Tab>
+            <Tabs.Tab value="setup" icon={<ShieldCheck size={16} />}>
+              {t('docs.tabSetup')}
+            </Tabs.Tab>
+            <Tabs.Tab value="feeds" icon={<Rss size={16} />}>
+              {t('docs.tabFeeds')}
+            </Tabs.Tab>
+            <Tabs.Tab value="commands" icon={<TerminalIcon size={16} />}>
+              {t('docs.tabCommands')}
+            </Tabs.Tab>
           </Tabs.List>
 
           {/* Setup & Permissions */}
@@ -58,19 +61,35 @@ export const DocsPage: React.FC = () => {
                   </Table.Header>
                   <Table.Body>
                     <Table.Row>
-                      <Table.Cell><strong>{t('docs.permSend')}</strong></Table.Cell>
+                      <Table.Cell>
+                        <strong>{t('docs.permSend')}</strong>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.permSendDesc')}</Table.Cell>
-                      <Table.Cell align="center"><Badge variant="online" dot>{t('docs.badgeRequired')}</Badge></Table.Cell>
+                      <Table.Cell align="center">
+                        <Badge variant="online" dot>
+                          {t('docs.badgeRequired')}
+                        </Badge>
+                      </Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell><strong>{t('docs.permAttach')}</strong></Table.Cell>
+                      <Table.Cell>
+                        <strong>{t('docs.permAttach')}</strong>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.permAttachDesc')}</Table.Cell>
-                      <Table.Cell align="center"><Badge variant="online" dot>{t('docs.badgeRequired')}</Badge></Table.Cell>
+                      <Table.Cell align="center">
+                        <Badge variant="online" dot>
+                          {t('docs.badgeRequired')}
+                        </Badge>
+                      </Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell><strong>{t('docs.permMention')}</strong></Table.Cell>
+                      <Table.Cell>
+                        <strong>{t('docs.permMention')}</strong>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.permMentionDesc')}</Table.Cell>
-                      <Table.Cell align="center"><Badge variant="tier">{t('docs.badgeOptional')}</Badge></Table.Cell>
+                      <Table.Cell align="center">
+                        <Badge variant="tier">{t('docs.badgeOptional')}</Badge>
+                      </Table.Cell>
                     </Table.Row>
                   </Table.Body>
                 </Table>
@@ -117,23 +136,33 @@ export const DocsPage: React.FC = () => {
                   </Table.Header>
                   <Table.Body>
                     <Table.Row>
-                      <Table.Cell><code>{t('docs.cmdAdd')}</code></Table.Cell>
+                      <Table.Cell>
+                        <code>{t('docs.cmdAdd')}</code>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.cmdAddDesc')}</Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell><code>{t('docs.cmdList')}</code></Table.Cell>
+                      <Table.Cell>
+                        <code>{t('docs.cmdList')}</code>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.cmdListDesc')}</Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell><code>{t('docs.cmdTest')}</code></Table.Cell>
+                      <Table.Cell>
+                        <code>{t('docs.cmdTest')}</code>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.cmdTestDesc')}</Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell><code>{t('docs.cmdRemove')}</code></Table.Cell>
+                      <Table.Cell>
+                        <code>{t('docs.cmdRemove')}</code>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.cmdRemoveDesc')}</Table.Cell>
                     </Table.Row>
                     <Table.Row>
-                      <Table.Cell><code>{t('docs.cmdStatus')}</code></Table.Cell>
+                      <Table.Cell>
+                        <code>{t('docs.cmdStatus')}</code>
+                      </Table.Cell>
                       <Table.Cell>{t('docs.cmdStatusDesc')}</Table.Cell>
                     </Table.Row>
                   </Table.Body>
@@ -146,4 +175,3 @@ export const DocsPage: React.FC = () => {
     </Container>
   );
 };
-

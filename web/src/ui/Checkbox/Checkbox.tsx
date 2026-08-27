@@ -113,7 +113,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 
   const isGroupItem = Boolean(group && value !== undefined);
   const isChecked = isGroupItem
-    ? group?.value?.includes(String(value)) ?? false
+    ? (group?.value?.includes(String(value)) ?? false)
     : controlledChecked !== undefined
       ? controlledChecked
       : uncontrolledChecked;
@@ -133,23 +133,26 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     onChange?.(e);
   };
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const colorClass = {
-    primary: '',
-    success: styles.colorSuccess,
-    danger: styles.colorDanger,
-  }[color] || '';
+  const colorClass =
+    {
+      primary: '',
+      success: styles.colorSuccess,
+      danger: styles.colorDanger,
+    }[color] || '';
 
-  const checkIconSize = {
-    sm: 10,
-    md: 12,
-    lg: 16,
-  }[size] || 12;
+  const checkIconSize =
+    {
+      sm: 10,
+      md: 12,
+      lg: 16,
+    }[size] || 12;
 
   const content = children ?? (
     <div className={styles.content}>

@@ -2,6 +2,8 @@ import React from 'react';
 import { HelpCircle, MessageSquare } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
+import { DISCORD_SUPPORT_SERVER_URL } from '../../constants';
+import { openExternalUrl } from '../../utils';
 import { Card, Button, Badge, Accordion, Container, Stack, Text } from '../../ui';
 
 export const SupportPage: React.FC = () => {
@@ -9,10 +11,7 @@ export const SupportPage: React.FC = () => {
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO
-        title={t('support.tag')}
-        description={t('support.subtitle')}
-      />
+      <SEO title={t('support.tag')} description={t('support.subtitle')} />
 
       <Stack gap="5xl">
         <Stack align="center" gap="md">
@@ -45,7 +44,7 @@ export const SupportPage: React.FC = () => {
                 <Button
                   variant="discord"
                   size="lg"
-                  onClick={() => window.open('https://discord.gg/PbvX3S7pXR', '_blank')}
+                  onClick={() => openExternalUrl(DISCORD_SUPPORT_SERVER_URL)}
                 >
                   <MessageSquare size={18} /> {t('support.discordCta')}
                 </Button>
@@ -64,27 +63,21 @@ export const SupportPage: React.FC = () => {
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('support.faqStreamQ')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('support.faqStreamA')}
-              </Accordion.Content>
+              <Accordion.Content>{t('support.faqStreamA')}</Accordion.Content>
             </Accordion.Item>
 
             <Accordion.Item value="support-q2">
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('support.faqLanguageQ')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('support.faqLanguageA')}
-              </Accordion.Content>
+              <Accordion.Content>{t('support.faqLanguageA')}</Accordion.Content>
             </Accordion.Item>
 
             <Accordion.Item value="support-q3">
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('support.faqRoleQ')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('support.faqRoleA')}
-              </Accordion.Content>
+              <Accordion.Content>{t('support.faqRoleA')}</Accordion.Content>
             </Accordion.Item>
           </Accordion>
         </Stack>
@@ -92,4 +85,3 @@ export const SupportPage: React.FC = () => {
     </Container>
   );
 };
-

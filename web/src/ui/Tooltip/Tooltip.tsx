@@ -59,18 +59,20 @@ export const Tooltip: React.FC<TooltipProps> = ({
     };
   }, []);
 
-  const posClass = {
-    top: styles.posTop,
-    bottom: styles.posBottom,
-    left: styles.posLeft,
-    right: styles.posRight,
-  }[position] || styles.posTop;
+  const posClass =
+    {
+      top: styles.posTop,
+      bottom: styles.posBottom,
+      left: styles.posLeft,
+      right: styles.posRight,
+    }[position] || styles.posTop;
 
-  const variantClass = {
-    dark: styles.variantDark,
-    glass: styles.variantGlass,
-    brand: styles.variantBrand,
-  }[variant] || styles.variantDark;
+  const variantClass =
+    {
+      dark: styles.variantDark,
+      glass: styles.variantGlass,
+      brand: styles.variantBrand,
+    }[variant] || styles.variantDark;
 
   const trigger = React.cloneElement(children, {
     onMouseEnter: (e: React.MouseEvent) => {

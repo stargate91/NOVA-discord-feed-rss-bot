@@ -169,6 +169,18 @@
   display: block;
 }
 
+.drawerFooter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.drawerDashboardLink {
+  flex: 1 1 auto;
+  text-decoration: none;
+}
+
 /* Responsive Media Queries */
 @media (width <= 48rem) {
   .navbar {

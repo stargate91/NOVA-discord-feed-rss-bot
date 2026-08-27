@@ -58,4 +58,3 @@ export const UpgradePromoCard: React.FC<UpgradePromoCardProps> = ({
     </div>
   );
 };
-

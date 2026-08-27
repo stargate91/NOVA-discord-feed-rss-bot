@@ -34,7 +34,9 @@ const AccordionItemContext = createContext<AccordionItemContextValue | null>(nul
 const useAccordionItem = () => {
   const context = useContext(AccordionItemContext);
   if (!context) {
-    throw new Error('AccordionTrigger and AccordionContent must be used within an <Accordion.Item>');
+    throw new Error(
+      'AccordionTrigger and AccordionContent must be used within an <Accordion.Item>'
+    );
   }
   return context;
 };
@@ -95,15 +97,16 @@ export const AccordionRoot: React.FC<AccordionProps> = ({
       setUncontrolledValues(nextValues);
     }
 
-    onChange?.(type === 'single' ? nextValues[0] ?? '' : nextValues);
+    onChange?.(type === 'single' ? (nextValues[0] ?? '') : nextValues);
   };
 
-  const variantClass = {
-    default: styles.variantDefault,
-    card: styles.variantCard,
-    glass: styles.variantGlass,
-    bordered: styles.variantBordered,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      card: styles.variantCard,
+      glass: styles.variantGlass,
+      bordered: styles.variantBordered,
+    }[variant] || styles.variantDefault;
 
   return (
     <AccordionContext.Provider value={{ type, openValues, toggleValue, variant }}>
@@ -206,11 +209,7 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({
   const { isOpen } = useAccordionItem();
 
   return (
-    <div
-      role="region"
-      aria-hidden={!isOpen}
-      className={styles.contentWrapper}
-    >
+    <div role="region" aria-hidden={!isOpen} className={styles.contentWrapper}>
       <div className={styles.contentInner}>
         <div className={`${styles.content} ${className}`} {...rest}>
           {children}

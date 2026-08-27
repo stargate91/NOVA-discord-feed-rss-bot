@@ -38,23 +38,23 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     }
   }, [percentage]);
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    brand: styles.variantBrand,
-    success: styles.variantSuccess,
-    warning: styles.variantWarning,
-    danger: styles.variantDanger,
-    purple: styles.variantPurple,
-  }[variant] || styles.variantBrand;
+  const variantClass =
+    {
+      brand: styles.variantBrand,
+      success: styles.variantSuccess,
+      warning: styles.variantWarning,
+      danger: styles.variantDanger,
+      purple: styles.variantPurple,
+    }[variant] || styles.variantBrand;
 
-  const renderedValue = valueFormat
-    ? valueFormat(value, max)
-    : `${Math.round(percentage)}%`;
+  const renderedValue = valueFormat ? valueFormat(value, max) : `${Math.round(percentage)}%`;
 
   return (
     <div

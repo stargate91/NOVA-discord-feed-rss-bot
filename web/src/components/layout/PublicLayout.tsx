@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import type { HealthStatus } from '../../types';
+import { useTranslation } from '../../i18n';
 import { ErrorBoundary } from '../common/ErrorBoundary';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
@@ -11,17 +12,16 @@ interface PublicLayoutProps {
   loadingHealth: boolean;
 }
 
-export const PublicLayout: React.FC<PublicLayoutProps> = ({
-  health,
-  loadingHealth,
-}) => {
+export const PublicLayout: React.FC<PublicLayoutProps> = ({ health, loadingHealth }) => {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.layout}>
-      <Navbar
-        health={health}
-        loadingHealth={loadingHealth}
-      />
-      <main className={styles.body}>
+      <a href="#main-content" className="skipToContent">
+        {t('common.skipToContent')}
+      </a>
+      <Navbar health={health} loadingHealth={loadingHealth} />
+      <main id="main-content" className={styles.body} tabIndex={-1}>
         <ErrorBoundary name="Marketing Page">
           <Outlet />
         </ErrorBoundary>

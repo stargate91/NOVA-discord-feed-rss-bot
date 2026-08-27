@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RefreshCw, ExternalLink, LogOut, Key } from 'lucide-react';
 import { apiClient } from '../api';
+import { errorReporter } from '../services/errorReporter';
 import { useAuth } from '../auth';
 import { useTranslation } from '../i18n';
 import { useToast } from '../components/common/Toast';
@@ -47,7 +48,7 @@ export const DeveloperPage: React.FC = () => {
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!secretInput.trim()) {
-      toast.warning('Please enter a secret key.', 'Input Required');
+      toast.warning(t('dev.toastSecretRequired'), t('dev.toastSecretRequiredTitle'));
       return;
     }
 
@@ -58,26 +59,28 @@ export const DeveloperPage: React.FC = () => {
 
       setAdminSecretKey(secretInput.trim());
       setIsAdminAuthenticated(true);
-      setAdminLogs(data.logs || ['[INFO] Successfully authenticated to Developer Portal.']);
-      setAdminMessage('Authentication successful!');
-      toast.success('Authenticated to Developer Console.', 'Access Granted');
-    } catch {
-      setAdminMessage('Invalid Secret Key. Access Denied.');
-      toast.error('Invalid Developer Secret Key or Connection Error.', 'Access Denied');
+      setAdminLogs(data.logs || [t('dev.initialAuthLog')]);
+      setAdminMessage(t('dev.authSuccessMessage'));
+      toast.success(t('dev.toastAccessGranted'), t('dev.toastAccessGrantedTitle'));
+    } catch (err: unknown) {
+      errorReporter.captureException(err, { action: 'admin_login' }, 'warning');
+      setAdminMessage(t('dev.authDeniedMessage'));
+      toast.error(t('dev.toastAccessDenied'), t('dev.toastAccessDeniedTitle'));
     }
   };
 
   const handleForceSync = async () => {
-    setSyncStatus('Synchronizing...');
+    setSyncStatus(t('dev.syncStatusSynchronizing'));
     try {
       await apiClient.post('/api/v1/monitors/sync', undefined, {
         adminSecret: adminSecret || secretInput,
       });
-      setSyncStatus('Monitors successfully synchronized!');
-      toast.success('Monitors cache reloaded from database.', 'Sync Complete');
-    } catch {
-      setSyncStatus('Failed to sync monitors.');
-      toast.error('Failed to trigger monitor sync.', 'Sync Error');
+      setSyncStatus(t('dev.syncStatusSuccess'));
+      toast.success(t('dev.toastSyncComplete'), t('dev.toastSyncCompleteTitle'));
+    } catch (err: unknown) {
+      errorReporter.captureException(err, { action: 'monitors_sync' }, 'error');
+      setSyncStatus(t('dev.syncStatusFailed'));
+      toast.error(t('dev.toastSyncError'), t('dev.toastSyncErrorTitle'));
     }
   };
 
@@ -86,7 +89,7 @@ export const DeveloperPage: React.FC = () => {
     setIsAdminAuthenticated(false);
     setSecretInput('');
     setAdminMessage('');
-    toast.info('Logged out from Developer Console.', 'Session Closed');
+    toast.info(t('dev.toastLogout'), t('dev.toastLogoutTitle'));
   };
 
   const filteredLogs = adminLogs.filter((log) => {
@@ -97,10 +100,7 @@ export const DeveloperPage: React.FC = () => {
 
   return (
     <div>
-      <SEO
-        title={t('dev.title')}
-        description={t('dev.description')}
-      />
+      <SEO title={t('dev.title')} description={t('dev.description')} noIndex />
 
       {!isAdminAuthenticated ? (
         <Container maxWidth="xs" padding="lg">
@@ -144,18 +144,16 @@ export const DeveloperPage: React.FC = () => {
                 <Text as="h2" size="2xl" weight="bold">
                   {t('dev.adminTitle')}
                 </Text>
-                <Badge variant="online" dot pulse>{t('dev.fastApiActive')}</Badge>
+                <Badge variant="online" dot pulse>
+                  {t('dev.fastApiActive')}
+                </Badge>
               </Inline>
               <Text size="sm" color="secondary">
                 {t('dev.connectedServer')}
               </Text>
             </Stack>
 
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleLogout}
-            >
+            <Button variant="secondary" size="sm" onClick={handleLogout}>
               <LogOut size={14} /> {t('dev.logoutBtn')}
             </Button>
           </Inline>
@@ -235,6 +233,3 @@ export const DeveloperPage: React.FC = () => {
     </div>
   );
 };
-
-
-

@@ -3,28 +3,40 @@ export const legal = {
   termsTag: 'Legal Documents',
   termsTitle: 'Terms of',
   termsTitleHighlight: 'Service',
-  termsSubtitle: 'Please review the terms and conditions governing your use of Nova Bot, its web portal, and associated notification services.',
+  termsSubtitle:
+    'Please review the terms and conditions governing your use of Nova Bot, its web portal, and associated notification services.',
   termsSection1Title: '1. Acceptance of Terms',
-  termsSection1Desc: 'By inviting the Nova bot to your Discord server or accessing the Nova web platform, you agree to be bound by these Terms of Service and comply with the Discord Developer Terms of Service and Community Guidelines.',
+  termsSection1Desc:
+    'By inviting the Nova bot to your Discord server or accessing the Nova web platform, you agree to be bound by these Terms of Service and comply with the Discord Developer Terms of Service and Community Guidelines.',
   termsSection2Title: '2. Service Provision & Uptime',
-  termsSection2Desc: 'Nova provides automated notification feeds from third-party social media and content platforms. While we strive for 99.9% uptime and reliable delivery, services are provided on an "as is" and "as available" basis without warranties of uninterrupted service.',
+  termsSection2Desc:
+    'Nova provides automated notification feeds from third-party social media and content platforms. While we strive for 99.9% uptime and reliable delivery, services are provided on an "as is" and "as available" basis without warranties of uninterrupted service.',
   termsSection3Title: '3. Subscription & Billing',
-  termsSection3Desc: 'Subscriptions provide expanded monitor quotas and faster polling rates per Discord server. Subscriptions renew automatically until cancelled by the server owner through the Web Dashboard.',
+  termsSection3Desc:
+    'Subscriptions provide expanded monitor quotas and faster polling rates per Discord server. Subscriptions renew automatically until cancelled by the server owner through the Web Dashboard.',
   termsSection4Title: '4. Acceptable Use',
-  termsSection4Desc: 'Users may not utilize the service to spam channels, scrape unauthorized private data, violate copyright, or disrupt service operation through denial-of-service attempts.',
+  termsSection4Desc:
+    'Users may not utilize the service to spam channels, scrape unauthorized private data, violate copyright, or disrupt service operation through denial-of-service attempts.',
 
   // Privacy
   privacyTag: 'Privacy & Data Protection',
   privacyTitle: 'Privacy',
   privacyTitleHighlight: 'Policy',
-  privacySubtitle: 'How Nova collects, processes, and protects your Discord server and user configuration data.',
+  privacySubtitle:
+    'How Nova collects, processes, and protects your Discord server and user configuration data.',
   privacySection1Title: '1. Information We Collect',
-  privacySection1Desc: 'Nova strictly collects minimal operational data necessary to perform feed monitoring:',
-  privacyGuildInfo: 'Discord Guild Information: Server ID, server name, configured notification channel IDs, and role mention IDs.',
-  privacyFeedInfo: 'Feed Configurations: Public channel usernames, handles, and RSS URLs configured by your administrators.',
-  privacyMetadataInfo: 'Delivery Metadata: Timestamp of the last processed item to prevent duplicate notifications.',
+  privacySection1Desc:
+    'Nova strictly collects minimal operational data necessary to perform feed monitoring:',
+  privacyGuildInfo:
+    'Discord Guild Information: Server ID, server name, configured notification channel IDs, and role mention IDs.',
+  privacyFeedInfo:
+    'Feed Configurations: Public channel usernames, handles, and RSS URLs configured by your administrators.',
+  privacyMetadataInfo:
+    'Delivery Metadata: Timestamp of the last processed item to prevent duplicate notifications.',
   privacySection2Title: '2. Information We Do NOT Collect',
-  privacySection2Desc: 'Nova does not store, read, or process user chat messages, direct messages, voice data, or personal Discord account details.',
+  privacySection2Desc:
+    'Nova does not store, read, or process user chat messages, direct messages, voice data, or personal Discord account details.',
   privacySection3Title: '3. Data Retention & Deletion',
-  privacySection3Desc: 'When the bot is removed from a Discord server, all associated feed configurations and monitor subscriptions for that server can be permanently purged upon request or after 30 days of inactivity.',
+  privacySection3Desc:
+    'When the bot is removed from a Discord server, all associated feed configurations and monitor subscriptions for that server can be permanently purged upon request or after 30 days of inactivity.',
 } as const;

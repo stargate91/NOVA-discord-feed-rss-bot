@@ -101,18 +101,20 @@ export interface TabsListProps extends HTMLAttributes<HTMLDivElement> {
 export const TabsList: React.FC<TabsListProps> = ({ children, className = '', ...rest }) => {
   const { variant, size, orientation, fitted } = useTabs();
 
-  const variantClass = {
-    line: styles.variantLine,
-    pill: styles.variantPill,
-    card: styles.variantCard,
-    glass: styles.variantGlass,
-  }[variant] || styles.variantLine;
+  const variantClass =
+    {
+      line: styles.variantLine,
+      pill: styles.variantPill,
+      card: styles.variantCard,
+      glass: styles.variantGlass,
+    }[variant] || styles.variantLine;
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
   const orientationClass = orientation === 'vertical' ? styles.verticalList : '';
   const fittedClass = fitted ? styles.fitted : '';
@@ -188,12 +190,7 @@ export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const TabPanel: React.FC<TabPanelProps> = ({
-  value,
-  children,
-  className = '',
-  ...rest
-}) => {
+export const TabPanel: React.FC<TabPanelProps> = ({ value, children, className = '', ...rest }) => {
   const { activeTab, keepMounted } = useTabs();
   const isSelected = activeTab === value;
 
@@ -211,7 +208,6 @@ export const TabPanel: React.FC<TabPanelProps> = ({
     </div>
   );
 };
-
 
 /* --------------------------------------------------------------------------
    Compound Export

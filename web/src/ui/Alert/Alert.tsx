@@ -47,33 +47,28 @@ export const Alert: React.FC<AlertProps> = ({
     danger: <AlertOctagon size={18} />,
   }[variant];
 
-  const variantClass = {
-    info: styles.variantInfo,
-    success: styles.variantSuccess,
-    warning: styles.variantWarning,
-    danger: styles.variantDanger,
-  }[variant] || styles.variantInfo;
+  const variantClass =
+    {
+      info: styles.variantInfo,
+      success: styles.variantSuccess,
+      warning: styles.variantWarning,
+      danger: styles.variantDanger,
+    }[variant] || styles.variantInfo;
 
   const alertIcon = icon !== undefined ? icon : defaultIcon;
 
   return (
-    <div
-      id={id}
-      role="alert"
-      className={`${styles.alert} ${variantClass} ${className}`}
-      {...rest}
-    >
+    <div id={id} role="alert" className={`${styles.alert} ${variantClass} ${className}`} {...rest}>
       {alertIcon && <span className={styles.icon}>{alertIcon}</span>}
 
       <div className={styles.content}>
         {title && (typeof title === 'string' ? <h4 className={styles.title}>{title}</h4> : title)}
-        {description && (
-          typeof description === 'string' ? (
+        {description &&
+          (typeof description === 'string' ? (
             <p className={styles.description}>{description}</p>
           ) : (
             description
-          )
-        )}
+          ))}
         {children}
         {action && <div className={styles.action}>{action}</div>}
       </div>

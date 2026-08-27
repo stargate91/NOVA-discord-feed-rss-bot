@@ -48,7 +48,9 @@ export const GuildAnalyticsPage: React.FC = () => {
               label: t(opt.labelKey),
             }))}
           />
-          <Badge variant="online" dot pulse>{t('guild.liveMetricsBadge')}</Badge>
+          <Badge variant="online" dot pulse>
+            {t('guild.liveMetricsBadge')}
+          </Badge>
         </Inline>
       </Inline>
 
@@ -62,8 +64,12 @@ export const GuildAnalyticsPage: React.FC = () => {
             </Card.Actions>
           </Card.Header>
           <Stack gap="xs">
-            <Text size="2xl" weight="black" color="brand">{t('guild.analyticsPostsDeliveredCount')}</Text>
-            <Text size="2xs" color="muted">{t('guild.analyticsPostsDeliveredSubtitle')}</Text>
+            <Text size="2xl" weight="black" color="brand">
+              {t('guild.analyticsPostsDeliveredCount')}
+            </Text>
+            <Text size="2xs" color="muted">
+              {t('guild.analyticsPostsDeliveredSubtitle')}
+            </Text>
             <ProgressBar value={71} max={100} size="sm" variant="brand" />
           </Stack>
         </Card>
@@ -76,8 +82,12 @@ export const GuildAnalyticsPage: React.FC = () => {
             </Card.Actions>
           </Card.Header>
           <Stack gap="xs">
-            <Text size="2xl" weight="black" color="success">{t('guild.analyticsSuccessRateValue')}</Text>
-            <Text size="2xs" color="muted">{t('guild.analyticsSuccessRateSubtitle')}</Text>
+            <Text size="2xl" weight="black" color="success">
+              {t('guild.analyticsSuccessRateValue')}
+            </Text>
+            <Text size="2xs" color="muted">
+              {t('guild.analyticsSuccessRateSubtitle')}
+            </Text>
             <ProgressBar value={99.98} max={100} size="sm" variant="success" />
           </Stack>
         </Card>
@@ -90,8 +100,12 @@ export const GuildAnalyticsPage: React.FC = () => {
             </Card.Actions>
           </Card.Header>
           <Stack gap="xs">
-            <Text size="2xl" weight="black" color="purple">{t('guild.analyticsAvgLatencyValue')}</Text>
-            <Text size="2xs" color="muted">{t('guild.analyticsAvgLatencySubtitle')}</Text>
+            <Text size="2xl" weight="black" color="purple">
+              {t('guild.analyticsAvgLatencyValue')}
+            </Text>
+            <Text size="2xs" color="muted">
+              {t('guild.analyticsAvgLatencySubtitle')}
+            </Text>
             <ProgressBar value={88} max={100} size="sm" variant="purple" />
           </Stack>
         </Card>
@@ -99,12 +113,17 @@ export const GuildAnalyticsPage: React.FC = () => {
 
       {/* Secondary Detailed Breakdown with Visual Progress Bars */}
       <Grid minItemWidth="md" gap="lg">
-        <Card title={t('guild.platformDistributionTitle')} subtitle={t('guild.platformDistributionSubtitle')}>
+        <Card
+          title={t('guild.platformDistributionTitle')}
+          subtitle={t('guild.platformDistributionSubtitle')}
+        >
           <Stack gap="md">
             <Stack gap="3xs">
               <Inline justify="between" align="center">
                 <Text size="xs">{t('guild.analyticsPlatformYoutube')}</Text>
-                <Text size="xs" color="secondary">{t('guild.analyticsPlatformYoutubeStats')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.analyticsPlatformYoutubeStats')}
+                </Text>
               </Inline>
               <ProgressBar value={48} max={100} size="sm" variant="danger" />
             </Stack>
@@ -112,7 +131,9 @@ export const GuildAnalyticsPage: React.FC = () => {
             <Stack gap="3xs">
               <Inline justify="between" align="center">
                 <Text size="xs">{t('guild.analyticsPlatformTwitchKick')}</Text>
-                <Text size="xs" color="secondary">{t('guild.analyticsPlatformTwitchKickStats')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.analyticsPlatformTwitchKickStats')}
+                </Text>
               </Inline>
               <ProgressBar value={30} max={100} size="sm" variant="purple" />
             </Stack>
@@ -120,7 +141,9 @@ export const GuildAnalyticsPage: React.FC = () => {
             <Stack gap="3xs">
               <Inline justify="between" align="center">
                 <Text size="xs">{t('guild.analyticsPlatformGames')}</Text>
-                <Text size="xs" color="secondary">{t('guild.analyticsPlatformGamesStats')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.analyticsPlatformGamesStats')}
+                </Text>
               </Inline>
               <ProgressBar value={14} max={100} size="sm" variant="brand" />
             </Stack>
@@ -128,7 +151,9 @@ export const GuildAnalyticsPage: React.FC = () => {
             <Stack gap="3xs">
               <Inline justify="between" align="center">
                 <Text size="xs">{t('guild.analyticsPlatformRss')}</Text>
-                <Text size="xs" color="secondary">{t('guild.analyticsPlatformRssStats')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.analyticsPlatformRssStats')}
+                </Text>
               </Inline>
               <ProgressBar value={8} max={100} size="sm" variant="warning" />
             </Stack>
@@ -138,20 +163,36 @@ export const GuildAnalyticsPage: React.FC = () => {
         <Card title={t('guild.channelHealthTitle')} subtitle={t('guild.channelHealthSubtitle')}>
           <Stack gap="xs">
             <Inline justify="between" align="center">
-              <Text size="xs" color="secondary">{t('guild.analyticsHealthChannels')}</Text>
-              <Text size="xs" weight="semibold">{t('guild.analyticsHealthChannelsCount')}</Text>
+              <Text size="xs" color="secondary">
+                {t('guild.analyticsHealthChannels')}
+              </Text>
+              <Text size="xs" weight="semibold">
+                {t('guild.analyticsHealthChannelsCount')}
+              </Text>
             </Inline>
             <Inline justify="between" align="center">
-              <Text size="xs" color="secondary">{t('guild.analyticsHealthPermErrors')}</Text>
-              <Text size="xs" weight="semibold">{t('guild.analyticsHealthPermErrorsHealthy')}</Text>
+              <Text size="xs" color="secondary">
+                {t('guild.analyticsHealthPermErrors')}
+              </Text>
+              <Text size="xs" weight="semibold">
+                {t('guild.analyticsHealthPermErrorsHealthy')}
+              </Text>
             </Inline>
             <Inline justify="between" align="center">
-              <Text size="xs" color="secondary">{t('guild.analyticsHealthRateLimit')}</Text>
-              <Text size="xs" weight="semibold">{t('guild.analyticsHealthRateLimitEvents')}</Text>
+              <Text size="xs" color="secondary">
+                {t('guild.analyticsHealthRateLimit')}
+              </Text>
+              <Text size="xs" weight="semibold">
+                {t('guild.analyticsHealthRateLimitEvents')}
+              </Text>
             </Inline>
             <Inline justify="between" align="center">
-              <Text size="xs" color="secondary">{t('guild.analyticsHealthQueueSpeed')}</Text>
-              <Text size="xs" weight="semibold">{t('guild.analyticsHealthQueueSpeedValue')}</Text>
+              <Text size="xs" color="secondary">
+                {t('guild.analyticsHealthQueueSpeed')}
+              </Text>
+              <Text size="xs" weight="semibold">
+                {t('guild.analyticsHealthQueueSpeedValue')}
+              </Text>
             </Inline>
           </Stack>
         </Card>
@@ -163,7 +204,11 @@ export const GuildAnalyticsPage: React.FC = () => {
         featureName={t('guild.analyticsFeatureName')}
         description={t('guild.analyticsFeatureDesc')}
       >
-        <Card glow="blue" title={t('guild.analyticsAuditExportTitle')} subtitle={t('guild.analyticsAuditExportSubtitle')}>
+        <Card
+          glow="blue"
+          title={t('guild.analyticsAuditExportTitle')}
+          subtitle={t('guild.analyticsAuditExportSubtitle')}
+        >
           <Inline justify="between" align="center" wrap gap="md">
             <Text size="xs" color="secondary">
               {t('guild.analyticsAuditArchiveReady')}
@@ -177,4 +222,3 @@ export const GuildAnalyticsPage: React.FC = () => {
     </Stack>
   );
 };
-

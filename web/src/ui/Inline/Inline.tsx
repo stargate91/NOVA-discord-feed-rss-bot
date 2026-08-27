@@ -77,4 +77,3 @@ export const Inline: React.FC<InlineProps> = ({
     </Component>
   );
 };
-

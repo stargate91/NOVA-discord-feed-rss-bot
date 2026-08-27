@@ -65,9 +65,11 @@ export const Input: React.FC<InputProps> = ({
 
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value : internalValue;
-  const currentLength = currentValue !== undefined && currentValue !== null ? String(currentValue).length : 0;
+  const currentLength =
+    currentValue !== undefined && currentValue !== null ? String(currentValue).length : 0;
 
-  const inputId = id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const inputId =
+    id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   const effectiveType = passwordToggle ? (showPassword ? 'text' : 'password') : type;
   const effectiveStatus: InputStatus = error ? 'error' : status;
@@ -99,31 +101,35 @@ export const Input: React.FC<InputProps> = ({
     }
   };
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    default: styles.variantDefault,
-    filled: styles.variantFilled,
-    glass: styles.variantGlass,
-    flush: styles.variantFlush,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      filled: styles.variantFilled,
+      glass: styles.variantGlass,
+      flush: styles.variantFlush,
+    }[variant] || styles.variantDefault;
 
-  const statusClass = {
-    default: '',
-    error: styles.hasError,
-    warning: styles.hasWarning,
-    success: styles.hasSuccess,
-  }[effectiveStatus] || '';
+  const statusClass =
+    {
+      default: '',
+      error: styles.hasError,
+      warning: styles.hasWarning,
+      success: styles.hasSuccess,
+    }[effectiveStatus] || '';
 
-  const iconPixelSize = {
-    sm: 14,
-    md: 16,
-    lg: 18,
-  }[size] || 16;
+  const iconPixelSize =
+    {
+      sm: 14,
+      md: 16,
+      lg: 18,
+    }[size] || 16;
 
   const wrapperClasses = [
     styles.wrapper,
@@ -137,7 +143,8 @@ export const Input: React.FC<InputProps> = ({
     .filter(Boolean)
     .join(' ');
 
-  const hasActionButtons = loading || passwordToggle || copyable || (clearable && Boolean(currentValue));
+  const hasActionButtons =
+    loading || passwordToggle || copyable || (clearable && Boolean(currentValue));
 
   const inputElement = (
     <div className={wrapperClasses}>
@@ -237,4 +244,3 @@ export const Input: React.FC<InputProps> = ({
     </div>
   );
 };
-

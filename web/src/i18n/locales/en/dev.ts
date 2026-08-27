@@ -1,6 +1,7 @@
 export const dev = {
   title: 'Developer Console & System Telemetry',
-  description: 'Direct operational diagnostics, log inspection, and Prometheus metrics for Nova Feeds.',
+  description:
+    'Direct operational diagnostics, log inspection, and Prometheus metrics for Nova Feeds.',
   authTitle: 'Developer Authentication',
   authSubtitle: 'Enter your server WEBHOOK_SECRET passkey to open the Developer Management Portal.',
   secretPasskeyLabel: 'Secret Passkey',
@@ -26,4 +27,24 @@ export const dev = {
   logLevelWarn: 'Warnings Only',
   logLevelError: 'Errors Only',
   logLevelDebug: 'Debug Only',
+
+  // Actions & Toasts
+  toastSecretRequired: 'Please enter a secret key.',
+  toastSecretRequiredTitle: 'Input Required',
+  authSuccessMessage: 'Authentication successful!',
+  toastAccessGranted: 'Authenticated to Developer Console.',
+  toastAccessGrantedTitle: 'Access Granted',
+  authDeniedMessage: 'Invalid Secret Key. Access Denied.',
+  toastAccessDenied: 'Invalid Developer Secret Key or Connection Error.',
+  toastAccessDeniedTitle: 'Access Denied',
+  syncStatusSynchronizing: 'Synchronizing...',
+  syncStatusSuccess: 'Monitors successfully synchronized!',
+  toastSyncComplete: 'Monitors cache reloaded from database.',
+  toastSyncCompleteTitle: 'Sync Complete',
+  syncStatusFailed: 'Failed to sync monitors.',
+  toastSyncError: 'Failed to trigger monitor sync.',
+  toastSyncErrorTitle: 'Sync Error',
+  toastLogout: 'Logged out from Developer Console.',
+  toastLogoutTitle: 'Session Closed',
+  initialAuthLog: '[INFO] Successfully authenticated to Developer Portal.',
 } as const;

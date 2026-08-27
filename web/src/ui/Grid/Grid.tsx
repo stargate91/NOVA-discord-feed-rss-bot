@@ -5,18 +5,7 @@ import styles from './Grid.module.css';
 export type GridColumns = 1 | 2 | 3 | 4 | 5 | 6 | 12 | 'auto-fill' | 'auto-fit';
 export type GridMinItemWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type GridGap =
-  | 'none'
-  | '3xs'
-  | '2xs'
-  | 'xs'
-  | 'sm'
-  | 'md'
-  | 'lg'
-  | 'xl'
-  | '2xl'
-  | '3xl'
-  | '4xl'
-  | '5xl';
+  'none' | '3xs' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 
 export type GridAlign = 'start' | 'center' | 'end' | 'stretch';
 export type GridJustify = 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly';
@@ -34,7 +23,6 @@ export interface GridProps extends HTMLAttributes<HTMLElement> {
   className?: string;
   id?: string;
 }
-
 
 export interface GridItemProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType;
@@ -139,7 +127,9 @@ export const Grid: React.FC<GridProps> & { Item: typeof GridItem } = ({
     xl: styles.minItemXl,
   };
 
-  const colClass = minItemWidth ? minItemMap[minItemWidth] : (colMap[String(columns)] || styles.cols1);
+  const colClass = minItemWidth
+    ? minItemMap[minItemWidth]
+    : colMap[String(columns)] || styles.cols1;
 
   const gapMap: Record<GridGap, string> = {
     none: styles.gapNone,

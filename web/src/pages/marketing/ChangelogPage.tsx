@@ -9,10 +9,7 @@ export const ChangelogPage: React.FC = () => {
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO
-        title={t('changelog.tag')}
-        description={t('changelog.subtitle')}
-      />
+      <SEO title={t('changelog.tag')} description={t('changelog.subtitle')} />
 
       <Stack gap="5xl">
         <Stack align="center" gap="md">
@@ -49,10 +46,18 @@ export const ChangelogPage: React.FC = () => {
             <Stack gap="md">
               <Text color="secondary">{t('changelog.v100Desc')}</Text>
               <Stack as="ul" gap="xs">
-                <Text as="li" size="sm" weight="semibold">• {t('changelog.v100Feature1')}</Text>
-                <Text as="li" size="sm" weight="semibold">• {t('changelog.v100Feature2')}</Text>
-                <Text as="li" size="sm" weight="semibold">• {t('changelog.v100Feature3')}</Text>
-                <Text as="li" size="sm" weight="semibold">• {t('changelog.v100Feature4')}</Text>
+                <Text as="li" size="sm" weight="semibold">
+                  • {t('changelog.v100Feature1')}
+                </Text>
+                <Text as="li" size="sm" weight="semibold">
+                  • {t('changelog.v100Feature2')}
+                </Text>
+                <Text as="li" size="sm" weight="semibold">
+                  • {t('changelog.v100Feature3')}
+                </Text>
+                <Text as="li" size="sm" weight="semibold">
+                  • {t('changelog.v100Feature4')}
+                </Text>
               </Stack>
             </Stack>
           </Card>
@@ -65,9 +70,15 @@ export const ChangelogPage: React.FC = () => {
             action={<Badge variant="neutral">{t('changelog.v090Badge')}</Badge>}
           >
             <Stack as="ul" gap="xs">
-              <Text as="li" size="sm" weight="semibold">• {t('changelog.v090Feature1')}</Text>
-              <Text as="li" size="sm" weight="semibold">• {t('changelog.v090Feature2')}</Text>
-              <Text as="li" size="sm" weight="semibold">• {t('changelog.v090Feature3')}</Text>
+              <Text as="li" size="sm" weight="semibold">
+                • {t('changelog.v090Feature1')}
+              </Text>
+              <Text as="li" size="sm" weight="semibold">
+                • {t('changelog.v090Feature2')}
+              </Text>
+              <Text as="li" size="sm" weight="semibold">
+                • {t('changelog.v090Feature3')}
+              </Text>
             </Stack>
           </Card>
         </Stack>
@@ -75,4 +86,3 @@ export const ChangelogPage: React.FC = () => {
     </Container>
   );
 };
-

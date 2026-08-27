@@ -1,6 +1,7 @@
 export const servers = {
   title: 'Select a Discord Server',
-  subtitle: 'Choose a server to configure notification feeds, customize embeds, and monitor statistics.',
+  subtitle:
+    'Choose a server to configure notification feeds, customize embeds, and monitor statistics.',
   addBot: 'Add Nova to New Server',
   statusLabel: 'Status',
   statusActive: 'Active',

@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle, HelpCircle, X } from 'lucide-react';
 import type { ConfirmOptions } from './types';
+import { useFocusTrap } from '../../../hooks/useFocusTrap';
 import { Button } from '../../../ui';
 import styles from './Modal.module.css';
 
@@ -18,6 +19,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  const dialogRef = useFocusTrap<HTMLDivElement>(true);
+
   const getIcon = () => {
     switch (variant) {
       case 'danger':
@@ -63,12 +66,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      <div className={getModalClass()}>
+      <div ref={dialogRef} className={getModalClass()}>
         <div className={styles.header}>
           <div className={styles.titleGroup}>
-            <div className={getIconWrapperClass()}>
-              {getIcon()}
-            </div>
+            <div className={getIconWrapperClass()}>{getIcon()}</div>
             <h3 className={styles.title}>{title}</h3>
           </div>
           <button
@@ -81,9 +82,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </button>
         </div>
 
-        <div className={styles.body}>
-          {message}
-        </div>
+        <div className={styles.body}>{message}</div>
 
         <div className={styles.footer}>
           <Button variant="secondary" size="sm" onClick={onCancel}>

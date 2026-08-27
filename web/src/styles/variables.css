@@ -2,7 +2,8 @@
   /* --------------------------------------------------------------------------
      1. HARMONIC TYPOGRAPHY SCALES
      -------------------------------------------------------------------------- */
-  --font-sans: 'Inter', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
+  --font-sans:
+    'Inter', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, menlo, consolas, monospace;
 
   /* Font Sizes */
@@ -65,15 +66,15 @@
      3. BORDER RADIUS SCALE (Smooth, modern, comfortably rounded curvatures)
      -------------------------------------------------------------------------- */
   --radius-none: 0;
-  --radius-2xs: 0.25rem;   /* 4px  - Fine accents / micro elements */
-  --radius-xs: 0.375rem;   /* 6px  - Badges & small status tags */
-  --radius-sm: 0.5rem;     /* 8px  - Compact buttons & dropdown items */
-  --radius-md: 0.75rem;    /* 12px - Standard buttons, inputs & controls */
-  --radius-lg: 1rem;       /* 16px - Cards, panels & containers */
-  --radius-xl: 1.25rem;    /* 20px - Modals, popovers & dialogs */
-  --radius-2xl: 1.5rem;    /* 24px - Large feature banners & sheet drawers */
-  --radius-3xl: 2rem;      /* 32px - Extra large frames */
-  --radius-full: 9999px;   /* Circular avatars & dot badges */
+  --radius-2xs: 0.25rem; /* 4px  - Fine accents / micro elements */
+  --radius-xs: 0.375rem; /* 6px  - Badges & small status tags */
+  --radius-sm: 0.5rem; /* 8px  - Compact buttons & dropdown items */
+  --radius-md: 0.75rem; /* 12px - Standard buttons, inputs & controls */
+  --radius-lg: 1rem; /* 16px - Cards, panels & containers */
+  --radius-xl: 1.25rem; /* 20px - Modals, popovers & dialogs */
+  --radius-2xl: 1.5rem; /* 24px - Large feature banners & sheet drawers */
+  --radius-3xl: 2rem; /* 32px - Extra large frames */
+  --radius-full: 9999px; /* Circular avatars & dot badges */
 
   /* --------------------------------------------------------------------------
      4. COLOR SYSTEM
@@ -213,6 +214,7 @@
   --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: var(--motion-duration-fast) var(--motion-ease-standard);
   --transition-smooth: var(--motion-duration-base) var(--motion-ease-standard);
+  --transition-normal: var(--motion-duration-base) var(--motion-ease-standard);
   --transition-spring: var(--motion-duration-slow) var(--motion-ease-expressive);
   --animation-spin: spin 0.8s linear infinite;
   --animation-shimmer: shimmer 1.6s linear infinite;
@@ -237,20 +239,20 @@
      8. RESPONSIVE CONTAINER & BREAKPOINT SCALES
      -------------------------------------------------------------------------- */
   --container-mobile: 100%;
-  --container-sm: 40rem;   /* ~640px  - Small tablets / phablets */
-  --container-md: 48rem;   /* ~768px  - Tablets / Mobile breakpoint */
-  --container-lg: 64rem;   /* ~1024px - Small laptops / Landscape tablets */
-  --container-xl: 80rem;   /* ~1280px - Standard desktop */
-  --container-2xl: 95rem;  /* ~1520px - Ultrawide dashboard */
+  --container-sm: 40rem; /* ~640px  - Small tablets / phablets */
+  --container-md: 48rem; /* ~768px  - Tablets / Mobile breakpoint */
+  --container-lg: 64rem; /* ~1024px - Small laptops / Landscape tablets */
+  --container-xl: 80rem; /* ~1280px - Standard desktop */
+  --container-2xl: 95rem; /* ~1520px - Ultrawide dashboard */
 
   /* --------------------------------------------------------------------------
      9. GLASSMORPHISM & BLUR SCALE
      -------------------------------------------------------------------------- */
   --blur-none: 0;
-  --blur-sm: 0.25rem;      /* 4px  - Subtle chips & badges */
-  --blur-md: 0.75rem;      /* 12px - Navbar & floating header */
-  --blur-lg: 1.25rem;      /* 20px - Glassmorphism cards & modals */
-  --blur-xl: 2rem;         /* 32px - Heavy overlays & backdrop sheets */
+  --blur-sm: 0.25rem; /* 4px  - Subtle chips & badges */
+  --blur-md: 0.75rem; /* 12px - Navbar & floating header */
+  --blur-lg: 1.25rem; /* 20px - Glassmorphism cards & modals */
+  --blur-xl: 2rem; /* 32px - Heavy overlays & backdrop sheets */
 
   /* --------------------------------------------------------------------------
      10. ACCESSIBILITY & FOCUS RING TOKENS (Signature Nova Glow Ring)
@@ -258,27 +260,29 @@
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
   --focus-ring-color: var(--blue-400);
-  --focus-ring: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--blue-500), 0 0 14px rgb(14 165 233 / 35%);
+  --focus-ring:
+    0 0 0 2px var(--bg-surface), 0 0 0 4px var(--blue-500), 0 0 14px rgb(14 165 233 / 35%);
   --focus-ring-input: 0 0 0 2px var(--blue-500), 0 0 12px rgb(14 165 233 / 30%);
-  --focus-ring-danger: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--status-danger), 0 0 12px var(--status-danger-bg);
+  --focus-ring-danger:
+    0 0 0 2px var(--bg-surface), 0 0 0 4px var(--status-danger), 0 0 12px var(--status-danger-bg);
 
   /* --------------------------------------------------------------------------
      11. COMPONENT DIMENSION & TARGET TOKENS (WCAG 2.2 AAA Target Sizing)
      -------------------------------------------------------------------------- */
-  --header-height: 4.25rem;       /* 68px - Fixed global navbar height */
-  --sidebar-width: 15rem;         /* 240px - Compact desktop sidebar */
-  --control-height-sm: 2rem;      /* 32px - Small inputs / compact buttons */
-  --control-height-md: 2.5rem;    /* 40px - Standard inputs / buttons */
-  --control-height-lg: 3rem;      /* 48px - Large CTA buttons */
-  --target-min-size: 2.75rem;     /* 44px - WCAG minimum mobile tap target */
+  --header-height: 4.25rem; /* 68px - Fixed global navbar height */
+  --sidebar-width: 15rem; /* 240px - Compact desktop sidebar */
+  --control-height-sm: 2rem; /* 32px - Small inputs / compact buttons */
+  --control-height-md: 2.5rem; /* 40px - Standard inputs / buttons */
+  --control-height-lg: 3rem; /* 48px - Large CTA buttons */
+  --target-min-size: 2.75rem; /* 44px - WCAG minimum mobile tap target */
 
   /* --------------------------------------------------------------------------
      12. MEDIA & ASPECT RATIO TOKENS
      -------------------------------------------------------------------------- */
-  --aspect-square: 1 / 1;         /* Avatars, icons, chips */
-  --aspect-video: 16 / 9;         /* YouTube / Twitch live stream frames */
-  --aspect-poster: 2 / 3;         /* TMDB movie releases */
-  --aspect-banner: 21 / 9;        /* Discord server & media banners */
+  --aspect-square: 1 / 1; /* Avatars, icons, chips */
+  --aspect-video: 16 / 9; /* YouTube / Twitch live stream frames */
+  --aspect-poster: 2 / 3; /* TMDB movie releases */
+  --aspect-banner: 21 / 9; /* Discord server & media banners */
 
   /* --------------------------------------------------------------------------
      13. OPACITY SCALES
@@ -288,4 +292,53 @@
   --opacity-disabled: 0.5;
   --opacity-hover: 0.85;
   --opacity-solid: 1;
+}
+
+/* --------------------------------------------------------------------------
+   LIGHT THEME OVERRIDES (data-theme="light")
+   -------------------------------------------------------------------------- */
+[data-theme='light'] {
+  /* Surfaces */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: rgb(255 255 255 / 92%);
+  --bg-surface: rgb(248 250 252 / 85%);
+  --bg-glass-subtle: rgb(0 0 0 / 3%);
+  --bg-glass-medium: rgb(0 0 0 / 6%);
+  --bg-glass-card: rgb(255 255 255 / 85%);
+
+  /* Layout Components */
+  --navbar-bg: rgb(255 255 255 / 88%);
+  --sidebar-bg: rgb(248 250 252 / 94%);
+  --header-bg: rgb(255 255 255 / 85%);
+  --footer-bg: rgb(241 245 249 / 92%);
+  --chip-bg: rgb(226 232 240 / 75%);
+  --chip-bg-hover: rgb(203 213 225 / 90%);
+  --modal-backdrop-bg: rgb(15 23 42 / 45%);
+
+  /* Borders & Dividers */
+  --border-subtle: rgb(0 0 0 / 8%);
+  --border-card: rgb(0 0 0 / 10%);
+  --border-hover: rgb(14 165 233 / 50%);
+  --border-active: rgb(14 165 233 / 75%);
+
+  /* Text Colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 6%);
+  --shadow-sm: 0 2px 4px rgb(0 0 0 / 8%);
+  --shadow-md: 0 4px 10px rgb(0 0 0 / 10%);
+  --shadow-lg: 0 10px 20px rgb(0 0 0 / 12%);
+  --shadow-xl: 0 16px 36px rgb(0 0 0 / 16%);
+  --shadow-card: 0 8px 24px -4px rgb(0 0 0 / 8%), 0 2px 6px -1px rgb(0 0 0 / 4%);
+  --shadow-card-hover: 0 16px 32px -6px rgb(0 0 0 / 12%), 0 0 15px rgb(14 165 233 / 15%);
+
+  /* Custom Scrollbar */
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #0ea5e9;
 }

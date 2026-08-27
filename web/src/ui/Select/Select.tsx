@@ -114,7 +114,8 @@ export const Select: React.FC<SelectProps> = ({
     );
   }, [parsedOptions, searchQuery]);
 
-  const selectId = id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const selectId =
+    id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -225,32 +226,36 @@ export const Select: React.FC<SelectProps> = ({
     }
   };
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    default: styles.variantDefault,
-    filled: styles.variantFilled,
-    glass: styles.variantGlass,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      filled: styles.variantFilled,
+      glass: styles.variantGlass,
+    }[variant] || styles.variantDefault;
 
   const effectiveStatus: SelectStatus = error ? 'error' : status;
 
-  const statusClass = {
-    default: '',
-    error: styles.hasError,
-    warning: styles.hasWarning,
-    success: styles.hasSuccess,
-  }[effectiveStatus] || '';
+  const statusClass =
+    {
+      default: '',
+      error: styles.hasError,
+      warning: styles.hasWarning,
+      success: styles.hasSuccess,
+    }[effectiveStatus] || '';
 
-  const chevronSize = {
-    sm: 14,
-    md: 16,
-    lg: 18,
-  }[size] || 16;
+  const chevronSize =
+    {
+      sm: 14,
+      md: 16,
+      lg: 18,
+    }[size] || 16;
 
   const wrapperClasses = [
     styles.wrapper,
@@ -266,11 +271,7 @@ export const Select: React.FC<SelectProps> = ({
   const listboxId = selectId ? `${selectId}-listbox` : 'select-listbox';
 
   return (
-    <div
-      ref={containerRef}
-      id={selectId}
-      className={`${styles.selectGroup} ${className}`}
-    >
+    <div ref={containerRef} id={selectId} className={`${styles.selectGroup} ${className}`}>
       {label && (
         <label htmlFor={selectId ? `${selectId}-trigger` : undefined} className={styles.label}>
           {label}
@@ -324,7 +325,6 @@ export const Select: React.FC<SelectProps> = ({
 
         {isOpen && (
           <div id={listboxId} className={styles.menu} role="listbox">
-
             {searchable && (
               <div className={styles.searchWrapper}>
                 <Search size={14} className={styles.searchIcon} />

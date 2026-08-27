@@ -16,9 +16,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   return (
     <div className={`${styles.cardSkeleton} ${className}`} aria-hidden="true">
       <div className={styles.cardHeader}>
-        {hasAvatar && (
-          <Skeleton variant="circular" avatarSize="md" />
-        )}
+        {hasAvatar && <Skeleton variant="circular" avatarSize="md" />}
         <div className={styles.cardHeaderContent}>
           <Skeleton variant="text" width="half" height="sm" />
           <Skeleton variant="text" width="third" height="xs" />

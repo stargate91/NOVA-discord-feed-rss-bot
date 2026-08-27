@@ -2,14 +2,16 @@ export const docs = {
   tag: 'Documentation & Reference',
   title: 'Getting Started with',
   titleHighlight: 'Nova Feeds',
-  subtitle: 'Learn how to invite the bot, configure social monitors, customize notification layouts, and manage guild entitlements.',
+  subtitle:
+    'Learn how to invite the bot, configure social monitors, customize notification layouts, and manage guild entitlements.',
 
   tabSetup: 'Setup & Permissions',
   tabFeeds: 'Supported Feeds',
   tabCommands: 'Slash Commands',
 
   section1Title: '1. Bot Invitation & Permissions',
-  section1Desc: 'To invite Nova to your Discord server, you must have the Manage Server or Administrator permission on that server.',
+  section1Desc:
+    'To invite Nova to your Discord server, you must have the Manage Server or Administrator permission on that server.',
   tableHeadPermission: 'Required Discord Permission',
   tableHeadPurpose: 'Purpose',
   tableHeadStatus: 'Status',
@@ -19,7 +21,8 @@ export const docs = {
   permSendDesc: 'Dispatching feed notifications to selected channels',
   permAttach: 'Attach Files: Required for high-resolution posters and thumbnails.',
   permAttachDesc: 'Uploading thumbnails, banners, and preview posters',
-  permMention: 'Mention Roles: Optional, required if you configure custom ping roles on notifications.',
+  permMention:
+    'Mention Roles: Optional, required if you configure custom ping roles on notifications.',
   permMentionDesc: 'Triggering customized notification pings for subscribed roles',
 
   section2Title: '2. Supported Monitor Types',
@@ -34,7 +37,8 @@ export const docs = {
   chipGithub: 'GitHub Releases',
 
   section3Title: '3. Slash Command Reference',
-  section3Desc: 'Execute these commands directly inside your Discord server or manage feeds in the dashboard.',
+  section3Desc:
+    'Execute these commands directly inside your Discord server or manage feeds in the dashboard.',
   tableHeadCommand: 'Command',
   tableHeadDescription: 'Description',
   cmdAdd: '/feed add [type] [target] [channel] — Create a new automated monitor.',
@@ -42,10 +46,10 @@ export const docs = {
   cmdList: '/feed list — List all active monitors on your server.',
   cmdListDesc: 'Lists all active notification monitors configured for this server',
   cmdTest: '/feed test [id] — Trigger an immediate test message in your destination channel.',
-  cmdTestDesc: 'Dispatches a synthetic live preview notification to verify permissions and embed layout',
+  cmdTestDesc:
+    'Dispatches a synthetic live preview notification to verify permissions and embed layout',
   cmdRemove: '/feed remove [id] — Delete an active monitor.',
   cmdRemoveDesc: 'Safely deletes a feed monitor and clears related cache entries',
   cmdStatus: '/feed status — Display polling latency and health metrics for your guild.',
   cmdStatusDesc: 'Displays real-time bot worker health, shard latency, and channel permissions',
 } as const;
-

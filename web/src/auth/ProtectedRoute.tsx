@@ -6,6 +6,7 @@ import styles from './ProtectedRoute.module.css';
 
 interface ProtectedRouteProps {
   children?: ReactNode;
+  requireAuth?: boolean;
   requireGuildManage?: boolean;
   requireAdminSecret?: boolean;
   fallbackRedirect?: string;
@@ -13,11 +14,12 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
+  requireAuth = true,
   requireGuildManage = false,
   requireAdminSecret = false,
-  fallbackRedirect = '/servers',
+  fallbackRedirect = '/',
 }) => {
-  const { isLoading, adminSecret, checkGuildPermission } = useAuth();
+  const { isLoading, isAuthenticated, adminSecret, checkGuildPermission } = useAuth();
   const { guildId } = useParams<{ guildId?: string }>();
 
   if (isLoading) {
@@ -29,6 +31,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  // Authentication check
+  if (requireAuth && !isAuthenticated) {
+    return <Navigate to={fallbackRedirect} replace />;
+  }
+
   // Developer portal route check
   if (requireAdminSecret && !adminSecret) {
     return <Navigate to="/dev" replace />;
@@ -38,7 +45,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (requireGuildManage && guildId) {
     const hasAccess = checkGuildPermission(guildId);
     if (!hasAccess) {
-      return <Navigate to={fallbackRedirect} replace />;
+      return <Navigate to="/servers" replace />;
     }
   }
 

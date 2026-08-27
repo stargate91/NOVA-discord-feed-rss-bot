@@ -39,27 +39,30 @@ export const IconButton: React.FC<IconButtonProps> = ({
 }) => {
   const isDisabled = disabled || loading;
 
-  const sizeClass = {
-    xs: styles.sizeXs,
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      xs: styles.sizeXs,
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const shapeClass = {
-    circle: styles.shapeCircle,
-    rounded: styles.shapeRounded,
-    square: styles.shapeSquare,
-  }[shape] || styles.shapeRounded;
+  const shapeClass =
+    {
+      circle: styles.shapeCircle,
+      rounded: styles.shapeRounded,
+      square: styles.shapeSquare,
+    }[shape] || styles.shapeRounded;
 
-  const variantClass = {
-    primary: styles.variantPrimary,
-    secondary: styles.variantSecondary,
-    ghost: styles.variantGhost,
-    outline: styles.variantOutline,
-    danger: styles.variantDanger,
-    glass: styles.variantGlass,
-  }[variant] || styles.variantGhost;
+  const variantClass =
+    {
+      primary: styles.variantPrimary,
+      secondary: styles.variantSecondary,
+      ghost: styles.variantGhost,
+      outline: styles.variantOutline,
+      danger: styles.variantDanger,
+      glass: styles.variantGlass,
+    }[variant] || styles.variantGhost;
 
   const classes = [
     styles.btn,
@@ -72,19 +75,24 @@ export const IconButton: React.FC<IconButtonProps> = ({
     .filter(Boolean)
     .join(' ');
 
-  const spinnerSize = {
-    xs: 12,
-    sm: 14,
-    md: 18,
-    lg: 22,
-  }[size] || 18;
+  const spinnerSize =
+    {
+      xs: 12,
+      sm: 14,
+      md: 18,
+      lg: 22,
+    }[size] || 18;
 
   const renderBadge = () => {
     if (badge === true) {
       return <span className={styles.badgeDot} aria-hidden="true" />;
     }
     if (typeof badge === 'number') {
-      return <span className={styles.badgeCount} aria-hidden="true">{badge > 99 ? '99+' : badge}</span>;
+      return (
+        <span className={styles.badgeCount} aria-hidden="true">
+          {badge > 99 ? '99+' : badge}
+        </span>
+      );
     }
     return null;
   };

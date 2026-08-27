@@ -20,9 +20,21 @@ export interface DashboardSidebarProps {
 }
 
 const SIDEBAR_SERVERS = [
-  { value: '123456789012345678', labelKey: 'guild.sidebarServer1Label', descKey: 'guild.sidebarServer1Desc' },
-  { value: '987654321098765432', labelKey: 'guild.sidebarServer2Label', descKey: 'guild.sidebarServer2Desc' },
-  { value: '555666777888999000', labelKey: 'guild.sidebarServer3Label', descKey: 'guild.sidebarServer3Desc' },
+  {
+    value: '123456789012345678',
+    labelKey: 'guild.sidebarServer1Label',
+    descKey: 'guild.sidebarServer1Desc',
+  },
+  {
+    value: '987654321098765432',
+    labelKey: 'guild.sidebarServer2Label',
+    descKey: 'guild.sidebarServer2Desc',
+  },
+  {
+    value: '555666777888999000',
+    labelKey: 'guild.sidebarServer3Label',
+    descKey: 'guild.sidebarServer3Desc',
+  },
 ] as const;
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
@@ -60,7 +72,6 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         />
       </div>
 
-
       {/* Navigation Links */}
       <nav className={styles.nav}>
         <NavLink
@@ -69,7 +80,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           onClick={onNavClick}
         >
-          <span className={styles.navIcon}><Activity size={16} /></span>
+          <span className={styles.navIcon}>
+            <Activity size={16} />
+          </span>
           <span>{t('guild.overviewTitle')}</span>
         </NavLink>
 
@@ -78,7 +91,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           onClick={onNavClick}
         >
-          <span className={styles.navIcon}><Radio size={16} /></span>
+          <span className={styles.navIcon}>
+            <Radio size={16} />
+          </span>
           <span>{t('common.navFeeds')}</span>
         </NavLink>
 
@@ -87,7 +102,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           onClick={onNavClick}
         >
-          <span className={styles.navIcon}><BarChart3 size={16} /></span>
+          <span className={styles.navIcon}>
+            <BarChart3 size={16} />
+          </span>
           <span>{t('common.navAnalytics')}</span>
         </NavLink>
 
@@ -96,7 +113,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           onClick={onNavClick}
         >
-          <span className={styles.navIcon}><Sparkles size={16} /></span>
+          <span className={styles.navIcon}>
+            <Sparkles size={16} />
+          </span>
           <span>{t('common.navPremium')}</span>
         </NavLink>
 
@@ -105,7 +124,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           onClick={onNavClick}
         >
-          <span className={styles.navIcon}><SlidersHorizontal size={16} /></span>
+          <span className={styles.navIcon}>
+            <SlidersHorizontal size={16} />
+          </span>
           <span>{t('common.navGuildSettings')}</span>
         </NavLink>
       </nav>

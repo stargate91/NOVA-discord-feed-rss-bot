@@ -1,24 +1,42 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftRight, Plus, Activity, Zap, CheckCircle2, Sliders, ArrowUpRight } from 'lucide-react';
-import { useTranslation } from '../../i18n';
 import {
-  Card,
-  Button,
-  Badge,
-  ProgressBar,
-  Chip,
-  Stack,
-  Inline,
-  Grid,
-  Text,
-} from '../../ui';
+  ArrowLeftRight,
+  Plus,
+  Activity,
+  Zap,
+  CheckCircle2,
+  Sliders,
+  ArrowUpRight,
+} from 'lucide-react';
+import { useTranslation } from '../../i18n';
+import { Card, Button, Badge, ProgressBar, Chip, Stack, Inline, Grid, Text } from '../../ui';
 
 const OVERVIEW_PLATFORMS = [
-  { id: 'youtube', labelKey: 'guild.feedPlatformYoutube', icon: '/images/brands/youtube.png', selected: true },
-  { id: 'twitch', labelKey: 'guild.feedPlatformTwitch', icon: '/images/brands/twitch.png', selected: true },
-  { id: 'steam', labelKey: 'guild.feedPlatformSteamDeals', icon: '/images/brands/steam.png', selected: true },
-  { id: 'kick', labelKey: 'guild.feedPlatformKickLive', icon: '/images/brands/kick.png', selected: false },
+  {
+    id: 'youtube',
+    labelKey: 'guild.feedPlatformYoutube',
+    icon: '/images/brands/youtube.png',
+    selected: true,
+  },
+  {
+    id: 'twitch',
+    labelKey: 'guild.feedPlatformTwitch',
+    icon: '/images/brands/twitch.png',
+    selected: true,
+  },
+  {
+    id: 'steam',
+    labelKey: 'guild.feedPlatformSteamDeals',
+    icon: '/images/brands/steam.png',
+    selected: true,
+  },
+  {
+    id: 'kick',
+    labelKey: 'guild.feedPlatformKickLive',
+    icon: '/images/brands/kick.png',
+    selected: false,
+  },
 ] as const;
 
 export const GuildOverviewPage: React.FC = () => {
@@ -39,16 +57,10 @@ export const GuildOverviewPage: React.FC = () => {
         </Stack>
 
         <Inline gap="xs" wrap>
-          <Button
-            variant="secondary"
-            onClick={() => navigate('/servers')}
-          >
+          <Button variant="secondary" onClick={() => navigate('/servers')}>
             <ArrowLeftRight size={14} /> {t('guild.switchServerBtn')}
           </Button>
-          <Button
-            variant="primary"
-            onClick={() => navigate(`/dashboard/${guildId}/feeds`)}
-          >
+          <Button variant="primary" onClick={() => navigate(`/dashboard/${guildId}/feeds`)}>
             <Plus size={14} /> {t('guild.manageFeedsBtn')}
           </Button>
         </Inline>
@@ -113,7 +125,10 @@ export const GuildOverviewPage: React.FC = () => {
 
       {/* Quick Access Grid */}
       <Grid minItemWidth="md" gap="lg">
-        <Card title={t('guild.monitoredPlatformsTitle')} subtitle={t('guild.monitoredPlatformsSubtitle')}>
+        <Card
+          title={t('guild.monitoredPlatformsTitle')}
+          subtitle={t('guild.monitoredPlatformsSubtitle')}
+        >
           <Stack gap="md">
             <Inline gap="xs" wrap>
               {OVERVIEW_PLATFORMS.map((platform) => (
@@ -142,17 +157,25 @@ export const GuildOverviewPage: React.FC = () => {
           <Stack gap="md">
             <Stack gap="xs">
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.activeTierLabel')}</Text>
-                <Badge variant="online" dot pulse>{t('guild.activeTierValue')}</Badge>
+                <Text size="xs" color="secondary">
+                  {t('guild.activeTierLabel')}
+                </Text>
+                <Badge variant="online" dot pulse>
+                  {t('guild.activeTierValue')}
+                </Badge>
               </Inline>
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.refreshIntervalLabel')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.refreshIntervalLabel')}
+                </Text>
                 <Text size="xs" weight="semibold">
                   {t('guild.refreshIntervalValue', { seconds: 120 })}
                 </Text>
               </Inline>
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.promoCodeLabel')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.promoCodeLabel')}
+                </Text>
                 <Badge variant="tier">{t('guild.promoCodeApplied')}</Badge>
               </Inline>
             </Stack>
@@ -170,4 +193,3 @@ export const GuildOverviewPage: React.FC = () => {
     </Stack>
   );
 };
-

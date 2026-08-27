@@ -58,7 +58,7 @@ export const GuildSettingsPage: React.FC = () => {
 
   const handleSave = (e?: React.FormEvent) => {
     e?.preventDefault();
-    toast.success('Guild settings successfully saved and synchronized to Nova backend.', 'Settings Updated');
+    toast.success(t('guild.toastSettingsSaved'), t('guild.toastSettingsSavedTitle'));
   };
 
   return (
@@ -80,7 +80,12 @@ export const GuildSettingsPage: React.FC = () => {
 
       <Grid minItemWidth="md" gap="lg">
         {/* Localization & Region */}
-        <Card glow="blue" padding="xl" title={t('guild.localizationTitle')} subtitle={t('guild.localizationSubtitle')}>
+        <Card
+          glow="blue"
+          padding="xl"
+          title={t('guild.localizationTitle')}
+          subtitle={t('guild.localizationSubtitle')}
+        >
           <form onSubmit={handleSave}>
             <Stack gap="md">
               <Field label={t('guild.botLanguageLabel')} hint={t('guild.botLanguageHint')}>
@@ -117,13 +122,15 @@ export const GuildSettingsPage: React.FC = () => {
         </Card>
 
         {/* Audit Logging & Diagnostic Health */}
-        <Card glow="purple" padding="xl" title={t('guild.auditLoggingTitle')} subtitle={t('guild.auditLoggingSubtitle')}>
+        <Card
+          glow="purple"
+          padding="xl"
+          title={t('guild.auditLoggingTitle')}
+          subtitle={t('guild.auditLoggingSubtitle')}
+        >
           <form onSubmit={handleSave}>
             <Stack gap="md">
-              <Field
-                label={t('guild.errorChannelLabel')}
-                hint={t('guild.errorChannelHint')}
-              >
+              <Field label={t('guild.errorChannelLabel')} hint={t('guild.errorChannelHint')}>
                 <Input
                   leftIcon={<Hash size={15} />}
                   value={logChannel}
@@ -152,4 +159,3 @@ export const GuildSettingsPage: React.FC = () => {
     </Stack>
   );
 };
-

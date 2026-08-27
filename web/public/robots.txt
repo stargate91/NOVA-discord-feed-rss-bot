@@ -6,11 +6,13 @@ Allow: /support
 Allow: /changelog
 Allow: /terms
 Allow: /privacy
-Allow: /dev
+Allow: /servers
 
-# Disallow private user/guild dashboard sessions and API routes from crawling
+# Disallow private user/guild dashboard sessions, admin portal, and API routes from crawling
 Disallow: /dashboard/
+Disallow: /dev
 Disallow: /api/
 Disallow: /health
 
 Sitemap: https://novafeeds.xyz/sitemap.xml
+

@@ -44,7 +44,9 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
     if (fallback !== undefined) {
       return fallback ? <>{fallback}</> : null;
     }
-    return <UpgradePromoCard requiredTier={tier} featureName={featureName} description={description} />;
+    return (
+      <UpgradePromoCard requiredTier={tier} featureName={featureName} description={description} />
+    );
   }
 
   return <>{children}</>;

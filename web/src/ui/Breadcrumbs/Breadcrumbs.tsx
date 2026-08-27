@@ -27,12 +27,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   if (!items || items.length === 0) return null;
 
   return (
-    <nav
-      id={id}
-      aria-label="Breadcrumb"
-      className={`${styles.nav} ${className}`}
-      {...rest}
-    >
+    <nav id={id} aria-label="Breadcrumb" className={`${styles.nav} ${className}`} {...rest}>
       <ol className={styles.list}>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -50,11 +45,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                   <span>{item.label}</span>
                 </a>
               ) : (
-                <button
-                  type="button"
-                  className={styles.link}
-                  onClick={item.onClick}
-                >
+                <button type="button" className={styles.link} onClick={item.onClick}>
                   {item.icon && <span>{item.icon}</span>}
                   <span>{item.label}</span>
                 </button>

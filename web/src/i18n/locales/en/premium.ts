@@ -2,7 +2,8 @@ export const premium = {
   tag: 'Nova Premium Plans',
   title: 'Supercharge Your',
   titleHighlight: 'Community Feeds',
-  subtitle: 'Accelerated polling speeds, higher monitor quotas, priority queue delivery, and full platform access.',
+  subtitle:
+    'Accelerated polling speeds, higher monitor quotas, priority queue delivery, and full platform access.',
 
   // Free Tier
   freeTitle: 'Free',
@@ -43,7 +44,9 @@ export const premium = {
   // FAQ
   faqTitle: 'Frequently Asked Questions',
   faqQ1: 'How do subscription tiers apply to Discord servers?',
-  faqA1: 'Subscriptions are tied to your Discord server (Guild ID). Once upgraded, all administrators and members on that guild instantly benefit from the expanded limits and accelerated intervals.',
+  faqA1:
+    'Subscriptions are tied to your Discord server (Guild ID). Once upgraded, all administrators and members on that guild instantly benefit from the expanded limits and accelerated intervals.',
   faqQ2: 'Can I cancel or switch tiers anytime?',
-  faqA2: 'Yes! You can upgrade, downgrade, or cancel your subscription at any point from your server management dashboard. Your plan remains active until the end of your billing cycle.',
+  faqA2:
+    'Yes! You can upgrade, downgrade, or cancel your subscription at any point from your server management dashboard. Your plan remains active until the end of your billing cycle.',
 } as const;

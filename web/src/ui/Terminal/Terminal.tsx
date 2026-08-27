@@ -117,9 +117,7 @@ export const Terminal: React.FC<TerminalProps> = ({
       <div key={logItem.id || `structured-log-${index}`} className={styles.line}>
         {timestamp && <span className={styles.timestamp}>[{timestamp}]</span>}
         {level && (
-          <span className={`${styles.level} ${getLevelClass(level)}`}>
-            [{level.toUpperCase()}]
-          </span>
+          <span className={`${styles.level} ${getLevelClass(level)}`}>[{level.toUpperCase()}]</span>
         )}
         {source && <span className={styles.source}>[{source}]</span>}
         <span className={styles.message}>{message}</span>
@@ -129,12 +127,13 @@ export const Terminal: React.FC<TerminalProps> = ({
 
   const isWindow = variant === 'window';
 
-  const sizeClass = {
-    sm: styles.bodySm,
-    md: styles.bodyMd,
-    lg: styles.bodyLg,
-    full: styles.bodyFull,
-  }[size] || styles.bodyMd;
+  const sizeClass =
+    {
+      sm: styles.bodySm,
+      md: styles.bodyMd,
+      lg: styles.bodyLg,
+      full: styles.bodyFull,
+    }[size] || styles.bodyMd;
 
   return (
     <div
@@ -178,10 +177,7 @@ export const Terminal: React.FC<TerminalProps> = ({
         </div>
       )}
 
-      <div
-        ref={bodyRef}
-        className={`${styles.body} ${sizeClass}`}
-      >
+      <div ref={bodyRef} className={`${styles.body} ${sizeClass}`}>
         {logs.length > 0 ? (
           logs.map((log, i) => renderLogLine(log, i))
         ) : (

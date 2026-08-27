@@ -93,7 +93,6 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
           </div>
 
           <div ref={embedBoxRef} className={styles.embedBox}>
-
             <div className={styles.embedHeaderLayout}>
               <div className={styles.embedMain}>
                 {author && (
@@ -104,7 +103,11 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
                     rel="noreferrer"
                   >
                     {author.icon_url && (
-                      <img src={author.icon_url} alt={author.name} className={styles.embedAuthorIcon} />
+                      <img
+                        src={author.icon_url}
+                        alt={author.name}
+                        className={styles.embedAuthorIcon}
+                      />
                     )}
                     <span>{author.name}</span>
                   </a>
@@ -117,7 +120,9 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
                 <p className={styles.desc}>{description}</p>
               </div>
 
-              {thumbnail && <img src={thumbnail} alt="Embed thumbnail" className={styles.thumbnail} />}
+              {thumbnail && (
+                <img src={thumbnail} alt="Embed thumbnail" className={styles.thumbnail} />
+              )}
             </div>
 
             {fields && fields.length > 0 && (
@@ -141,7 +146,11 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
             {footerContent.text && (
               <div className={styles.footer}>
                 {footerContent.icon_url && (
-                  <img src={footerContent.icon_url} alt="Footer icon" className={styles.footerIcon} />
+                  <img
+                    src={footerContent.icon_url}
+                    alt="Footer icon"
+                    className={styles.footerIcon}
+                  />
                 )}
                 <span>
                   {footerContent.text}
@@ -151,14 +160,9 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
             )}
           </div>
 
-          {components && (
-            <div className={styles.componentsContainer}>
-              {components}
-            </div>
-          )}
+          {components && <div className={styles.componentsContainer}>{components}</div>}
         </div>
       </div>
     </div>
   );
 };
-

@@ -47,11 +47,29 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({ children }) => {
     }
   }, [locale]);
 
-  // Translation function with parameter interpolation
+  // Translation function with parameter interpolation & pluralization
   const t = useCallback(
     (key: TranslationKey, params?: Record<string, string | number>): string => {
       const activeDict = dictionaries[locale] || en;
-      let text: string = activeDict[key] || en[key] || (key as string);
+
+      // Pluralization resolver if count is provided
+      let resolvedKey = key as string;
+      if (params && typeof params.count === 'number') {
+        const count = params.count;
+        if (count === 0 && `${key}_zero` in activeDict) {
+          resolvedKey = `${key}_zero`;
+        } else if (count === 1 && `${key}_one` in activeDict) {
+          resolvedKey = `${key}_one`;
+        } else if (count > 1 && `${key}_other` in activeDict) {
+          resolvedKey = `${key}_other`;
+        } else if (`${key}_plural` in activeDict && count !== 1) {
+          resolvedKey = `${key}_plural`;
+        }
+      }
+
+      const dictKey = resolvedKey as TranslationKey;
+      let text: string =
+        activeDict[dictKey] || en[dictKey] || activeDict[key] || en[key] || (key as string);
 
       if (params) {
         Object.entries(params).forEach(([paramKey, paramValue]) => {

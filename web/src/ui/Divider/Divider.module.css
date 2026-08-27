@@ -107,7 +107,7 @@
 
 .withLabel::before,
 .withLabel::after {
-  content: "";
+  content: '';
   flex: 1;
   border-top: 1px solid var(--border-subtle);
 }

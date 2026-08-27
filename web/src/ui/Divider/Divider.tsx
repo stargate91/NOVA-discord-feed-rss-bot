@@ -42,17 +42,18 @@ export const Divider: React.FC<DividerProps> = ({
   const isVertical = orientation === 'vertical';
 
   if (content && !isVertical) {
-    const withLabelClasses = [
-      styles.withLabel,
-      spacingMap[spacing],
-      styles[variant],
-      className,
-    ]
+    const withLabelClasses = [styles.withLabel, spacingMap[spacing], styles[variant], className]
       .filter(Boolean)
       .join(' ');
 
     return (
-      <div id={id} className={withLabelClasses} role="separator" aria-orientation="horizontal" {...rest}>
+      <div
+        id={id}
+        className={withLabelClasses}
+        role="separator"
+        aria-orientation="horizontal"
+        {...rest}
+      >
         <span className={styles.label}>{content}</span>
       </div>
     );
@@ -68,12 +69,6 @@ export const Divider: React.FC<DividerProps> = ({
     .join(' ');
 
   return (
-    <div
-      id={id}
-      className={classes}
-      role="separator"
-      aria-orientation={orientation}
-      {...rest}
-    />
+    <div id={id} className={classes} role="separator" aria-orientation={orientation} {...rest} />
   );
 };

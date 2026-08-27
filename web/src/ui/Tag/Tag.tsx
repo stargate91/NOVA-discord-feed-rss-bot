@@ -46,18 +46,20 @@ export const Tag: React.FC<TagProps> = ({
   const isInteractive = Boolean(onClick);
   const handleRemove = onRemove ?? onDelete;
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    default: styles.variantDefault,
-    subtle: styles.variantSubtle,
-    outline: styles.variantOutline,
-    filled: styles.variantFilled,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      subtle: styles.variantSubtle,
+      outline: styles.variantOutline,
+      filled: styles.variantFilled,
+    }[variant] || styles.variantDefault;
 
   const colorClass = color
     ? {

@@ -51,11 +51,12 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
     onChange?.(val);
   };
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
   const containerClasses = [
     styles.container,
@@ -72,10 +73,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
         const isSelected = activeValue === option.value;
         const isOptionDisabled = disabled || option.disabled;
 
-        const segmentClasses = [
-          styles.segment,
-          isSelected ? styles.active : '',
-        ]
+        const segmentClasses = [styles.segment, isSelected ? styles.active : '']
           .filter(Boolean)
           .join(' ');
 
@@ -92,9 +90,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
           >
             {option.icon && <span className={styles.icon}>{option.icon}</span>}
             <span>{option.label}</span>
-            {option.badge !== undefined && (
-              <span className={styles.badge}>{option.badge}</span>
-            )}
+            {option.badge !== undefined && <span className={styles.badge}>{option.badge}</span>}
           </button>
         );
       })}

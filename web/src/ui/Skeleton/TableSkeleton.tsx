@@ -7,10 +7,7 @@ interface TableSkeletonProps {
   className?: string;
 }
 
-export const TableSkeleton: React.FC<TableSkeletonProps> = ({
-  rows = 4,
-  className = '',
-}) => {
+export const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 4, className = '' }) => {
   const rowElements = [];
   for (let i = 0; i < rows; i++) {
     rowElements.push(

@@ -9,10 +9,7 @@ export const TermsPage: React.FC = () => {
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO
-        title={t('legal.termsTitle')}
-        description={t('legal.termsSubtitle')}
-      />
+      <SEO title={t('legal.termsTitle')} description={t('legal.termsSubtitle')} />
 
       <Stack gap="5xl">
         <Stack align="center" gap="md">
@@ -73,4 +70,3 @@ export const TermsPage: React.FC = () => {
     </Container>
   );
 };
-

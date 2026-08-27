@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
+import { DISCORD_BOT_INVITE_URL } from '../../constants';
+import { openExternalUrl } from '../../utils';
 import {
   Badge,
   Button,
@@ -68,18 +70,20 @@ export const HomePage: React.FC = () => {
         icon_url: '/images/brands/youtube.png',
         url: 'https://youtube.com',
       },
-      title: '$1,000,000 Every 10 Seconds You Survive Inside a Circle!',
+      title: t('home.embedYoutubeTitle'),
       titleUrl: 'https://youtube.com',
-      description: 'The final 10 contestants face extreme obstacle challenges in the ultimate live event.',
-      thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=60',
-      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+      description: t('home.embedYoutubeDesc'),
+      thumbnail:
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=60',
+      image:
+        'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
       fields: [
-        { name: 'Channel', value: '@MrBeast', inline: true },
-        { name: 'Video Duration', value: '18:42', inline: true },
-        { name: 'Upload Time', value: '2 mins ago', inline: true },
+        { name: t('home.embedYoutubeFieldChannel'), value: '@MrBeast', inline: true },
+        { name: t('home.embedYoutubeFieldDuration'), value: '18:42', inline: true },
+        { name: t('home.embedYoutubeFieldUploadTime'), value: '2 mins ago', inline: true },
       ],
       footer: {
-        text: 'YouTube Upload Notification • Nova Feeds',
+        text: t('home.embedYoutubeFooter'),
         timestamp: 'Today at 18:00',
       },
     },
@@ -92,12 +96,14 @@ export const HomePage: React.FC = () => {
       title: t('home.embedTitle'),
       titleUrl: 'https://twitch.tv',
       description: t('home.embedDescription'),
-      thumbnail: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=60',
-      image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+      thumbnail:
+        'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=60',
+      image:
+        'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
       fields: [
-        { name: 'Category', value: 'VALORANT', inline: true },
-        { name: 'Viewer Count', value: '24,510 Viewers', inline: true },
-        { name: 'Uptime', value: 'Live for 14 mins', inline: true },
+        { name: t('home.embedTwitchFieldCategory'), value: 'VALORANT', inline: true },
+        { name: t('home.embedTwitchFieldViewers'), value: '24,510 Viewers', inline: true },
+        { name: t('home.embedTwitchFieldUptime'), value: 'Live for 14 mins', inline: true },
       ],
       footer: {
         text: t('home.embedFooter'),
@@ -110,18 +116,20 @@ export const HomePage: React.FC = () => {
         icon_url: '/images/brands/steam.png',
         url: 'https://store.steampowered.com',
       },
-      title: 'FREE: Warhammer: Vermintide 2 is 100% OFF!',
+      title: t('home.embedSteamTitle'),
       titleUrl: 'https://store.steampowered.com',
-      description: 'Grab Warhammer: Vermintide 2 for free on Steam during this limited-time 100% discount promotional giveaway!',
-      thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=60',
-      image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+      description: t('home.embedSteamDesc'),
+      thumbnail:
+        'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=60',
+      image:
+        'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
       fields: [
-        { name: 'Original Price', value: '~~$29.99~~', inline: true },
-        { name: 'Discount Price', value: '**FREE ($0.00)**', inline: true },
-        { name: 'Offer Expiry', value: 'Sunday at 18:00 UTC', inline: true },
+        { name: t('home.embedSteamOriginalPrice'), value: '~~$29.99~~', inline: true },
+        { name: t('home.embedSteamDiscountPrice'), value: '**FREE ($0.00)**', inline: true },
+        { name: t('home.embedSteamExpiry'), value: 'Sunday at 18:00 UTC', inline: true },
       ],
       footer: {
-        text: 'Steam Price Drops • Nova Feeds',
+        text: t('home.embedSteamFooter'),
         timestamp: 'Today at 17:15',
       },
     },
@@ -131,18 +139,19 @@ export const HomePage: React.FC = () => {
         icon_url: '/images/brands/github.png',
         url: 'https://github.com',
       },
-      title: 'Release 0.115.0 · tiangolo/fastapi',
+      title: t('home.embedGithubTitle'),
       titleUrl: 'https://github.com',
-      description: 'New features: Support for Pydantic v2 recursive validation, performance improvements for async dependency injection.',
-      thumbnail: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=200&auto=format&fit=crop&q=60',
+      description: t('home.embedGithubDesc'),
+      thumbnail:
+        'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=200&auto=format&fit=crop&q=60',
       image: undefined,
       fields: [
-        { name: 'Tag', value: 'v0.115.0', inline: true },
-        { name: 'Commit Hash', value: '`7b3d2ef`', inline: true },
-        { name: 'Assets', value: '4 binaries attached', inline: true },
+        { name: t('home.embedGithubFieldTag'), value: 'v0.115.0', inline: true },
+        { name: t('home.embedGithubFieldCommit'), value: '`7b3d2ef`', inline: true },
+        { name: t('home.embedGithubFieldAssets'), value: '4 binaries attached', inline: true },
       ],
       footer: {
-        text: 'GitHub Releases • Nova Feeds',
+        text: t('home.embedGithubFooter'),
         timestamp: 'Today at 12:45',
       },
     },
@@ -150,10 +159,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <Stack gap="5xl">
-      <SEO
-        title={t('home.heroTitleHighlight')}
-        description={t('home.heroDescription')}
-      />
+      <SEO title={t('home.heroTitleHighlight')} description={t('home.heroDescription')} />
 
       {/* Hero Section */}
       <Stack align="center" gap="2xl">
@@ -178,12 +184,7 @@ export const HomePage: React.FC = () => {
           <Button
             variant="primary"
             size="lg"
-            onClick={() =>
-              window.open(
-                'https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands',
-                '_blank'
-              )
-            }
+            onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
           >
             <Plus size={18} /> {t('home.ctaDiscord')}
           </Button>
@@ -205,7 +206,9 @@ export const HomePage: React.FC = () => {
       {/* Interactive Live Preview Demonstration */}
       <Stack align="center" gap="xl">
         <Stack align="center" gap="2xs">
-          <Text as="h2" size="2xl" weight="bold" align="center">{t('home.previewTitle')}</Text>
+          <Text as="h2" size="2xl" weight="bold" align="center">
+            {t('home.previewTitle')}
+          </Text>
           <Text size="sm" color="secondary" align="center">
             {t('home.previewSubtitle')}
           </Text>
@@ -244,7 +247,9 @@ export const HomePage: React.FC = () => {
       {/* Features Grid */}
       <Stack gap="xl">
         <Stack align="center" gap="2xs">
-          <Text as="h2" size="2xl" weight="bold" align="center">{t('home.scaleSpeedTitle')}</Text>
+          <Text as="h2" size="2xl" weight="bold" align="center">
+            {t('home.scaleSpeedTitle')}
+          </Text>
           <Container maxWidth="sm" centered>
             <Text size="sm" color="secondary" align="center">
               {t('home.scaleSpeedDesc')}
@@ -262,7 +267,9 @@ export const HomePage: React.FC = () => {
             </Card.Header>
             <Card.Description>{t('home.featureRealtimeSubtitle')}</Card.Description>
             <Card.Body>
-              <Text size="sm" color="secondary">{t('home.featureRealtimeDesc')}</Text>
+              <Text size="sm" color="secondary">
+                {t('home.featureRealtimeDesc')}
+              </Text>
             </Card.Body>
           </Card>
 
@@ -275,7 +282,9 @@ export const HomePage: React.FC = () => {
             </Card.Header>
             <Card.Description>{t('home.featureReliabilitySubtitle')}</Card.Description>
             <Card.Body>
-              <Text size="sm" color="secondary">{t('home.featureReliabilityDesc')}</Text>
+              <Text size="sm" color="secondary">
+                {t('home.featureReliabilityDesc')}
+              </Text>
             </Card.Body>
           </Card>
 
@@ -288,7 +297,9 @@ export const HomePage: React.FC = () => {
             </Card.Header>
             <Card.Description>{t('home.featureLayoutsSubtitle')}</Card.Description>
             <Card.Body>
-              <Text size="sm" color="secondary">{t('home.featureLayoutsDesc')}</Text>
+              <Text size="sm" color="secondary">
+                {t('home.featureLayoutsDesc')}
+              </Text>
             </Card.Body>
           </Card>
         </Grid>
@@ -304,7 +315,9 @@ export const HomePage: React.FC = () => {
             </Card.Actions>
           </Card.Header>
           <Stack gap="sm">
-            <Text size="3xl" weight="black">{t('home.statLatencyValue')}</Text>
+            <Text size="3xl" weight="black">
+              {t('home.statLatencyValue')}
+            </Text>
             <ProgressBar
               value={92}
               size="sm"
@@ -324,7 +337,9 @@ export const HomePage: React.FC = () => {
             </Card.Actions>
           </Card.Header>
           <Stack gap="sm">
-            <Text size="3xl" weight="black">{t('home.statPollingValue')}</Text>
+            <Text size="3xl" weight="black">
+              {t('home.statPollingValue')}
+            </Text>
             <ProgressBar
               value={99.98}
               size="sm"
@@ -344,7 +359,9 @@ export const HomePage: React.FC = () => {
             </Card.Actions>
           </Card.Header>
           <Stack gap="sm">
-            <Text size="3xl" weight="black">{t('home.statQuotaValue')}</Text>
+            <Text size="3xl" weight="black">
+              {t('home.statQuotaValue')}
+            </Text>
             <ProgressBar
               value={42}
               size="sm"
@@ -361,7 +378,9 @@ export const HomePage: React.FC = () => {
       <Container maxWidth="sm" centered>
         <Stack gap="xl">
           <Stack align="center" gap="2xs">
-            <Text as="h2" size="2xl" weight="bold" align="center">{t('home.faqTitle')}</Text>
+            <Text as="h2" size="2xl" weight="bold" align="center">
+              {t('home.faqTitle')}
+            </Text>
             <Text size="sm" color="secondary" align="center">
               {t('home.faqSubtitle')}
             </Text>
@@ -372,36 +391,28 @@ export const HomePage: React.FC = () => {
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('home.faq1Question')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('home.faq1Answer')}
-              </Accordion.Content>
+              <Accordion.Content>{t('home.faq1Answer')}</Accordion.Content>
             </Accordion.Item>
 
             <Accordion.Item value="faq-2">
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('home.faq2Question')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('home.faq2Answer')}
-              </Accordion.Content>
+              <Accordion.Content>{t('home.faq2Answer')}</Accordion.Content>
             </Accordion.Item>
 
             <Accordion.Item value="faq-3">
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('home.faq3Question')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('home.faq3Answer')}
-              </Accordion.Content>
+              <Accordion.Content>{t('home.faq3Answer')}</Accordion.Content>
             </Accordion.Item>
 
             <Accordion.Item value="faq-4">
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('home.faq4Question')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('home.faq4Answer')}
-              </Accordion.Content>
+              <Accordion.Content>{t('home.faq4Answer')}</Accordion.Content>
             </Accordion.Item>
           </Accordion>
         </Stack>
@@ -411,7 +422,9 @@ export const HomePage: React.FC = () => {
       <Card glow="blue" padding="xl">
         <Inline justify="between" align="center" wrap gap="2xl">
           <Stack gap="3xs">
-            <Text as="h3" size="xl" weight="bold">{t('home.ctaSuperpowerTitle')}</Text>
+            <Text as="h3" size="xl" weight="bold">
+              {t('home.ctaSuperpowerTitle')}
+            </Text>
             <Text size="sm" color="secondary">
               {t('home.ctaSuperpowerDesc')}
             </Text>
@@ -421,12 +434,7 @@ export const HomePage: React.FC = () => {
             <Button
               variant="primary"
               size="lg"
-              onClick={() =>
-                window.open(
-                  'https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands',
-                  '_blank'
-                )
-              }
+              onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
             >
               <Plus size={18} /> {t('home.ctaDiscord')}
             </Button>

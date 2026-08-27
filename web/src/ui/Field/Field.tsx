@@ -60,10 +60,17 @@ export const Field: React.FC<FieldProps> = ({
       <div className={styles.labelGroup}>
         <label htmlFor={fieldId} className={styles.label}>
           {label}
-          {required && <span className={styles.required} aria-hidden="true">*</span>}
+          {required && (
+            <span className={styles.required} aria-hidden="true">
+              *
+            </span>
+          )}
         </label>
         {tooltip && (
-          <span className={styles.tooltipIcon} title={typeof tooltip === 'string' ? tooltip : undefined}>
+          <span
+            className={styles.tooltipIcon}
+            title={typeof tooltip === 'string' ? tooltip : undefined}
+          >
             <HelpCircle size={14} />
           </span>
         )}

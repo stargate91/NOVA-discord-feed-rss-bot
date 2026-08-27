@@ -38,12 +38,13 @@ export const FloatingBar: React.FC<FloatingBarProps> = ({
 
   const positionClass = position === 'top' ? styles.posTop : styles.posBottom;
 
-  const variantClass = {
-    default: styles.variantDefault,
-    glass: styles.variantGlass,
-    danger: styles.variantDanger,
-    info: styles.variantInfo,
-  }[variant] || styles.variantGlass;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      glass: styles.variantGlass,
+      danger: styles.variantDanger,
+      info: styles.variantInfo,
+    }[variant] || styles.variantGlass;
 
   const content = children ?? message;
 

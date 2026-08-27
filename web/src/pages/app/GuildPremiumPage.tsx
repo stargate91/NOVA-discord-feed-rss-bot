@@ -3,18 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Sparkles, Ticket, CheckCircle2, ArrowUpRight } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useToast } from '../../components/common/Toast';
-import {
-  Card,
-  Button,
-  Input,
-  Badge,
-  Field,
-  Alert,
-  Stack,
-  Inline,
-  Grid,
-  Text,
-} from '../../ui';
+import { Card, Button, Input, Badge, Field, Alert, Stack, Inline, Grid, Text } from '../../ui';
 
 export const GuildPremiumPage: React.FC = () => {
   const { guildId = '' } = useParams<{ guildId: string }>();
@@ -25,20 +14,23 @@ export const GuildPremiumPage: React.FC = () => {
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
     if (!promoCode.trim()) {
-      toast.warning('Please enter a valid promo code.', 'Input Required');
+      toast.warning(t('guild.toastPromoRequired'), t('guild.toastPromoRequiredTitle'));
       return;
     }
 
-    if (promoCode.trim().toLowerCase() === 'nova2026' || promoCode.trim().toLowerCase() === 'launch') {
-      toast.success('Master Tier unlocked for 30 days!', 'Promo Code Applied');
+    if (
+      promoCode.trim().toLowerCase() === 'nova2026' ||
+      promoCode.trim().toLowerCase() === 'launch'
+    ) {
+      toast.success(t('guild.toastPromoSuccess'), t('guild.toastPromoSuccessTitle'));
       setPromoCode('');
     } else {
-      toast.error('Invalid or expired promo code. Please check spelling.', 'Validation Error');
+      toast.error(t('guild.toastPromoInvalid'), t('guild.toastPromoInvalidTitle'));
     }
   };
 
   const handleUpgradeCheckout = () => {
-    toast.info('Redirecting to secure Stripe checkout portal...', 'Stripe Billing');
+    toast.info(t('guild.toastCheckoutRedirect'), t('guild.toastCheckoutRedirectTitle'));
   };
 
   return (
@@ -53,48 +45,71 @@ export const GuildPremiumPage: React.FC = () => {
           </Text>
         </Stack>
 
-        <Badge variant="online" dot pulse>{t('guild.activePlanBadge')}</Badge>
+        <Badge variant="online" dot pulse>
+          {t('guild.activePlanBadge')}
+        </Badge>
       </Inline>
 
       <Grid minItemWidth="md" gap="lg">
         {/* Current Plan Status */}
-        <Card glow="blue" padding="xl" title={t('guild.currentSubscriptionTitle')} subtitle={t('guild.currentSubscriptionSubtitle')}>
+        <Card
+          glow="blue"
+          padding="xl"
+          title={t('guild.currentSubscriptionTitle')}
+          subtitle={t('guild.currentSubscriptionSubtitle')}
+        >
           <Stack gap="lg">
             <Stack gap="xs">
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.activeTierLabel')}</Text>
-                <Badge variant="tier"><Sparkles size={12} /> {t('guild.activeTierValue')}</Badge>
+                <Text size="xs" color="secondary">
+                  {t('guild.activeTierLabel')}
+                </Text>
+                <Badge variant="tier">
+                  <Sparkles size={12} /> {t('guild.activeTierValue')}
+                </Badge>
               </Inline>
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.maxActiveMonitors')}</Text>
-                <Text size="xs" weight="semibold">{t('guild.maxActiveMonitorsCount', { count: 25 })}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.maxActiveMonitors')}
+                </Text>
+                <Text size="xs" weight="semibold">
+                  {t('guild.maxActiveMonitorsCount', { count: 25 })}
+                </Text>
               </Inline>
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.refreshIntervalLabel')}</Text>
-                <Text size="xs" weight="semibold">{t('guild.refreshIntervalValue', { seconds: 120 })}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.refreshIntervalLabel')}
+                </Text>
+                <Text size="xs" weight="semibold">
+                  {t('guild.refreshIntervalValue', { seconds: 120 })}
+                </Text>
               </Inline>
               <Inline justify="between" align="center">
-                <Text size="xs" color="secondary">{t('guild.priorityQueueDelivery')}</Text>
+                <Text size="xs" color="secondary">
+                  {t('guild.priorityQueueDelivery')}
+                </Text>
                 <Inline gap="2xs" align="center">
                   <CheckCircle2 size={14} color="var(--status-success)" />
-                  <Text size="xs" weight="semibold">{t('guild.enabled')}</Text>
+                  <Text size="xs" weight="semibold">
+                    {t('guild.enabled')}
+                  </Text>
                 </Inline>
               </Inline>
             </Stack>
 
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleUpgradeCheckout}
-            >
+            <Button variant="primary" size="lg" fullWidth onClick={handleUpgradeCheckout}>
               <ArrowUpRight size={16} /> {t('guild.upgradeToMasterTierBtn')}
             </Button>
           </Stack>
         </Card>
 
         {/* Promo Code Redemption */}
-        <Card glow="purple" padding="xl" title={t('guild.redeemPromoTitle')} subtitle={t('guild.redeemPromoSubtitle')}>
+        <Card
+          glow="purple"
+          padding="xl"
+          title={t('guild.redeemPromoTitle')}
+          subtitle={t('guild.redeemPromoSubtitle')}
+        >
           <Stack gap="lg">
             <form onSubmit={handleApplyPromo}>
               <Stack gap="md">

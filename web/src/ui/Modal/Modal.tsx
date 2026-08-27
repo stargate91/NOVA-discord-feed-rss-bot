@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ReactNode, MouseEvent } from 'react';
 import React, { createContext, useContext, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import styles from './Modal.module.css';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -45,6 +46,7 @@ export const ModalRoot: React.FC<ModalProps> = ({
   ...rest
 }) => {
   const visible = open ?? legacyIsOpen ?? false;
+  const dialogRef = useFocusTrap<HTMLDivElement>(visible);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -70,13 +72,14 @@ export const ModalRoot: React.FC<ModalProps> = ({
 
   if (!visible) return null;
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-    xl: styles.sizeXl,
-    full: styles.sizeFull,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
+      full: styles.sizeFull,
+    }[size] || styles.sizeMd;
 
   const handleOverlayClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && closeOnOverlayClick) {
@@ -90,6 +93,7 @@ export const ModalRoot: React.FC<ModalProps> = ({
     <ModalContext.Provider value={{ onClose }}>
       <div className={styles.overlay} onClick={handleOverlayClick} role="presentation">
         <div
+          ref={dialogRef}
           id={id}
           role="dialog"
           aria-modal="true"
@@ -157,19 +161,31 @@ export const ModalTitle: React.FC<HTMLAttributes<HTMLHeadingElement>> = ({
   children,
   className = '',
   ...rest
-}) => <h3 className={`${styles.title} ${className}`} {...rest}>{children}</h3>;
+}) => (
+  <h3 className={`${styles.title} ${className}`} {...rest}>
+    {children}
+  </h3>
+);
 
 export const ModalBody: React.FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.body} ${className}`} {...rest}>{children}</div>;
+}) => (
+  <div className={`${styles.body} ${className}`} {...rest}>
+    {children}
+  </div>
+);
 
 export const ModalFooter: React.FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.footer} ${className}`} {...rest}>{children}</div>;
+}) => (
+  <div className={`${styles.footer} ${className}`} {...rest}>
+    {children}
+  </div>
+);
 
 /* --------------------------------------------------------------------------
    Compound Export

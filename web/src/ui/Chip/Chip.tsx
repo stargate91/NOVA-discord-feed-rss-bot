@@ -42,18 +42,20 @@ export const Chip: React.FC<ChipProps> = ({
   const isSelected = selected || active;
   const isInteractive = Boolean(onClick);
 
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    default: styles.variantDefault,
-    outline: styles.variantOutline,
-    filled: styles.variantFilled,
-    subtle: styles.variantSubtle,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      outline: styles.variantOutline,
+      filled: styles.variantFilled,
+      subtle: styles.variantSubtle,
+    }[variant] || styles.variantDefault;
 
   const chipClasses = [
     styles.chip,
@@ -71,14 +73,7 @@ export const Chip: React.FC<ChipProps> = ({
     if (!icon) return null;
 
     if (typeof icon === 'string') {
-      return (
-        <img
-          src={icon}
-          alt=""
-          aria-hidden="true"
-          className={styles.icon}
-        />
-      );
+      return <img src={icon} alt="" aria-hidden="true" className={styles.icon} />;
     }
 
     return <span className={styles.iconWrapper}>{icon}</span>;

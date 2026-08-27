@@ -3,17 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, Check, HelpCircle } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
-import {
-  Button,
-  Badge,
-  Card,
-  Accordion,
-  Container,
-  Stack,
-  Inline,
-  Grid,
-  Text,
-} from '../../ui';
+import { Button, Badge, Card, Accordion, Container, Stack, Inline, Grid, Text } from '../../ui';
 
 export const PremiumPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,10 +11,7 @@ export const PremiumPage: React.FC = () => {
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO
-        title={t('premium.tag')}
-        description={t('premium.subtitle')}
-      />
+      <SEO title={t('premium.tag')} description={t('premium.subtitle')} />
 
       <Stack gap="5xl">
         <Stack align="center" gap="md">
@@ -54,10 +41,16 @@ export const PremiumPage: React.FC = () => {
                   <Badge variant="neutral">{t('premium.freeTitle')}</Badge>
                 </Inline>
                 <Inline align="baseline" gap="xs">
-                  <Text size="4xl" weight="black">{t('premium.freePrice')}</Text>
-                  <Text size="sm" color="muted">{t('premium.freePricePeriod')}</Text>
+                  <Text size="4xl" weight="black">
+                    {t('premium.freePrice')}
+                  </Text>
+                  <Text size="sm" color="muted">
+                    {t('premium.freePricePeriod')}
+                  </Text>
                 </Inline>
-                <Text size="sm" color="secondary">{t('premium.freeDesc')}</Text>
+                <Text size="sm" color="secondary">
+                  {t('premium.freeDesc')}
+                </Text>
                 <Stack as="ul" gap="sm">
                   <Inline as="li" gap="sm" align="center">
                     <Check size={14} color="var(--status-success)" />
@@ -92,10 +85,16 @@ export const PremiumPage: React.FC = () => {
                   <Badge variant="tier">{t('premium.plusBadge')}</Badge>
                 </Inline>
                 <Inline align="baseline" gap="xs">
-                  <Text size="4xl" weight="black">{t('premium.plusPrice')}</Text>
-                  <Text size="sm" color="muted">{t('premium.plusPricePeriod')}</Text>
+                  <Text size="4xl" weight="black">
+                    {t('premium.plusPrice')}
+                  </Text>
+                  <Text size="sm" color="muted">
+                    {t('premium.plusPricePeriod')}
+                  </Text>
                 </Inline>
-                <Text size="sm" color="secondary">{t('premium.plusDesc')}</Text>
+                <Text size="sm" color="secondary">
+                  {t('premium.plusDesc')}
+                </Text>
                 <Stack as="ul" gap="sm">
                   <Inline as="li" gap="sm" align="center">
                     <Check size={14} color="var(--status-success)" />
@@ -133,10 +132,16 @@ export const PremiumPage: React.FC = () => {
                   <Badge variant="tier">{t('premium.masterTitle')}</Badge>
                 </Inline>
                 <Inline align="baseline" gap="xs">
-                  <Text size="4xl" weight="black">{t('premium.masterPrice')}</Text>
-                  <Text size="sm" color="muted">{t('premium.masterPricePeriod')}</Text>
+                  <Text size="4xl" weight="black">
+                    {t('premium.masterPrice')}
+                  </Text>
+                  <Text size="sm" color="muted">
+                    {t('premium.masterPricePeriod')}
+                  </Text>
                 </Inline>
-                <Text size="sm" color="secondary">{t('premium.masterDesc')}</Text>
+                <Text size="sm" color="secondary">
+                  {t('premium.masterDesc')}
+                </Text>
                 <Stack as="ul" gap="sm">
                   <Inline as="li" gap="sm" align="center">
                     <Check size={14} color="var(--status-success)" />
@@ -177,18 +182,14 @@ export const PremiumPage: React.FC = () => {
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('premium.faqQ1')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('premium.faqA1')}
-              </Accordion.Content>
+              <Accordion.Content>{t('premium.faqA1')}</Accordion.Content>
             </Accordion.Item>
 
             <Accordion.Item value="prem-q2">
               <Accordion.Trigger icon={<HelpCircle size={18} />}>
                 {t('premium.faqQ2')}
               </Accordion.Trigger>
-              <Accordion.Content>
-                {t('premium.faqA2')}
-              </Accordion.Content>
+              <Accordion.Content>{t('premium.faqA2')}</Accordion.Content>
             </Accordion.Item>
           </Accordion>
         </Stack>
@@ -196,4 +197,3 @@ export const PremiumPage: React.FC = () => {
     </Container>
   );
 };
-

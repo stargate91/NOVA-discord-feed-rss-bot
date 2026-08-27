@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { ApiError } from './types';
+import { ApiError } from './types';
 import { queryCache } from './queryCache';
 
 export interface UseApiQueryOptions {
@@ -8,6 +8,7 @@ export interface UseApiQueryOptions {
   revalidateOnMount?: boolean;
   revalidateOnFocus?: boolean;
   dedupingIntervalMs?: number;
+  enabled?: boolean;
 }
 
 export interface UseApiQueryResult<T> {
@@ -30,6 +31,7 @@ export const useApiQuery = <T>(
     revalidateOnMount = true,
     revalidateOnFocus = false,
     dedupingIntervalMs = 2000,
+    enabled = true,
   } = options;
 
   // Read initial data from cache if key provided
@@ -37,11 +39,16 @@ export const useApiQuery = <T>(
 
   const [data, setData] = useState<T | null>(cachedData ?? null);
   const [error, setError] = useState<ApiError | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(cachedData === undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(enabled && cachedData === undefined);
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
   const lastFetchTime = useRef<number>(0);
   const isMounted = useRef<boolean>(true);
+  const dataRef = useRef<T | null>(data);
+  dataRef.current = data;
+
+  const queryFnRef = useRef(queryFn);
+  queryFnRef.current = queryFn;
 
   // Subscribe to external cache updates for the same key
   useEffect(() => {
@@ -55,6 +62,8 @@ export const useApiQuery = <T>(
 
   const execute = useCallback(
     async (isManualRefetch: boolean = false) => {
+      if (!enabled) return;
+
       // Deduplication check
       const now = Date.now();
       if (!isManualRefetch && now - lastFetchTime.current < dedupingIntervalMs) {
@@ -62,15 +71,18 @@ export const useApiQuery = <T>(
       }
       lastFetchTime.current = now;
 
-      // If no cached data, show initial loading state
-      if (!data && cachedData === undefined) {
+      // Check current fresh value using dataRef and cache rather than stale closure
+      const currentVal = dataRef.current;
+      const currentCache = key ? queryCache.get<T>(key) : undefined;
+
+      if (currentVal === null && currentCache === undefined) {
         setIsLoading(true);
       }
       setIsValidating(true);
       setError(null);
 
       try {
-        const result = await queryFn();
+        const result = await queryFnRef.current();
         if (isMounted.current) {
           setData(result);
           if (key) {
@@ -79,7 +91,15 @@ export const useApiQuery = <T>(
         }
       } catch (err: unknown) {
         if (isMounted.current) {
-          setError(err as ApiError);
+          const apiError =
+            err instanceof ApiError
+              ? err
+              : new ApiError(
+                  err instanceof Error ? err.message : 'Unknown query execution error',
+                  0,
+                  err
+                );
+          setError(apiError);
         }
       } finally {
         if (isMounted.current) {
@@ -89,15 +109,14 @@ export const useApiQuery = <T>(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [key, ttlMs, dedupingIntervalMs, ...deps]
+    [key, ttlMs, dedupingIntervalMs, enabled, ...deps]
   );
 
   // Initial fetch / SWR revalidation
   useEffect(() => {
     isMounted.current = true;
 
-    if (revalidateOnMount) {
-      // If cache is fresh, don't immediately re-fetch unless stale
+    if (enabled && revalidateOnMount) {
       if (!key || queryCache.isStale(key)) {
         execute();
       }
@@ -106,11 +125,11 @@ export const useApiQuery = <T>(
     return () => {
       isMounted.current = false;
     };
-  }, [execute, key, revalidateOnMount]);
+  }, [execute, key, revalidateOnMount, enabled]);
 
-  // Window Focus Revalidation (optional)
+  // Window Focus Revalidation
   useEffect(() => {
-    if (!revalidateOnFocus) return;
+    if (!enabled || !revalidateOnFocus) return;
 
     const handleFocus = () => {
       if (key && queryCache.isStale(key)) {
@@ -122,16 +141,14 @@ export const useApiQuery = <T>(
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [execute, key, revalidateOnFocus]);
+  }, [execute, key, revalidateOnFocus, enabled]);
 
   // Optimistic Mutation & Cache Sync
   const mutate = useCallback(
     (newData: T | ((prev: T | null) => T), shouldRevalidate: boolean = false) => {
       setData((current) => {
         const resolvedData =
-          typeof newData === 'function'
-            ? (newData as (prev: T | null) => T)(current)
-            : newData;
+          typeof newData === 'function' ? (newData as (prev: T | null) => T)(current) : newData;
 
         if (key) {
           queryCache.set(key, resolvedData, ttlMs);

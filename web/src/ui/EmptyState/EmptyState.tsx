@@ -31,27 +31,22 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   id,
   ...rest
 }) => {
-  const sizeClass = {
-    sm: styles.sizeSm,
-    md: styles.sizeMd,
-    lg: styles.sizeLg,
-  }[size] || styles.sizeMd;
+  const sizeClass =
+    {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+    }[size] || styles.sizeMd;
 
-  const variantClass = {
-    default: styles.variantDefault,
-    card: styles.variantCard,
-    glass: styles.variantGlass,
-    dashed: styles.variantDashed,
-  }[variant] || styles.variantDefault;
+  const variantClass =
+    {
+      default: styles.variantDefault,
+      card: styles.variantCard,
+      glass: styles.variantGlass,
+      dashed: styles.variantDashed,
+    }[variant] || styles.variantDefault;
 
-  const classes = [
-    styles.container,
-    sizeClass,
-    variantClass,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const classes = [styles.container, sizeClass, variantClass, className].filter(Boolean).join(' ');
 
   return (
     <div id={id} className={classes} {...rest}>
@@ -59,13 +54,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
       {typeof title === 'string' ? <h3 className={styles.title}>{title}</h3> : title}
 
-      {description && (
-        typeof description === 'string' ? (
+      {description &&
+        (typeof description === 'string' ? (
           <p className={styles.description}>{description}</p>
         ) : (
           description
-        )
-      )}
+        ))}
 
       {children}
 

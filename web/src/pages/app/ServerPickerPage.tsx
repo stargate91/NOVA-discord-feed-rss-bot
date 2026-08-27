@@ -3,17 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Settings, UserPlus } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
-import {
-  Button,
-  Badge,
-  Card,
-  Avatar,
-  CardSkeleton,
-  Grid,
-  Stack,
-  Inline,
-  Text,
-} from '../../ui';
+import { DISCORD_BOT_INVITE_URL } from '../../constants';
+import { openExternalUrl } from '../../utils';
+import { Button, Badge, Card, Avatar, CardSkeleton, Grid, Stack, Inline, Text } from '../../ui';
 
 interface ServerItem {
   id: string;
@@ -65,10 +57,7 @@ export const ServerPickerPage: React.FC = () => {
 
   return (
     <Stack gap="lg">
-      <SEO
-        title={t('servers.title')}
-        description={t('servers.subtitle')}
-      />
+      <SEO title={t('servers.title')} description={t('servers.subtitle')} />
 
       <Inline justify="between" align="center" wrap gap="md">
         <Stack gap="3xs">
@@ -80,24 +69,14 @@ export const ServerPickerPage: React.FC = () => {
           </Text>
         </Stack>
 
-        <Button
-          variant="discord"
-          onClick={() =>
-            window.open(
-              'https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands',
-              '_blank'
-            )
-          }
-        >
+        <Button variant="discord" onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}>
           <Plus size={14} /> {t('servers.addBot')}
         </Button>
       </Inline>
 
       <Grid minItemWidth="sm" gap="lg">
         {isLoading
-          ? [1, 2, 3].map((key) => (
-              <CardSkeleton key={`skeleton-server-${key}`} lines={3} />
-            ))
+          ? [1, 2, 3].map((key) => <CardSkeleton key={`skeleton-server-${key}`} lines={3} />)
           : mockServers.map((server) => (
               <Card
                 key={server.id}
@@ -115,25 +94,35 @@ export const ServerPickerPage: React.FC = () => {
                     />
                     <Stack gap="none">
                       <Text weight="bold">{server.name}</Text>
-                      <Text size="2xs" color="muted" mono>{server.id}</Text>
+                      <Text size="2xs" color="muted" mono>
+                        {server.id}
+                      </Text>
                     </Stack>
                   </Inline>
 
                   <Stack gap="xs">
                     <Inline justify="between" align="center">
-                      <Text size="xs" color="secondary">{t('servers.statusLabel')}</Text>
+                      <Text size="xs" color="secondary">
+                        {t('servers.statusLabel')}
+                      </Text>
                       <Badge variant={server.isBotInServer ? 'online' : 'neutral'} dot>
-                        {server.isBotInServer ? t('servers.statusActive') : t('servers.statusNotInvited')}
+                        {server.isBotInServer
+                          ? t('servers.statusActive')
+                          : t('servers.statusNotInvited')}
                       </Badge>
                     </Inline>
 
                     <Inline justify="between" align="center">
-                      <Text size="xs" color="secondary">{t('servers.planLabel')}</Text>
+                      <Text size="xs" color="secondary">
+                        {t('servers.planLabel')}
+                      </Text>
                       <Badge variant="tier">{server.tier}</Badge>
                     </Inline>
 
                     <Inline justify="between" align="center">
-                      <Text size="xs" color="secondary">{t('servers.activeFeedsLabel')}</Text>
+                      <Text size="xs" color="secondary">
+                        {t('servers.activeFeedsLabel')}
+                      </Text>
                       <Text size="xs" weight="semibold">
                         {t('servers.monitorsCount', { count: server.monitors })}
                       </Text>
@@ -152,12 +141,7 @@ export const ServerPickerPage: React.FC = () => {
                     <Button
                       variant="secondary"
                       fullWidth
-                      onClick={() =>
-                        window.open(
-                          'https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands',
-                          '_blank'
-                        )
-                      }
+                      onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
                     >
                       <UserPlus size={14} /> {t('servers.inviteBtn')}
                     </Button>
@@ -169,4 +153,3 @@ export const ServerPickerPage: React.FC = () => {
     </Stack>
   );
 };
-

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Rss, Hash, AtSign, Zap, Trash2 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useToast } from '../../components/common/Toast';
+import { useConfirm } from '../../components/common/Modal';
 import {
   Card,
   Button,
@@ -21,17 +22,29 @@ const PLATFORMS = [
   { id: 'youtube', icon: '/images/brands/youtube.png', labelKey: 'guild.feedPlatformYoutube' },
   { id: 'twitch', icon: '/images/brands/twitch.png', labelKey: 'guild.feedPlatformTwitch' },
   { id: 'kick', icon: '/images/brands/kick.png', labelKey: 'guild.feedPlatformKick' },
-  { id: 'epic_games', icon: '/images/brands/epic_games.png', labelKey: 'guild.feedPlatformEpicGames' },
+  {
+    id: 'epic_games',
+    icon: '/images/brands/epic_games.png',
+    labelKey: 'guild.feedPlatformEpicGames',
+  },
   { id: 'steam', icon: '/images/brands/steam.png', labelKey: 'guild.feedPlatformSteam' },
   { id: 'tmdb', icon: '/images/brands/tmdb.png', labelKey: 'guild.feedPlatformTmdb' },
   { id: 'rss', icon: '/images/brands/rss.png', labelKey: 'guild.feedPlatformRss' },
 ] as const;
 
 const FEED_TYPE_OPTIONS = [
-  { value: 'youtube', labelKey: 'guild.feedTypeYoutubeLabel', descKey: 'guild.feedTypeYoutubeDesc' },
+  {
+    value: 'youtube',
+    labelKey: 'guild.feedTypeYoutubeLabel',
+    descKey: 'guild.feedTypeYoutubeDesc',
+  },
   { value: 'twitch', labelKey: 'guild.feedTypeTwitchLabel', descKey: 'guild.feedTypeTwitchDesc' },
   { value: 'kick', labelKey: 'guild.feedTypeKickLabel', descKey: 'guild.feedTypeKickDesc' },
-  { value: 'epic_games', labelKey: 'guild.feedTypeEpicGamesLabel', descKey: 'guild.feedTypeEpicGamesDesc' },
+  {
+    value: 'epic_games',
+    labelKey: 'guild.feedTypeEpicGamesLabel',
+    descKey: 'guild.feedTypeEpicGamesDesc',
+  },
   { value: 'steam', labelKey: 'guild.feedTypeSteamLabel', descKey: 'guild.feedTypeSteamDesc' },
   { value: 'tmdb', labelKey: 'guild.feedTypeTmdbLabel', descKey: 'guild.feedTypeTmdbDesc' },
   { value: 'rss', labelKey: 'guild.feedTypeRssLabel', descKey: 'guild.feedTypeRssDesc' },
@@ -41,6 +54,7 @@ export const GuildFeedsPage: React.FC = () => {
   const { guildId = '' } = useParams<{ guildId: string }>();
   const { t } = useTranslation();
   const toast = useToast();
+  const confirm = useConfirm();
 
   const [selectedType, setSelectedType] = useState<string>('youtube');
   const [targetId, setTargetId] = useState<string>('');
@@ -60,22 +74,36 @@ export const GuildFeedsPage: React.FC = () => {
   const handleSaveFeed = (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetId.trim()) {
-      toast.warning('Please enter a target username/channel and destination channel ID.', 'Validation Warning');
+      toast.warning(t('guild.toastValidationWarning'), t('guild.toastValidationWarningTitle'));
       return;
     }
-    toast.success(`Monitor for ${targetId} (${selectedType}) activated successfully!`, 'Monitor Saved');
+    toast.success(
+      t('guild.toastMonitorSaved', { targetId, type: selectedType }),
+      t('guild.toastMonitorSavedTitle')
+    );
   };
 
   const handleTestFeed = () => {
-    toast.success(`Simulated delivery payload dispatched for ${selectedType.toUpperCase()} -> #${destChannel}`, 'Feed Test Sent');
+    toast.success(
+      t('guild.toastTestDispatched', { type: selectedType.toUpperCase(), destChannel }),
+      t('guild.toastTestDispatchedTitle')
+    );
   };
 
-  const handleClearForm = () => {
-    if (window.confirm('Are you sure you want to clear this monitor setup?')) {
+  const handleClearForm = async () => {
+    const isConfirmed = await confirm({
+      title: t('guild.toastFormClearedTitle'),
+      message: t('guild.confirmClearForm'),
+      variant: 'warning',
+      confirmText: t('common.save'),
+      cancelText: t('common.cancel'),
+    });
+
+    if (isConfirmed) {
       setTargetId('');
       setDestChannel('feed-alerts');
       setPingRole('');
-      toast.info('Feed configuration form has been cleared.', 'Form Cleared');
+      toast.info(t('guild.toastFormCleared'), t('guild.toastFormClearedTitle'));
     }
   };
 
@@ -103,7 +131,9 @@ export const GuildFeedsPage: React.FC = () => {
 
       {/* Select Platform Type */}
       <Stack gap="xs">
-        <Text size="xs" color="secondary">{t('guild.supportedIntegrations')}</Text>
+        <Text size="xs" color="secondary">
+          {t('guild.supportedIntegrations')}
+        </Text>
         <Inline gap="xs" wrap>
           {PLATFORMS.map((platform) => (
             <Chip
@@ -119,7 +149,12 @@ export const GuildFeedsPage: React.FC = () => {
 
       <Grid minItemWidth="md" gap="lg">
         {/* Create Feed Card */}
-        <Card glow="blue" padding="xl" title={t('guild.addMonitorTitle')} subtitle={t('guild.selectedTypeSubtitle', { type: selectedType.toUpperCase() })}>
+        <Card
+          glow="blue"
+          padding="xl"
+          title={t('guild.addMonitorTitle')}
+          subtitle={t('guild.selectedTypeSubtitle', { type: selectedType.toUpperCase() })}
+        >
           <form onSubmit={handleSaveFeed}>
             <Stack gap="md">
               <Field label={t('guild.typeLabel')} required>
@@ -172,7 +207,12 @@ export const GuildFeedsPage: React.FC = () => {
         </Card>
 
         {/* Live Discord Embed Simulation */}
-        <Card glow="purple" padding="xl" title={t('guild.liveEmbedPreviewTitle')} subtitle={t('guild.liveEmbedPreviewSubtitle')}>
+        <Card
+          glow="purple"
+          padding="xl"
+          title={t('guild.liveEmbedPreviewTitle')}
+          subtitle={t('guild.liveEmbedPreviewSubtitle')}
+        >
           <DiscordEmbed
             channelName={destChannel || t('guild.defaultFeedAlertsChannel')}
             botName={t('common.brandName')}
@@ -182,13 +222,27 @@ export const GuildFeedsPage: React.FC = () => {
               name: `${debouncedTargetId || t('guild.embedChannelFallback')} • Live Feed`,
               icon_url: '/images/logo.webp',
             }}
-            title={t('guild.embedPublishedContent', { target: debouncedTargetId || t('guild.embedFeedTargetFallback') })}
+            title={t('guild.embedPublishedContent', {
+              target: debouncedTargetId || t('guild.embedFeedTargetFallback'),
+            })}
             description={t('guild.embedProcessedBy', { type: selectedType.toUpperCase() })}
             thumbnail="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=60"
             fields={[
-              { name: t('guild.embedFieldTargetAccount'), value: `@${debouncedTargetId || t('guild.embedCreatorFallback')}`, inline: true },
-              { name: t('guild.embedFieldTargetChannel'), value: `#${destChannel || t('guild.defaultFeedAlertsChannel')}`, inline: true },
-              { name: t('guild.embedFieldPingTarget'), value: pingRole ? `@${pingRole}` : t('guild.embedPingNone'), inline: true },
+              {
+                name: t('guild.embedFieldTargetAccount'),
+                value: `@${debouncedTargetId || t('guild.embedCreatorFallback')}`,
+                inline: true,
+              },
+              {
+                name: t('guild.embedFieldTargetChannel'),
+                value: `#${destChannel || t('guild.defaultFeedAlertsChannel')}`,
+                inline: true,
+              },
+              {
+                name: t('guild.embedFieldPingTarget'),
+                value: pingRole ? `@${pingRole}` : t('guild.embedPingNone'),
+                inline: true,
+              },
             ]}
             footer={{
               text: t('guild.embedFooterText', { guildId }),
