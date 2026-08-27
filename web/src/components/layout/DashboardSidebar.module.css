@@ -61,19 +61,6 @@
   margin-bottom: var(--space-3xs);
 }
 
-.guildSelect {
-  width: 100%;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  padding: var(--space-2xs) var(--space-xs);
-  font-size: var(--font-size-xs);
-  font-family: var(--font-mono);
-  outline: none;
-  cursor: pointer;
-}
-
 .nav {
   display: flex;
   flex-direction: column;
@@ -90,11 +77,13 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
-  border: none;
-  background: none;
+  border: 1px solid transparent;
+  background: transparent;
   cursor: pointer;
   transition: var(--transition-fast);
   text-align: left;
+  outline: none;
+  user-select: none;
 }
 
 .navItem:hover {
@@ -102,10 +91,25 @@
   background: var(--bg-glass-subtle);
 }
 
-.active {
+.navItem:focus {
+  outline: none;
+}
+
+.navItem:focus-visible {
+  border-color: var(--blue-500);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.navItem:active {
+  outline: none;
+}
+
+.active,
+.active:hover {
   color: var(--text-primary);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border-color: var(--border-card);
   box-shadow: var(--glow-blue-sm);
 }
 

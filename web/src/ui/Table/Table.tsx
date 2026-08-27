@@ -1,6 +1,7 @@
 import type { HTMLAttributes, TableHTMLAttributes, TdHTMLAttributes, ThHTMLAttributes, ReactNode, MouseEvent } from 'react';
 import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Spinner } from '../Spinner/Spinner';
 import styles from './Table.module.css';
 
 export type TableVariant = 'default' | 'striped' | 'bordered' | 'glass';
@@ -13,6 +14,8 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   density?: TableDensity;
   hoverable?: boolean;
   stickyHeader?: boolean;
+  loading?: boolean;
+  emptyState?: ReactNode;
   containerClassName?: string;
   children?: ReactNode;
 }
@@ -28,6 +31,7 @@ export interface TableBodyProps extends HTMLAttributes<HTMLTableSectionElement> 
 }
 
 export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
+  selected?: boolean;
   children?: ReactNode;
   className?: string;
 }
@@ -37,12 +41,14 @@ export interface TableHeadProps extends ThHTMLAttributes<HTMLTableCellElement> {
   sortDirection?: TableSortDirection;
   onSort?: () => void;
   align?: TableAlign;
+  checkbox?: boolean;
   children?: ReactNode;
   className?: string;
 }
 
 export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
   align?: TableAlign;
+  checkbox?: boolean;
   children?: ReactNode;
   className?: string;
 }
@@ -59,8 +65,8 @@ export const TableBody: React.FC<TableBodyProps> = ({ children, className = '', 
   </tbody>
 );
 
-export const TableRow: React.FC<TableRowProps> = ({ children, className = '', ...rest }) => (
-  <tr className={`${styles.tr} ${className}`} {...rest}>
+export const TableRow: React.FC<TableRowProps> = ({ selected = false, children, className = '', ...rest }) => (
+  <tr className={`${styles.tr} ${selected ? styles.trSelected : ''} ${className}`} {...rest}>
     {children}
   </tr>
 );
@@ -70,6 +76,7 @@ export const TableHead: React.FC<TableHeadProps> = ({
   sortDirection = 'none',
   onSort,
   align = 'left',
+  checkbox = false,
   children,
   className = '',
   onClick,
@@ -102,6 +109,7 @@ export const TableHead: React.FC<TableHeadProps> = ({
   const classes = [
     styles.th,
     alignClass,
+    checkbox ? styles.checkboxCell : '',
     sortable ? styles.sortable : '',
     className,
   ]
@@ -125,6 +133,7 @@ export const TableHead: React.FC<TableHeadProps> = ({
 
 export const TableCell: React.FC<TableCellProps> = ({
   align = 'left',
+  checkbox = false,
   children,
   className = '',
   ...rest
@@ -135,8 +144,17 @@ export const TableCell: React.FC<TableCellProps> = ({
     right: styles.alignRight,
   }[align] || styles.alignLeft;
 
+  const classes = [
+    styles.td,
+    alignClass,
+    checkbox ? styles.checkboxCell : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <td className={`${styles.td} ${alignClass} ${className}`} {...rest}>
+    <td className={classes} {...rest}>
       {children}
     </td>
   );
@@ -155,6 +173,8 @@ export const Table = (({
   density = 'normal',
   hoverable = true,
   stickyHeader = false,
+  loading = false,
+  emptyState,
   containerClassName = '',
   className = '',
   children,
@@ -185,10 +205,18 @@ export const Table = (({
     .join(' ');
 
   return (
-    <div className={`${styles.container} ${variant === 'glass' ? styles.glass : ''} ${containerClassName}`}>
+    <div className={`${styles.container} ${styles.loadingContainer} ${variant === 'glass' ? styles.glass : ''} ${containerClassName}`}>
+      {loading && (
+        <div className={styles.loadingOverlay}>
+          <Spinner size="md" />
+        </div>
+      )}
       <table className={tableClasses} {...rest}>
         {children}
       </table>
+      {emptyState && !loading && (
+        <div className={styles.emptyState}>{emptyState}</div>
+      )}
     </div>
   );
 }) as TableCompound;
@@ -198,3 +226,4 @@ Table.Body = TableBody;
 Table.Row = TableRow;
 Table.Head = TableHead;
 Table.Cell = TableCell;
+

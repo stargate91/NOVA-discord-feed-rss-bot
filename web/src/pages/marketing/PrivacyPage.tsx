@@ -2,56 +2,73 @@ import React from 'react';
 import { Shield } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
-import { Card } from '../../ui';
-import styles from './MarketingPage.module.css';
+import { Card, Badge, Container, Stack, Text } from '../../ui';
 
 export const PrivacyPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className={styles.pageWrapper}>
+    <Container maxWidth="md" padding="md">
       <SEO
         title={t('legal.privacyTitle')}
         description={t('legal.privacySubtitle')}
       />
 
-      <header className={styles.header}>
-        <div className={styles.tag}>
-          <Shield size={14} />
-          <span>{t('legal.privacyTag')}</span>
-        </div>
-        <h1 className={styles.title}>
-          {t('legal.privacyTitle')} <span>{t('legal.privacyTitleHighlight')}</span>
-        </h1>
-        <p className={styles.subtitle}>
-          {t('legal.privacySubtitle')}
-        </p>
-      </header>
+      <Stack gap="5xl">
+        <Stack align="center" gap="md">
+          <Badge variant="online" size="md" dot pulse>
+            <Shield size={14} /> {t('legal.privacyTag')}
+          </Badge>
+          <Text as="h1" size="hero" weight="extrabold" align="center">
+            {t('legal.privacyTitle')}{' '}
+            <Text as="span" color="gradient" size="hero" weight="extrabold">
+              {t('legal.privacyTitleHighlight')}
+            </Text>
+          </Text>
+          <Container maxWidth="sm" centered>
+            <Text size="lg" color="secondary" align="center">
+              {t('legal.privacySubtitle')}
+            </Text>
+          </Container>
+        </Stack>
 
-      <div className={styles.sectionStack}>
-        <Card title={t('legal.privacySection1Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.privacySection1Desc')}</p>
-            <ul>
-              <li><strong>{t('legal.privacyGuildInfo')}</strong></li>
-              <li><strong>{t('legal.privacyFeedInfo')}</strong></li>
-              <li><strong>{t('legal.privacyMetadataInfo')}</strong></li>
-            </ul>
-          </div>
-        </Card>
+        <Stack gap="xl">
+          <Card padding="xl" glow="blue">
+            <Card.Header>
+              <Card.Title>{t('legal.privacySection1Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Stack gap="md">
+                <Text color="secondary">{t('legal.privacySection1Desc')}</Text>
+                <Stack as="ul" gap="xs">
+                  <Text as="li" size="sm" weight="semibold">• {t('legal.privacyGuildInfo')}</Text>
+                  <Text as="li" size="sm" weight="semibold">• {t('legal.privacyFeedInfo')}</Text>
+                  <Text as="li" size="sm" weight="semibold">• {t('legal.privacyMetadataInfo')}</Text>
+                </Stack>
+              </Stack>
+            </Card.Body>
+          </Card>
 
-        <Card title={t('legal.privacySection2Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.privacySection2Desc')}</p>
-          </div>
-        </Card>
+          <Card padding="xl">
+            <Card.Header>
+              <Card.Title>{t('legal.privacySection2Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Text color="secondary">{t('legal.privacySection2Desc')}</Text>
+            </Card.Body>
+          </Card>
 
-        <Card title={t('legal.privacySection3Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.privacySection3Desc')}</p>
-          </div>
-        </Card>
-      </div>
-    </div>
+          <Card padding="xl">
+            <Card.Header>
+              <Card.Title>{t('legal.privacySection3Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Text color="secondary">{t('legal.privacySection3Desc')}</Text>
+            </Card.Body>
+          </Card>
+        </Stack>
+      </Stack>
+    </Container>
   );
 };
+

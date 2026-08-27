@@ -15,7 +15,9 @@ export type TextSize =
   | '3xl'
   | '4xl'
   | '5xl'
-  | '6xl';
+  | '6xl'
+  | 'hero';
+
 
 export type TextWeight = 'regular' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
 
@@ -83,7 +85,9 @@ export const Text: React.FC<TextProps> = ({
     '4xl': styles.size4xl,
     '5xl': styles.size5xl,
     '6xl': styles.size6xl,
+    hero: styles.sizeHero,
   };
+
 
   const weightMap: Record<TextWeight, string> = {
     regular: styles.weightRegular,

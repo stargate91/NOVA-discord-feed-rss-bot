@@ -223,3 +223,11 @@
     grid-column: span 1;
   }
 }
+
+.componentsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}

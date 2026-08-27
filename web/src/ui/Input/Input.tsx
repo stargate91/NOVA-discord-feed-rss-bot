@@ -1,21 +1,28 @@
 import type { InputHTMLAttributes, ReactNode, MouseEvent } from 'react';
 import React, { useState, useRef } from 'react';
-import { Eye, EyeOff, Copy, Check, X } from 'lucide-react';
+import { Eye, EyeOff, Copy, Check, X, Loader2 } from 'lucide-react';
 import styles from './Input.module.css';
 
 export type InputSize = 'sm' | 'md' | 'lg';
-export type InputVariant = 'default' | 'filled' | 'glass';
+export type InputVariant = 'default' | 'filled' | 'glass' | 'flush';
+export type InputStatus = 'default' | 'error' | 'warning' | 'success';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   label?: ReactNode;
   error?: ReactNode;
+  status?: InputStatus;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  addonBefore?: ReactNode;
+  addonAfter?: ReactNode;
   passwordToggle?: boolean;
   copyable?: boolean;
   clearable?: boolean;
+  loading?: boolean;
+  showCount?: boolean;
+  maxLength?: number;
   onClear?: () => void;
   size?: InputSize;
   variant?: InputVariant;
@@ -24,13 +31,19 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 export const Input: React.FC<InputProps> = ({
   label,
   error,
+  status = 'default',
   leftIcon,
   rightIcon,
   prefix,
   suffix,
+  addonBefore,
+  addonAfter,
   passwordToggle = false,
   copyable = false,
   clearable = false,
+  loading = false,
+  showCount = false,
+  maxLength,
   onClear,
   size = 'md',
   variant = 'default',
@@ -52,10 +65,12 @@ export const Input: React.FC<InputProps> = ({
 
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value : internalValue;
+  const currentLength = currentValue !== undefined && currentValue !== null ? String(currentValue).length : 0;
 
   const inputId = id || (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   const effectiveType = passwordToggle ? (showPassword ? 'text' : 'password') : type;
+  const effectiveStatus: InputStatus = error ? 'error' : status;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isControlled) {
@@ -94,7 +109,15 @@ export const Input: React.FC<InputProps> = ({
     default: styles.variantDefault,
     filled: styles.variantFilled,
     glass: styles.variantGlass,
+    flush: styles.variantFlush,
   }[variant] || styles.variantDefault;
+
+  const statusClass = {
+    default: '',
+    error: styles.hasError,
+    warning: styles.hasWarning,
+    success: styles.hasSuccess,
+  }[effectiveStatus] || '';
 
   const iconPixelSize = {
     sm: 14,
@@ -106,13 +129,81 @@ export const Input: React.FC<InputProps> = ({
     styles.wrapper,
     sizeClass,
     variantClass,
-    error ? styles.hasError : '',
+    statusClass,
+    addonBefore ? styles.hasAddonBefore : '',
+    addonAfter ? styles.hasAddonAfter : '',
     disabled ? styles.disabled : '',
   ]
     .filter(Boolean)
     .join(' ');
 
-  const hasActionButtons = passwordToggle || copyable || (clearable && Boolean(currentValue));
+  const hasActionButtons = loading || passwordToggle || copyable || (clearable && Boolean(currentValue));
+
+  const inputElement = (
+    <div className={wrapperClasses}>
+      {prefix && <span className={styles.affix}>{prefix}</span>}
+      {leftIcon && <span className={styles.icon}>{leftIcon}</span>}
+
+      <input
+        ref={inputRef}
+        id={inputId}
+        type={effectiveType}
+        value={currentValue}
+        maxLength={maxLength}
+        onChange={handleChange}
+        disabled={disabled}
+        className={styles.control}
+        {...rest}
+      />
+
+      {loading && (
+        <span className={styles.spinner}>
+          <Loader2 size={iconPixelSize} />
+        </span>
+      )}
+
+      {rightIcon && !hasActionButtons && <span className={styles.icon}>{rightIcon}</span>}
+
+      {hasActionButtons && !loading && (
+        <div className={styles.actionGroup}>
+          {clearable && Boolean(currentValue) && !disabled && (
+            <button
+              type="button"
+              aria-label="Clear input"
+              className={styles.actionBtn}
+              onClick={handleClear}
+            >
+              <X size={iconPixelSize} />
+            </button>
+          )}
+
+          {passwordToggle && !disabled && (
+            <button
+              type="button"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className={styles.actionBtn}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={iconPixelSize} /> : <Eye size={iconPixelSize} />}
+            </button>
+          )}
+
+          {copyable && (
+            <button
+              type="button"
+              aria-label={copied ? 'Copied to clipboard' : 'Copy to clipboard'}
+              className={styles.actionBtn}
+              onClick={handleCopy}
+            >
+              {copied ? <Check size={iconPixelSize} /> : <Copy size={iconPixelSize} />}
+            </button>
+          )}
+        </div>
+      )}
+
+      {suffix && <span className={`${styles.affix} ${styles.suffix}`}>{suffix}</span>}
+    </div>
+  );
 
   return (
     <div className={`${styles.inputGroup} ${className}`}>
@@ -122,64 +213,28 @@ export const Input: React.FC<InputProps> = ({
         </label>
       )}
 
-      <div className={wrapperClasses}>
-        {prefix && <span className={styles.affix}>{prefix}</span>}
-        {leftIcon && <span className={styles.icon}>{leftIcon}</span>}
+      {addonBefore || addonAfter ? (
+        <div className={styles.addonWrapper}>
+          {addonBefore && <span className={styles.addonBefore}>{addonBefore}</span>}
+          {inputElement}
+          {addonAfter && <span className={styles.addonAfter}>{addonAfter}</span>}
+        </div>
+      ) : (
+        inputElement
+      )}
 
-        <input
-          ref={inputRef}
-          id={inputId}
-          type={effectiveType}
-          value={currentValue}
-          onChange={handleChange}
-          disabled={disabled}
-          className={styles.control}
-          {...rest}
-        />
-
-        {rightIcon && !hasActionButtons && <span className={styles.icon}>{rightIcon}</span>}
-
-        {hasActionButtons && (
-          <div className={styles.actionGroup}>
-            {clearable && Boolean(currentValue) && !disabled && (
-              <button
-                type="button"
-                aria-label="Clear input"
-                className={styles.actionBtn}
-                onClick={handleClear}
-              >
-                <X size={iconPixelSize} />
-              </button>
-            )}
-
-            {passwordToggle && !disabled && (
-              <button
-                type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className={styles.actionBtn}
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={iconPixelSize} /> : <Eye size={iconPixelSize} />}
-              </button>
-            )}
-
-            {copyable && (
-              <button
-                type="button"
-                aria-label={copied ? 'Copied to clipboard' : 'Copy to clipboard'}
-                className={styles.actionBtn}
-                onClick={handleCopy}
-              >
-                {copied ? <Check size={iconPixelSize} /> : <Copy size={iconPixelSize} />}
-              </button>
-            )}
-          </div>
-        )}
-
-        {suffix && <span className={`${styles.affix} ${styles.suffix}`}>{suffix}</span>}
-      </div>
-
-      {error && <span className={styles.error}>{error}</span>}
+      {(error || showCount) && (
+        <div className={styles.footerRow}>
+          {error ? <span className={styles.error}>{error}</span> : <span />}
+          {showCount && (
+            <span className={styles.characterCount}>
+              {currentLength}
+              {maxLength !== undefined ? `/${maxLength}` : ''}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 };
+

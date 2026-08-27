@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import styles from './Drawer.module.css';
 
@@ -76,7 +77,7 @@ export const Drawer: React.FC<DrawerProps> = ({
     full: styles.sizeFull,
   }[size] || styles.sizeMd;
 
-  return (
+  return createPortal(
     <>
       <div
         className={styles.backdrop}
@@ -129,6 +130,7 @@ export const Drawer: React.FC<DrawerProps> = ({
 
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>
-    </>
+    </>,
+    document.body
   );
 };

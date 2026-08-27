@@ -1,6 +1,7 @@
-import type { ErrorInfo, ReactNode } from 'react';
+import type { ContextType, ErrorInfo, ReactNode } from 'react';
 import { Component } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { I18nContext } from '../../i18n/context';
 import { Button } from '../../ui';
 import styles from './ErrorBoundary.module.css';
 
@@ -18,6 +19,9 @@ interface ErrorBoundaryState {
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public static override contextType = I18nContext;
+  public declare context: ContextType<typeof I18nContext>;
+
   public override state: ErrorBoundaryState = {
     hasError: false,
     error: null,
@@ -53,6 +57,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       const { isGlobal = false, name = 'Application' } = this.props;
       const { error } = this.state;
+      const t = this.context?.t ?? ((key: string, params?: Record<string, string | number>) => {
+        if (key === 'common.errorBoundaryTitle') return 'Something went wrong';
+        if (key === 'common.errorBoundarySubtitle') return `An unexpected client error occurred in the ${params?.name ?? 'Application'} component.`;
+        if (key === 'common.errorBoundaryDetails') return 'Diagnostic Information';
+        if (key === 'common.errorBoundaryTryAgain') return 'Try Again';
+        if (key === 'common.errorBoundaryReload') return 'Reload Application';
+        return key;
+      });
 
       return (
         <div className={isGlobal ? styles.errorWrapper : styles.inlineErrorWrapper}>
@@ -61,15 +73,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <AlertTriangle size={24} color="var(--status-danger)" />
             </div>
 
-            <h2 className={styles.title}>Something went wrong</h2>
+            <h2 className={styles.title}>{t('common.errorBoundaryTitle')}</h2>
             <p className={styles.subtitle}>
-              An unexpected client error occurred in the {name} component.
+              {t('common.errorBoundarySubtitle', { name })}
             </p>
 
             {error && (
               <details className={styles.errorDetails}>
                 <summary className={styles.errorSummary}>
-                  Diagnostic Information
+                  {t('common.errorBoundaryDetails')}
                 </summary>
                 <div className={styles.errorMessage}>
                   {error.name}: {error.message}
@@ -80,10 +92,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             <div className={styles.actions}>
               <Button variant="secondary" onClick={this.handleReset}>
-                <RefreshCw size={14} /> Try Again
+                <RefreshCw size={14} /> {t('common.errorBoundaryTryAgain')}
               </Button>
               <Button variant="primary" onClick={this.handleReload}>
-                Reload Application
+                {t('common.errorBoundaryReload')}
               </Button>
             </div>
           </div>
@@ -94,3 +106,4 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return this.props.children;
   }
 }
+

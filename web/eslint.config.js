@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import reactPlugin from 'eslint-plugin-react';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import i18next from 'eslint-plugin-i18next';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -34,6 +35,7 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'jsx-a11y': jsxA11y,
+      i18next,
     },
     rules: {
       'no-unused-vars': 'off',
@@ -71,4 +73,35 @@ export default tseslint.config(
       'jsx-a11y/role-supports-aria-props': 'error',
     },
   },
+  {
+    files: ['src/pages/**/*.{ts,tsx}', 'src/components/**/*.{ts,tsx}'],
+    plugins: {
+      i18next,
+    },
+    rules: {
+      'i18next/no-literal-string': ['warn', {
+        mode: 'jsx-only',
+        'jsx-attributes': {
+          include: ['placeholder', 'title', 'label', 'description', 'subtitle', 'emptyMessage', 'confirmText', 'cancelText', 'hint', 'featureName', 'searchPlaceholder'],
+          exclude: [
+            'className', 'id', 'to', 'href', 'variant', 'size', 'color', 'weight',
+            'align', 'justify', 'gap', 'as', 'role', 'type', 'name', 'key', 'ref',
+            'src', 'alt', 'maxWidth', 'minItemWidth', 'glow', 'padding', 'position',
+            'value', 'target', 'rel', 'dot', 'pulse', 'fullWidth', 'interactive', 'bordered',
+            'aria-label', 'aria-labelledby', 'aria-describedby', 'aria-hidden',
+            'defaultValue', 'status', 'placement', 'shape', 'orientation', 'activeTab', 'defaultTab',
+            'icon', 'avatarUrl', 'thumbnail', 'tier', 'channelName', 'botName', 'author', 'footer',
+            'leftIcon', 'rightIcon', 'valueFormat', 'tabId', 'fallback', 'density',
+          ],
+        },
+        callees: {
+          exclude: ['t', 'useTranslation', 'classNames', 'clsx', 'cva', 'navigate', 'open', 'window.open', 'setLocale', 'match', 'includes', 'indexOf', 'startsWith', 'endsWith', 'getLangPath', 'apiClient.get', 'apiClient.post', 'apiClient.put', 'apiClient.delete'],
+        },
+        words: {
+          exclude: ['[0-9]+', '[•|/\\-:\\%\\...\\×\\#\\@\\$\\&]+', '^[A-Z0-9_-]+$'],
+        },
+      }],
+    },
+  },
 );
+

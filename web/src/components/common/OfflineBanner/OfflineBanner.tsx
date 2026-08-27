@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { WifiOff, Wifi } from 'lucide-react';
 import { useOnlineStatus } from '../../../hooks';
+import { useTranslation } from '../../../i18n';
 import styles from './OfflineBanner.module.css';
 
 export const OfflineBanner: React.FC = () => {
   const { isOnline, wasOffline } = useOnlineStatus();
+  const { t } = useTranslation();
   const [showRestored, setShowRestored] = useState<boolean>(false);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export const OfflineBanner: React.FC = () => {
         <span className={styles.icon}>
           <WifiOff size={14} />
         </span>
-        <span>Network connection lost. Offline changes will be synced once connection is restored.</span>
+        <span>{t('common.offlineLost')}</span>
       </div>
     );
   }
@@ -34,10 +36,11 @@ export const OfflineBanner: React.FC = () => {
         <span className={styles.icon}>
           <Wifi size={14} />
         </span>
-        <span>Connection restored! Telemetry synchronization active.</span>
+        <span>{t('common.offlineRestored')}</span>
       </div>
     );
   }
 
   return null;
 };
+

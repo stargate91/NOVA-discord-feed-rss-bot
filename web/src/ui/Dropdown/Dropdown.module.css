@@ -83,7 +83,7 @@
 
 .searchInput:focus-visible {
   border-color: var(--blue-500);
-  box-shadow: 0 0 0 2px var(--blue-500);
+  box-shadow: var(--focus-ring-input);
 }
 
 .searchClear {
@@ -102,6 +102,7 @@
 
 .searchClear:focus-visible {
   color: var(--text-primary);
+  box-shadow: var(--focus-ring);
   outline: none;
 }
 
@@ -133,7 +134,7 @@
 
 .item:focus-visible {
   background: var(--bg-glass-medium);
-  box-shadow: 0 0 0 2px var(--blue-500);
+  box-shadow: var(--focus-ring);
 }
 
 .item:hover:not(:disabled) {

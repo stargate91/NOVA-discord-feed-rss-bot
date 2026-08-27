@@ -3,6 +3,7 @@ import React from 'react';
 import styles from './Grid.module.css';
 
 export type GridColumns = 1 | 2 | 3 | 4 | 5 | 6 | 12 | 'auto-fill' | 'auto-fit';
+export type GridMinItemWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type GridGap =
   | 'none'
   | '3xs'
@@ -23,6 +24,7 @@ export type GridJustify = 'start' | 'center' | 'end' | 'between' | 'around' | 'e
 export interface GridProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType;
   columns?: GridColumns;
+  minItemWidth?: GridMinItemWidth;
   gap?: GridGap;
   rowGap?: GridGap;
   columnGap?: GridGap;
@@ -32,6 +34,7 @@ export interface GridProps extends HTMLAttributes<HTMLElement> {
   className?: string;
   id?: string;
 }
+
 
 export interface GridItemProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType;
@@ -105,6 +108,7 @@ export const GridItem: React.FC<GridItemProps> = ({
 export const Grid: React.FC<GridProps> & { Item: typeof GridItem } = ({
   as: Component = 'div',
   columns = 1,
+  minItemWidth,
   gap = 'md',
   rowGap,
   columnGap,
@@ -126,6 +130,16 @@ export const Grid: React.FC<GridProps> & { Item: typeof GridItem } = ({
     'auto-fill': styles.colsAutoFill,
     'auto-fit': styles.colsAutoFit,
   };
+
+  const minItemMap: Record<GridMinItemWidth, string> = {
+    xs: styles.minItemXs,
+    sm: styles.minItemSm,
+    md: styles.minItemMd,
+    lg: styles.minItemLg,
+    xl: styles.minItemXl,
+  };
+
+  const colClass = minItemWidth ? minItemMap[minItemWidth] : (colMap[String(columns)] || styles.cols1);
 
   const gapMap: Record<GridGap, string> = {
     none: styles.gapNone,
@@ -190,7 +204,7 @@ export const Grid: React.FC<GridProps> & { Item: typeof GridItem } = ({
 
   const classes = [
     styles.grid,
-    colMap[String(columns)],
+    colClass,
     gapMap[gap],
     rowGap ? rowGapMap[rowGap] : '',
     columnGap ? colGapMap[columnGap] : '',
@@ -198,6 +212,7 @@ export const Grid: React.FC<GridProps> & { Item: typeof GridItem } = ({
     justify ? justifyMap[justify] : '',
     className,
   ]
+
     .filter(Boolean)
     .join(' ');
 

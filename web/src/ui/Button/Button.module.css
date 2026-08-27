@@ -17,7 +17,8 @@
 
 .btn:focus-visible {
   border-color: var(--blue-500);
-  box-shadow: 0 0 0 2px var(--blue-500);
+  box-shadow: var(--focus-ring);
+  outline: none;
 }
 
 .btn:disabled {
@@ -190,4 +191,53 @@
 .link:not(:disabled):hover {
   text-decoration: underline;
   color: var(--blue-300);
+}
+
+.soft {
+  background: var(--status-info-bg);
+  color: var(--blue-400);
+  border-color: var(--status-info-border);
+}
+
+.soft:not(:disabled):hover {
+  background: var(--status-info-border);
+  border-color: var(--blue-400);
+  color: var(--text-primary);
+  transform: translateY(-0.125rem);
+}
+
+.gradient {
+  background: var(--gradient-brand);
+  color: var(--text-primary);
+  border-color: transparent;
+  box-shadow: var(--glow-blue-sm);
+}
+
+.gradient:not(:disabled):hover {
+  box-shadow: var(--glow-blue-md);
+  transform: translateY(-0.125rem);
+  filter: brightness(1.08);
+}
+
+.dangerOutline {
+  background: transparent;
+  color: var(--status-danger);
+  border-color: var(--status-danger-border);
+}
+
+.dangerOutline:not(:disabled):hover {
+  background: var(--status-danger-bg);
+  border-color: var(--status-danger);
+  transform: translateY(-0.125rem);
+}
+
+.dangerGhost {
+  background: transparent;
+  color: var(--status-danger);
+  border-color: transparent;
+}
+
+.dangerGhost:not(:disabled):hover {
+  background: var(--status-danger-bg);
+  color: var(--status-danger);
 }

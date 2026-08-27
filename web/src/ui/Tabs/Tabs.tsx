@@ -4,12 +4,16 @@ import styles from './Tabs.module.css';
 
 export type TabsVariant = 'line' | 'pill' | 'card' | 'glass';
 export type TabsSize = 'sm' | 'md' | 'lg';
+export type TabsOrientation = 'horizontal' | 'vertical';
 
 interface TabsContextValue {
   activeTab: string;
   setActiveTab: (val: string) => void;
   variant: TabsVariant;
   size: TabsSize;
+  orientation: TabsOrientation;
+  fitted: boolean;
+  keepMounted: boolean;
 }
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -31,6 +35,9 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   onChange?: (val: string) => void;
   variant?: TabsVariant;
   size?: TabsSize;
+  orientation?: TabsOrientation;
+  fitted?: boolean;
+  keepMounted?: boolean;
   children: ReactNode;
   className?: string;
   id?: string;
@@ -42,6 +49,9 @@ export const TabsRoot: React.FC<TabsProps> = ({
   onChange,
   variant = 'line',
   size = 'md',
+  orientation = 'horizontal',
+  fitted = false,
+  keepMounted = false,
   children,
   className = '',
   id,
@@ -59,6 +69,8 @@ export const TabsRoot: React.FC<TabsProps> = ({
     onChange?.(val);
   };
 
+  const orientationClass = orientation === 'vertical' ? styles.verticalTabs : '';
+
   return (
     <TabsContext.Provider
       value={{
@@ -66,9 +78,12 @@ export const TabsRoot: React.FC<TabsProps> = ({
         setActiveTab: handleTabChange,
         variant,
         size,
+        orientation,
+        fitted,
+        keepMounted,
       }}
     >
-      <div id={id} className={`${styles.tabs} ${className}`} {...rest}>
+      <div id={id} className={`${styles.tabs} ${orientationClass} ${className}`} {...rest}>
         {children}
       </div>
     </TabsContext.Provider>
@@ -84,7 +99,7 @@ export interface TabsListProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const TabsList: React.FC<TabsListProps> = ({ children, className = '', ...rest }) => {
-  const { variant, size } = useTabs();
+  const { variant, size, orientation, fitted } = useTabs();
 
   const variantClass = {
     line: styles.variantLine,
@@ -99,10 +114,14 @@ export const TabsList: React.FC<TabsListProps> = ({ children, className = '', ..
     lg: styles.sizeLg,
   }[size] || styles.sizeMd;
 
+  const orientationClass = orientation === 'vertical' ? styles.verticalList : '';
+  const fittedClass = fitted ? styles.fitted : '';
+
   return (
     <div
       role="tablist"
-      className={`${styles.list} ${variantClass} ${sizeClass} ${className}`}
+      aria-orientation={orientation}
+      className={`${styles.list} ${variantClass} ${sizeClass} ${orientationClass} ${fittedClass} ${className}`}
       {...rest}
     >
       {children}
@@ -131,12 +150,13 @@ export const Tab: React.FC<TabProps> = ({
   className = '',
   ...rest
 }) => {
-  const { activeTab, setActiveTab } = useTabs();
+  const { activeTab, setActiveTab, fitted } = useTabs();
   const isSelected = activeTab === value;
 
   const classes = [
     styles.tab,
     isSelected ? styles.active : '',
+    fitted ? styles.tabFitted : '',
     className,
   ]
     .filter(Boolean)
@@ -174,14 +194,16 @@ export const TabPanel: React.FC<TabPanelProps> = ({
   className = '',
   ...rest
 }) => {
-  const { activeTab } = useTabs();
+  const { activeTab, keepMounted } = useTabs();
+  const isSelected = activeTab === value;
 
-  if (activeTab !== value) return null;
+  if (!isSelected && !keepMounted) return null;
 
   return (
     <div
       role="tabpanel"
       tabIndex={0}
+      hidden={!isSelected}
       className={`${styles.panel} ${className}`}
       {...rest}
     >
@@ -189,6 +211,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({
     </div>
   );
 };
+
 
 /* --------------------------------------------------------------------------
    Compound Export

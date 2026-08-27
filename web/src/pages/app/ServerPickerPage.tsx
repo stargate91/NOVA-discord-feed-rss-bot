@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Settings, UserPlus } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
-import { Button, Badge, CardSkeleton } from '../../ui';
-import styles from './AppPages.module.css';
+import {
+  Button,
+  Badge,
+  Card,
+  Avatar,
+  CardSkeleton,
+  Grid,
+  Stack,
+  Inline,
+  Text,
+} from '../../ui';
 
 interface ServerItem {
   id: string;
@@ -55,84 +64,109 @@ export const ServerPickerPage: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <Stack gap="lg">
       <SEO
         title={t('servers.title')}
         description={t('servers.subtitle')}
       />
 
-      <div className={styles.tabHeader}>
-        <div>
-          <h2 className={styles.tabTitle}>{t('servers.title')}</h2>
-          <p className={styles.tabSubtitle}>
+      <Inline justify="between" align="center" wrap gap="md">
+        <Stack gap="3xs">
+          <Text as="h2" size="lg" weight="bold">
+            {t('servers.title')}
+          </Text>
+          <Text size="xs" color="secondary">
             {t('servers.subtitle')}
-          </p>
-        </div>
+          </Text>
+        </Stack>
 
         <Button
           variant="discord"
-          onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands', '_blank')}
+          onClick={() =>
+            window.open(
+              'https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands',
+              '_blank'
+            )
+          }
         >
           <Plus size={14} /> {t('servers.addBot')}
         </Button>
-      </div>
+      </Inline>
 
-      <div className={styles.grid3}>
+      <Grid minItemWidth="sm" gap="lg">
         {isLoading
           ? [1, 2, 3].map((key) => (
               <CardSkeleton key={`skeleton-server-${key}`} lines={3} />
             ))
           : mockServers.map((server) => (
-              <div key={server.id} className={styles.serverCard}>
-                <div>
-                  <div className={styles.serverHeader}>
-                    <img src={server.avatar} alt={server.name} className={styles.serverAvatar} />
-                    <div>
-                      <h3 className={styles.serverName}>{server.name}</h3>
-                      <span className={styles.serverId}>{server.id}</span>
-                    </div>
-                  </div>
+              <Card
+                key={server.id}
+                glow={server.isBotInServer ? 'blue' : 'none'}
+                interactive
+                padding="lg"
+              >
+                <Stack gap="lg">
+                  <Inline align="center" gap="md">
+                    <Avatar
+                      src={server.avatar}
+                      name={server.name}
+                      size="md"
+                      status={server.isBotInServer ? 'online' : 'offline'}
+                    />
+                    <Stack gap="none">
+                      <Text weight="bold">{server.name}</Text>
+                      <Text size="2xs" color="muted" mono>{server.id}</Text>
+                    </Stack>
+                  </Inline>
 
-                  <div className={styles.serverStats}>
-                    <div className={styles.statRow}>
-                      <span>{t('servers.statusLabel')}</span>
-                      <Badge variant={server.isBotInServer ? 'online' : 'neutral'}>
+                  <Stack gap="xs">
+                    <Inline justify="between" align="center">
+                      <Text size="xs" color="secondary">{t('servers.statusLabel')}</Text>
+                      <Badge variant={server.isBotInServer ? 'online' : 'neutral'} dot>
                         {server.isBotInServer ? t('servers.statusActive') : t('servers.statusNotInvited')}
                       </Badge>
-                    </div>
-                    <div className={styles.statRow}>
-                      <span>{t('servers.planLabel')}</span>
-                      <Badge variant="tier">{server.tier}</Badge>
-                    </div>
-                    <div className={styles.statRow}>
-                      <span>{t('servers.activeFeedsLabel')}</span>
-                      <span className={styles.statValue}>
-                        {t('servers.monitorsCount', { count: server.monitors })}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                    </Inline>
 
-                {server.isBotInServer ? (
-                  <Button
-                    variant="primary"
-                    fullWidth
-                    onClick={() => navigate(`/dashboard/${server.id}`)}
-                  >
-                    {t('servers.manageBtn')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="secondary"
-                    fullWidth
-                    onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands', '_blank')}
-                  >
-                    {t('servers.inviteBtn')}
-                  </Button>
-                )}
-              </div>
+                    <Inline justify="between" align="center">
+                      <Text size="xs" color="secondary">{t('servers.planLabel')}</Text>
+                      <Badge variant="tier">{server.tier}</Badge>
+                    </Inline>
+
+                    <Inline justify="between" align="center">
+                      <Text size="xs" color="secondary">{t('servers.activeFeedsLabel')}</Text>
+                      <Text size="xs" weight="semibold">
+                        {t('servers.monitorsCount', { count: server.monitors })}
+                      </Text>
+                    </Inline>
+                  </Stack>
+
+                  {server.isBotInServer ? (
+                    <Button
+                      variant="primary"
+                      fullWidth
+                      onClick={() => navigate(`/dashboard/${server.id}`)}
+                    >
+                      <Settings size={14} /> {t('servers.manageBtn')}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      fullWidth
+                      onClick={() =>
+                        window.open(
+                          'https://discord.com/oauth2/authorize?client_id=1489908793780338688&permissions=277025508352&scope=bot%20applications.commands',
+                          '_blank'
+                        )
+                      }
+                    >
+                      <UserPlus size={14} /> {t('servers.inviteBtn')}
+                    </Button>
+                  )}
+                </Stack>
+              </Card>
             ))}
-      </div>
-    </div>
+      </Grid>
+    </Stack>
   );
 };
+

@@ -1,0 +1,60 @@
+.container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Max Widths */
+.maxWidthXs {
+  max-width: 30rem;
+}
+
+.maxWidthSm {
+  max-width: 42rem;
+}
+
+.maxWidthMd {
+  max-width: 55rem;
+}
+
+.maxWidthLg {
+  max-width: 72rem;
+}
+
+.maxWidthXl {
+  max-width: 84rem;
+}
+
+.maxWidthFull {
+  max-width: 100%;
+}
+
+/* Paddings */
+.padNone {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.padSm {
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
+}
+
+.padMd {
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.padLg {
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+.padXl {
+  padding-left: var(--space-xl);
+  padding-right: var(--space-xl);
+}

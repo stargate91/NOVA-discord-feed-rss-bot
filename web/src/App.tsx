@@ -10,8 +10,7 @@ import { ModalProvider } from './components/common/Modal';
 import { OfflineBanner } from './components/common/OfflineBanner';
 import { AuthProvider, ProtectedRoute } from './auth';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { PublicLayout } from './components/layout/PublicLayout';
-import { DashboardLayout } from './components/layout/DashboardLayout';
+import { PublicLayout, DashboardLayout } from './components/layout';
 
 // Marketing Pages
 import { HomePage } from './pages/marketing/HomePage';

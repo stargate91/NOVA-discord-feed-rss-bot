@@ -28,7 +28,7 @@
 
 .controlWrapper:focus-within {
   border-color: var(--blue-500);
-  box-shadow: 0 0 0 2px var(--blue-500), var(--glow-blue-sm);
+  box-shadow: var(--focus-ring-input);
 }
 
 .hasError {
@@ -37,7 +37,7 @@
 
 .hasError:focus-within {
   border-color: var(--status-danger);
-  box-shadow: 0 0 0 2px var(--status-danger);
+  box-shadow: var(--focus-ring-danger);
 }
 
 .disabled {

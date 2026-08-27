@@ -65,7 +65,14 @@
   line-height: var(--line-height-tight);
 }
 
+.sizeHero {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tighter);
+}
+
 /* Font Weights */
+
 .weightRegular {
   font-weight: var(--font-weight-regular);
 }

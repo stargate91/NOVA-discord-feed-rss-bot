@@ -27,4 +27,29 @@ export const common = {
   navFeeds: 'Feeds & Monitors',
   navAnalytics: 'Analytics & Stats',
   navGuildSettings: 'Guild Settings',
+
+  // Error Boundary
+  errorBoundaryTitle: 'Something went wrong',
+  errorBoundarySubtitle: 'An unexpected client error occurred in the {name} component.',
+  errorBoundaryDetails: 'Diagnostic Information',
+  errorBoundaryTryAgain: 'Try Again',
+  errorBoundaryReload: 'Reload Application',
+
+  // Feature Gate & Upgrade Promo
+  tierRequired: '{tier} Required',
+  unlockFeature: 'Unlock {feature}',
+  upgradePromoDefaultDesc: 'This advanced functionality is exclusively available on the {tier} and above. Upgrade your Discord server to activate immediate access.',
+  upgradeServerBtn: 'Upgrade Server',
+  defaultFeatureName: 'This feature',
+
+  // Offline Banner
+  offlineLost: 'Network connection lost. Offline changes will be synced once connection is restored.',
+  offlineRestored: 'Connection restored! Telemetry synchronization active.',
+
+  // Header & Footer
+  serverWithId: 'Server #{id}',
+  plusTier: 'Plus Tier',
+  footerResources: 'Resources',
+  footerLegalSupport: 'Legal & Support',
 } as const;
+

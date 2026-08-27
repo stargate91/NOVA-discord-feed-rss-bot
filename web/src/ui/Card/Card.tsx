@@ -1,17 +1,24 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import React from 'react';
 import { Spinner } from '../Spinner/Spinner';
 import styles from './Card.module.css';
 
 export type CardGlow = 'none' | 'blue' | 'purple' | 'green' | 'danger';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+export type CardVariant = 'default' | 'surface' | 'glass' | 'elevated' | 'ghost' | 'gradient-border';
+export type CardBorderAccent = 'none' | 'left' | 'top';
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+  as?: ElementType;
   title?: ReactNode;
   subtitle?: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
   interactive?: boolean;
+  variant?: CardVariant;
+  borderAccent?: CardBorderAccent;
+  headerDivided?: boolean;
+  footerDivided?: boolean;
   glow?: CardGlow;
   padding?: CardPadding;
   loading?: boolean;
@@ -21,11 +28,16 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>
 }
 
 export const CardRoot: React.FC<CardProps> = ({
+  as: Component = 'div',
   title,
   subtitle,
   description,
   action,
   interactive = false,
+  variant = 'default',
+  borderAccent = 'none',
+  headerDivided = false,
+  footerDivided: _footerDivided = false,
   glow = 'none',
   padding = 'lg',
   loading = false,
@@ -50,10 +62,27 @@ export const CardRoot: React.FC<CardProps> = ({
     danger: styles.glowDanger,
   }[glow] || '';
 
+  const variantClass = {
+    default: '',
+    surface: styles.variantSurface,
+    glass: styles.variantGlass,
+    elevated: styles.variantElevated,
+    ghost: styles.variantGhost,
+    'gradient-border': styles.variantGradientBorder,
+  }[variant] || '';
+
+  const accentClass = {
+    none: '',
+    left: styles.accentLeft,
+    top: styles.accentTop,
+  }[borderAccent] || '';
+
   const classes = [
     styles.card,
     padClass,
     glowClass,
+    variantClass,
+    accentClass,
     interactive ? styles.interactive : '',
     className,
   ]
@@ -64,11 +93,11 @@ export const CardRoot: React.FC<CardProps> = ({
   const hasMonolithicHeader = Boolean(title || descText || action);
 
   return (
-    <div id={id} className={classes} {...rest}>
+    <Component id={id} className={classes} {...rest}>
       {loading && <Spinner overlay />}
 
       {hasMonolithicHeader && (
-        <div className={styles.header}>
+        <div className={`${styles.header} ${headerDivided ? styles.headerDivided : ''}`}>
           <div className={styles.titleGroup}>
             {title && (typeof title === 'string' ? <h3 className={styles.title}>{title}</h3> : title)}
             {descText && (typeof descText === 'string' ? <p className={styles.description}>{descText}</p> : descText)}
@@ -78,18 +107,23 @@ export const CardRoot: React.FC<CardProps> = ({
       )}
 
       {hasMonolithicHeader ? <div className={styles.body}>{children}</div> : children}
-    </div>
+    </Component>
   );
 };
 
 /* --------------------------------------------------------------------------
    Card Compound Subcomponents
    -------------------------------------------------------------------------- */
-export const CardHeader: React.FC<HTMLAttributes<HTMLDivElement>> = ({
+export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  divided?: boolean;
+}
+
+export const CardHeader: React.FC<CardHeaderProps> = ({
+  divided = false,
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.header} ${className}`} {...rest}>{children}</div>;
+}) => <div className={`${styles.header} ${divided ? styles.headerDivided : ''} ${className}`} {...rest}>{children}</div>;
 
 export const CardTitle: React.FC<HTMLAttributes<HTMLHeadingElement>> = ({
   children,
@@ -109,11 +143,16 @@ export const CardBody: React.FC<HTMLAttributes<HTMLDivElement>> = ({
   ...rest
 }) => <div className={`${styles.body} ${className}`} {...rest}>{children}</div>;
 
-export const CardFooter: React.FC<HTMLAttributes<HTMLDivElement>> = ({
+export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
+  divided?: boolean;
+}
+
+export const CardFooter: React.FC<CardFooterProps> = ({
+  divided = true,
   children,
   className = '',
   ...rest
-}) => <div className={`${styles.footer} ${className}`} {...rest}>{children}</div>;
+}) => <div className={`${styles.footer} ${divided ? styles.footerDivided : ''} ${className}`} {...rest}>{children}</div>;
 
 export const CardActions: React.FC<HTMLAttributes<HTMLDivElement>> = ({
   children,
@@ -140,3 +179,4 @@ Card.Description = CardDescription;
 Card.Body = CardBody;
 Card.Footer = CardFooter;
 Card.Actions = CardActions;
+

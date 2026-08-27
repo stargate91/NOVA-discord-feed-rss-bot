@@ -2,57 +2,75 @@ import React from 'react';
 import { Scale } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
-import { Card } from '../../ui';
-import styles from './MarketingPage.module.css';
+import { Card, Badge, Container, Stack, Text } from '../../ui';
 
 export const TermsPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className={styles.pageWrapper}>
+    <Container maxWidth="md" padding="md">
       <SEO
         title={t('legal.termsTitle')}
         description={t('legal.termsSubtitle')}
       />
 
-      <header className={styles.header}>
-        <div className={styles.tag}>
-          <Scale size={14} />
-          <span>{t('legal.termsTag')}</span>
-        </div>
-        <h1 className={styles.title}>
-          {t('legal.termsTitle')} <span>{t('legal.termsTitleHighlight')}</span>
-        </h1>
-        <p className={styles.subtitle}>
-          {t('legal.termsSubtitle')}
-        </p>
-      </header>
+      <Stack gap="5xl">
+        <Stack align="center" gap="md">
+          <Badge variant="outline" size="md" dot pulse>
+            <Scale size={14} /> {t('legal.termsTag')}
+          </Badge>
+          <Text as="h1" size="hero" weight="extrabold" align="center">
+            {t('legal.termsTitle')}{' '}
+            <Text as="span" color="gradient" size="hero" weight="extrabold">
+              {t('legal.termsTitleHighlight')}
+            </Text>
+          </Text>
+          <Container maxWidth="sm" centered>
+            <Text size="lg" color="secondary" align="center">
+              {t('legal.termsSubtitle')}
+            </Text>
+          </Container>
+        </Stack>
 
-      <div className={styles.sectionStack}>
-        <Card title={t('legal.termsSection1Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.termsSection1Desc')}</p>
-          </div>
-        </Card>
+        <Stack gap="xl">
+          <Card padding="xl">
+            <Card.Header>
+              <Card.Title>{t('legal.termsSection1Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Text color="secondary">{t('legal.termsSection1Desc')}</Text>
+            </Card.Body>
+          </Card>
 
-        <Card title={t('legal.termsSection2Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.termsSection2Desc')}</p>
-          </div>
-        </Card>
+          <Card padding="xl">
+            <Card.Header>
+              <Card.Title>{t('legal.termsSection2Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Text color="secondary">{t('legal.termsSection2Desc')}</Text>
+            </Card.Body>
+          </Card>
 
-        <Card title={t('legal.termsSection3Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.termsSection3Desc')}</p>
-          </div>
-        </Card>
+          <Card padding="xl">
+            <Card.Header>
+              <Card.Title>{t('legal.termsSection3Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Text color="secondary">{t('legal.termsSection3Desc')}</Text>
+            </Card.Body>
+          </Card>
 
-        <Card title={t('legal.termsSection4Title')}>
-          <div className={styles.proseBlock}>
-            <p>{t('legal.termsSection4Desc')}</p>
-          </div>
-        </Card>
-      </div>
-    </div>
+          <Card padding="xl">
+            <Card.Header>
+              <Card.Title>{t('legal.termsSection4Title')}</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Text color="secondary">{t('legal.termsSection4Desc')}</Text>
+            </Card.Body>
+          </Card>
+        </Stack>
+      </Stack>
+    </Container>
   );
 };
+

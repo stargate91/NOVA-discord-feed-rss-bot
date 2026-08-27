@@ -39,6 +39,11 @@ a {
   color: inherit;
   text-decoration: none;
   transition: var(--transition-fast);
+  outline: none;
+}
+
+a:focus:not(:focus-visible) {
+  outline: none;
 }
 
 button {

@@ -12,6 +12,7 @@ export interface InlineProps extends HTMLAttributes<HTMLElement> {
   align?: InlineAlign;
   justify?: InlineJustify;
   nowrap?: boolean;
+  wrap?: boolean;
   fullWidth?: boolean;
   children?: ReactNode;
   className?: string;
@@ -24,6 +25,7 @@ export const Inline: React.FC<InlineProps> = ({
   align = 'center',
   justify,
   nowrap = false,
+  wrap,
   fullWidth = false,
   children,
   className = '',
@@ -55,12 +57,14 @@ export const Inline: React.FC<InlineProps> = ({
     between: styles.justifyBetween,
   };
 
+  const isNoWrap = wrap !== undefined ? !wrap : nowrap;
+
   const classes = [
     styles.inline,
     gapMap[gap],
     alignMap[align],
     justify ? justifyMap[justify] : '',
-    nowrap ? styles.nowrap : '',
+    isNoWrap ? styles.nowrap : '',
     fullWidth ? styles.fullWidth : '',
     className,
   ]
@@ -73,3 +77,4 @@ export const Inline: React.FC<InlineProps> = ({
     </Component>
   );
 };
+

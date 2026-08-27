@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import type { GuildTier } from '../../../auth';
 import { TIER_LABELS } from '../../../auth';
+import { useTranslation } from '../../../i18n';
 import { Badge, Button } from '../../../ui';
 import styles from './FeatureGate.module.css';
 
@@ -14,12 +15,14 @@ interface UpgradePromoCardProps {
 
 export const UpgradePromoCard: React.FC<UpgradePromoCardProps> = ({
   requiredTier,
-  featureName = 'This feature',
+  featureName,
   description,
 }) => {
   const navigate = useNavigate();
   const { guildId } = useParams<{ guildId?: string }>();
+  const { t } = useTranslation();
   const tierName = TIER_LABELS[requiredTier] || `${requiredTier.toUpperCase()} Tier`;
+  const resolvedFeatureName = featureName || t('common.defaultFeatureName');
 
   const handleUpgradeClick = () => {
     if (guildId) {
@@ -36,23 +39,23 @@ export const UpgradePromoCard: React.FC<UpgradePromoCardProps> = ({
       </div>
 
       <div className={styles.badgeRow}>
-        <Badge variant="tier">{tierName} Required</Badge>
+        <Badge variant="tier">{t('common.tierRequired', { tier: tierName })}</Badge>
       </div>
 
       <h4 className={styles.title}>
-        Unlock {featureName}
+        {t('common.unlockFeature', { feature: resolvedFeatureName })}
       </h4>
 
       <p className={styles.description}>
-        {description ||
-          `This advanced functionality is exclusively available on the ${tierName} and above. Upgrade your Discord server to activate immediate access.`}
+        {description || t('common.upgradePromoDefaultDesc', { tier: tierName })}
       </p>
 
       <div className={styles.actions}>
         <Button variant="primary" size="sm" onClick={handleUpgradeClick}>
-          Upgrade Server <ArrowRight size={14} />
+          {t('common.upgradeServerBtn')} <ArrowRight size={14} />
         </Button>
       </div>
     </div>
   );
 };
+

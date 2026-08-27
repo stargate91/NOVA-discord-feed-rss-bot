@@ -104,3 +104,74 @@
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
 }
+
+/* Style Solid */
+.styleSolid.online,
+.styleSolid.success {
+  background: var(--status-success);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.styleSolid.offline,
+.styleSolid.danger {
+  background: var(--status-danger);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.styleSolid.warning {
+  background: var(--status-warning);
+  color: var(--slate-950);
+  border-color: transparent;
+}
+
+.styleSolid.info,
+.styleSolid.tier {
+  background: var(--blue-500);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.styleSolid.purple {
+  background: var(--status-purple);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.styleSolid.neutral {
+  background: var(--slate-700);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+/* Placements */
+.placed {
+  position: absolute;
+  z-index: var(--z-base);
+}
+
+.topRight {
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.topLeft {
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.bottomRight {
+  bottom: 0;
+  right: 0;
+  transform: translate(50%, 50%);
+}
+
+.bottomLeft {
+  bottom: 0;
+  left: 0;
+  transform: translate(-50%, 50%);
+}
+

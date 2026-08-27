@@ -253,12 +253,14 @@
   --blur-xl: 2rem;         /* 32px - Heavy overlays & backdrop sheets */
 
   /* --------------------------------------------------------------------------
-     10. ACCESSIBILITY & FOCUS RING TOKENS
+     10. ACCESSIBILITY & FOCUS RING TOKENS (Signature Nova Glow Ring)
      -------------------------------------------------------------------------- */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
   --focus-ring-color: var(--blue-400);
-  --focus-ring-glow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--blue-500);
+  --focus-ring: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--blue-500), 0 0 14px rgb(14 165 233 / 35%);
+  --focus-ring-input: 0 0 0 2px var(--blue-500), 0 0 12px rgb(14 165 233 / 30%);
+  --focus-ring-danger: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--status-danger), 0 0 12px var(--status-danger-bg);
 
   /* --------------------------------------------------------------------------
      11. COMPONENT DIMENSION & TARGET TOKENS (WCAG 2.2 AAA Target Sizing)

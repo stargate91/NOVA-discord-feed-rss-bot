@@ -35,3 +35,4 @@ export * from './ProgressBar/ProgressBar';
 export * from './Pagination/Pagination';
 export * from './Breadcrumbs/Breadcrumbs';
 export * from './Textarea/Textarea';
+export * from './Container/Container';

@@ -3,7 +3,7 @@ import { NavLink, Link, useParams } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import type { HealthStatus } from '../../types';
 import { useTranslation } from '../../i18n';
-import { Badge, Button } from '../../ui';
+import { Badge, Button, Drawer, Stack } from '../../ui';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
@@ -95,21 +95,40 @@ export const Navbar: React.FC<NavbarProps> = ({
             </Button>
           </Link>
 
-          {/* Mobile Hamburger Button with Lucide Icons */}
+          {/* Mobile Hamburger Button */}
           <button
             type="button"
-            className={styles.menuToggle}
+            className={styles.mobileMenuBtn}
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {isMobileMenuOpen && (
-        <nav className={styles.mobileDrawer}>
+      {/* Mobile Drawer via UI Drawer primitive */}
+      <Drawer
+        open={isMobileMenuOpen}
+        onClose={closeMobileMenu}
+        position="right"
+        size="sm"
+        title={
+          <Link to={getLangPath('/')} className={styles.brand} onClick={closeMobileMenu}>
+            <img src="/images/logo.webp" alt="Nova Logo" className={styles.brandAvatar} />
+            <span className={styles.brandText}>{t('common.brandName')}</span>
+          </Link>
+        }
+        footer={
+          <Link to="/servers" onClick={closeMobileMenu} className={styles.dashboardLink}>
+            <Button variant="primary" size="lg" fullWidth>
+              {t('common.dashboard')}
+            </Button>
+          </Link>
+        }
+      >
+        <Stack gap="xs">
           <NavLink
             to={getLangPath('/')}
             end
@@ -153,8 +172,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {t('common.navDev')}
           </NavLink>
-        </nav>
-      )}
+        </Stack>
+      </Drawer>
     </header>
   );
 };

@@ -151,3 +151,32 @@
   text-align: center;
   color: var(--text-muted);
 }
+
+.loadingContainer {
+  position: relative;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  background: var(--modal-backdrop-bg);
+  backdrop-filter: blur(var(--blur-sm));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-base);
+  border-radius: var(--radius-lg);
+}
+
+.tbody .tr.trSelected,
+.trSelected {
+  background: var(--status-info-bg);
+}
+
+.th.checkboxCell,
+.td.checkboxCell {
+  width: 2.75rem;
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
+  text-align: center;
+}

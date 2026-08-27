@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import styles from './DiscordEmbed.module.css';
 
 export interface DiscordEmbedField {
@@ -34,6 +34,8 @@ export interface DiscordEmbedProps extends HTMLAttributes<HTMLDivElement> {
   image?: string;
   footer?: DiscordEmbedFooter;
   footerText?: string;
+  accentColor?: string;
+  components?: ReactNode;
   children?: ReactNode;
   className?: string;
   id?: string;
@@ -53,12 +55,25 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
   image,
   footer,
   footerText = 'Delivered by Nova Feeds • Sub-second Latency',
+  accentColor,
+  components,
   children,
   className = '',
   id,
   ...rest
 }) => {
   const footerContent = footer ?? { text: footerText };
+  const embedBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (embedBoxRef.current) {
+      if (accentColor) {
+        embedBoxRef.current.style.borderLeftColor = accentColor;
+      } else {
+        embedBoxRef.current.style.removeProperty('border-left-color');
+      }
+    }
+  }, [accentColor]);
 
   return (
     <div id={id} className={`${styles.preview} ${className}`} {...rest}>
@@ -77,7 +92,8 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
             <span className={styles.timestamp}>{timestamp}</span>
           </div>
 
-          <div className={styles.embedBox}>
+          <div ref={embedBoxRef} className={styles.embedBox}>
+
             <div className={styles.embedHeaderLayout}>
               <div className={styles.embedMain}>
                 {author && (
@@ -134,8 +150,15 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
               </div>
             )}
           </div>
+
+          {components && (
+            <div className={styles.componentsContainer}>
+              {components}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
+

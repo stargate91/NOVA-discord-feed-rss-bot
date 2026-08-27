@@ -15,6 +15,7 @@ export const changelog = {
 
   v090Title: 'Nova v0.9.0 — Multi-Language & Free Games Monitors',
   v090Subtitle: 'Released July 2026',
+  v090Badge: 'Archived',
   v090Feature1: '17 Locales Supported: Full internationalization for Discord notifications and admin command feedback.',
   v090Feature2: 'Epic Games, Steam & GOG Free Deals: Automated tracking of 100% discount game giveaways.',
   v090Feature3: 'Adaptive Shared Polling: Grouped requests reducing external API rate limits by over 60%.',

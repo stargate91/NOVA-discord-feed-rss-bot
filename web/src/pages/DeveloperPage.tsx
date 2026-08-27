@@ -1,21 +1,46 @@
 import React, { useState } from 'react';
+import { RefreshCw, ExternalLink, LogOut, Key } from 'lucide-react';
 import { apiClient } from '../api';
 import { useAuth } from '../auth';
+import { useTranslation } from '../i18n';
 import { useToast } from '../components/common/Toast';
 import { SEO } from '../components/common/SEO';
-import { Button, Card, Input, Terminal } from '../ui';
-import styles from './DeveloperPage.module.css';
+import {
+  Button,
+  Card,
+  Input,
+  Terminal,
+  Badge,
+  Alert,
+  ProgressBar,
+  Select,
+  Container,
+  Stack,
+  Inline,
+  Grid,
+  Text,
+} from '../ui';
 
 interface AdminLogsResponse {
   logs?: string[];
 }
 
+const LOG_LEVEL_OPTIONS = [
+  { value: 'all', labelKey: 'dev.logLevelAll' },
+  { value: 'info', labelKey: 'dev.logLevelInfo' },
+  { value: 'warn', labelKey: 'dev.logLevelWarn' },
+  { value: 'error', labelKey: 'dev.logLevelError' },
+  { value: 'debug', labelKey: 'dev.logLevelDebug' },
+] as const;
+
 export const DeveloperPage: React.FC = () => {
   const { adminSecret, setAdminSecretKey, clearAdminSecretKey } = useAuth();
+  const { t } = useTranslation();
   const toast = useToast();
   const [secretInput, setSecretInput] = useState<string>('');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(Boolean(adminSecret));
   const [adminLogs, setAdminLogs] = useState<string[]>([]);
+  const [logFilter, setLogFilter] = useState<string>('all');
   const [adminMessage, setAdminMessage] = useState<string>('');
   const [syncStatus, setSyncStatus] = useState<string>('');
 
@@ -64,93 +89,152 @@ export const DeveloperPage: React.FC = () => {
     toast.info('Logged out from Developer Console.', 'Session Closed');
   };
 
+  const filteredLogs = adminLogs.filter((log) => {
+    if (logFilter === 'all') return true;
+    const lower = log.toLowerCase();
+    return lower.includes(`[${logFilter}]`) || lower.includes(`${logFilter}:`);
+  });
+
   return (
     <div>
       <SEO
-        title="Developer Console & System Telemetry"
-        description="Direct operational diagnostics, log inspection, and Prometheus metrics for Nova Feeds."
+        title={t('dev.title')}
+        description={t('dev.description')}
       />
 
       {!isAdminAuthenticated ? (
-        <div className={styles.authWrapper}>
+        <Container maxWidth="xs" padding="lg">
           <Card
-            title="Developer Authentication"
-            subtitle="Enter your server WEBHOOK_SECRET passkey to open the Developer Management Portal."
+            glow="blue"
+            padding="xl"
+            title={t('dev.authTitle')}
+            subtitle={t('dev.authSubtitle')}
           >
             <form onSubmit={handleAdminLogin}>
-              <Input
-                label="Secret Key"
-                type="password"
-                value={secretInput}
-                onChange={(e) => setSecretInput(e.target.value)}
-                placeholder="Enter WEBHOOK_SECRET..."
-                className={styles.authInput}
-              />
+              <Stack gap="lg">
+                <Input
+                  label={t('dev.secretPasskeyLabel')}
+                  value={secretInput}
+                  onChange={(e) => setSecretInput(e.target.value)}
+                  placeholder={t('dev.secretPasskeyPlaceholder')}
+                  passwordToggle
+                  clearable
+                  leftIcon={<Key size={15} />}
+                />
 
-              {adminMessage && (
-                <p className={adminMessage.includes('successful') ? styles.authMsgSuccess : styles.authMsgDanger}>
-                  {adminMessage}
-                </p>
-              )}
+                {adminMessage && (
+                  <Alert
+                    variant={adminMessage.includes('successful') ? 'success' : 'danger'}
+                    description={adminMessage}
+                  />
+                )}
 
-              <Button type="submit" variant="primary" fullWidth>
-                Verify & Enter Portal
-              </Button>
+                <Button type="submit" variant="primary" size="lg" fullWidth>
+                  {t('dev.verifyBtn')}
+                </Button>
+              </Stack>
             </form>
           </Card>
-        </div>
+        </Container>
       ) : (
-        <div>
-          <div className={styles.dashboardHeader}>
-            <div>
-              <h2>System Administration & Telemetry</h2>
-              <p>Connected to FastAPI Microservice Server (:8080)</p>
-            </div>
+        <Stack gap="2xl">
+          <Inline justify="between" align="center" wrap gap="md">
+            <Stack gap="3xs">
+              <Inline align="center" gap="sm">
+                <Text as="h2" size="2xl" weight="bold">
+                  {t('dev.adminTitle')}
+                </Text>
+                <Badge variant="online" dot pulse>{t('dev.fastApiActive')}</Badge>
+              </Inline>
+              <Text size="sm" color="secondary">
+                {t('dev.connectedServer')}
+              </Text>
+            </Stack>
+
             <Button
               variant="secondary"
               size="sm"
               onClick={handleLogout}
             >
-              Logout
+              <LogOut size={14} /> {t('dev.logoutBtn')}
             </Button>
-          </div>
+          </Inline>
 
-          <div className={styles.grid2}>
+          <Grid minItemWidth="lg" gap="2xl">
             <Card
-              title="System Controls"
-              subtitle="Trigger immediate monitor cache reloads from the database."
+              glow="blue"
+              title={t('dev.systemControlsTitle')}
+              subtitle={t('dev.systemControlsSubtitle')}
             >
-              <div className={styles.controlRow}>
-                <Button variant="secondary" size="sm" onClick={handleForceSync}>
-                  Force Monitor Sync
+              <Stack gap="md">
+                <Inline align="center" gap="md">
+                  <Button variant="secondary" size="sm" onClick={handleForceSync}>
+                    <RefreshCw size={14} /> {t('dev.forceSyncBtn')}
+                  </Button>
+                  {syncStatus && (
+                    <Text size="sm" color="brand">
+                      {syncStatus}
+                    </Text>
+                  )}
+                </Inline>
+                <ProgressBar
+                  value={100}
+                  size="sm"
+                  variant="brand"
+                  label={t('dev.cacheCoherencyLabel')}
+                  showValue
+                  valueFormat={() => t('dev.synchronized')}
+                />
+              </Stack>
+            </Card>
+
+            <Card
+              glow="purple"
+              title={t('dev.prometheusTitle')}
+              subtitle={t('dev.prometheusSubtitle')}
+            >
+              <Stack gap="md">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => window.open('/metrics', '_blank')}
+                >
+                  <ExternalLink size={14} /> {t('dev.viewMetricsBtn')}
                 </Button>
-                {syncStatus && (
-                  <span className={styles.statusMsg}>
-                    {syncStatus}
-                  </span>
-                )}
-              </div>
+                <ProgressBar
+                  value={98}
+                  size="sm"
+                  variant="purple"
+                  label={t('dev.metricHealthLabel')}
+                  showValue
+                  valueFormat={() => t('dev.uptimeHealth')}
+                />
+              </Stack>
             </Card>
+          </Grid>
 
-            <Card
-              title="Prometheus Metrics"
-              subtitle="Real-time telemetry and counter exposition."
-            >
-              <Button
-                variant="secondary"
+          <Card
+            glow="none"
+            title={t('dev.logsTitle')}
+            action={
+              <Select
                 size="sm"
-                onClick={() => window.open('/metrics', '_blank')}
-              >
-                View /metrics Endpoint ↗
-              </Button>
-            </Card>
-          </div>
-
-          <Card title="Recent System Logs (Ring Buffer)">
-            <Terminal logs={adminLogs} />
+                value={logFilter}
+                onValueChange={setLogFilter}
+                options={LOG_LEVEL_OPTIONS.map((opt) => ({
+                  value: opt.value,
+                  label: t(opt.labelKey),
+                }))}
+              />
+            }
+          >
+            <Terminal logs={filteredLogs.length > 0 ? filteredLogs : adminLogs} />
           </Card>
-        </div>
+        </Stack>
       )}
     </div>
   );
 };
+
+
+

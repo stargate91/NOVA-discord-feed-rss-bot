@@ -2,8 +2,13 @@ import type { ReactNode } from 'react';
 import React from 'react';
 import styles from './Badge.module.css';
 
+export type BadgePlacement = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'inline';
+export type BadgeStyleVariant = 'solid' | 'subtle' | 'outline';
+
 export interface BadgeProps {
   variant?: 'online' | 'offline' | 'tier' | 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'outline';
+  styleVariant?: BadgeStyleVariant;
+  placement?: BadgePlacement;
   size?: 'xs' | 'sm' | 'md';
   dot?: boolean;
   pulse?: boolean;
@@ -18,6 +23,8 @@ export interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({
   variant = 'neutral',
+  styleVariant = 'subtle',
+  placement = 'inline',
   size = 'md',
   dot = false,
   pulse = false,
@@ -35,10 +42,21 @@ export const Badge: React.FC<BadgeProps> = ({
     md: styles.sizeMd,
   }[size] || styles.sizeMd;
 
+  const placementClass = placement !== 'inline' ? {
+    'top-right': `${styles.placed} ${styles.topRight}`,
+    'top-left': `${styles.placed} ${styles.topLeft}`,
+    'bottom-right': `${styles.placed} ${styles.bottomRight}`,
+    'bottom-left': `${styles.placed} ${styles.bottomLeft}`,
+  }[placement] : '';
+
+  const styleClass = styleVariant === 'solid' ? styles.styleSolid : '';
+
   const classes = [
     styles.badge,
     styles[variant],
+    styleClass,
     sizeClass,
+    placementClass,
     pill ? styles.pill : '',
     className,
   ]
@@ -63,3 +81,4 @@ export const Badge: React.FC<BadgeProps> = ({
     </span>
   );
 };
+

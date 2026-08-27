@@ -7,6 +7,7 @@ import { changelog } from './changelog';
 import { legal } from './legal';
 import { servers } from './servers';
 import { guild } from './guild';
+import { dev } from './dev';
 
 // Helper to prefix namespace keys: prefixObj('home', home) -> { 'home.heroTitle': '...' }
 const prefixObj = <P extends string, T extends Record<string, string>>(
@@ -30,6 +31,8 @@ export const en = {
   ...prefixObj('legal', legal),
   ...prefixObj('servers', servers),
   ...prefixObj('guild', guild),
+  ...prefixObj('dev', dev),
 } as const;
 
 export type TranslationKey = keyof typeof en;
+

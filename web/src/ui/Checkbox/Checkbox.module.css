@@ -83,8 +83,8 @@
 }
 
 .hiddenInput:focus-visible + .box {
-  box-shadow: 0 0 0 2px var(--blue-500);
   border-color: var(--blue-500);
+  box-shadow: var(--focus-ring);
 }
 
 .checkboxLabel:hover:not(.disabled) .box {

@@ -139,3 +139,52 @@
     margin-bottom: var(--space-md);
   }
 }
+
+/* Card Surface Variants */
+.variantSurface {
+  background: var(--bg-surface);
+  backdrop-filter: blur(var(--blur-md));
+}
+
+.variantGlass {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(var(--blur-xl));
+}
+
+.variantElevated {
+  background: var(--bg-tertiary);
+  box-shadow: var(--shadow-xl);
+}
+
+.variantGhost {
+  background: transparent;
+  backdrop-filter: none;
+  border-color: var(--border-subtle);
+  box-shadow: none;
+}
+
+.variantGradientBorder {
+  border-color: var(--blue-500);
+  box-shadow: var(--shadow-card), var(--glow-blue-sm);
+}
+
+/* Border Accents */
+.accentLeft {
+  border-left-width: 0.25rem;
+}
+
+.accentTop {
+  border-top-width: 0.25rem;
+}
+
+/* Header & Footer Divided */
+.headerDivided {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-md);
+}
+
+.footerDivided {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-md);
+}
+

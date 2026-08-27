@@ -7,7 +7,15 @@
 .body {
   flex: 1 0 auto;
   width: 100%;
-  max-width: 72.5rem;
+  max-width: var(--container-2xl, 80rem);
   margin: 0 auto;
-  padding: var(--space-4xl) var(--space-2xl) var(--space-5xl);
+  padding: var(--space-3xl) var(--space-xl) var(--space-5xl);
+  box-sizing: border-box;
 }
+
+@media (width <= 48rem) {
+  .body {
+    padding: var(--space-xl) var(--space-md) var(--space-3xl);
+  }
+}
+

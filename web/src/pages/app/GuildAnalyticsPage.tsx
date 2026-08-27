@@ -1,100 +1,180 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Activity, ShieldCheck, Zap, Download } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { FeatureGate } from '../../components/common/FeatureGate';
-import { Card, Badge } from '../../ui';
-import styles from './AppPages.module.css';
+import {
+  Card,
+  Badge,
+  ProgressBar,
+  SegmentedControl,
+  Button,
+  Stack,
+  Inline,
+  Grid,
+  Text,
+} from '../../ui';
+
+const TIME_RANGE_OPTIONS = [
+  { value: '24h', labelKey: 'guild.analytics24h' },
+  { value: '7d', labelKey: 'guild.analytics7d' },
+  { value: '30d', labelKey: 'guild.analytics30d' },
+] as const;
 
 export const GuildAnalyticsPage: React.FC = () => {
   const { guildId = '' } = useParams<{ guildId: string }>();
   const { t } = useTranslation();
+  const [timeRange, setTimeRange] = useState<string>('7d');
 
   return (
-    <div>
-      <div className={styles.tabHeader}>
-        <div>
-          <h2 className={styles.tabTitle}>{t('guild.analyticsTitle')}</h2>
-          <p className={styles.tabSubtitle}>
+    <Stack gap="xl">
+      <Inline justify="between" align="center" wrap gap="md">
+        <Stack gap="3xs">
+          <Text as="h2" size="lg" weight="bold">
+            {t('guild.analyticsTitle')}
+          </Text>
+          <Text size="xs" color="secondary">
             {t('guild.analyticsSubtitle', { guildId })}
-          </p>
-        </div>
+          </Text>
+        </Stack>
 
-        <Badge variant="online" dot>{t('guild.liveMetricsBadge')}</Badge>
-      </div>
+        <Inline align="center" gap="md">
+          <SegmentedControl
+            size="sm"
+            value={timeRange}
+            onChange={setTimeRange}
+            options={TIME_RANGE_OPTIONS.map((opt) => ({
+              value: opt.value,
+              label: t(opt.labelKey),
+            }))}
+          />
+          <Badge variant="online" dot pulse>{t('guild.liveMetricsBadge')}</Badge>
+        </Inline>
+      </Inline>
 
-      {/* Primary Counters */}
-      <div className={styles.grid3}>
-        <Card title={t('guild.totalPostsDelivered')}>
-          <div className={styles.metricValue}>1,428</div>
-          <div className={styles.metricDesc}>Across all channels since bot join</div>
+      {/* Primary Counters with Glow and Progress */}
+      <Grid minItemWidth="sm" gap="lg">
+        <Card glow="blue">
+          <Card.Header>
+            <Card.Title>{t('guild.totalPostsDelivered')}</Card.Title>
+            <Card.Actions>
+              <Activity size={18} color="var(--blue-400)" />
+            </Card.Actions>
+          </Card.Header>
+          <Stack gap="xs">
+            <Text size="2xl" weight="black" color="brand">{t('guild.analyticsPostsDeliveredCount')}</Text>
+            <Text size="2xs" color="muted">{t('guild.analyticsPostsDeliveredSubtitle')}</Text>
+            <ProgressBar value={71} max={100} size="sm" variant="brand" />
+          </Stack>
         </Card>
 
-        <Card title={t('guild.successRate')}>
-          <div className={styles.metricValue}>99.98%</div>
-          <div className={styles.metricDesc}>0 failed requests in last 7 days</div>
+        <Card glow="green">
+          <Card.Header>
+            <Card.Title>{t('guild.successRate')}</Card.Title>
+            <Card.Actions>
+              <ShieldCheck size={18} color="var(--status-success)" />
+            </Card.Actions>
+          </Card.Header>
+          <Stack gap="xs">
+            <Text size="2xl" weight="black" color="success">{t('guild.analyticsSuccessRateValue')}</Text>
+            <Text size="2xs" color="muted">{t('guild.analyticsSuccessRateSubtitle')}</Text>
+            <ProgressBar value={99.98} max={100} size="sm" variant="success" />
+          </Stack>
         </Card>
 
-        <Card title={t('guild.avgLatency')}>
-          <div className={styles.metricValue}>118 ms</div>
-          <div className={styles.metricDesc}>Time from platform release to Discord post</div>
+        <Card glow="purple">
+          <Card.Header>
+            <Card.Title>{t('guild.avgLatency')}</Card.Title>
+            <Card.Actions>
+              <Zap size={18} color="var(--status-purple)" />
+            </Card.Actions>
+          </Card.Header>
+          <Stack gap="xs">
+            <Text size="2xl" weight="black" color="purple">{t('guild.analyticsAvgLatencyValue')}</Text>
+            <Text size="2xs" color="muted">{t('guild.analyticsAvgLatencySubtitle')}</Text>
+            <ProgressBar value={88} max={100} size="sm" variant="purple" />
+          </Stack>
         </Card>
-      </div>
+      </Grid>
 
-      {/* Secondary Detailed Breakdown */}
-      <div className={`${styles.grid2} ${styles.sectionSpacing}`}>
+      {/* Secondary Detailed Breakdown with Visual Progress Bars */}
+      <Grid minItemWidth="md" gap="lg">
         <Card title={t('guild.platformDistributionTitle')} subtitle={t('guild.platformDistributionSubtitle')}>
-          <div className={styles.statRow}>
-            <span>YouTube Videos</span>
-            <span className={styles.statValue}>682 posts (48%)</span>
-          </div>
-          <div className={styles.statRow}>
-            <span>Twitch & Kick Streams</span>
-            <span className={styles.statValue}>430 posts (30%)</span>
-          </div>
-          <div className={styles.statRow}>
-            <span>Free Game Giveaways</span>
-            <span className={styles.statValue}>194 posts (14%)</span>
-          </div>
-          <div className={styles.statRow}>
-            <span>Custom RSS Feeds</span>
-            <span className={styles.statValue}>122 posts (8%)</span>
-          </div>
+          <Stack gap="md">
+            <Stack gap="3xs">
+              <Inline justify="between" align="center">
+                <Text size="xs">{t('guild.analyticsPlatformYoutube')}</Text>
+                <Text size="xs" color="secondary">{t('guild.analyticsPlatformYoutubeStats')}</Text>
+              </Inline>
+              <ProgressBar value={48} max={100} size="sm" variant="danger" />
+            </Stack>
+
+            <Stack gap="3xs">
+              <Inline justify="between" align="center">
+                <Text size="xs">{t('guild.analyticsPlatformTwitchKick')}</Text>
+                <Text size="xs" color="secondary">{t('guild.analyticsPlatformTwitchKickStats')}</Text>
+              </Inline>
+              <ProgressBar value={30} max={100} size="sm" variant="purple" />
+            </Stack>
+
+            <Stack gap="3xs">
+              <Inline justify="between" align="center">
+                <Text size="xs">{t('guild.analyticsPlatformGames')}</Text>
+                <Text size="xs" color="secondary">{t('guild.analyticsPlatformGamesStats')}</Text>
+              </Inline>
+              <ProgressBar value={14} max={100} size="sm" variant="brand" />
+            </Stack>
+
+            <Stack gap="3xs">
+              <Inline justify="between" align="center">
+                <Text size="xs">{t('guild.analyticsPlatformRss')}</Text>
+                <Text size="xs" color="secondary">{t('guild.analyticsPlatformRssStats')}</Text>
+              </Inline>
+              <ProgressBar value={8} max={100} size="sm" variant="warning" />
+            </Stack>
+          </Stack>
         </Card>
 
         <Card title={t('guild.channelHealthTitle')} subtitle={t('guild.channelHealthSubtitle')}>
-          <div className={styles.statRow}>
-            <span>Active Destination Channels</span>
-            <span className={styles.statValue}>4 Channels</span>
-          </div>
-          <div className={styles.statRow}>
-            <span>Permission Errors</span>
-            <span className={styles.statValue}>0 (Healthy)</span>
-          </div>
-          <div className={styles.statRow}>
-            <span>Rate Limit Throttle Count</span>
-            <span className={styles.statValue}>0 Events</span>
-          </div>
-          <div className={styles.statRow}>
-            <span>Queue Ingestion Speed</span>
-            <span className={styles.statValue}>1.4k events/sec</span>
-          </div>
+          <Stack gap="xs">
+            <Inline justify="between" align="center">
+              <Text size="xs" color="secondary">{t('guild.analyticsHealthChannels')}</Text>
+              <Text size="xs" weight="semibold">{t('guild.analyticsHealthChannelsCount')}</Text>
+            </Inline>
+            <Inline justify="between" align="center">
+              <Text size="xs" color="secondary">{t('guild.analyticsHealthPermErrors')}</Text>
+              <Text size="xs" weight="semibold">{t('guild.analyticsHealthPermErrorsHealthy')}</Text>
+            </Inline>
+            <Inline justify="between" align="center">
+              <Text size="xs" color="secondary">{t('guild.analyticsHealthRateLimit')}</Text>
+              <Text size="xs" weight="semibold">{t('guild.analyticsHealthRateLimitEvents')}</Text>
+            </Inline>
+            <Inline justify="between" align="center">
+              <Text size="xs" color="secondary">{t('guild.analyticsHealthQueueSpeed')}</Text>
+              <Text size="xs" weight="semibold">{t('guild.analyticsHealthQueueSpeedValue')}</Text>
+            </Inline>
+          </Stack>
         </Card>
-      </div>
+      </Grid>
 
       {/* Ultimate Tier Exclusive Real-time Stream Inspector */}
-      <div className={styles.sectionSpacing}>
-        <FeatureGate
-          tier="ultimate"
-          featureName="Historical 90-Day Analytics & Raw CSV Export"
-          description="Access deep longitudinal trends, audience peak engagement heatmaps, and export raw delivery audit logs directly to CSV/JSON."
-        >
-          <Card title="Raw Audit Export & Longitudinal Metrics" subtitle="Ultimate & Master Tier Enterprise Exclusives">
-            <p className={styles.feedDesc}>
-              Full 90-day notification delivery archive is ready for export.
-            </p>
-          </Card>
-        </FeatureGate>
-      </div>
-    </div>
+      <FeatureGate
+        tier="ultimate"
+        featureName={t('guild.analyticsFeatureName')}
+        description={t('guild.analyticsFeatureDesc')}
+      >
+        <Card glow="blue" title={t('guild.analyticsAuditExportTitle')} subtitle={t('guild.analyticsAuditExportSubtitle')}>
+          <Inline justify="between" align="center" wrap gap="md">
+            <Text size="xs" color="secondary">
+              {t('guild.analyticsAuditArchiveReady')}
+            </Text>
+            <Button variant="primary" size="sm">
+              <Download size={14} /> {t('guild.exportCsvBtn')}
+            </Button>
+          </Inline>
+        </Card>
+      </FeatureGate>
+    </Stack>
   );
 };
+

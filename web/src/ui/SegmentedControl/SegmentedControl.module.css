@@ -89,7 +89,8 @@
 
 .segment:focus-visible {
   border-color: var(--blue-500);
-  box-shadow: 0 0 0 2px var(--blue-500);
+  box-shadow: var(--focus-ring);
+  outline: none;
 }
 
 .segment:hover:not(.active):not(:disabled) {

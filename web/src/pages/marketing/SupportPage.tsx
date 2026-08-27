@@ -1,74 +1,95 @@
 import React from 'react';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, MessageSquare } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { SEO } from '../../components/common/SEO';
-import { Card, Button } from '../../ui';
-import styles from './MarketingPage.module.css';
+import { Card, Button, Badge, Accordion, Container, Stack, Text } from '../../ui';
 
 export const SupportPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className={styles.pageWrapper}>
+    <Container maxWidth="md" padding="md">
       <SEO
         title={t('support.tag')}
         description={t('support.subtitle')}
       />
 
-      <header className={styles.header}>
-        <div className={styles.tag}>
-          <HelpCircle size={14} />
-          <span>{t('support.tag')}</span>
-        </div>
-        <h1 className={styles.title}>
-          {t('support.title')} <span>{t('support.titleHighlight')}</span>
-        </h1>
-        <p className={styles.subtitle}>
-          {t('support.subtitle')}
-        </p>
-      </header>
+      <Stack gap="5xl">
+        <Stack align="center" gap="md">
+          <Badge variant="outline" size="md" dot pulse>
+            <HelpCircle size={14} /> {t('support.tag')}
+          </Badge>
+          <Text as="h1" size="hero" weight="extrabold" align="center">
+            {t('support.title')}{' '}
+            <Text as="span" color="gradient" size="hero" weight="extrabold">
+              {t('support.titleHighlight')}
+            </Text>
+          </Text>
+          <Container maxWidth="sm" centered>
+            <Text size="lg" color="secondary" align="center">
+              {t('support.subtitle')}
+            </Text>
+          </Container>
+        </Stack>
 
-      {/* Direct Discord Support Card */}
-      <Card title={t('support.discordTitle')} subtitle={t('support.discordSubtitle')}>
-        <div className={styles.proseBlock}>
-          <p>{t('support.discordDesc')}</p>
-          <div className={styles.ctaWrapper}>
-            <Button
-              variant="discord"
-              size="lg"
-              onClick={() => window.open('https://discord.gg/PbvX3S7pXR', '_blank')}
-            >
-              {t('support.discordCta')}
-            </Button>
-          </div>
-        </div>
-      </Card>
+        {/* Direct Discord Support Card */}
+        <Card glow="blue" padding="xl">
+          <Card.Header>
+            <Card.Title>{t('support.discordTitle')}</Card.Title>
+          </Card.Header>
+          <Card.Description>{t('support.discordSubtitle')}</Card.Description>
+          <Card.Body>
+            <Stack gap="xl">
+              <Text color="secondary">{t('support.discordDesc')}</Text>
+              <div>
+                <Button
+                  variant="discord"
+                  size="lg"
+                  onClick={() => window.open('https://discord.gg/PbvX3S7pXR', '_blank')}
+                >
+                  <MessageSquare size={18} /> {t('support.discordCta')}
+                </Button>
+              </div>
+            </Stack>
+          </Card.Body>
+        </Card>
 
-      {/* Common Troubleshooting FAQ */}
-      <div className={styles.faqSection}>
-        <h2 className={styles.faqTitle}>
-          {t('support.faqTitle')}
-        </h2>
-        <div className={styles.sectionStack}>
-          <Card title={t('support.faqStreamQ')}>
-            <div className={styles.proseBlock}>
-              <p>{t('support.faqStreamA')}</p>
-            </div>
-          </Card>
+        {/* Common Troubleshooting FAQ */}
+        <Stack gap="xl">
+          <Text as="h2" size="2xl" weight="bold" align="center">
+            {t('support.faqTitle')}
+          </Text>
+          <Accordion type="single" variant="card" defaultValue="support-q1">
+            <Accordion.Item value="support-q1">
+              <Accordion.Trigger icon={<HelpCircle size={18} />}>
+                {t('support.faqStreamQ')}
+              </Accordion.Trigger>
+              <Accordion.Content>
+                {t('support.faqStreamA')}
+              </Accordion.Content>
+            </Accordion.Item>
 
-          <Card title={t('support.faqLanguageQ')}>
-            <div className={styles.proseBlock}>
-              <p>{t('support.faqLanguageA')}</p>
-            </div>
-          </Card>
+            <Accordion.Item value="support-q2">
+              <Accordion.Trigger icon={<HelpCircle size={18} />}>
+                {t('support.faqLanguageQ')}
+              </Accordion.Trigger>
+              <Accordion.Content>
+                {t('support.faqLanguageA')}
+              </Accordion.Content>
+            </Accordion.Item>
 
-          <Card title={t('support.faqRoleQ')}>
-            <div className={styles.proseBlock}>
-              <p>{t('support.faqRoleA')}</p>
-            </div>
-          </Card>
-        </div>
-      </div>
-    </div>
+            <Accordion.Item value="support-q3">
+              <Accordion.Trigger icon={<HelpCircle size={18} />}>
+                {t('support.faqRoleQ')}
+              </Accordion.Trigger>
+              <Accordion.Content>
+                {t('support.faqRoleA')}
+              </Accordion.Content>
+            </Accordion.Item>
+          </Accordion>
+        </Stack>
+      </Stack>
+    </Container>
   );
 };
+

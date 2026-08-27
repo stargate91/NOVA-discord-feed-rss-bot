@@ -85,7 +85,7 @@
 
 .closeBtn:focus-visible {
   color: var(--text-primary);
-  box-shadow: 0 0 0 2px var(--blue-500);
+  box-shadow: var(--focus-ring);
   outline: none;
 }
 
