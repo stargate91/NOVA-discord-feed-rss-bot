@@ -172,7 +172,10 @@ describe('ApiClient Unit Tests', () => {
   });
 
   it('should throttle and queue concurrent mutations when exceeding concurrency limit', async () => {
-    const queueClient = new ApiClient({ baseUrl: 'http://localhost:8080', maxConcurrentMutations: 2 });
+    const queueClient = new ApiClient({
+      baseUrl: 'http://localhost:8080',
+      maxConcurrentMutations: 2,
+    });
     let activeInFlight = 0;
     let maxObservedInFlight = 0;
 

@@ -143,10 +143,7 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({ children }) => {
       // 4. Interpolate variables: {variableName}
       if (params) {
         Object.entries(params).forEach(([paramKey, paramValue]) => {
-          text = (text as string).replace(
-            new RegExp(`\\{${paramKey}\\}`, 'g'),
-            String(paramValue)
-          );
+          text = (text as string).replace(new RegExp(`\\{${paramKey}\\}`, 'g'), String(paramValue));
         });
       }
 

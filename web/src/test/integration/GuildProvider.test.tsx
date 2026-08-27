@@ -72,10 +72,29 @@ describe('GuildProvider Integration', () => {
     await user.click(screen.getByTestId('select-guild-2'));
     expect(screen.getByTestId('active-guild-name')).toHaveTextContent('Creator Hub VIP');
     expect(screen.getByTestId('active-guild-tier')).toHaveTextContent('ultimate');
+    expect(localStorage.getItem('nova_active_guild_id')).toBe('987654321098765432');
 
     // Logout
     await user.click(screen.getByTestId('logout-btn'));
     expect(screen.getByTestId('guilds-count')).toHaveTextContent('0');
     expect(screen.getByTestId('active-guild-name')).toHaveTextContent('None');
+  });
+
+  it('should rehydrate activeGuild from localStorage when initialized', async () => {
+    const user = userEvent.setup();
+    localStorage.setItem('nova_active_guild_id', '987654321098765432');
+
+    render(
+      <AuthProvider>
+        <GuildProvider>
+          <GuildConsumer />
+        </GuildProvider>
+      </AuthProvider>
+    );
+
+    await user.click(screen.getByTestId('login-btn'));
+
+    // Automatically picks the persisted guild
+    expect(screen.getByTestId('active-guild-name')).toHaveTextContent('Creator Hub VIP');
   });
 });

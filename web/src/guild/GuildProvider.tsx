@@ -1,3 +1,4 @@
+import { isUserGuild } from '@/types';
 import type { ReactNode } from 'react';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { UserGuild, GuildContextValue } from './types';
@@ -33,6 +34,8 @@ export const DEFAULT_DEMO_GUILDS: UserGuild[] = [
   },
 ];
 
+export const ACTIVE_GUILD_STORAGE_KEY = 'nova_active_guild_id';
+
 export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
   // Safe consumption of AuthContext with graceful fallback if rendered outside AuthProvider
   let isAuthenticated = false;
@@ -44,14 +47,20 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
   }
 
   const [guilds, setGuilds] = useState<UserGuild[]>([]);
-  const [activeGuildId, setActiveGuildId] = useState<string | null>(null);
+  const [activeGuildId, setActiveGuildId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem(ACTIVE_GUILD_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  });
   const [isLoadingGuilds, setIsLoadingGuilds] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchGuilds = useCallback(async () => {
     if (!isAuthenticated) {
       setGuilds([]);
-      setActiveGuildId(null);
       setError(null);
       return;
     }
@@ -66,11 +75,12 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
       return;
     }
 
-    // 2. Real async API fetch path
+    // 2. Real async API fetch path with runtime schema validation
     try {
       const data = await apiClient.get<UserGuild[]>('/api/v1/users/@me/guilds', {
         timeout: 6000,
         dedup: true,
+        validate: (res) => Array.isArray(res) && res.every(isUserGuild),
       });
 
       const normalizedGuilds = Array.isArray(data) ? data : DEFAULT_DEMO_GUILDS;
@@ -80,8 +90,7 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
       if (featureFlags.mockAuth) {
         setGuilds(DEFAULT_DEMO_GUILDS);
       } else {
-        const errorMsg =
-          err instanceof Error ? err.message : 'Failed to fetch user Discord guilds';
+        const errorMsg = err instanceof Error ? err.message : 'Failed to fetch user Discord guilds';
         setError(errorMsg);
       }
     } finally {
@@ -95,6 +104,17 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
 
   const selectGuild = useCallback((guildId: string | null) => {
     setActiveGuildId(guildId);
+    if (typeof window !== 'undefined') {
+      try {
+        if (guildId) {
+          localStorage.setItem(ACTIVE_GUILD_STORAGE_KEY, guildId);
+        } else {
+          localStorage.removeItem(ACTIVE_GUILD_STORAGE_KEY);
+        }
+      } catch {
+        // Ignore storage errors
+      }
+    }
   }, []);
 
   const getGuildById = useCallback(
@@ -115,8 +135,11 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
   );
 
   const activeGuild = useMemo(() => {
-    if (!activeGuildId) return guilds[0] || null;
-    return guilds.find((g) => g.id === activeGuildId) || null;
+    if (activeGuildId) {
+      const matched = guilds.find((g) => g.id === activeGuildId);
+      if (matched) return matched;
+    }
+    return guilds[0] || null;
   }, [activeGuildId, guilds]);
 
   const value: GuildContextValue = useMemo(

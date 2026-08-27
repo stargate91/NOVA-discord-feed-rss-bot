@@ -267,6 +267,37 @@ ${urls.join('\n')}
   console.log(`  ✓ Generated sitemap.xml with ${urls.length} indexable URLs & hreflang annotations`);
 }
 
+function generateRobotsTxt() {
+  const content = `# ==============================================================================
+# Nova Feeds — Enterprise Crawling Rules & Robots Exclusion Protocol
+# ==============================================================================
+
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /assets/
+
+# Disallow private user consoles, dashboards, auth callbacks, and dev catalog
+Disallow: /auth/
+Disallow: /servers
+Disallow: /dashboard/
+Disallow: /dev/
+Disallow: /components
+
+# Sitemap declaration
+Sitemap: ${BASE_URL}/sitemap.xml
+`;
+
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(path.join(distDir, 'robots.txt'), content, 'utf-8');
+  }
+  if (fs.existsSync(publicDir)) {
+    fs.writeFileSync(path.join(publicDir, 'robots.txt'), content, 'utf-8');
+  }
+
+  console.log(`  ✓ Generated dynamic robots.txt pointing to ${BASE_URL}/sitemap.xml`);
+}
+
 function runPrerender() {
   const templatePath = path.join(distDir, 'index.html');
   if (!fs.existsSync(templatePath)) {
@@ -311,11 +342,13 @@ function runPrerender() {
   });
   console.log(`  ✓ Pre-rendered ${privateNoindexRoutes.length} private app shells with noindex`);
 
-  // 4. Generate XML Sitemap
+  // 4. Generate XML Sitemap & Robots.txt
   generateSitemapXml();
+  generateRobotsTxt();
 
   console.log(`  ✓ Pre-rendered ${localizedCount} localized routes (${LOCALES.length} languages × ${localizableRoutes.length} pages)`);
-  console.log(`✨ Total: ${generatedCount} static HTML shells + sitemap.xml generated with full SEO, Open Graph & Hreflang alternate metadata!`);
+  console.log(`✨ Total: ${generatedCount} static HTML shells + sitemap.xml & robots.txt generated!`);
 }
+
 
 runPrerender();

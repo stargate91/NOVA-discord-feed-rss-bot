@@ -167,47 +167,4 @@ export interface AuditLogEntry {
 // Type Guards & Runtime Validators (Enterprise Schema Verification)
 // ------------------------------------------------------------------------------
 
-export function isHealthStatus(data: unknown): data is HealthStatus {
-  if (typeof data !== 'object' || data === null) return false;
-  const h = data as Partial<HealthStatus>;
-  return typeof h.status === 'string';
-}
-
-export function isGuildSummary(data: unknown): data is GuildSummary {
-  if (typeof data !== 'object' || data === null) return false;
-  const g = data as Partial<GuildSummary>;
-  return (
-    typeof g.guild_id === 'string' &&
-    typeof g.name === 'string' &&
-    (typeof g.tier === 'number' || typeof g.tier === 'string') &&
-    typeof g.active_monitors === 'number' &&
-    typeof g.max_monitors === 'number'
-  );
-}
-
-export function isFeedMonitor(data: unknown): data is FeedMonitor {
-  if (typeof data !== 'object' || data === null) return false;
-  const m = data as Partial<FeedMonitor>;
-  return (
-    typeof m.id === 'string' &&
-    typeof m.guild_id === 'string' &&
-    typeof m.platform === 'string' &&
-    typeof m.target_id === 'string' &&
-    typeof m.destination_channel_id === 'string' &&
-    typeof m.status === 'string' &&
-    typeof m.created_at === 'string' &&
-    typeof m.updated_at === 'string'
-  );
-}
-
-export function isSystemTelemetry(data: unknown): data is SystemTelemetry {
-  if (typeof data !== 'object' || data === null) return false;
-  const s = data as Partial<SystemTelemetry>;
-  return (
-    typeof s.status === 'string' &&
-    typeof s.version === 'string' &&
-    typeof s.mode === 'string' &&
-    typeof s.database === 'string' &&
-    typeof s.queue_backend === 'string'
-  );
-}
+export * from './validators';

@@ -1,13 +1,6 @@
 /* eslint-disable i18next/no-literal-string, react/forbid-component-props */
 import React, { useState } from 'react';
-import {
-  Layers,
-  Search,
-  Bell,
-  ExternalLink,
-  Bot,
-  Zap,
-} from 'lucide-react';
+import { Layers, Search, Bell, ExternalLink, Bot, Zap } from 'lucide-react';
 import {
   Container,
   Card,
@@ -82,7 +75,8 @@ export const UiCatalogPage: React.FC = () => {
               <Badge variant="info">38 Components</Badge>
             </Inline>
             <Text color="secondary" size="sm" style={{ marginTop: '0.25rem' }}>
-              Interactive showcase and design system reference for all Nova atomic & compound components.
+              Interactive showcase and design system reference for all Nova atomic & compound
+              components.
             </Text>
           </div>
 
@@ -120,7 +114,8 @@ export const UiCatalogPage: React.FC = () => {
                     Button Component (Polymorphic Generic)
                   </Text>
                   <Text size="xs" color="secondary">
-                    Supports 13 visual variants, 4 sizes, loading spinner, icons, and polymorphic generic `as` prop.
+                    Supports 13 visual variants, 4 sizes, loading spinner, icons, and polymorphic
+                    generic `as` prop.
                   </Text>
                 </div>
                 <Inline gap="xs">
@@ -157,10 +152,20 @@ export const UiCatalogPage: React.FC = () => {
                 <Button variant="secondary" size={btnSize} loading={btnLoading}>
                   Secondary
                 </Button>
-                <Button variant="discord" size={btnSize} loading={btnLoading} icon={<Bot size={16} />}>
+                <Button
+                  variant="discord"
+                  size={btnSize}
+                  loading={btnLoading}
+                  icon={<Bot size={16} />}
+                >
                   Discord
                 </Button>
-                <Button variant="gradient" size={btnSize} loading={btnLoading} icon={<Zap size={16} />}>
+                <Button
+                  variant="gradient"
+                  size={btnSize}
+                  loading={btnLoading}
+                  icon={<Zap size={16} />}
+                >
                   Gradient
                 </Button>
                 <Button variant="success" size={btnSize} loading={btnLoading}>
@@ -331,7 +336,8 @@ export const UiCatalogPage: React.FC = () => {
                 </Modal.Header>
                 <Modal.Body>
                   <Text size="sm">
-                    This is an accessible compound Modal primitive using React Portal, focus trap, and escape key listener.
+                    This is an accessible compound Modal primitive using React Portal, focus trap,
+                    and escape key listener.
                   </Text>
                 </Modal.Body>
                 <Modal.Footer>
@@ -346,9 +352,7 @@ export const UiCatalogPage: React.FC = () => {
 
               <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Drawer Overlay">
                 <Stack gap="md">
-                  <Text size="sm">
-                    Side drawer navigation and secondary action container.
-                  </Text>
+                  <Text size="sm">Side drawer navigation and secondary action container.</Text>
                   <Button variant="outline" fullWidth onClick={() => setDrawerOpen(false)}>
                     Close Drawer
                   </Button>
@@ -380,7 +384,9 @@ export const UiCatalogPage: React.FC = () => {
                 <Chip label="YouTube RSS" variant="filled" active />
                 <Chip label="Twitch Live" variant="outline" />
                 <Chip label="Kick VOD" variant="subtle" />
-                <Tag variant="default" color="blue">#discord-feeds</Tag>
+                <Tag variant="default" color="blue">
+                  #discord-feeds
+                </Tag>
               </Inline>
 
               <Text size="xs" weight="bold" color="secondary" style={{ marginTop: '0.75rem' }}>
@@ -438,13 +444,15 @@ export const UiCatalogPage: React.FC = () => {
                 <Accordion.Item value="acc1">
                   <Accordion.Trigger>How does Nova handle multi-region failover?</Accordion.Trigger>
                   <Accordion.Content>
-                    Nova continuously monitors bot latency across 4 continents and automatically routes traffic through healthy nodes.
+                    Nova continuously monitors bot latency across 4 continents and automatically
+                    routes traffic through healthy nodes.
                   </Accordion.Content>
                 </Accordion.Item>
                 <Accordion.Item value="acc2">
                   <Accordion.Trigger>Are custom CSS design tokens supported?</Accordion.Trigger>
                   <Accordion.Content>
-                    All 38 components utilize CSS custom properties defined in theme-tokens.css supporting dark and light themes seamlessly.
+                    All 38 components utilize CSS custom properties defined in theme-tokens.css
+                    supporting dark and light themes seamlessly.
                   </Accordion.Content>
                 </Accordion.Item>
               </Accordion>

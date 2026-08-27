@@ -53,4 +53,21 @@ describe('Auth Session Storage & Expiry Tests', () => {
     const session = getStoredSession();
     expect(session.user).toEqual(mockUser);
   });
+
+  it('should safely reject and clean up corrupted user profile from localStorage', () => {
+    // Missing required avatar and username fields
+    localStorage.setItem('nova_auth_user', JSON.stringify({ id: '12345', invalidProp: true }));
+
+    const session = getStoredSession();
+    expect(session.user).toBeNull();
+    // Verify it automatically cleaned up the corrupted key
+    expect(localStorage.getItem('nova_auth_user')).toBeNull();
+  });
+
+  it('should safely handle unparseable JSON in stored user profile', () => {
+    localStorage.setItem('nova_auth_user', '{{bad-json');
+
+    const session = getStoredSession();
+    expect(session.user).toBeNull();
+  });
 });

@@ -1,10 +1,18 @@
-# Nova Feeds Production Robots Configuration
+# ==============================================================================
+# Nova Feeds — Enterprise Crawling Rules & Robots Exclusion Protocol
+# ==============================================================================
+
 User-agent: *
 Allow: /
-Disallow: /dashboard/
-Disallow: /servers
-Disallow: /auth/
-Disallow: /dev/
+Allow: /images/
+Allow: /assets/
 
-# XML Sitemap Location
+# Disallow private user consoles, dashboards, auth callbacks, and dev catalog
+Disallow: /auth/
+Disallow: /servers
+Disallow: /dashboard/
+Disallow: /dev/
+Disallow: /components
+
+# Sitemap declaration
 Sitemap: https://novafeeds.xyz/sitemap.xml

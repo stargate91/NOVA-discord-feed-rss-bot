@@ -2,16 +2,7 @@ import { useState } from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Input,
-  Textarea,
-  Field,
-  Select,
-  Switch,
-  Checkbox,
-  Radio,
-  SegmentedControl,
-} from '@/ui';
+import { Input, Textarea, Field, Select, Switch, Checkbox, Radio, SegmentedControl } from '@/ui';
 
 describe('Form Controls & Inputs UI Tests', () => {
   it('should render Input and accept user typing with clear button support', async () => {
@@ -54,11 +45,7 @@ describe('Form Controls & Inputs UI Tests', () => {
 
   it('should render Field with label, description, and required indicator', () => {
     render(
-      <Field
-        label="Webhook URL"
-        description="Discord channel webhook destination."
-        required
-      >
+      <Field label="Webhook URL" description="Discord channel webhook destination." required>
         <Input placeholder="https://discord.com/api/webhooks/..." />
       </Field>
     );
@@ -69,10 +56,7 @@ describe('Form Controls & Inputs UI Tests', () => {
 
   it('should render Field in error state with alert message', () => {
     render(
-      <Field
-        label="Webhook URL"
-        error="Invalid webhook format"
-      >
+      <Field label="Webhook URL" error="Invalid webhook format">
         <Input placeholder="https://discord.com/api/webhooks/..." />
       </Field>
     );

@@ -39,3 +39,36 @@ export class ApiError extends Error {
 }
 
 export type ErrorHandlerCallback = (error: ApiError) => void;
+
+// ------------------------------------------------------------------------------
+// Middleware & Interceptor Types (Enterprise Request Pipeline)
+// ------------------------------------------------------------------------------
+
+export interface RequestContext<T = unknown> {
+  url: string;
+  method: string;
+  headers: Record<string, string>;
+  body?: unknown;
+  options: RequestOptions<T>;
+}
+
+export type RequestInterceptor = (
+  context: RequestContext
+) => Promise<RequestContext | void> | RequestContext | void;
+
+export type ResponseInterceptor = (
+  data: unknown,
+  response: Response,
+  context: RequestContext
+) => Promise<unknown | void> | unknown | void;
+
+export type ErrorInterceptor = (
+  error: ApiError,
+  context: RequestContext
+) => Promise<unknown | void> | unknown | void;
+
+export interface ApiInterceptor {
+  onRequest?: RequestInterceptor;
+  onResponse?: ResponseInterceptor;
+  onError?: ErrorInterceptor;
+}

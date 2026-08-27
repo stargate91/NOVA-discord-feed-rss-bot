@@ -10,13 +10,7 @@ describe('Switch, Radio, and Checkbox Form UI Components', () => {
 
     const TestSwitch: React.FC = () => {
       const [checked, setChecked] = useState(false);
-      return (
-        <Switch
-          checked={checked}
-          onChange={setChecked}
-          label="Enable Notifications"
-        />
-      );
+      return <Switch checked={checked} onChange={setChecked} label="Enable Notifications" />;
     };
 
     render(<TestSwitch />);

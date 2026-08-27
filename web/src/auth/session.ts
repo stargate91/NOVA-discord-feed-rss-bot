@@ -1,3 +1,4 @@
+import { isDiscordUser } from '@/types';
 import { AUTH_TOKEN_KEY } from './context';
 import type { DiscordUser } from './types';
 
@@ -42,14 +43,22 @@ export const saveAuthSession = (
 };
 
 /**
- * Retrieves the stored user profile from localStorage.
+ * Retrieves the stored user profile from localStorage with runtime schema validation.
  */
+
 export const getStoredUser = (): DiscordUser | null => {
   if (typeof window === 'undefined') return null;
 
   try {
     const raw = localStorage.getItem(AUTH_USER_KEY);
-    return raw ? (JSON.parse(raw) as DiscordUser) : null;
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (isDiscordUser(parsed)) {
+      return parsed;
+    }
+    // Corrupted or outdated schema: remove corrupted item
+    localStorage.removeItem(AUTH_USER_KEY);
+    return null;
   } catch {
     return null;
   }

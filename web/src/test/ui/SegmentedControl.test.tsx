@@ -28,9 +28,6 @@ describe('SegmentedControl UI Component Tests', () => {
     const weeklyOption = screen.getByText('Weekly');
     await user.click(weeklyOption);
 
-    expect(screen.getByRole('tab', { name: 'Weekly' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    expect(screen.getByRole('tab', { name: 'Weekly' })).toHaveAttribute('aria-selected', 'true');
   });
 });

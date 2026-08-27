@@ -11,23 +11,24 @@ export const lazyWithRetry = <T extends ComponentType<any>>(
   retries: number = 2,
   intervalMs: number = 1000
 ): React.LazyExoticComponent<T> => {
-  return lazy(() =>
-    new Promise<{ default: T }>((resolve, reject) => {
-      const attemptImport = (attemptsLeft: number) => {
-        componentImport()
-          .then(resolve)
-          .catch((error: unknown) => {
-            if (attemptsLeft === 0) {
-              reject(error);
-              return;
-            }
-            setTimeout(() => {
-              attemptImport(attemptsLeft - 1);
-            }, intervalMs);
-          });
-      };
+  return lazy(
+    () =>
+      new Promise<{ default: T }>((resolve, reject) => {
+        const attemptImport = (attemptsLeft: number) => {
+          componentImport()
+            .then(resolve)
+            .catch((error: unknown) => {
+              if (attemptsLeft === 0) {
+                reject(error);
+                return;
+              }
+              setTimeout(() => {
+                attemptImport(attemptsLeft - 1);
+              }, intervalMs);
+            });
+        };
 
-      attemptImport(retries);
-    })
+        attemptImport(retries);
+      })
   );
 };

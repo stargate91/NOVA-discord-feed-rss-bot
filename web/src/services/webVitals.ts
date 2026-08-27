@@ -88,7 +88,10 @@ export function initWebVitals(onReport: WebVitalReportHandler): void {
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((entryList) => {
       entryList.getEntries().forEach((entry) => {
-        const layoutShift = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number };
+        const layoutShift = entry as PerformanceEntry & {
+          hadRecentInput?: boolean;
+          value?: number;
+        };
         if (!layoutShift.hadRecentInput && typeof layoutShift.value === 'number') {
           clsValue += layoutShift.value;
           report('CLS', clsValue);
@@ -100,17 +103,39 @@ export function initWebVitals(onReport: WebVitalReportHandler): void {
     // Unsupported entry type
   }
 
-  // 4. First Input Delay (FID) / Interaction to Next Paint (INP)
+  // 4. Interaction to Next Paint (INP) - Official Core Web Vital Standard & FID Fallback
   try {
-    const firstInputObserver = new PerformanceObserver((entryList) => {
-      const firstInput = entryList.getEntries()[0] as PerformanceEventTiming;
-      if (firstInput && !observedMetrics.has('FID')) {
-        observedMetrics.add('FID');
-        report('FID', firstInput.processingStart - firstInput.startTime);
-      }
+    let maxInteractionDuration = 0;
+    const inpObserver = new PerformanceObserver((entryList) => {
+      entryList.getEntries().forEach((entry) => {
+        const eventEntry = entry as PerformanceEntry & {
+          interactionId?: number;
+          duration: number;
+        };
+        if (eventEntry.duration !== undefined && eventEntry.duration > maxInteractionDuration) {
+          maxInteractionDuration = eventEntry.duration;
+          report('INP', maxInteractionDuration);
+        }
+      });
     });
-    firstInputObserver.observe({ type: 'first-input', buffered: true });
+    inpObserver.observe({
+      type: 'event',
+      buffered: true,
+      durationThreshold: 40,
+    } as PerformanceObserverInit);
   } catch {
-    // Unsupported entry type
+    // Fallback to legacy First Input Delay (FID) if 'event' entry type is unavailable
+    try {
+      const firstInputObserver = new PerformanceObserver((entryList) => {
+        const firstInput = entryList.getEntries()[0] as PerformanceEventTiming;
+        if (firstInput && !observedMetrics.has('FID')) {
+          observedMetrics.add('FID');
+          report('FID', firstInput.processingStart - firstInput.startTime);
+        }
+      });
+      firstInputObserver.observe({ type: 'first-input', buffered: true });
+    } catch {
+      // Unsupported entry type in legacy environment
+    }
   }
 }

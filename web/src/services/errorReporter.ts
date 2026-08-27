@@ -158,9 +158,7 @@ export class SentryReporterAdapter implements ErrorReporterAdapter {
 
     try {
       const errorObj =
-        payload.error instanceof Error
-          ? payload.error
-          : new Error(String(payload.error));
+        payload.error instanceof Error ? payload.error : new Error(String(payload.error));
 
       const frames = parseStackTrace(errorObj.stack);
 

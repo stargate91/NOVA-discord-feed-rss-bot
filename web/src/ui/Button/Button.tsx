@@ -1,4 +1,9 @@
-import type { ElementType, ReactNode, ComponentPropsWithoutRef, ComponentPropsWithRef } from 'react';
+import type {
+  ElementType,
+  ReactNode,
+  ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
+} from 'react';
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import styles from './Button.module.css';
@@ -132,14 +137,8 @@ const ButtonRender = <C extends ElementType = 'button'>(
             <Loader2 size={spinnerSize} />
           </span>
         )}
-        {!loading && effectiveLeftIcon && (
-          <span className={styles.icon}>{effectiveLeftIcon}</span>
-        )}
-        {loading && loadingText ? (
-          <span>{loadingText}</span>
-        ) : (
-          children && <span>{children}</span>
-        )}
+        {!loading && effectiveLeftIcon && <span className={styles.icon}>{effectiveLeftIcon}</span>}
+        {loading && loadingText ? <span>{loadingText}</span> : children && <span>{children}</span>}
         {!loading && effectiveRightIcon && (
           <span className={styles.icon}>{effectiveRightIcon}</span>
         )}

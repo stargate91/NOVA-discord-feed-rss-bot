@@ -2,15 +2,7 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Container,
-  Grid,
-  Stack,
-  Inline,
-  Breadcrumbs,
-  Pagination,
-  Accordion,
-} from '@/ui';
+import { Container, Grid, Stack, Inline, Breadcrumbs, Pagination, Accordion } from '@/ui';
 
 describe('Layout Primitives & Navigation UI Tests', () => {
   it('should render Container, Grid, Stack, and Inline layout components', () => {

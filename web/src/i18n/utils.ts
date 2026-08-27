@@ -26,10 +26,7 @@ export const flattenDictionary = (
  * Resolves ICU LDML Plural Category ('zero' | 'one' | 'two' | 'few' | 'many' | 'other')
  * using native Intl.PluralRules.
  */
-export const getPluralCategory = (
-  locale: SupportedLocale,
-  count: number
-): Intl.LDMLPluralRule => {
+export const getPluralCategory = (locale: SupportedLocale, count: number): Intl.LDMLPluralRule => {
   try {
     return new Intl.PluralRules(locale).select(count);
   } catch {

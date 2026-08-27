@@ -12,10 +12,7 @@ interface RouteErrorBoundaryProps {
  * Route-level Error Boundary that automatically resets its error state
  * whenever the browser location (URL pathname) changes.
  */
-export const RouteErrorBoundary: React.FC<RouteErrorBoundaryProps> = ({
-  children,
-  name,
-}) => {
+export const RouteErrorBoundary: React.FC<RouteErrorBoundaryProps> = ({ children, name }) => {
   const location = useLocation();
 
   return (

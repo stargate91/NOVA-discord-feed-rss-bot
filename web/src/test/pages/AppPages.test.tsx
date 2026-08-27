@@ -82,7 +82,9 @@ describe('App & Dashboard Pages Smoke & Render Tests', () => {
 
   it('should render DeveloperPage authentication gateway without crashing', () => {
     renderWithAllProviders(<DeveloperPage />, '/dev');
-    expect(screen.getByRole('heading', { level: 3, name: /Developer Authentication/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: /Developer Authentication/i })
+    ).toBeInTheDocument();
   });
 
   it('should render UiCatalogPage without crashing', () => {

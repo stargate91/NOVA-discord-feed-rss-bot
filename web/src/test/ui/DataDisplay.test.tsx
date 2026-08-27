@@ -1,15 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import {
-  Badge,
-  Tag,
-  Chip,
-  ProgressBar,
-  Skeleton,
-  DiscordEmbed,
-  Card,
-  Alert,
-} from '@/ui';
+import { Badge, Tag, Chip, ProgressBar, Skeleton, DiscordEmbed, Card, Alert } from '@/ui';
 
 describe('Data Display & Visual Feedback Components UI Tests', () => {
   it('should render Badge with dot, pulse, and count overflow formatting', () => {

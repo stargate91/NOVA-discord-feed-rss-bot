@@ -66,9 +66,7 @@ describe('useApiQuery Hook', () => {
     const initialData = { count: 1 };
     const queryFn = vi.fn().mockResolvedValue(initialData);
 
-    const { result } = renderHook(() =>
-      useApiQuery(queryFn, [], { key: 'counter-key' })
-    );
+    const { result } = renderHook(() => useApiQuery(queryFn, [], { key: 'counter-key' }));
 
     await waitFor(() => {
       expect(result.current.data).toEqual(initialData);

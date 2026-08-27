@@ -25,8 +25,8 @@ export const SUPPORTED_LOCALES: readonly LocaleInfo[] = [
 
 export const LOCALE_FALLBACK_CHAINS: Partial<Record<SupportedLocale, SupportedLocale[]>> = {
   'zh-tw': ['zh', 'en'],
-  'ar': ['en'],
-  'he': ['en'],
+  ar: ['en'],
+  he: ['en'],
 };
 
 export const STORAGE_KEY = 'nova_locale';

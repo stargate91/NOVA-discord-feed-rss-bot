@@ -1,7 +1,7 @@
 import { AUTH_TOKEN_KEY, ADMIN_SECRET_KEY } from '@/auth/context';
 import { errorReporter } from '@/services/errorReporter';
 import { apiCircuitBreaker } from './circuitBreaker';
-import type { RequestOptions, ErrorHandlerCallback } from './types';
+import type { RequestOptions, ErrorHandlerCallback, ApiInterceptor, RequestContext } from './types';
 import { ApiError } from './types';
 
 /**
@@ -60,6 +60,7 @@ export class ApiClient {
   private defaultTimeout: number = 10000;
   private errorListeners: Set<ErrorHandlerCallback> = new Set();
   private inFlightRequests: Map<string, Promise<unknown>> = new Map();
+  private interceptors: ApiInterceptor[] = [];
 
   // In-memory security credentials (isolated from arbitrary localStorage access)
   private authToken: string | null = null;
@@ -80,7 +81,7 @@ export class ApiClient {
     const options: ApiClientOptions =
       typeof baseUrlOrOptions === 'string'
         ? { baseUrl: baseUrlOrOptions }
-        : baseUrlOrOptions ?? {};
+        : (baseUrlOrOptions ?? {});
 
     const envBaseUrl =
       typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
@@ -119,6 +120,20 @@ export class ApiClient {
 
   public setTokenRefreshHandler(handler: TokenRefreshHandler | null): void {
     this.tokenRefreshHandler = handler;
+  }
+
+  /**
+   * Registers a middleware interceptor for request, response, or error transformation.
+   * Returns an unsubscribe function to remove the interceptor.
+   */
+  public use(interceptor: ApiInterceptor): () => void {
+    this.interceptors.push(interceptor);
+    return () => {
+      const index = this.interceptors.indexOf(interceptor);
+      if (index !== -1) {
+        this.interceptors.splice(index, 1);
+      }
+    };
   }
 
   public clearSession(): void {
@@ -307,16 +322,34 @@ export class ApiClient {
             ...headers,
           };
 
+          let context: RequestContext<T> = {
+            url,
+            method,
+            headers: finalHeaders,
+            body,
+            options,
+          };
+
+          // 1. Run Request Interceptors
+          for (const interceptor of this.interceptors) {
+            if (interceptor.onRequest) {
+              const updated = await interceptor.onRequest(context as RequestContext);
+              if (updated) {
+                context = updated as RequestContext<T>;
+              }
+            }
+          }
+
           let serializedBody: string | undefined;
-          if (body !== undefined) {
-            finalHeaders['Content-Type'] = 'application/json';
-            serializedBody = JSON.stringify(body);
+          if (context.body !== undefined) {
+            context.headers['Content-Type'] = 'application/json';
+            serializedBody = JSON.stringify(context.body);
           }
 
           try {
-            const response = await fetch(url, {
-              method,
-              headers: finalHeaders,
+            const response = await fetch(context.url, {
+              method: context.method,
+              headers: context.headers,
               body: serializedBody,
               signal: mergedSignal,
             });
@@ -348,7 +381,23 @@ export class ApiClient {
                   ? String((responseData as { message: unknown }).message)
                   : `HTTP Error ${response.status}: ${response.statusText}`;
 
-              const apiError = new ApiError(errorMessage, response.status, responseData, url);
+              const apiError = new ApiError(
+                errorMessage,
+                response.status,
+                responseData,
+                context.url
+              );
+
+              // Run Error Interceptors
+              for (const interceptor of this.interceptors) {
+                if (interceptor.onError) {
+                  try {
+                    await interceptor.onError(apiError, context);
+                  } catch {
+                    // Ignore interceptor errors
+                  }
+                }
+              }
 
               // Record server failure on circuit breaker for 5xx
               if (response.status >= 500) {
@@ -371,13 +420,23 @@ export class ApiClient {
               throw apiError;
             }
 
+            // 2. Run Response Interceptors
+            for (const interceptor of this.interceptors) {
+              if (interceptor.onResponse) {
+                const transformed = await interceptor.onResponse(responseData, response, context);
+                if (transformed !== undefined) {
+                  responseData = transformed;
+                }
+              }
+            }
+
             // Response validation if provided
             if (validate && !validate(responseData)) {
               const validationError = new ApiError(
                 'Response schema validation failed',
                 response.status,
                 responseData,
-                url
+                context.url
               );
               this.notifyError(validationError);
               throw validationError;
@@ -402,7 +461,23 @@ export class ApiClient {
                 : `Request timeout after ${timeout}ms`
               : (err as Error).message || 'Network communication failure';
 
-            const networkError = new ApiError(fallbackMessage, isAbort ? 408 : 0, null, url);
+            const networkError = new ApiError(
+              fallbackMessage,
+              isAbort ? 408 : 0,
+              null,
+              context.url
+            );
+
+            // Run Error Interceptors for network errors
+            for (const interceptor of this.interceptors) {
+              if (interceptor.onError) {
+                try {
+                  await interceptor.onError(networkError, context);
+                } catch {
+                  // Ignore interceptor errors
+                }
+              }
+            }
 
             // Record failure on circuit breaker for network failures
             if (!isUserAbort) {

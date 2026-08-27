@@ -67,4 +67,27 @@ describe('AuthProvider Integration', () => {
 
     expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged in as PersistentUser');
   });
+
+  it('should invalidate session on mount if token is expired and no refresh token exists', () => {
+    localStorage.setItem('nova_discord_token', 'expired_token');
+    localStorage.setItem('nova_auth_expires_at', String(Date.now() - 10000));
+    localStorage.setItem(
+      'nova_auth_user',
+      JSON.stringify({
+        id: '111',
+        username: 'OldUser',
+        discriminator: '0001',
+        avatar: '/avatar.webp',
+      })
+    );
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+      </AuthProvider>
+    );
+
+    expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged Out');
+    expect(localStorage.getItem('nova_discord_token')).toBeNull();
+  });
 });

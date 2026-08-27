@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/prerender.js",
+    "build": "tsc -b && vite build && node scripts/optimize-images.js && node scripts/prerender.js",
+    "optimize:images": "node scripts/optimize-images.js",
     "analyze": "cross-env ANALYZE=true vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
@@ -42,6 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@playwright/test": "^1.49.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.6",
