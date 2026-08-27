@@ -13,7 +13,6 @@ export const NAV_ITEMS: NavItemConfig[] = [
   { path: '/docs', labelKey: 'common.navDocs' },
   { path: '/support', labelKey: 'common.navSupport' },
   { path: '/changelog', labelKey: 'common.navChangelog' },
-  { path: '/dev', labelKey: 'common.navDev', isDev: true },
 ];
 
 export const getLocalizedPath = (path: string, lang?: string): string => {

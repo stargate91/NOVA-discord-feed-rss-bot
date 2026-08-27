@@ -18,18 +18,32 @@ export interface DiscordEmbedFooter {
   timestamp?: string;
 }
 
+export interface DiscordEmbedButton {
+  label: string;
+  url?: string;
+  emoji?: string;
+  variant?: 'primary' | 'secondary' | 'link';
+}
+
 export interface DiscordEmbedProps extends HTMLAttributes<HTMLDivElement> {
   channelName?: string;
   botName?: string;
   avatarUrl?: string;
   timestamp?: string;
+  roleMention?: string;
+  alertText?: string;
+  alertUrl?: string;
+  platformIcon?: string;
   author?: DiscordEmbedAuthor;
   title: string;
   titleUrl?: string;
-  description: string;
+  description?: string;
+  metaLines?: string[];
   fields?: DiscordEmbedField[];
   thumbnail?: string;
   image?: string;
+  accessoryButton?: DiscordEmbedButton;
+  buttons?: DiscordEmbedButton[];
   footer?: DiscordEmbedFooter;
   footerText?: string;
   accentColor?: string;

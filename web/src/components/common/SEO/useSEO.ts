@@ -28,8 +28,8 @@ export const useSEO = ({
   useEffect(() => {
     // 1. Set document title
     const fullTitle = title
-      ? `${title} | Nova Feeds`
-      : 'Nova Feeds — Next-Generation Discord Notification Bot';
+      ? `${title} | NovaFeeds`
+      : 'NovaFeeds — Next-Generation Discord Notification Bot';
     document.title = fullTitle;
 
     // Helper to set or create meta tag

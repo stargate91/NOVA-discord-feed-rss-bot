@@ -1,7 +1,7 @@
 export const docs = {
   tag: 'Documentation & Reference',
   title: 'Getting Started with',
-  titleHighlight: 'Nova Feeds',
+  titleHighlight: 'NovaFeeds',
   subtitle:
     'Learn how to invite the bot, configure social monitors, customize notification layouts, and manage guild entitlements.',
 

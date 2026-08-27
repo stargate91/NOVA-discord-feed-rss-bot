@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from '@/i18n';
-import { Container, Inline, Chip } from '@/ui';
+import { Inline, Chip } from '@/ui';
 
 export const BRAND_CHIPS = [
   { labelKey: 'home.brandYoutube', icon: '/images/brands/youtube.png' },
@@ -14,16 +14,18 @@ export const BRAND_CHIPS = [
   { labelKey: 'home.brandRss', icon: '/images/brands/rss.png' },
 ] as const;
 
-export const PlatformChipsBar: React.FC = () => {
+export interface PlatformChipsBarProps {
+  align?: 'start' | 'center';
+}
+
+export const PlatformChipsBar: React.FC<PlatformChipsBarProps> = ({ align = 'center' }) => {
   const { t } = useTranslation();
 
   return (
-    <Container maxWidth="md" centered>
-      <Inline justify="center" gap="sm" wrap>
-        {BRAND_CHIPS.map((chip) => (
-          <Chip key={chip.labelKey} label={t(chip.labelKey)} icon={chip.icon} />
-        ))}
-      </Inline>
-    </Container>
+    <Inline justify={align} gap="sm" wrap>
+      {BRAND_CHIPS.map((chip) => (
+        <Chip key={chip.labelKey} label={t(chip.labelKey)} icon={chip.icon} />
+      ))}
+    </Inline>
   );
 };

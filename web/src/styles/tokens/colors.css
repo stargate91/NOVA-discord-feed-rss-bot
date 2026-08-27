@@ -57,10 +57,12 @@
   --brand-youtube: #f00;
   --brand-twitch: #9146ff;
   --brand-kick: #53fc18;
-  --brand-steam: #1b2838;
+  --brand-steam: #66c0f4;
   --brand-epic: #313131;
+  --brand-gog: #9c54d6;
   --brand-github: #fff;
   --brand-tmdb: #01b4e4;
+  --brand-rss: #f5b000;
 
   /* Component Surface Tokens */
   --navbar-bg: rgb(7 10 18 / 85%);
@@ -69,6 +71,11 @@
   --footer-bg: rgb(6 10 18 / 85%);
   --chip-bg: rgb(16 25 45 / 50%);
   --chip-bg-hover: rgb(16 25 45 / 90%);
+  --nav-capsule-bg: rgb(15 23 42 / 65%);
+  --nav-capsule-border: rgb(255 255 255 / 8%);
+  --nav-btn-active-bg: linear-gradient(135deg, rgb(56 189 248 / 14%) 0%, rgb(14 165 233 / 6%) 100%);
+  --nav-btn-active-border: rgb(56 189 248 / 28%);
+  --nav-btn-active-glow: 0 0 12px -2px rgb(56 189 248 / 20%);
   --terminal-bg: #04060c;
   --modal-backdrop-bg: rgb(2 6 23 / 75%);
 
@@ -80,6 +87,12 @@
   --discord-text-body: #dbdee1;
   --discord-text-muted: #949ba4;
   --discord-badge-app: #5865f2;
+  --discord-mention-bg: rgb(88 101 242 / 30%);
+  --discord-mention-text: #c9cdfb;
+  --discord-mention-hover: rgb(88 101 242 / 50%);
+  --discord-btn-bg: #4e5058;
+  --discord-btn-hover: #6d6f78;
+  --discord-btn-text: #fff;
 
   /* Dark Theme Surfaces */
   --bg-primary: #070a12;

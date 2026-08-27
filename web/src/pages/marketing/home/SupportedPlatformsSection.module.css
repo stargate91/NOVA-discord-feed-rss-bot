@@ -1,0 +1,115 @@
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xl);
+  overflow: hidden;
+  position: relative;
+  padding: var(--space-xl) 0;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2xs);
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.title {
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  margin: 0;
+}
+
+.marqueeWrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  overflow: hidden;
+  padding: var(--space-xs) 0;
+  mask-image: linear-gradient(to right, transparent, var(--text-primary) 10%, var(--text-primary) 90%, transparent);
+}
+
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  gap: var(--space-md);
+  user-select: none;
+}
+
+.marqueeLeft {
+  animation: var(--animation-marquee-left);
+}
+
+.marqueeRight {
+  animation: var(--animation-marquee-right);
+}
+
+.marqueeWrapper:hover .marqueeLeft,
+.marqueeWrapper:hover .marqueeRight {
+  animation-play-state: paused;
+}
+
+.platformCard {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--blur-md));
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.platformCard:hover {
+  transform: translateY(-0.1875rem) scale(1.03);
+  border-color: var(--brand-border, var(--border-hover));
+  box-shadow: var(--brand-glow, var(--glow-blue-sm));
+  background: var(--bg-card-hover);
+}
+
+.platformIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.platformName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.platformBadge {
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-glass-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.platformCard:hover .platformBadge {
+  background: var(--brand-badge-bg, var(--bg-card-hover));
+  border-color: var(--brand-badge-border, var(--border-hover));
+  color: var(--brand-color, var(--text-primary));
+}

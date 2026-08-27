@@ -62,7 +62,7 @@
   },
   "overrides": [
     {
-      "files": ["src/styles/variables.css", "src/styles/global.css"],
+      "files": ["src/styles/variables.css", "src/styles/global.css", "src/styles/tokens/**/*.css"],
       "rules": {
         "color-function-notation": null,
         "function-disallowed-list": null,

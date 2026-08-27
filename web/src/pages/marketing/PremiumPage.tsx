@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { SEO } from '@/components/common/SEO';
-import { Badge, Container, Stack, Text } from '@/ui';
+import { Badge, Container, Stack, Text, SegmentedControl, Inline } from '@/ui';
 import { PricingCardsGrid, PremiumFaqSection } from './premium';
 
 export const PremiumPage: React.FC = () => {
   const { t } = useTranslation();
+  const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
 
   return (
-    <Container maxWidth="md" padding="md">
+    <Container maxWidth="xl" padding="md">
       <SEO title={t('premium.tag')} description={t('premium.subtitle')} />
 
       <Stack gap="5xl">
@@ -28,10 +29,33 @@ export const PremiumPage: React.FC = () => {
               {t('premium.subtitle')}
             </Text>
           </Container>
+
+          {/* Billing Interval Toggle (Monthly / Yearly) */}
+          <Inline justify="center" align="center" style={{ marginTop: '1rem' }}>
+            <SegmentedControl
+              size="md"
+              value={billingInterval}
+              onChange={(val) => setBillingInterval(val as 'month' | 'year')}
+              options={[
+                { value: 'month', label: t('premium.billingMonthly') },
+                {
+                  value: 'year',
+                  label: (
+                    <Inline gap="xs" align="center">
+                      <span>{t('premium.billingYearly')}</span>
+                      <Badge variant="online" size="xs">
+                        {t('premium.billingYearlyDiscount')}
+                      </Badge>
+                    </Inline>
+                  ),
+                },
+              ]}
+            />
+          </Inline>
         </Stack>
 
-        {/* Pricing Grid */}
-        <PricingCardsGrid />
+        {/* 5-Tier Pricing Grid */}
+        <PricingCardsGrid billingInterval={billingInterval} />
 
         {/* FAQ Section */}
         <PremiumFaqSection />

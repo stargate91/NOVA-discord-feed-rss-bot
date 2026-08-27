@@ -34,7 +34,7 @@ def generate_dashboard_layout(bot, guild_id: int):
 
     # 2. Action Buttons
     btn_db = discord.ui.Button(label=db_label, emoji=db_emoji, url="https://novafeeds.xyz", style=discord.ButtonStyle.link)
-    btn_sup = discord.ui.Button(label=sup_label, emoji=sup_emoji, url="https://discord.gg/novafeeds", style=discord.ButtonStyle.link)
+    btn_sup = discord.ui.Button(label=sup_label, emoji=sup_emoji, url="https://discord.gg/tjRStPtm9k", style=discord.ButtonStyle.link)
 
     container_items.append(discord.ui.Separator())
     container_items.append(discord.ui.ActionRow(btn_db, btn_sup))

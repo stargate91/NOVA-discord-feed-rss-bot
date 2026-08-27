@@ -31,16 +31,20 @@
 }
 
 .brandAvatar {
-  width: var(--space-2xl);
-  height: var(--space-2xl);
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: var(--radius-full);
   object-fit: cover;
   border: 1px solid var(--border-card);
+  box-shadow: var(--glow-blue-sm);
+  transition: var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .brandTitle {
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-sm);
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 

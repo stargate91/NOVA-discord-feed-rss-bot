@@ -19,7 +19,18 @@ describe('useGuildSubscription Hook', () => {
 
     expect(result.current.entitlements.tier).toBe('professional');
     expect(result.current.activeTier).toBe('professional');
-    expect(result.current.entitlements.max_monitors).toBe(25);
+    expect(result.current.entitlements.max_monitors).toBe(35);
+  });
+
+  it('initializes with master tier entitlements when guild is designated master', () => {
+    const { result } = renderHook(() => useGuildSubscription('1083433370815582240'), {
+      wrapper: TestWrapper,
+    });
+
+    expect(result.current.entitlements.tier).toBe('master');
+    expect(result.current.activeTier).toBe('master');
+    expect(result.current.entitlements.max_monitors).toBe(999999);
+    expect(result.current.entitlements.min_poll_interval_seconds).toBe(0);
   });
 
   it('successfully upgrades tier when applying valid promo code', () => {

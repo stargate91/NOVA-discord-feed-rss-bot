@@ -53,7 +53,17 @@ class EntitlementService:
         """
         Resolve resource limits (refresh interval, max monitors/channels/pings/purges)
         for a guild based on its active subscription tier configuration.
+        Master guilds have zero limits (unlimited resources).
         """
+        if self.is_master(guild_id):
+            return TierLimits(
+                min_refresh_interval=0,
+                max_monitors=999999,
+                max_channels=999999,
+                max_pings=999999,
+                max_purge=999999
+            )
+
         settings = self._get_guild_settings(guild_id)
         tier = settings.get("tier", 0)
 
@@ -66,7 +76,7 @@ class EntitlementService:
 
         return TierLimits(
             min_refresh_interval=config.get("min_refresh_interval", 20),
-            max_monitors=config.get("max_monitors", 2),
+            max_monitors=config.get("max_monitors", 5),
             max_channels=config.get("max_channels", 1),
             max_pings=config.get("max_pings", 1),
             max_purge=config.get("max_purge", 10)

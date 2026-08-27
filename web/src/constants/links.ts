@@ -17,7 +17,7 @@ export const buildDiscordBotInviteUrl = (
 };
 
 export const DISCORD_BOT_INVITE_URL = buildDiscordBotInviteUrl();
-export const DISCORD_SUPPORT_SERVER_URL = 'https://discord.gg/PbvX3S7pXR';
+export const DISCORD_SUPPORT_SERVER_URL = 'https://discord.gg/tjRStPtm9k';
 
 export const APP_BASE_URL = 'https://novafeeds.xyz';
 export const DEFAULT_OG_IMAGE = 'https://novafeeds.xyz/images/logo.webp';

@@ -67,7 +67,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: HomePage,
     layout: 'public',
     meta: {
-      title: 'Nova Feeds — Next-Generation Discord Notification Bot',
+      title: 'NovaFeeds — Next-Generation Discord Notification Bot',
       titleKey: 'home.heroTitle',
       isLocalized: true,
     },
@@ -78,7 +78,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: PremiumPage,
     layout: 'public',
     meta: {
-      title: 'Premium Plans & Tiers — Nova Feeds',
+      title: 'Premium Plans & Tiers — NovaFeeds',
       titleKey: 'nav.premium',
       isLocalized: true,
     },
@@ -89,7 +89,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: DocsPage,
     layout: 'public',
     meta: {
-      title: 'Documentation — Nova Feeds',
+      title: 'Documentation — NovaFeeds',
       titleKey: 'nav.docs',
       isLocalized: true,
     },
@@ -100,7 +100,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: SupportPage,
     layout: 'public',
     meta: {
-      title: 'Support Center — Nova Feeds',
+      title: 'Support Center — NovaFeeds',
       titleKey: 'nav.support',
       isLocalized: true,
     },
@@ -111,7 +111,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: ChangelogPage,
     layout: 'public',
     meta: {
-      title: 'Changelog & Updates — Nova Feeds',
+      title: 'Changelog & Updates — NovaFeeds',
       titleKey: 'nav.changelog',
       isLocalized: true,
     },
@@ -122,7 +122,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: TermsPage,
     layout: 'public',
     meta: {
-      title: 'Terms of Service — Nova Feeds',
+      title: 'Terms of Service — NovaFeeds',
       titleKey: 'legal.termsOfService',
       isLocalized: true,
     },
@@ -133,7 +133,7 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     component: PrivacyPage,
     layout: 'public',
     meta: {
-      title: 'Privacy Policy — Nova Feeds',
+      title: 'Privacy Policy — NovaFeeds',
       titleKey: 'legal.privacyPolicy',
       isLocalized: true,
     },
@@ -151,7 +151,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: DeveloperPage,
     layout: 'public',
     meta: {
-      title: 'Developer Portal — Nova Feeds',
+      title: 'Developer Portal — NovaFeeds',
       requiresAuth: true,
       fallbackRedirect: '/servers',
     },
@@ -162,7 +162,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: UiCatalogPage,
     layout: 'public',
     meta: {
-      title: 'UI Component Catalog — Nova Feeds',
+      title: 'UI Component Catalog — NovaFeeds',
     },
   },
   {
@@ -171,7 +171,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: UiCatalogPage,
     layout: 'public',
     meta: {
-      title: 'UI Component Catalog — Nova Feeds',
+      title: 'UI Component Catalog — NovaFeeds',
     },
   },
   {
@@ -180,7 +180,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: AuthCallbackPage,
     layout: 'public',
     meta: {
-      title: 'Authenticating — Nova Feeds',
+      title: 'Authenticating — NovaFeeds',
     },
   },
   {
@@ -189,7 +189,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: ServerPickerPage,
     layout: 'public',
     meta: {
-      title: 'Select Server — Nova Feeds',
+      title: 'Select Server — NovaFeeds',
       requiresAuth: true,
       fallbackRedirect: '/',
     },
@@ -201,7 +201,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: GuildOverviewPage,
     layout: 'dashboard',
     meta: {
-      title: 'Server Overview — Nova Feeds',
+      title: 'Server Overview — NovaFeeds',
       requiresAuth: true,
       requiresGuildManage: true,
       fallbackRedirect: '/servers',
@@ -213,7 +213,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: GuildFeedsPage,
     layout: 'dashboard',
     meta: {
-      title: 'Feed Management — Nova Feeds',
+      title: 'Feed Management — NovaFeeds',
       requiresAuth: true,
       requiresGuildManage: true,
       fallbackRedirect: '/servers',
@@ -225,7 +225,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: GuildAnalyticsPage,
     layout: 'dashboard',
     meta: {
-      title: 'Analytics & Delivery Stats — Nova Feeds',
+      title: 'Analytics & Delivery Stats — NovaFeeds',
       requiresAuth: true,
       requiresGuildManage: true,
       fallbackRedirect: '/servers',
@@ -237,7 +237,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: GuildSettingsPage,
     layout: 'dashboard',
     meta: {
-      title: 'Server Settings — Nova Feeds',
+      title: 'Server Settings — NovaFeeds',
       requiresAuth: true,
       requiresGuildManage: true,
       fallbackRedirect: '/servers',
@@ -249,7 +249,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
     component: GuildPremiumPage,
     layout: 'dashboard',
     meta: {
-      title: 'Server Premium & Quotas — Nova Feeds',
+      title: 'Server Premium & Quotas — NovaFeeds',
       requiresAuth: true,
       requiresGuildManage: true,
       fallbackRedirect: '/servers',

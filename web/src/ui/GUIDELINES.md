@@ -84,7 +84,7 @@ import { Link } from 'react-router-dom';
 <Button as={Link} to="/premium" variant="gradient">Upgrade to Pro</Button>
 
 // External Anchor
-<Button as="a" href="https://discord.gg/nova" target="_blank" variant="discord">
+<Button as="a" href="https://discord.gg/tjRStPtm9k" target="_blank" variant="discord">
   Join Discord
 </Button>
 ```

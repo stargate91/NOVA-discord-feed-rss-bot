@@ -2,7 +2,10 @@
     "command_prefix": "!",
     "command_suffix": "_nova",
     "master_guilds": {
-        "1083433370815582240": 1486516075905417216
+        "1083433370815582240": 1486516075905417216,
+        "1419208997852020769": 0,
+        "1532501759971430460": 0,
+        "1542531403751755857": 0
     },
     "master_user_ids": [
         1438156842609148006,
@@ -15,40 +18,49 @@
     },
     "tier_config": {
         "0": {
-            "name": "Free",
+            "name": "Nova Free",
             "min_refresh_interval": 20,
-            "max_monitors": 2,
+            "max_monitors": 5,
             "max_purge": 10,
             "max_channels": 1,
             "max_pings": 1,
             "features": []
         },
         "1": {
-            "name": "Starter",
+            "name": "Nova Starter",
             "min_refresh_interval": 10,
-            "max_monitors": 10,
+            "max_monitors": 15,
             "max_purge": 25,
             "max_channels": 5,
             "max_pings": 5,
             "features": ["custom_color", "alert_template", "genre_filter", "bulk_delete", "tmdb_language_filter", "remove_branding"]
         },
         "2": {
-            "name": "Professional",
+            "name": "Nova Professional",
             "min_refresh_interval": 5,
-            "max_monitors": 30,
+            "max_monitors": 35,
             "max_purge": 50,
             "max_channels": 10,
             "max_pings": 10,
             "features": ["repost", "custom_template", "custom_color", "alert_template", "genre_filter", "bulk_delete", "tmdb_language_filter", "remove_branding"]
         },
         "3": {
-            "name": "Ultimate",
-            "min_refresh_interval": 2,
+            "name": "Nova Ultimate",
+            "min_refresh_interval": 1,
             "max_monitors": 100,
             "max_purge": 100,
             "max_channels": 20,
             "max_pings": 20,
-            "features": ["repost", "custom_template", "custom_color", "alert_template", "genre_filter", "bulk_delete", "tmdb_language_filter", "remove_branding"]
+            "features": ["repost", "custom_template", "custom_color", "alert_template", "genre_filter", "bulk_delete", "tmdb_language_filter", "remove_branding", "crypto_alerts", "csv_export"]
+        },
+        "4": {
+            "name": "Nova Master",
+            "min_refresh_interval": 0,
+            "max_monitors": 999999,
+            "max_purge": 999999,
+            "max_channels": 999999,
+            "max_pings": 999999,
+            "features": ["repost", "custom_template", "custom_color", "alert_template", "genre_filter", "bulk_delete", "tmdb_language_filter", "remove_branding", "crypto_alerts", "csv_export", "unlimited", "master_access"]
         }
     },
     "stripe_config": {

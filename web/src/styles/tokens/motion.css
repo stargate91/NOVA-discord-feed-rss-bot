@@ -13,4 +13,6 @@
   --animation-spin: spin 0.8s linear infinite;
   --animation-shimmer: shimmer 1.6s linear infinite;
   --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animation-marquee-left: marquee-left 35s linear infinite;
+  --animation-marquee-right: marquee-right 38s linear infinite;
 }

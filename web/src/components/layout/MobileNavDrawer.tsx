@@ -1,9 +1,8 @@
 import React from 'react';
 import { NavLink, Link, useNavigate, useParams } from 'react-router-dom';
-import { LogIn, LogOut, LayoutDashboard, Server } from 'lucide-react';
+import { LogIn, LogOut, Server, Code } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { useAuth } from '@/auth';
-import { ThemeToggle } from '@/theme';
+import { useAuth, isMasterAdmin } from '@/auth';
 import { Button, Drawer, Stack, Avatar } from '@/ui';
 import { NAV_ITEMS, getLocalizedPath } from './navConfig';
 import styles from './Navbar.module.css';
@@ -75,25 +74,6 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
               <LogIn size={16} /> {t('common.loginWithDiscord')}
             </Button>
           )}
-
-          <div className={styles.drawerFooterActions}>
-            <ThemeToggle />
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={() => {
-                onClose();
-                if (isAuthenticated) {
-                  navigate('/servers');
-                } else {
-                  loginWithDiscord();
-                }
-              }}
-            >
-              <LayoutDashboard size={18} /> {t('common.dashboard')}
-            </Button>
-          </div>
         </div>
       }
     >
@@ -118,6 +98,18 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
               <Server size={18} /> {t('common.navServers')}
+            </span>
+          </NavLink>
+        )}
+
+        {isAuthenticated && isMasterAdmin(user?.id) && (
+          <NavLink
+            to="/dev"
+            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
+            onClick={onClose}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <Code size={18} /> {t('common.navDev')}
             </span>
           </NavLink>
         )}

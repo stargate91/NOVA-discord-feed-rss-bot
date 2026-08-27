@@ -26,21 +26,66 @@ export const TIER_TO_NUMBER: Record<GuildTier, SubscriptionTierNumber> = {
 } as const;
 
 export const TIER_LABELS: Record<GuildTier, string> = {
-  free: 'Free Tier',
-  starter: 'Starter Tier',
-  professional: 'Professional Tier',
-  ultimate: 'Ultimate Tier',
-  master: 'Master Guild (Full Access)',
+  free: 'Nova Free',
+  starter: 'Nova Starter',
+  professional: 'Nova Professional',
+  ultimate: 'Nova Ultimate',
+  master: 'Nova Master',
 } as const;
+
+/**
+ * Designated Master Guild IDs (Granted absolute full access with zero limits).
+ * Cannot be purchased; exclusively assigned by the owner.
+ */
+export const MASTER_GUILD_IDS = new Set<string>([
+  '1083433370815582240',
+  '1419208997852020769',
+  '1532501759971430460',
+  '1542531403751755857',
+]);
+
+/**
+ * Checks if a given Discord Guild ID is an owner-designated Master Guild.
+ */
+export const isMasterGuild = (guildId?: string | number | null): boolean => {
+  if (!guildId) return false;
+  return MASTER_GUILD_IDS.has(String(guildId));
+};
+
+/**
+ * Designated Master User IDs (Bot owners / Developer access).
+ */
+export const MASTER_USER_IDS = new Set<string>([
+  '1438156842609148006',
+  '321300698245365761',
+  '495596107473223700',
+]);
+
+/**
+ * Checks if a given Discord User ID is an owner/master admin.
+ */
+export const isMasterAdmin = (userId?: string | number | null): boolean => {
+  if (!userId) return false;
+  return MASTER_USER_IDS.has(String(userId));
+};
 
 /**
  * Normalizes any numeric or string tier representation into a type-safe GuildTier.
  */
-export const toGuildTier = (tier: GuildTier | number | undefined | null): GuildTier => {
+export const toGuildTier = (
+  tier: string | number | undefined | null,
+  guildId?: string | number | null
+): GuildTier => {
+  if (guildId && isMasterGuild(guildId)) return 'master';
   if (tier === undefined || tier === null) return 'free';
   if (typeof tier === 'string') {
-    const lower = tier.toLowerCase() as GuildTier;
-    return lower in TIER_RANKS ? lower : 'free';
+    const lower = tier.trim().toLowerCase();
+    if (lower === 'master' || lower === 'nova master') return 'master';
+    if (lower === 'ultimate' || lower === 'nova ultimate') return 'ultimate';
+    if (lower === 'professional' || lower === 'nova professional' || lower === 'pro') return 'professional';
+    if (lower === 'starter' || lower === 'nova starter') return 'starter';
+    if (lower === 'free' || lower === 'nova free') return 'free';
+    return (lower in TIER_RANKS ? lower : 'free') as GuildTier;
   }
   return NUMBER_TO_TIER[tier as SubscriptionTierNumber] ?? 'free';
 };

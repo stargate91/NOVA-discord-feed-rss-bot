@@ -275,22 +275,36 @@ async def get_user_guilds(
         tier = 0
         settings = None
         try:
-            if hasattr(bot, "guild_settings_cache") and bot.guild_settings_cache:
-                settings = bot.guild_settings_cache.get(guild_id_int, {})
-            if isinstance(settings, dict):
-                tier = settings.get("tier", 0)
-            elif settings is not None:
-                tier = getattr(settings, "tier", 0)
-            if tier == 0 and hasattr(bot, "is_premium") and bot.is_premium(guild_id_int):
-                tier = 3
+            is_master_guild = False
+            if hasattr(bot, "is_master"):
+                try:
+                    is_master_guild = bot.is_master(guild_id_int) is True
+                except Exception:
+                    is_master_guild = False
+
+            if is_master_guild:
+                tier = 4
+            else:
+                if hasattr(bot, "guild_settings_cache") and bot.guild_settings_cache:
+                    settings = bot.guild_settings_cache.get(guild_id_int, {})
+                if isinstance(settings, dict):
+                    tier = settings.get("tier", 0)
+                elif settings is not None:
+                    tier = getattr(settings, "tier", 0)
+                if tier == 0 and hasattr(bot, "is_premium"):
+                    try:
+                        if bot.is_premium(guild_id_int) is True:
+                            tier = 3
+                    except Exception:
+                        pass
         except Exception as e:
             log.warning(f"[Auth] Tier resolution fallback for guild {guild_id_int}: {e}")
 
         # Resolve tier limits safely
-        max_monitors = 2
+        max_monitors = 5 if tier == 0 else 15 if tier == 1 else 35 if tier == 2 else 100 if tier == 3 else 999999
         try:
             tier_config = bot.config.get("tier_config", {}).get(str(tier), {})
-            max_monitors = tier_config.get("max_monitors", 2)
+            max_monitors = tier_config.get("max_monitors", max_monitors)
         except Exception:
             pass
 
@@ -326,7 +340,7 @@ async def get_user_guilds(
             "bot_in_guild": bot_in_guild,
         })
 
-    log.info(f"[Auth] Returned {len(result)} manageable guilds for user")
+    log.debug(f"[Auth] Returned {len(result)} manageable guilds for user")
     return result
 
 __all__ = ["router"]

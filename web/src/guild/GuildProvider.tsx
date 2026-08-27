@@ -61,14 +61,15 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
       const rawList = Array.isArray(data) ? data : [];
       const normalizedGuilds: UserGuild[] = rawList.map((item: unknown) => {
         const g = item as Record<string, unknown>;
+        const guildId = String(g.id || g.guild_id || '');
         return {
-          id: String(g.id || g.guild_id || ''),
+          id: guildId,
           name: String(g.name || 'Unnamed Server'),
           icon: (g.icon as string) || null,
           owner: Boolean(g.owner ?? g.is_owner),
           permissions: String(g.permissions ?? '0'),
           hasManagePermission: Boolean(g.hasManagePermission ?? g.is_owner ?? g.owner ?? true),
-          tier: toGuildTier(g.tier as any),
+          tier: toGuildTier(g.tier as string | number, guildId),
           monitorsCount: Number(g.active_monitors ?? g.monitorsCount ?? 0),
         };
       });

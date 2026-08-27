@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
+from logger import log
 from api.routers import stripe_router, monitor_router, guild_router, admin_router, auth_router, guild_feeds_router
 from models.api import HealthResponse
 
@@ -64,13 +65,13 @@ app.add_middleware(
 async def log_http_requests(request: Request, call_next):
     method = request.method
     url_path = request.url.path
-    print(f"\n[HTTP INCOMING] ➔ {method} {url_path}", flush=True)
+    log.debug(f"[HTTP INCOMING] -> {method} {url_path}")
     try:
         response: Response = await call_next(request)
-        print(f"[HTTP RESPONSE] ➔ {method} {url_path} | Status: {response.status_code}", flush=True)
+        log.debug(f"[HTTP RESPONSE] -> {method} {url_path} | Status: {response.status_code}")
         return response
     except Exception as exc:
-        print(f"[HTTP ERROR] ➔ {method} {url_path} | Exception: {exc}", flush=True)
+        log.error(f"[HTTP ERROR] -> {method} {url_path} | Exception: {exc}")
         raise exc
 
 # 2. Versioned API v1 Routes (/api/v1/...)

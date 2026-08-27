@@ -35,7 +35,7 @@ describe('I18nProvider Integration', () => {
       </I18nProvider>
     );
 
-    expect(screen.getByTestId('brand-name')).toHaveTextContent('Nova Feeds');
+    expect(screen.getByTestId('brand-name')).toHaveTextContent('NovaFeeds');
     expect(screen.getByTestId('scoped-save')).toHaveTextContent('Save Changes');
     expect(screen.getByTestId('monitor-saved')).toHaveTextContent(
       'Monitor for NovaBot (YouTube) activated successfully!'

@@ -1,13 +1,17 @@
 export const home = {
   heroTag: 'Next-Generation Discord Notification Bot',
-  heroTitle: 'Automate Everything with',
-  heroTitleHighlight: 'Nova Feeds',
+  heroTitle: 'Never miss an update',
+  heroTitleWith: 'with',
+  heroTitleHighlight: 'Nova',
   heroDescription:
-    'Lightning-fast social notifications, media drops, release alerts, and live stream updates for your Discord community. Powered by resilient asyncio worker architecture.',
+    'Get instant notifications in your Discord server whenever your favorite creators go live, post new videos, or when games become 100% free. Fast, simple, and completely automatic.',
   ctaDiscord: 'Add to Discord',
   ctaDashboard: 'Open Dashboard',
 
-  // Brand Chips
+  // Brand Chips / Supported Platforms
+  supportedPlatformsTitle: 'Supported Platforms',
+  supportedPlatformsSubtitle:
+    'Connect all your favorite services and automate real-time alerts across your Discord server.',
   brandYoutube: 'YouTube',
   brandTwitch: 'Twitch',
   brandKick: 'Kick',
@@ -24,48 +28,102 @@ export const home = {
     'See exactly how Nova formats rich Discord notifications for each supported service.',
   platformYoutube: 'YouTube',
   platformTwitch: 'Twitch',
+  platformKick: 'Kick',
+  platformEpic: 'Epic Games',
   platformSteam: 'Steam Deals',
+  platformTmdb: 'TMDB Movies',
   platformGithub: 'GitHub Releases',
+  platformRss: 'Custom RSS',
 
-  // Live Embed Demo
-  embedChannelName: 'feed-alerts',
-  embedBotName: 'Nova',
-  embedTimestamp: 'Today at 14:32',
-  embedTitle: 'Shroud is now LIVE on Twitch!',
-  embedDescription: 'Playing **VALORANT** • Ranked Games with the squad! Come join the stream.',
-  embedFooter: 'Twitch Monitor • Nova feeds',
+  // Common Embed Labels & Feedback
+  embedDeliveredBy: 'Delivered by',
+  embedFieldPublishedAt: 'Published at',
+  embedFieldGame: 'Game',
+  embedFieldCategory: 'Category',
+  embedFieldViewers: 'Viewers',
+  embedFieldWorth: 'Worth',
+  embedFieldType: 'Type',
+  embedFieldExpiry: 'Offer Expiry',
+  embedFieldScore: 'Score',
+  embedFieldRuntime: 'Runtime',
+  embedFieldGenres: 'Genres',
+  embedFieldReleaseDate: 'Release Date',
+  embedFieldTag: 'Release Tag',
+  embedFieldCommit: 'Commit Hash',
+  embedFieldAssets: 'Attached Assets',
+  embedFieldSource: 'Feed Source',
+  embedFieldReadTime: 'Read Time',
+
+  // Embed Action Buttons
+  embedBtnWatchYoutube: 'Watch on YouTube',
+  embedBtnWatchStream: 'Watch Stream',
+  embedBtnWatchKick: 'Watch on Kick',
+  embedBtnGetGame: 'Get Game',
+  embedBtnGetSteam: 'Get on Steam',
+  embedBtnViewTmdb: 'View on TMDb',
+  embedBtnWatchTrailer: 'Watch Trailer',
+  embedBtnViewGithub: 'View on GitHub',
+  embedBtnReadArticle: 'Read Full Article',
 
   // YouTube Demo Embed
-  embedYoutubeTitle: '$1,000,000 Every 10 Seconds You Survive Inside a Circle!',
-  embedYoutubeDesc:
-    'The final 10 contestants face extreme obstacle challenges in the ultimate live event.',
-  embedYoutubeFieldChannel: 'Channel',
-  embedYoutubeFieldDuration: 'Video Duration',
-  embedYoutubeFieldUploadTime: 'Upload Time',
-  embedYoutubeFooter: 'YouTube Upload Notification • Nova Feeds',
+  embedYoutubeRole: '@Hecklefish',
+  embedYoutubeAlert: 'The Why Files just uploaded a new video!',
+  embedYoutubeTitle: 'The Basement: Mitch Horowitz | Gandhi, Reagan, and the Occultists History Erased',
+  embedYoutubePublishedValue: 'Today at 18:03 (2 hours ago)',
+
+  // Twitch Demo Embed
+  embedTwitchRole: '@Stream Alerts',
+  embedTwitchAlert: 'Shroud is now live streaming on Twitch!',
+  embedTwitchTitle: 'Shroud • LIVE',
+  embedTwitchDesc: 'Playing VALORANT • Ranked Games with the squad! Come join the stream.',
+  embedTwitchGameValue: 'VALORANT',
+  embedTwitchViewersValue: '24,510',
+
+  // Kick Demo Embed
+  embedKickRole: '@Kick Squad',
+  embedKickAlert: 'Westcol is now live streaming on Kick!',
+  embedKickTitle: 'Westcol • LIVE',
+  embedKickDesc: '🔴 IRL & Just Chatting • 100K Viewer Special with the community! Come chill.',
+  embedKickCategoryValue: 'Just Chatting',
+  embedKickViewersValue: '48,290',
+
+  // Epic Games Demo Embed
+  embedEpicRole: '@Free Games',
+  embedEpicAlert: 'New 100% Free Game on Epic Games Store!',
+  embedEpicTitle: "Death Stranding Director's Cut",
+  embedEpicWorthValue: '~~$39.99~~ FREE',
+  embedEpicTypeValue: 'Full Game',
+  embedEpicExpiryValue: 'Thursday at 17:00 UTC (in 4 days)',
 
   // Steam Demo Embed
-  embedSteamTitle: 'FREE: Warhammer: Vermintide 2 is 100% OFF!',
-  embedSteamDesc:
-    'Grab Warhammer: Vermintide 2 for free on Steam during this limited-time 100% discount promotional giveaway!',
-  embedSteamOriginalPrice: 'Original Price',
-  embedSteamDiscountPrice: 'Discount Price',
-  embedSteamExpiry: 'Offer Expiry',
-  embedSteamFooter: 'Steam Price Drops • Nova Feeds',
+  embedSteamRole: '@Steam Deals',
+  embedSteamAlert: 'Limited-time 100% Free Giveaway on Steam!',
+  embedSteamTitle: 'Warhammer: Vermintide 2',
+  embedSteamWorthValue: '~~$29.99~~ FREE',
+  embedSteamTypeValue: 'Steam Library Game',
+  embedSteamExpiryValue: 'Sunday at 18:00 UTC',
+
+  // TMDB Demo Embed
+  embedTmdbRole: '@Cinema Club',
+  embedTmdbAlert: 'New High-Rated Movie Digital Release!',
+  embedTmdbTitle: 'Dune: Part Two',
+  embedTmdbGenresValue: 'Sci-Fi, Adventure',
+  embedTmdbScoreValue: '⭐ 8.6 / 10',
+  embedTmdbReleaseValue: 'March 1, 2024',
 
   // GitHub Demo Embed
-  embedGithubTitle: 'Release 0.115.0 · tiangolo/fastapi',
+  embedGithubRole: '@Dev Releases',
+  embedGithubAlert: 'New release published on GitHub!',
+  embedGithubTitle: 'tiangolo/fastapi - Release 0.115.0',
   embedGithubDesc:
-    'New features: Support for Pydantic v2 recursive validation, performance improvements for async dependency injection.',
-  embedGithubFieldTag: 'Tag',
-  embedGithubFieldCommit: 'Commit Hash',
-  embedGithubFieldAssets: 'Assets',
-  embedGithubFooter: 'GitHub Releases • Nova Feeds',
+    'Support for Pydantic v2 recursive type validations, 40% faster JSON serialization pipeline, and async dependency injection optimizations.',
+  embedGithubPublishedValue: 'Today at 12:45 (1 hour ago)',
 
-  // Twitch Fields
-  embedTwitchFieldCategory: 'Category',
-  embedTwitchFieldViewers: 'Viewer Count',
-  embedTwitchFieldUptime: 'Uptime',
+  // RSS Demo Embed
+  embedRssRole: '@Tech News',
+  embedRssAlert: 'New article from RSS Feed!',
+  embedRssTitle: 'Next-Gen AI Hardware Architecture Unveiled at Tech Summit',
+  embedRssPublishedValue: '5 mins ago',
 
   // Feature Highlights
   scaleSpeedTitle: 'Engineered for Scale & Speed',

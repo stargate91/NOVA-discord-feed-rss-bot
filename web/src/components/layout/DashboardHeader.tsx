@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import type { HealthStatus } from '@/types';
 import { useTranslation } from '@/i18n';
+import { isMasterGuild, toGuildTier, TIER_LABELS } from '@/auth';
+import { GuildContext } from '@/guild/context';
 import { ThemeToggle } from '@/theme';
 import { Badge, Container, Inline, Text } from '@/ui';
 import styles from './DashboardHeader.module.css';
@@ -19,8 +21,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onMobileMenuClick,
 }) => {
   const { guildId = '123456789012345678' } = useParams<{ guildId?: string }>();
+  const guildContext = useContext(GuildContext);
+  const activeGuild = guildContext?.activeGuild;
   const { t } = useTranslation();
   const isOnline = health?.status === 'ok' || health?.status === 'healthy';
+
+  const isMaster = isMasterGuild(guildId) || activeGuild?.tier === 'master';
+  const tierLabel = isMaster ? 'Nova Master' : TIER_LABELS[toGuildTier(activeGuild?.tier, guildId)];
 
   return (
     <header className={styles.header}>
@@ -38,9 +45,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               </button>
             )}
             <Text as="h2" size="base" weight="bold">
-              {t('common.serverWithId', { id: guildId })}
+              {activeGuild?.name || t('common.serverWithId', { id: guildId })}
             </Text>
-            <Badge variant="tier">{t('common.plusTier')}</Badge>
+            <Badge variant="tier">{tierLabel}</Badge>
           </Inline>
 
           <Inline align="center" gap="sm">

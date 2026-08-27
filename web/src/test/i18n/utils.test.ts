@@ -5,7 +5,7 @@ describe('i18n Utilities Tests', () => {
   it('should recursively flatten nested dictionary objects into dot notation', () => {
     const nested = {
       common: {
-        brandName: 'Nova Feeds',
+        brandName: 'NovaFeeds',
         buttons: {
           save: 'Save Changes',
           cancel: 'Cancel',
@@ -17,7 +17,7 @@ describe('i18n Utilities Tests', () => {
     };
 
     const flat = flattenDictionary(nested);
-    expect(flat['common.brandName']).toBe('Nova Feeds');
+    expect(flat['common.brandName']).toBe('NovaFeeds');
     expect(flat['common.buttons.save']).toBe('Save Changes');
     expect(flat['common.buttons.cancel']).toBe('Cancel');
     expect(flat['dashboard.title']).toBe('Dashboard Overview');

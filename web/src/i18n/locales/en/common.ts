@@ -1,5 +1,5 @@
 export const common = {
-  brandName: 'Nova Feeds',
+  brandName: 'NovaFeeds',
   statusOnline: 'Online',
   statusOffline: 'Offline',
   checking: 'Checking...',
@@ -17,7 +17,7 @@ export const common = {
   manage: 'Manage',
   upgrade: 'Upgrade',
   version: 'Version 1.0.0',
-  copyright: '© 2026 Nova Feeds. All rights reserved.',
+  copyright: '© 2026 NovaFeeds. All rights reserved.',
 
   // Global Navigation
   navOverview: 'Overview',
@@ -87,10 +87,10 @@ export const common = {
   loggedOutSuccess: 'You have been logged out.',
   authRequiredTitle: 'Authentication Required',
   authRequiredDesc:
-    'Please sign in with your Discord account to access the Nova Feeds management dashboard, configure feeds, and monitor server statistics.',
+    'Please sign in with your Discord account to access the NovaFeeds management dashboard, configure feeds, and monitor server statistics.',
   sessionExpired: 'Your Discord session has expired. Please sign in again.',
   backendOfflineDesc:
-    'Unable to reach the Nova Feeds backend service. Please verify that the backend is running.',
+    'Unable to reach the NovaFeeds backend service. Please verify that the backend is running.',
   retryConnection: 'Retry Connection',
   tryDemoMode: 'Try Demo Mode',
   userTag: 'User ID: {id}',

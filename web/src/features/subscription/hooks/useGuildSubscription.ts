@@ -1,19 +1,22 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/i18n';
 import { useToast } from '@/components/common/Toast';
-import { toGuildTier } from '@/auth/entitlements';
-import { VALID_PROMO_CODES, DEFAULT_GUILD_ENTITLEMENTS } from '../constants';
+import { toGuildTier, isMasterGuild } from '@/auth/entitlements';
+import { VALID_PROMO_CODES, DEFAULT_GUILD_ENTITLEMENTS, MASTER_GUILD_ENTITLEMENTS } from '../constants';
 import type { GuildEntitlements, UseGuildSubscriptionReturn, GuildTier } from '../types';
 
 export const useGuildSubscription = (
-  _guildId: string,
+  guildId: string,
   initialEntitlements?: Partial<GuildEntitlements>
 ): UseGuildSubscriptionReturn => {
   const { t } = useTranslation();
   const toast = useToast();
 
+  const isMaster = isMasterGuild(guildId);
+  const baseEntitlements = isMaster ? MASTER_GUILD_ENTITLEMENTS : DEFAULT_GUILD_ENTITLEMENTS;
+
   const [entitlements, setEntitlements] = useState<GuildEntitlements>({
-    ...DEFAULT_GUILD_ENTITLEMENTS,
+    ...baseEntitlements,
     ...initialEntitlements,
   });
   const [promoCode, setPromoCode] = useState<string>('');

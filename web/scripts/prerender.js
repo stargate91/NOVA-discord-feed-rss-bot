@@ -12,7 +12,7 @@ const BASE_URL = 'https://novafeeds.xyz';
 const publicMarketingRoutes = [
   {
     path: '/',
-    title: 'Nova Feeds — Next-Generation Discord Notification Bot',
+    title: 'NovaFeeds — Next-Generation Discord Notification Bot',
     description:
       'Lightning-fast social notifications, media drops, release alerts, and live stream updates for your Discord community. Powered by resilient asyncio worker architecture.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -22,7 +22,7 @@ const publicMarketingRoutes = [
   },
   {
     path: '/premium',
-    title: 'Premium Subscription & Tier Plans — Nova Feeds',
+    title: 'Premium Subscription & Tier Plans — NovaFeeds',
     description:
       'Unlock sub-second polling, unlimited feed monitors, custom branding, and priority queue delivery for your Discord servers.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -32,7 +32,7 @@ const publicMarketingRoutes = [
   },
   {
     path: '/docs',
-    title: 'Documentation & API Guides — Nova Feeds',
+    title: 'Documentation & API Guides — NovaFeeds',
     description:
       'Explore developer guides, feed configuration tutorials, webhook integration, and architectural documentation for Nova.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -42,7 +42,7 @@ const publicMarketingRoutes = [
   },
   {
     path: '/support',
-    title: 'Support & Community Help Center — Nova Feeds',
+    title: 'Support & Community Help Center — NovaFeeds',
     description:
       'Get live assistance, report bugs, join our Discord community, and find answers to common setup questions.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -52,7 +52,7 @@ const publicMarketingRoutes = [
   },
   {
     path: '/changelog',
-    title: 'Changelog & Release Notes — Nova Feeds',
+    title: 'Changelog & Release Notes — NovaFeeds',
     description:
       'See recent feature drops, architectural speed improvements, platform additions, and security enhancements.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -62,7 +62,7 @@ const publicMarketingRoutes = [
   },
   {
     path: '/privacy',
-    title: 'Privacy Policy — Nova Feeds',
+    title: 'Privacy Policy — NovaFeeds',
     description:
       'Learn how Nova protects your Discord server data, encryption standards, and privacy commitments.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -72,7 +72,7 @@ const publicMarketingRoutes = [
   },
   {
     path: '/terms',
-    title: 'Terms of Service — Nova Feeds',
+    title: 'Terms of Service — NovaFeeds',
     description:
       'Read the terms of service governing usage of the Nova notification platform and bot services.',
     ogImage: `${BASE_URL}/images/logo.webp`,
@@ -83,11 +83,11 @@ const publicMarketingRoutes = [
 ];
 
 const privateNoindexRoutes = [
-  { path: '/servers', title: 'Select Server — Nova Feeds' },
-  { path: '/auth/callback', title: 'Authenticating — Nova Feeds' },
-  { path: '/dev', title: 'Developer Portal — Nova Feeds' },
-  { path: '/dev/ui', title: 'UI Component Catalog — Nova Feeds' },
-  { path: '/components', title: 'UI Components — Nova Feeds' },
+  { path: '/servers', title: 'Select Server — NovaFeeds' },
+  { path: '/auth/callback', title: 'Authenticating — NovaFeeds' },
+  { path: '/dev', title: 'Developer Portal — NovaFeeds' },
+  { path: '/dev/ui', title: 'UI Component Catalog — NovaFeeds' },
+  { path: '/components', title: 'UI Components — NovaFeeds' },
 ];
 
 const LOCALES = [

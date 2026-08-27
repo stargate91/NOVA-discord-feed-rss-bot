@@ -13,7 +13,6 @@ export const FOOTER_RESOURCES_LINKS: FooterLinkItem[] = [
   { path: '/premium', labelKey: 'common.navPremium' },
   { path: '/changelog', labelKey: 'common.navChangelog' },
   { path: '/support', labelKey: 'common.navSupport' },
-  { path: '/dev', labelKey: 'common.navDev', isDev: true },
 ];
 
 export const FOOTER_LEGAL_LINKS: FooterLinkItem[] = [

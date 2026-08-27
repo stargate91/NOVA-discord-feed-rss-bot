@@ -19,6 +19,11 @@
   --footer-bg: rgb(241 245 249 / 92%);
   --chip-bg: rgb(226 232 240 / 75%);
   --chip-bg-hover: rgb(203 213 225 / 90%);
+  --nav-capsule-bg: rgb(241 245 249 / 85%);
+  --nav-capsule-border: rgb(0 0 0 / 8%);
+  --nav-btn-active-bg: linear-gradient(135deg, rgb(14 165 233 / 12%) 0%, rgb(2 132 199 / 6%) 100%);
+  --nav-btn-active-border: rgb(14 165 233 / 30%);
+  --nav-btn-active-glow: 0 1px 4px rgb(14 165 233 / 15%);
   --modal-backdrop-bg: rgb(15 23 42 / 45%);
 
   /* Borders & Dividers */

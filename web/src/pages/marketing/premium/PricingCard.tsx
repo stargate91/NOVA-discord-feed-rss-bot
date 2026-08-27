@@ -13,21 +13,32 @@ export interface PricingPlanConfig {
   badgeVariant?: BadgeProps['variant'];
   titleKey: TranslationKey;
   pillKey?: TranslationKey;
-  priceKey: TranslationKey;
-  pricePeriodKey: TranslationKey;
+  priceMonthlyKey: TranslationKey;
+  priceYearlyKey: TranslationKey;
   descKey: TranslationKey;
   featureKeys: TranslationKey[];
   ctaVariant?: ButtonProps['variant'];
   ctaKey: TranslationKey;
+  isBuyable?: boolean;
+  disabledNoteKey?: TranslationKey;
 }
 
 export interface PricingCardProps {
   plan: PricingPlanConfig;
+  billingInterval?: 'month' | 'year';
 }
 
-export const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
+export const PricingCard: React.FC<PricingCardProps> = ({ plan, billingInterval = 'month' }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const priceKey = billingInterval === 'year' ? plan.priceYearlyKey : plan.priceMonthlyKey;
+  const periodText =
+    plan.id === 'master'
+      ? t('premium.masterPricePeriod')
+      : billingInterval === 'year'
+      ? t('premium.perYear')
+      : t('premium.perMonth');
 
   return (
     <Card
@@ -35,7 +46,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
       interactive={plan.interactive}
       padding="xl"
     >
-      <Stack gap="lg" justify="between">
+      <Stack gap="lg" justify="between" style={{ height: '100%' }}>
         <Stack gap="sm">
           <Inline justify="between" align="center">
             <Badge variant={plan.badgeVariant}>{t(plan.titleKey)}</Badge>
@@ -44,10 +55,10 @@ export const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
 
           <Inline align="baseline" gap="xs">
             <Text size="4xl" weight="black">
-              {t(plan.priceKey)}
+              {t(priceKey)}
             </Text>
             <Text size="sm" color="muted">
-              {t(plan.pricePeriodKey)}
+              {periodText}
             </Text>
           </Inline>
 
@@ -65,13 +76,31 @@ export const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
           </Stack>
         </Stack>
 
-        <Button
-          variant={plan.ctaVariant}
-          fullWidth
-          onClick={() => navigate('/servers')}
-        >
-          {t(plan.ctaKey)}
-        </Button>
+        <Stack gap="2xs">
+          {plan.isBuyable !== false ? (
+            <Button
+              variant={plan.ctaVariant}
+              fullWidth
+              onClick={() => navigate('/servers')}
+            >
+              {t(plan.ctaKey)}
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              fullWidth
+              disabled
+              style={{ opacity: 0.85, cursor: 'default' }}
+            >
+              {t(plan.ctaKey)}
+            </Button>
+          )}
+          {plan.disabledNoteKey && (
+            <Text size="3xs" color="muted" align="center">
+              {t(plan.disabledNoteKey)}
+            </Text>
+          )}
+        </Stack>
       </Stack>
     </Card>
   );

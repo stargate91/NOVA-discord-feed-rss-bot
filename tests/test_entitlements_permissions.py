@@ -28,6 +28,17 @@ class TestEntitlementsAndPermissions(unittest.TestCase):
         self.assertTrue(self.entitlements.is_master(12345))
         self.assertTrue(self.entitlements.is_premium(12345))
 
+    def test_master_guild_has_unlimited_tier_limits(self):
+        """Verify master guilds have zero limits and instant polling."""
+        limits = self.entitlements.get_guild_tier_limits(12345)
+        self.assertEqual(limits.min_refresh_interval, 0)
+        self.assertEqual(limits.max_monitors, 999999)
+        self.assertEqual(limits.max_channels, 999999)
+        self.assertEqual(limits.max_pings, 999999)
+        self.assertEqual(limits.max_purge, 999999)
+        self.assertTrue(self.entitlements.has_feature(12345, "crypto_alerts"))
+        self.assertTrue(self.entitlements.has_feature(12345, "unlimited"))
+
     def test_tier_based_premium_status(self):
         """Verify tier 1+ gives premium status."""
         self.bot.guild_settings_cache[100] = {"tier": 1}

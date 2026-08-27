@@ -19,13 +19,27 @@ async def get_permissions(
 ):
     guild = bot.get_guild(guild_id)
 
-    # 1. Base Tier Info (from DB / cache)
-    settings = bot.guild_settings_cache.get(guild_id, {})
-    tier = settings.get("tier", 0)
-    if tier == 0 and bot.is_premium(guild_id):
-        tier = 3
+    # 1. Base Tier Info (from DB / cache or master_guilds)
+    is_master_guild = False
+    if hasattr(bot, "is_master"):
+        try:
+            is_master_guild = bot.is_master(guild_id) is True
+        except Exception:
+            is_master_guild = False
 
-    tier_config_all = bot.config.get("tier_config", {})
+    if is_master_guild:
+        tier = 4
+    else:
+        settings = bot.guild_settings_cache.get(guild_id, {}) if hasattr(bot, "guild_settings_cache") and bot.guild_settings_cache else {}
+        tier = settings.get("tier", 0) if isinstance(settings, dict) else getattr(settings, "tier", 0)
+        if tier == 0 and hasattr(bot, "is_premium"):
+            try:
+                if bot.is_premium(guild_id) is True:
+                    tier = 3
+            except Exception:
+                pass
+
+    tier_config_all = bot.config.get("tier_config", {}) if hasattr(bot, "config") and bot.config else {}
     tier_info = tier_config_all.get(str(tier), tier_config_all.get("0", {}))
 
     # 2. Member Permissions (Requires bot in guild)

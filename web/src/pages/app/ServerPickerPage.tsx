@@ -6,7 +6,7 @@ import { SEO } from '@/components/common/SEO';
 import { DISCORD_BOT_INVITE_URL, featureFlags } from '@/constants';
 import { openExternalUrl } from '@/utils';
 import { useApiQuery, apiClient } from '@/api';
-import { useAuth } from '@/auth';
+import { useAuth, isMasterGuild, toGuildTier, TIER_LABELS } from '@/auth';
 import { useGuild } from '@/guild';
 import { Button, CardSkeleton, Grid, Stack, Inline, Text, EmptyState, Alert } from '@/ui';
 import type { ServerItem } from './components';
@@ -26,26 +26,34 @@ interface ApiGuildItem {
 
 const MOCK_SERVERS: ServerItem[] = [
   {
-    id: '123456789012345678',
-    name: 'Stargate Gaming Lounge',
+    id: '1083433370815582240',
+    name: 'Stargate Lounge',
     avatar: '/images/logo.webp',
-    tier: 'Plus Tier',
+    tier: 'Nova Master',
+    isBotInServer: true,
+    monitors: 12,
+  },
+  {
+    id: '123456789012345678',
+    name: 'Gaming Community',
+    avatar: '/images/logo.webp',
+    tier: 'Nova Professional',
     isBotInServer: true,
     monitors: 8,
   },
   {
     id: '987654321098765432',
-    name: 'Creator Hub VIP',
+    name: 'Creator Hub',
     avatar: '/images/logo.webp',
-    tier: 'Master Tier',
+    tier: 'Nova Ultimate',
     isBotInServer: true,
     monitors: 24,
   },
   {
     id: '555666777888999000',
-    name: 'Community Anime & Hangout',
+    name: 'Public Hangout',
     avatar: '/images/logo.webp',
-    tier: 'Free',
+    tier: 'Nova Free',
     isBotInServer: false,
     monitors: 0,
   },
@@ -86,16 +94,9 @@ export const ServerPickerPage: React.FC = () => {
             avatar: g.icon
               ? `https://cdn.discordapp.com/icons/${guildId}/${g.icon}.png`
               : '/images/logo.webp',
-            tier:
-              typeof g.tier === 'number'
-                ? g.tier === 3
-                  ? 'Ultimate'
-                  : g.tier === 2
-                  ? 'Professional'
-                  : g.tier === 1
-                  ? 'Starter'
-                  : 'Free'
-                : String(g.tier),
+            tier: isMasterGuild(guildId)
+              ? 'Nova Master'
+              : TIER_LABELS[toGuildTier(g.tier, guildId)],
             isBotInServer: g.bot_in_guild,
             monitors: g.active_monitors ?? g.monitorsCount ?? 0,
           };

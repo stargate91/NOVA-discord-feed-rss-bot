@@ -1,6 +1,7 @@
 export * from './embedMocks';
 export * from './PlatformChipsBar';
 export * from './HeroSection';
+export * from './SupportedPlatformsSection';
 export * from './InteractiveEmbedPreview';
 export * from './FeaturesGridSection';
 export * from './DeliveryStatsSection';

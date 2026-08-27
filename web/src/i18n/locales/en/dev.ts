@@ -1,7 +1,7 @@
 export const dev = {
   title: 'Developer Console & System Telemetry',
   description:
-    'Direct operational diagnostics, log inspection, and Prometheus metrics for Nova Feeds.',
+    'Direct operational diagnostics, log inspection, and Prometheus metrics for NovaFeeds.',
   authTitle: 'Developer Authentication',
   authSubtitle: 'Enter your server WEBHOOK_SECRET passkey to open the Developer Management Portal.',
   secretPasskeyLabel: 'Secret Passkey',
