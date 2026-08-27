@@ -6,35 +6,11 @@ import { GuildContext } from './context';
 import { useAuth } from '@/auth';
 import { apiClient } from '@/api/client';
 import { featureFlags } from '@/constants';
+import { DEFAULT_DEMO_GUILDS, ACTIVE_GUILD_STORAGE_KEY } from './constants';
 
 interface GuildProviderProps {
   children: ReactNode;
 }
-
-export const DEFAULT_DEMO_GUILDS: UserGuild[] = [
-  {
-    id: '123456789012345678',
-    name: 'Stargate Gaming Lounge',
-    icon: null,
-    owner: true,
-    permissions: '8',
-    hasManagePermission: true,
-    tier: 'professional',
-    monitorsCount: 4,
-  },
-  {
-    id: '987654321098765432',
-    name: 'Creator Hub VIP',
-    icon: null,
-    owner: true,
-    permissions: '8',
-    hasManagePermission: true,
-    tier: 'ultimate',
-    monitorsCount: 8,
-  },
-];
-
-export const ACTIVE_GUILD_STORAGE_KEY = 'nova_active_guild_id';
 
 export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
   // Safe consumption of AuthContext with graceful fallback if rendered outside AuthProvider

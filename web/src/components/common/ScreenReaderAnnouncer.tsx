@@ -1,10 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-
-export interface AnnouncerContextValue {
-  announce: (message: string, priority?: 'polite' | 'assertive') => void;
-}
-
-const AnnouncerContext = createContext<AnnouncerContextValue | null>(null);
+import React, { useState, useCallback, useMemo } from 'react';
+import { AnnouncerContext } from './AnnouncerContext';
+import styles from './ScreenReaderAnnouncer.module.css';
 
 export interface AnnouncerProviderProps {
   children: React.ReactNode;
@@ -38,17 +34,7 @@ export const AnnouncerProvider: React.FC<AnnouncerProviderProps> = ({ children }
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        style={{
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          padding: 0,
-          margin: '-1px',
-          overflow: 'hidden',
-          clip: 'rect(0, 0, 0, 0)',
-          whiteSpace: 'nowrap',
-          border: 0,
-        }}
+        className={styles.srOnly}
       >
         {politeMessage}
       </div>
@@ -56,17 +42,7 @@ export const AnnouncerProvider: React.FC<AnnouncerProviderProps> = ({ children }
         role="alert"
         aria-live="assertive"
         aria-atomic="true"
-        style={{
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          padding: 0,
-          margin: '-1px',
-          overflow: 'hidden',
-          clip: 'rect(0, 0, 0, 0)',
-          whiteSpace: 'nowrap',
-          border: 0,
-        }}
+        className={styles.srOnly}
       >
         {assertiveMessage}
       </div>
@@ -74,13 +50,5 @@ export const AnnouncerProvider: React.FC<AnnouncerProviderProps> = ({ children }
   );
 };
 
-export const useAnnounce = (): AnnouncerContextValue => {
-  const context = useContext(AnnouncerContext);
-  if (!context) {
-    // Graceful fallback for components rendered outside AnnouncerProvider
-    return {
-      announce: () => {},
-    };
-  }
-  return context;
-};
+export type { AnnouncerContextValue } from './AnnouncerContext';
+

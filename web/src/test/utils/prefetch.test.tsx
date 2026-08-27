@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { prefetchRoute, PrefetchLink, useIdlePrefetch } from '@/utils/prefetch';
+import { prefetchRoute, PrefetchLink, useIdlePrefetch } from '@/utils';
 
 describe('Route Prefetching Utility & PrefetchLink', () => {
   beforeEach(() => {

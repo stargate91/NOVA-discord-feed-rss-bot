@@ -14,18 +14,11 @@ import {
 import { queryCache } from '@/api/queryCache';
 import { apiClient } from '@/api/client';
 import { featureFlags } from '@/constants';
+import { DEFAULT_DEMO_USER } from './constants';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
-
-export const DEFAULT_DEMO_USER: DiscordUser = {
-  id: '123456789012345678',
-  username: 'NovaAdmin',
-  discriminator: '0001',
-  avatar: '/images/logo.webp',
-  global_name: 'Nova Admin User',
-};
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<DiscordUser | null>(null);

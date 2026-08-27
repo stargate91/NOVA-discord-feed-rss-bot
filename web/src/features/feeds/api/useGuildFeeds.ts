@@ -3,11 +3,23 @@ import { featureFlags } from '@/constants';
 import { MOCK_FEED_MONITORS } from '../constants';
 import type { FeedMonitor, CreateMonitorPayload } from '@/types';
 
+const mockFeedStore = new Map<string, FeedMonitor[]>();
+
+const getMockFeedsForGuild = (guildId: string): FeedMonitor[] => {
+  if (!mockFeedStore.has(guildId)) {
+    mockFeedStore.set(
+      guildId,
+      MOCK_FEED_MONITORS.filter((m) => m.guild_id === guildId || !guildId)
+    );
+  }
+  return mockFeedStore.get(guildId) || [];
+};
+
 export const useGuildFeeds = (guildId: string) => {
   const query = useApiQuery<FeedMonitor[]>(
     async (signal) => {
       if (featureFlags.useMockData) {
-        return MOCK_FEED_MONITORS.filter((m) => m.guild_id === guildId || !guildId);
+        return [...getMockFeedsForGuild(guildId)];
       }
       return apiClient.get<FeedMonitor[]>(`/api/v1/guilds/${guildId}/feeds`, { signal });
     },
@@ -33,6 +45,8 @@ export const useGuildFeeds = (guildId: string) => {
           updated_at: new Date().toISOString(),
           last_checked_at: new Date().toISOString(),
         };
+        const currentList = getMockFeedsForGuild(guildId);
+        mockFeedStore.set(guildId, [newMonitor, ...currentList]);
         return newMonitor;
       }
       return apiClient.post<FeedMonitor>(`/api/v1/guilds/${guildId}/feeds`, payload);
