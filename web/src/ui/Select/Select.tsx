@@ -6,7 +6,7 @@ import { SelectSearch } from './SelectSearch';
 import { SelectListbox } from './SelectListbox';
 import styles from './Select.module.css';
 
-export * from './types';
+export type * from './types';
 
 export const Select: React.FC<SelectProps> = ({
   name,

@@ -5,12 +5,11 @@ import { TabsList } from './TabsList';
 import { Tab } from './Tab';
 import { TabPanel } from './TabPanel';
 
-export * from './types';
-export * from './context';
-export * from './TabsRoot';
-export * from './TabsList';
-export * from './Tab';
-export * from './TabPanel';
+export type * from './types';
+export { TabsRoot } from './TabsRoot';
+export { TabsList } from './TabsList';
+export { Tab } from './Tab';
+export { TabPanel } from './TabPanel';
 
 export interface TabsCompound extends React.FC<TabsProps> {
   List: typeof TabsList;

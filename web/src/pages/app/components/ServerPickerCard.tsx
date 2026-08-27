@@ -2,6 +2,7 @@ import React from 'react';
 import { Settings, UserPlus } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { Card, Avatar, Stack, Inline, Text, Badge, Button } from '@/ui';
+import styles from './ServerPickerCard.module.css';
 
 export interface ServerItem {
   id: string;
@@ -48,9 +49,46 @@ export const ServerPickerCard: React.FC<ServerPickerCardProps> = ({
             <Text size="xs" color="secondary">
               {t('servers.statusLabel')}
             </Text>
-            <Badge variant={server.isBotInServer ? 'online' : 'neutral'} dot>
-              {server.isBotInServer ? t('servers.statusActive') : t('servers.statusNotInvited')}
-            </Badge>
+            {server.isBotInServer ? (
+              <span className={`${styles.ekgBadge} ${styles.ekgBadgeActive}`}>
+                <svg
+                  className={styles.ekgSvg}
+                  viewBox="0 0 26 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    className={styles.ekgTrack}
+                    d="M0,6 L6,6 L8,6 L10,1 L12,11 L14,3 L16,7 L18,6 L26,6"
+                  />
+                  <path
+                    className={styles.ekgPulse}
+                    d="M0,6 L6,6 L8,6 L10,1 L12,11 L14,3 L16,7 L18,6 L26,6"
+                  />
+                </svg>
+                <span>{t('servers.statusActive')}</span>
+              </span>
+            ) : (
+              <span className={`${styles.ekgBadge} ${styles.ekgBadgeInactive}`}>
+                <svg
+                  className={styles.flatlineSvg}
+                  viewBox="0 0 26 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <line
+                    className={styles.flatline}
+                    x1="0"
+                    y1="6"
+                    x2="26"
+                    y2="6"
+                  />
+                </svg>
+                <span>{t('servers.statusNotInvited')}</span>
+              </span>
+            )}
           </Inline>
 
           <Inline justify="between" align="center">

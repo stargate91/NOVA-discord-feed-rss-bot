@@ -46,6 +46,13 @@ export const FaqSection: React.FC = () => {
             </Accordion.Trigger>
             <Accordion.Content>{t('home.faq4Answer')}</Accordion.Content>
           </Accordion.Item>
+
+          <Accordion.Item value="faq-5">
+            <Accordion.Trigger icon={<HelpCircle size={18} />}>
+              {t('home.faq5Question')}
+            </Accordion.Trigger>
+            <Accordion.Content>{t('home.faq5Answer')}</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </Stack>
     </Container>

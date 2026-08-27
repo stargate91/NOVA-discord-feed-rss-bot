@@ -10,10 +10,15 @@ export const DISCORD_BOT_SCOPES = 'bot applications.commands';
 export const buildDiscordBotInviteUrl = (
   clientId: string = DISCORD_CLIENT_ID,
   permissions: string = DISCORD_BOT_PERMISSIONS,
-  scopes: string = DISCORD_BOT_SCOPES
+  scopes: string = DISCORD_BOT_SCOPES,
+  guildId?: string
 ): string => {
   const encodedScopes = encodeURIComponent(scopes);
-  return `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&scope=${encodedScopes}`;
+  let url = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&scope=${encodedScopes}`;
+  if (guildId) {
+    url += `&guild_id=${guildId}&disable_guild_select=true`;
+  }
+  return url;
 };
 
 export const DISCORD_BOT_INVITE_URL = buildDiscordBotInviteUrl();

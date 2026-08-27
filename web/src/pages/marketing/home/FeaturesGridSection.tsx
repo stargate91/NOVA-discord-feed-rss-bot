@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { Zap, Gift, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { Stack, Text, Container, Grid, Card } from '@/ui';
 
@@ -20,7 +20,7 @@ export const FeaturesGridSection: React.FC = () => {
       </Stack>
 
       <Grid minItemWidth="md" gap="xl">
-        <Card glow="blue" interactive>
+        <Card glow="blue">
           <Card.Header>
             <Card.Title>{t('home.featureRealtimeTitle')}</Card.Title>
             <Card.Actions>
@@ -35,11 +35,11 @@ export const FeaturesGridSection: React.FC = () => {
           </Card.Body>
         </Card>
 
-        <Card glow="green" interactive>
+        <Card glow="green">
           <Card.Header>
             <Card.Title>{t('home.featureReliabilityTitle')}</Card.Title>
             <Card.Actions>
-              <ShieldCheck size={18} color="var(--status-success)" />
+              <Gift size={18} color="var(--status-success)" />
             </Card.Actions>
           </Card.Header>
           <Card.Description>{t('home.featureReliabilitySubtitle')}</Card.Description>
@@ -50,11 +50,11 @@ export const FeaturesGridSection: React.FC = () => {
           </Card.Body>
         </Card>
 
-        <Card glow="purple" interactive>
+        <Card glow="purple">
           <Card.Header>
             <Card.Title>{t('home.featureLayoutsTitle')}</Card.Title>
             <Card.Actions>
-              <SlidersHorizontal size={18} color="var(--status-purple)" />
+              <Sparkles size={18} color="var(--status-purple)" />
             </Card.Actions>
           </Card.Header>
           <Card.Description>{t('home.featureLayoutsSubtitle')}</Card.Description>

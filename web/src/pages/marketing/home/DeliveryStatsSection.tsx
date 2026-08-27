@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Cpu, Zap } from 'lucide-react';
+import { Zap, Gift, ShieldCheck } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { Grid, Card, Stack, Text, ProgressBar } from '@/ui';
 
@@ -12,7 +12,7 @@ export const DeliveryStatsSection: React.FC = () => {
         <Card.Header>
           <Card.Title>{t('home.statLatencyTitle')}</Card.Title>
           <Card.Actions>
-            <Clock size={16} color="var(--blue-400)" />
+            <Zap size={16} color="var(--blue-400)" />
           </Card.Actions>
         </Card.Header>
         <Stack gap="sm">
@@ -20,7 +20,7 @@ export const DeliveryStatsSection: React.FC = () => {
             {t('home.statLatencyValue')}
           </Text>
           <ProgressBar
-            value={92}
+            value={98}
             size="sm"
             variant="brand"
             label={t('home.statLatencyLabel')}
@@ -34,7 +34,7 @@ export const DeliveryStatsSection: React.FC = () => {
         <Card.Header>
           <Card.Title>{t('home.statPollingTitle')}</Card.Title>
           <Card.Actions>
-            <Cpu size={16} color="var(--status-success)" />
+            <Gift size={16} color="var(--status-success)" />
           </Card.Actions>
         </Card.Header>
         <Stack gap="sm">
@@ -42,7 +42,7 @@ export const DeliveryStatsSection: React.FC = () => {
             {t('home.statPollingValue')}
           </Text>
           <ProgressBar
-            value={99.98}
+            value={100}
             size="sm"
             variant="success"
             label={t('home.statPollingLabel')}
@@ -56,7 +56,7 @@ export const DeliveryStatsSection: React.FC = () => {
         <Card.Header>
           <Card.Title>{t('home.statQuotaTitle')}</Card.Title>
           <Card.Actions>
-            <Zap size={16} color="var(--status-warning)" />
+            <ShieldCheck size={16} color="var(--status-purple)" />
           </Card.Actions>
         </Card.Header>
         <Stack gap="sm">
@@ -64,9 +64,9 @@ export const DeliveryStatsSection: React.FC = () => {
             {t('home.statQuotaValue')}
           </Text>
           <ProgressBar
-            value={42}
+            value={99.9}
             size="sm"
-            variant="brand"
+            variant="success"
             label={t('home.statQuotaLabel')}
             showValue
             valueFormat={() => t('home.statQuotaProgress')}

@@ -1,20 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, LayoutDashboard } from 'lucide-react';
+import { Plus, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { DISCORD_BOT_INVITE_URL } from '@/constants';
+import { DISCORD_BOT_INVITE_URL, DISCORD_SUPPORT_SERVER_URL } from '@/constants';
 import { openExternalUrl } from '@/utils';
 import { Button, Text } from '@/ui';
 import styles from './HeroSection.module.css';
 
 export const HeroSection: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   return (
     <section className={styles.heroSection}>
       <div className={styles.heroGrid}>
-        {/* Left Column: Heading, Description, 2 CTAs, and Platform Chips */}
+        {/* Left Column: Heading, Description, 2 CTAs */}
         <div className={styles.contentCol}>
           <Text as="h1" size="hero" weight="extrabold" className={styles.heroTitle}>
             {t('home.heroTitle')}{' '}
@@ -38,8 +36,12 @@ export const HeroSection: React.FC = () => {
             >
               <Plus size={18} /> {t('home.ctaDiscord')}
             </Button>
-            <Button variant="secondary" size="lg" onClick={() => navigate('/servers')}>
-              <LayoutDashboard size={18} /> {t('home.ctaDashboard')}
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => openExternalUrl(DISCORD_SUPPORT_SERVER_URL)}
+            >
+              <MessageSquare size={18} /> {t('home.ctaCommunity')}
             </Button>
           </div>
         </div>

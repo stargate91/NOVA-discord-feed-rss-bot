@@ -8,7 +8,7 @@ import i18next from 'eslint-plugin-i18next';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'build', 'node_modules'] },
+  { ignores: ['dist', 'build', 'node_modules', 'coverage'] },
   {
     extends: [
       js.configs.recommended,

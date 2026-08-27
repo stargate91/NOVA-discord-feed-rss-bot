@@ -10,6 +10,21 @@ export const PremiumPage: React.FC = () => {
   const { t } = useTranslation();
   const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
 
+  const intervalOptions = [
+    { value: 'month', label: t('premium.billingMonthly') },
+    {
+      value: 'year',
+      label: (
+        <Inline gap="xs" align="center">
+          <span>{t('premium.billingYearly')}</span>
+          <Badge variant="online" size="xs">
+            {t('premium.billingYearlyDiscount')}
+          </Badge>
+        </Inline>
+      ),
+    },
+  ];
+
   return (
     <Container maxWidth="xl" padding="md">
       <SEO title={t('premium.tag')} description={t('premium.subtitle')} />
@@ -37,20 +52,7 @@ export const PremiumPage: React.FC = () => {
               size="md"
               value={billingInterval}
               onChange={(val) => setBillingInterval(val as 'month' | 'year')}
-              options={[
-                { value: 'month', label: t('premium.billingMonthly') },
-                {
-                  value: 'year',
-                  label: (
-                    <Inline gap="xs" align="center">
-                      <span>{t('premium.billingYearly')}</span>
-                      <Badge variant="online" size="xs">
-                        {t('premium.billingYearlyDiscount')}
-                      </Badge>
-                    </Inline>
-                  ),
-                },
-              ]}
+              options={intervalOptions}
             />
           </Inline>
         </Stack>

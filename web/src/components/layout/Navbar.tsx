@@ -5,7 +5,7 @@ import type { HealthStatus } from '@/types';
 import { useTranslation } from '@/i18n';
 import { useAuth, isMasterAdmin } from '@/auth';
 import { ThemeToggle } from '@/theme';
-import { Badge, Button, Dropdown, Avatar } from '@/ui';
+import { Button, Dropdown, Avatar } from '@/ui';
 import { DISCORD_SUPPORT_SERVER_URL } from '@/constants';
 import { openExternalUrl } from '@/utils';
 import { NAV_ITEMS, getLocalizedPath } from './navConfig';
@@ -13,17 +13,16 @@ import { MobileNavDrawer } from './MobileNavDrawer';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
-  health: HealthStatus | null;
-  loadingHealth: boolean;
+  health?: HealthStatus | null;
+  loadingHealth?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
+export const Navbar: React.FC<NavbarProps> = () => {
   const { lang } = useParams<{ lang?: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated, user, loginWithDiscord, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const isOnline = health?.status === 'ok' || health?.status === 'healthy';
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -62,18 +61,6 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
           <ThemeToggle />
 
           <div className={styles.desktopActions}>
-            {loadingHealth ? (
-              <Badge variant="neutral">{t('common.checking')}</Badge>
-            ) : isOnline ? (
-              <Badge variant="online" dot>
-                {t('common.statusOnline')}
-              </Badge>
-            ) : (
-              <Badge variant="offline" dot>
-                {t('common.statusOffline')}
-              </Badge>
-            )}
-
             {/* Authentication & User Dropdown */}
             {isAuthenticated && user ? (
               <Dropdown align="end">

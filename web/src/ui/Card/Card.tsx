@@ -10,9 +10,16 @@ import {
   CardActions,
 } from './CardSubcomponents';
 
-export * from './types';
-export * from './CardRoot';
-export * from './CardSubcomponents';
+export type * from './types';
+export { CardRoot } from './CardRoot';
+export {
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardBody,
+  CardFooter,
+  CardActions,
+} from './CardSubcomponents';
 
 export interface CardCompound extends React.FC<CardProps> {
   Header: typeof CardHeader;

@@ -1,14 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, LayoutDashboard } from 'lucide-react';
+import { Plus, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { DISCORD_BOT_INVITE_URL } from '@/constants';
+import { DISCORD_BOT_INVITE_URL, DISCORD_SUPPORT_SERVER_URL } from '@/constants';
 import { openExternalUrl } from '@/utils';
 import { Card, Inline, Stack, Text, Button } from '@/ui';
 
 export const CtaBannerSection: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   return (
     <Card glow="blue" padding="xl">
@@ -30,8 +28,12 @@ export const CtaBannerSection: React.FC = () => {
           >
             <Plus size={18} /> {t('home.ctaDiscord')}
           </Button>
-          <Button variant="secondary" size="lg" onClick={() => navigate('/servers')}>
-            <LayoutDashboard size={18} /> {t('home.ctaDashboard')}
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => openExternalUrl(DISCORD_SUPPORT_SERVER_URL)}
+          >
+            <MessageSquare size={18} /> {t('home.ctaCommunity')}
           </Button>
         </Inline>
       </Inline>

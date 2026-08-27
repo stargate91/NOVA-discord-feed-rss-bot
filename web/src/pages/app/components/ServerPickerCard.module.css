@@ -1,0 +1,94 @@
+.ekgBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  user-select: none;
+  transition: var(--transition-fast);
+  line-height: var(--line-height-none);
+}
+
+.ekgBadgeActive {
+  background: var(--status-success-bg);
+  border: 1px solid var(--status-success-border);
+  color: var(--status-success);
+  box-shadow: 0 0 0.75rem hsl(160 84% 39% / 15%);
+}
+
+.ekgBadgeInactive {
+  background: var(--bg-glass-subtle);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+}
+
+.ekgSvg {
+  width: 1.5rem;
+  height: 0.75rem;
+  overflow: visible;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Background faint baseline wave */
+.ekgTrack {
+  stroke: hsl(160 84% 39% / 25%);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Foreground moving neon pulse beam */
+.ekgPulse {
+  --ekg-duration: 1.6s;
+
+  stroke: var(--status-success);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 14 55;
+  stroke-dashoffset: 65;
+  animation: ekgTravel var(--ekg-duration) var(--motion-ease-standard) infinite;
+  filter: drop-shadow(0 0 0.1875rem hsl(160 84% 39%)) drop-shadow(0 0 0.375rem hsl(160 84% 39% / 60%));
+}
+
+@keyframes ekgTravel {
+  0% {
+    stroke-dashoffset: 65;
+    opacity: 0.3;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: -14;
+    opacity: 0.3;
+  }
+}
+
+.flatlineSvg {
+  width: 1.5rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+  display: block;
+}
+
+.flatline {
+  stroke: currentcolor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+

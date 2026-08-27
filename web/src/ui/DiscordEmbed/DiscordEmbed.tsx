@@ -6,39 +6,47 @@ import { DiscordEmbedFields } from './DiscordEmbedFields';
 import { EmbedFooter } from './DiscordEmbedFooter';
 import styles from './DiscordEmbed.module.css';
 
-export * from './types';
-export * from './DiscordEmbedAuthor';
-export * from './DiscordEmbedFields';
-export * from './DiscordEmbedFooter';
+export type * from './types';
+export { EmbedAuthor } from './DiscordEmbedAuthor';
+export { DiscordEmbedFields } from './DiscordEmbedFields';
+export { EmbedFooter } from './DiscordEmbedFooter';
 
 const renderDiscordMarkdown = (text: string): React.ReactNode => {
   const lines = text.split('\n');
-  return lines.map((line, lIdx) => {
+  const result: React.ReactNode[] = [];
+
+  for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+    const line = lines[lIdx];
     const parts = line.split(/(\*\*.*?\*\*|~~.*?~~|`.*?`)/g);
-    const parsedLine = parts.map((part, pIdx) => {
+    const parsedLine: React.ReactNode[] = [];
+
+    for (let pIdx = 0; pIdx < parts.length; pIdx++) {
+      const part = parts[pIdx];
+      const partKey = `p-${lIdx}-${pIdx}-${part}`;
       if (part.startsWith('**') && part.endsWith('**')) {
-        return (
-          <strong key={pIdx} className={styles.sectionAuthor}>
+        parsedLine.push(
+          <strong key={partKey} className={styles.sectionAuthor}>
             {part.slice(2, -2)}
           </strong>
         );
+      } else if (part.startsWith('~~') && part.endsWith('~~')) {
+        parsedLine.push(<del key={partKey}>{part.slice(2, -2)}</del>);
+      } else if (part.startsWith('`') && part.endsWith('`')) {
+        parsedLine.push(<code key={partKey}>{part.slice(1, -1)}</code>);
+      } else {
+        parsedLine.push(part);
       }
-      if (part.startsWith('~~') && part.endsWith('~~')) {
-        return <del key={pIdx}>{part.slice(2, -2)}</del>;
-      }
-      if (part.startsWith('`') && part.endsWith('`')) {
-        return <code key={pIdx}>{part.slice(1, -1)}</code>;
-      }
-      return part;
-    });
+    }
 
-    return (
-      <React.Fragment key={lIdx}>
+    result.push(
+      <React.Fragment key={`line-${lIdx}-${line}`}>
         {lIdx > 0 && <br />}
         {parsedLine}
       </React.Fragment>
     );
-  });
+  }
+
+  return result;
 };
 
 const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
@@ -157,8 +165,8 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
                   <div className={styles.sectionWithAccessory}>
                     <div className={styles.sectionContent}>
                       {author?.name && <div className={styles.sectionAuthor}>{author.name}</div>}
-                      {metaLines?.map((line, idx) => (
-                        <div key={idx} className={styles.sectionMeta}>
+                      {metaLines?.map((line) => (
+                        <div key={line} className={styles.sectionMeta}>
                           {renderDiscordMarkdown(line)}
                         </div>
                       ))}

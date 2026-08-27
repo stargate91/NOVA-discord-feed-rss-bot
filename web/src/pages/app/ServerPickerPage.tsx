@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, RefreshCw, LogIn, Sparkles } from 'lucide-react';
+import { RefreshCw, LogIn, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { SEO } from '@/components/common/SEO';
-import { DISCORD_BOT_INVITE_URL, featureFlags } from '@/constants';
+import {
+  DISCORD_CLIENT_ID,
+  DISCORD_BOT_PERMISSIONS,
+  DISCORD_BOT_SCOPES,
+  buildDiscordBotInviteUrl,
+  featureFlags,
+} from '@/constants';
 import { openExternalUrl } from '@/utils';
 import { useApiQuery, apiClient } from '@/api';
 import { useAuth, isMasterGuild, toGuildTier, TIER_LABELS } from '@/auth';
@@ -120,16 +126,11 @@ export const ServerPickerPage: React.FC = () => {
           </Text>
         </Stack>
 
-        <Inline gap="sm" align="center" wrap>
-          {error && (
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
-              <RefreshCw size={14} /> {t('servers.retryBtn')}
-            </Button>
-          )}
-          <Button variant="discord" onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}>
-            <Plus size={14} /> {t('servers.addBot')}
+        {error && (
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            <RefreshCw size={14} /> {t('servers.retryBtn')}
           </Button>
-        </Inline>
+        )}
       </Inline>
 
       {/* Authentication Prompt */}
@@ -170,7 +171,7 @@ export const ServerPickerPage: React.FC = () => {
           description={
             error.status === 401
               ? t('common.authRequiredDesc')
-              : `${t('common.backendOfflineDesc')} (${error.message || 'Connection refused'})`
+              : `${t('common.backendOfflineDesc')} (${error.message || t('common.connectionRefused')})`
           }
           action={
             <Inline gap="sm" align="center" wrap className={styles.alertActionRow}>
@@ -219,7 +220,16 @@ export const ServerPickerPage: React.FC = () => {
                 selectGuild(serverId);
                 navigate(`/dashboard/${serverId}`);
               }}
-              onInvite={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
+              onInvite={() =>
+                openExternalUrl(
+                  buildDiscordBotInviteUrl(
+                    DISCORD_CLIENT_ID,
+                    DISCORD_BOT_PERMISSIONS,
+                    DISCORD_BOT_SCOPES,
+                    server.id
+                  )
+                )
+              }
             />
           ))}
         </Grid>
@@ -229,12 +239,13 @@ export const ServerPickerPage: React.FC = () => {
           description={t('servers.noServersDesc')}
           action={
             <Inline gap="sm" align="center">
-              <Button variant="discord" onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}>
-                <Plus size={14} /> {t('servers.addBot')}
-              </Button>
-              {!isAuthenticated && (
-                <Button variant="primary" onClick={() => loginWithDiscord()}>
+              {!isAuthenticated ? (
+                <Button variant="discord" onClick={() => loginWithDiscord()}>
                   <LogIn size={14} /> {t('common.loginWithDiscord')}
+                </Button>
+              ) : (
+                <Button variant="secondary" onClick={() => refetch()}>
+                  <RefreshCw size={14} /> {t('servers.retryBtn')}
                 </Button>
               )}
             </Inline>

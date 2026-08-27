@@ -3,10 +3,9 @@ import type { ModalProps } from './types';
 import { ModalRoot } from './ModalRoot';
 import { ModalHeader, ModalTitle, ModalBody, ModalFooter } from './ModalHeader';
 
-export * from './types';
-export * from './context';
-export * from './ModalRoot';
-export * from './ModalHeader';
+export type * from './types';
+export { ModalRoot } from './ModalRoot';
+export { ModalHeader, ModalTitle, ModalBody, ModalFooter } from './ModalHeader';
 
 export interface ModalCompound extends React.FC<ModalProps> {
   Header: typeof ModalHeader;

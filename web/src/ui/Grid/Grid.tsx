@@ -4,9 +4,8 @@ import { colMap, minItemMap, gapMap, rowGapMap, colGapMap, alignMap, justifyMap 
 import { GridItem } from './GridItem';
 import styles from './Grid.module.css';
 
-export * from './types';
-export * from './mappings';
-export * from './GridItem';
+export type * from './types';
+export { GridItem } from './GridItem';
 
 export const Grid: React.FC<GridProps> & { Item: typeof GridItem } = ({
   as: Component = 'div',

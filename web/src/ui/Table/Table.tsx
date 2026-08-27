@@ -8,12 +8,12 @@ import { TableHead } from './TableHead';
 import { TableCell } from './TableCell';
 import styles from './Table.module.css';
 
-export * from './types';
-export * from './TableHeader';
-export * from './TableBody';
-export * from './TableRow';
-export * from './TableHead';
-export * from './TableCell';
+export type * from './types';
+export { TableHeader } from './TableHeader';
+export { TableBody } from './TableBody';
+export { TableRow } from './TableRow';
+export { TableHead } from './TableHead';
+export { TableCell } from './TableCell';
 
 export interface TableCompound extends React.FC<TableProps> {
   Header: typeof TableHeader;

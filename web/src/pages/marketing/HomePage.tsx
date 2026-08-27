@@ -4,7 +4,6 @@ import { SEO } from '@/components/common/SEO';
 import { Stack } from '@/ui';
 import {
   HeroSection,
-  SupportedPlatformsSection,
   InteractiveEmbedPreview,
   FeaturesGridSection,
   DeliveryStatsSection,
@@ -24,7 +23,6 @@ export const HomePage: React.FC = () => {
       <SEO title={t('home.heroTitleHighlight')} description={t('home.heroDescription')} />
 
       <HeroSection />
-      <SupportedPlatformsSection />
       <InteractiveEmbedPreview />
       <FeaturesGridSection />
       <DeliveryStatsSection />

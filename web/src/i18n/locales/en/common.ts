@@ -94,10 +94,22 @@ export const common = {
   retryConnection: 'Retry Connection',
   tryDemoMode: 'Try Demo Mode',
   userTag: 'User ID: {id}',
+  connectionRefused: 'Connection refused',
 
   // Auth Callback
   authCallbackTitle: 'Authenticating...',
   authCallbackVerifying: 'Securely verifying your Discord session...',
   authCallbackFailed: 'Authentication Failed',
   authCallbackReturnHome: 'Return Home',
+  oauthDiagnosticDetails: 'OAuth Diagnostic Details',
+  oauthClientId: 'Discord Client ID:',
+  oauthOrigin: 'Origin:',
+  oauthRedirectUri: 'Redirect URI:',
+  oauthCodeReceived: 'Code Received:',
+  oauthStatePresent: 'State Present:',
+  oauthNone: 'None',
+  oauthYes: 'Yes',
+  oauthNo: 'No',
+  oauthCopied: 'Copied!',
+  oauthCopyDiagnostics: 'Copy Diagnostics',
 } as const;

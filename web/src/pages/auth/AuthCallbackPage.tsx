@@ -189,7 +189,7 @@ export const AuthCallbackPage: React.FC = () => {
                   className={styles.debugToggleBtn}
                 >
                   <Text size="xs" color="secondary">
-                    OAuth Diagnostic Details
+                    {t('common.oauthDiagnosticDetails')}
                   </Text>
                   {showDebug ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </Button>
@@ -197,27 +197,28 @@ export const AuthCallbackPage: React.FC = () => {
                 {showDebug && (
                   <div className={styles.debugPanel}>
                     <div>
-                      <strong>Discord Client ID:</strong> {DISCORD_CLIENT_ID}
+                      <strong>{t('common.oauthClientId')}</strong> {DISCORD_CLIENT_ID}
                     </div>
                     <div>
-                      <strong>Origin:</strong> {originUrl}
+                      <strong>{t('common.oauthOrigin')}</strong> {originUrl}
                     </div>
                     <div>
-                      <strong>Redirect URI:</strong> {redirectUri}
+                      <strong>{t('common.oauthRedirectUri')}</strong> {redirectUri}
                     </div>
                     <div>
-                      <strong>Code Received:</strong>{' '}
+                      <strong>{t('common.oauthCodeReceived')}</strong>{' '}
                       {codeParam
                         ? `${codeParam.substring(0, 10)}... (length ${codeParam.length})`
-                        : 'None'}
+                        : t('common.oauthNone')}
                     </div>
                     <div>
-                      <strong>State Present:</strong> {stateParam ? 'Yes' : 'No'}
+                      <strong>{t('common.oauthStatePresent')}</strong>{' '}
+                      {stateParam ? t('common.oauthYes') : t('common.oauthNo')}
                     </div>
                     <div className={styles.debugActions}>
                       <Button variant="outline" size="sm" onClick={copyDiagnosticInfo}>
                         {copied ? <Check size={12} /> : <Copy size={12} />}{' '}
-                        {copied ? 'Copied!' : 'Copy Diagnostics'}
+                        {copied ? t('common.oauthCopied') : t('common.oauthCopyDiagnostics')}
                       </Button>
                     </div>
                   </div>

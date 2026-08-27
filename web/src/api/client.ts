@@ -2,7 +2,7 @@ import { errorReporter } from '@/services/errorReporter';
 import { apiCircuitBreaker } from './circuitBreaker';
 import type { RequestOptions, ErrorHandlerCallback, ApiInterceptor, RequestContext } from './types';
 import { ApiError } from './types';
-import { combineSignals, buildAuthHeaders, MutationQueueManager } from './core';
+import { buildAuthHeaders, MutationQueueManager } from './core';
 
 const DEFAULT_RETRYABLE_STATUSES = [408, 429, 500, 502, 503, 504];
 
@@ -203,10 +203,32 @@ export class ApiClient {
       throw circuitError;
     }
 
+    const wrapWithSignal = (promise: Promise<T>, sig?: AbortSignal): Promise<T> => {
+      if (!sig) return promise;
+      if (sig.aborted) {
+        return Promise.reject(new ApiError('Request was cancelled', 408, null, url));
+      }
+      return new Promise<T>((resolve, reject) => {
+        const onAbort = () => {
+          reject(new ApiError('Request was cancelled', 408, null, url));
+        };
+        sig.addEventListener('abort', onAbort, { once: true });
+        promise
+          .then((res) => {
+            sig.removeEventListener('abort', onAbort);
+            resolve(res);
+          })
+          .catch((err) => {
+            sig.removeEventListener('abort', onAbort);
+            reject(err);
+          });
+      });
+    };
+
     // Deduplication check for concurrent identical requests
     const dedupKey = dedup ? `${method}:${endpoint}:${body ? JSON.stringify(body) : ''}` : null;
     if (dedupKey && this.inFlightRequests.has(dedupKey)) {
-      return this.inFlightRequests.get(dedupKey) as Promise<T>;
+      return wrapWithSignal(this.inFlightRequests.get(dedupKey) as Promise<T>, customSignal);
     }
 
     const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase());
@@ -223,7 +245,7 @@ export class ApiClient {
         while (attempt <= maxRetries) {
           const timeoutController = new AbortController();
           const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
-          const mergedSignal = combineSignals([customSignal, timeoutController.signal]);
+          const mergedSignal = timeoutController.signal;
 
           const authHeaders = this.getAuthHeaders(method);
           if (overrideToken) {
@@ -441,7 +463,7 @@ export class ApiClient {
       this.inFlightRequests.set(dedupKey, requestPromise);
     }
 
-    return requestPromise;
+    return wrapWithSignal(requestPromise, customSignal);
   }
 
   public async get<T>(endpoint: string, options?: RequestOptions<T>): Promise<T> {

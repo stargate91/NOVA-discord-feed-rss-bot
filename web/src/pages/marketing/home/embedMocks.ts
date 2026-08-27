@@ -4,15 +4,116 @@ import type { TranslationKey } from '@/i18n';
 export type PreviewPlatform =
   'youtube' | 'twitch' | 'kick' | 'epic' | 'steam' | 'tmdb' | 'github' | 'rss';
 
-export const PREVIEW_PLATFORMS = [
-  { value: 'youtube', labelKey: 'home.platformYoutube' as TranslationKey, icon: Video },
-  { value: 'twitch', labelKey: 'home.platformTwitch' as TranslationKey, icon: Radio },
-  { value: 'kick', labelKey: 'home.platformKick' as TranslationKey, icon: Tv },
-  { value: 'epic', labelKey: 'home.platformEpic' as TranslationKey, icon: Gift },
-  { value: 'steam', labelKey: 'home.platformSteam' as TranslationKey, icon: Gamepad2 },
-  { value: 'tmdb', labelKey: 'home.platformTmdb' as TranslationKey, icon: Film },
-  { value: 'github', labelKey: 'home.platformGithub' as TranslationKey, icon: GitBranch },
-  { value: 'rss', labelKey: 'home.platformRss' as TranslationKey, icon: Rss },
+export interface PreviewPlatformItem {
+  value: PreviewPlatform;
+  labelKey: TranslationKey;
+  image: string;
+  brandColor: string;
+  brandBadgeBg: string;
+  brandBadgeBorder: string;
+  brandBorder: string;
+  brandGlow: string;
+  badge: string;
+  icon: typeof Video;
+}
+
+export const PREVIEW_PLATFORMS: readonly PreviewPlatformItem[] = [
+  {
+    value: 'youtube',
+    labelKey: 'home.platformYoutube' as TranslationKey,
+    image: '/images/brands/youtube.png',
+    brandColor: '#f87171',
+    brandBadgeBg: 'rgb(239 68 68 / 12%)',
+    brandBadgeBorder: 'rgb(239 68 68 / 25%)',
+    brandBorder: 'rgb(239 68 68 / 50%)',
+    brandGlow: '0 0 16px rgb(239 68 68 / 30%)',
+    badge: '4K & Shorts Alerts',
+    icon: Video,
+  },
+  {
+    value: 'twitch',
+    labelKey: 'home.platformTwitch' as TranslationKey,
+    image: '/images/brands/twitch.png',
+    brandColor: '#c084fc',
+    brandBadgeBg: 'rgb(145 70 255 / 12%)',
+    brandBadgeBorder: 'rgb(145 70 255 / 25%)',
+    brandBorder: 'rgb(145 70 255 / 50%)',
+    brandGlow: '0 0 16px rgb(145 70 255 / 30%)',
+    badge: '1-3s Live WebSocket',
+    icon: Radio,
+  },
+  {
+    value: 'kick',
+    labelKey: 'home.platformKick' as TranslationKey,
+    image: '/images/brands/kick.png',
+    brandColor: '#53fc18',
+    brandBadgeBg: 'rgb(83 252 24 / 12%)',
+    brandBadgeBorder: 'rgb(83 252 24 / 25%)',
+    brandBorder: 'rgb(83 252 24 / 50%)',
+    brandGlow: '0 0 16px rgb(83 252 24 / 30%)',
+    badge: 'Real-Time Stream Alerts',
+    icon: Tv,
+  },
+  {
+    value: 'epic',
+    labelKey: 'home.platformEpic' as TranslationKey,
+    image: '/images/brands/epic_games.png',
+    brandColor: '#f1f5f9',
+    brandBadgeBg: 'rgb(255 255 255 / 10%)',
+    brandBadgeBorder: 'rgb(255 255 255 / 20%)',
+    brandBorder: 'rgb(255 255 255 / 40%)',
+    brandGlow: '0 0 16px rgb(255 255 255 / 25%)',
+    badge: 'Weekly Free Games',
+    icon: Gift,
+  },
+  {
+    value: 'steam',
+    labelKey: 'home.platformSteam' as TranslationKey,
+    image: '/images/brands/steam.png',
+    brandColor: '#66c0f4',
+    brandBadgeBg: 'rgb(102 192 244 / 12%)',
+    brandBadgeBorder: 'rgb(102 192 244 / 25%)',
+    brandBorder: 'rgb(102 192 244 / 50%)',
+    brandGlow: '0 0 16px rgb(102 192 244 / 30%)',
+    badge: '100% Price Drops',
+    icon: Gamepad2,
+  },
+  {
+    value: 'tmdb',
+    labelKey: 'home.platformTmdb' as TranslationKey,
+    image: '/images/brands/tmdb.png',
+    brandColor: '#38bdf8',
+    brandBadgeBg: 'rgb(1 180 228 / 12%)',
+    brandBadgeBorder: 'rgb(1 180 228 / 25%)',
+    brandBorder: 'rgb(1 180 228 / 50%)',
+    brandGlow: '0 0 16px rgb(1 180 228 / 30%)',
+    badge: 'Cinema & TV Drops',
+    icon: Film,
+  },
+  {
+    value: 'github',
+    labelKey: 'home.platformGithub' as TranslationKey,
+    image: '/images/brands/github.png',
+    brandColor: '#f1f5f9',
+    brandBadgeBg: 'rgb(240 246 252 / 10%)',
+    brandBadgeBorder: 'rgb(240 246 252 / 20%)',
+    brandBorder: 'rgb(240 246 252 / 40%)',
+    brandGlow: '0 0 16px rgb(240 246 252 / 25%)',
+    badge: 'Tags, Commits & Releases',
+    icon: GitBranch,
+  },
+  {
+    value: 'rss',
+    labelKey: 'home.platformRss' as TranslationKey,
+    image: '/images/brands/rss.png',
+    brandColor: '#fbbf24',
+    brandBadgeBg: 'rgb(245 176 0 / 12%)',
+    brandBadgeBorder: 'rgb(245 176 0 / 25%)',
+    brandBorder: 'rgb(245 176 0 / 50%)',
+    brandGlow: '0 0 16px rgb(245 176 0 / 30%)',
+    badge: 'Custom XML / Atom',
+    icon: Rss,
+  },
 ] as const;
 
 export interface EmbedMockPayload {

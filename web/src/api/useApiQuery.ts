@@ -118,8 +118,12 @@ export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
           }
         }
       } catch (err: unknown) {
-        // If aborted by user or unmount, suppress error state update
-        if (controller.signal.aborted || !isMounted.current) {
+        // If aborted by user, unmount, or cancelled in-flight, suppress error state update
+        if (
+          controller.signal.aborted ||
+          !isMounted.current ||
+          (err instanceof ApiError && (err.message === 'Request was cancelled' || err.status === 408))
+        ) {
           return;
         }
 

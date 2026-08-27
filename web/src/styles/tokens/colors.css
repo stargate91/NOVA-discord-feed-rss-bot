@@ -80,6 +80,9 @@
   --modal-backdrop-bg: rgb(2 6 23 / 75%);
 
   /* Discord Embed Simulation Tokens */
+  --discord-bg-outer-glass: rgb(20 23 30 / 65%);
+  --discord-bg-header-glass: rgb(15 18 24 / 75%);
+  --discord-bg-embed-glass: rgb(35 38 46 / 55%);
   --discord-bg-outer: #1e1f22;
   --discord-bg-header: #141517;
   --discord-bg-embed: #2b2d31;
@@ -90,9 +93,51 @@
   --discord-mention-bg: rgb(88 101 242 / 30%);
   --discord-mention-text: #c9cdfb;
   --discord-mention-hover: rgb(88 101 242 / 50%);
-  --discord-btn-bg: #4e5058;
-  --discord-btn-hover: #6d6f78;
-  --discord-btn-text: #fff;
+  --discord-btn-bg: #35373c;
+  --discord-btn-hover: #404249;
+  --discord-btn-text: #f2f3f5;
+
+  /* Ambient Platform Glow Gradients (High-Definition Bloom) */
+  --ambient-glow-youtube: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(239 68 68 / 55%) 0%,
+      rgb(239 68 68 / 20%) 45%,
+      transparent 75%);
+  --ambient-glow-twitch: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(145 70 255 / 55%) 0%,
+      rgb(145 70 255 / 20%) 45%,
+      transparent 75%);
+  --ambient-glow-kick: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(83 252 24 / 50%) 0%,
+      rgb(83 252 24 / 18%) 45%,
+      transparent 75%);
+  --ambient-glow-epic: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(148 163 184 / 45%) 0%,
+      rgb(148 163 184 / 15%) 45%,
+      transparent 75%);
+  --ambient-glow-steam: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(102 192 244 / 55%) 0%,
+      rgb(102 192 244 / 20%) 45%,
+      transparent 75%);
+  --ambient-glow-gog: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(156 84 214 / 55%) 0%,
+      rgb(156 84 214 / 20%) 45%,
+      transparent 75%);
+  --ambient-glow-tmdb: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(1 180 228 / 55%) 0%,
+      rgb(1 180 228 / 20%) 45%,
+      transparent 75%);
+  --ambient-glow-github: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(203 213 225 / 45%) 0%,
+      rgb(203 213 225 / 15%) 45%,
+      transparent 75%);
+  --ambient-glow-rss: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(245 176 0 / 55%) 0%,
+      rgb(245 176 0 / 20%) 45%,
+      transparent 75%);
+  --ambient-glow-discord: radial-gradient(ellipse 65% 55% at 50% 50%,
+      rgb(56 189 248 / 55%) 0%,
+      rgb(56 189 248 / 20%) 45%,
+      transparent 75%);
 
   /* Supported Platform Brand Colors & Glows */
   --brand-youtube-color: #f87171;

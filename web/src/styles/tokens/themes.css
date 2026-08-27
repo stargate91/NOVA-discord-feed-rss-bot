@@ -2,55 +2,109 @@
    LIGHT THEME OVERRIDES (data-theme="light")
    -------------------------------------------------------------------------- */
 [data-theme='light'] {
-  /* Surfaces */
+  /* Surfaces & Frosted Glass */
   --bg-primary: #f8fafc;
   --bg-secondary: #f1f5f9;
   --bg-tertiary: #e2e8f0;
-  --bg-card: rgb(255 255 255 / 92%);
-  --bg-surface: rgb(248 250 252 / 85%);
-  --bg-glass-subtle: rgb(0 0 0 / 3%);
-  --bg-glass-medium: rgb(0 0 0 / 6%);
-  --bg-glass-card: rgb(255 255 255 / 85%);
+  --bg-card: rgb(255 255 255 / 75%);
+  --bg-surface: rgb(255 255 255 / 65%);
+  --bg-glass-subtle: rgb(255 255 255 / 45%);
+  --bg-glass-medium: rgb(255 255 255 / 60%);
+  --bg-glass-card: rgb(255 255 255 / 80%);
 
   /* Layout Components */
-  --navbar-bg: rgb(255 255 255 / 88%);
-  --sidebar-bg: rgb(248 250 252 / 94%);
-  --header-bg: rgb(255 255 255 / 85%);
-  --footer-bg: rgb(241 245 249 / 92%);
-  --chip-bg: rgb(226 232 240 / 75%);
+  --navbar-bg: rgb(255 255 255 / 75%);
+  --sidebar-bg: rgb(248 250 252 / 85%);
+  --header-bg: rgb(255 255 255 / 75%);
+  --footer-bg: rgb(241 245 249 / 85%);
+  --chip-bg: rgb(226 232 240 / 70%);
   --chip-bg-hover: rgb(203 213 225 / 90%);
-  --nav-capsule-bg: rgb(241 245 249 / 85%);
-  --nav-capsule-border: rgb(0 0 0 / 8%);
-  --nav-btn-active-bg: linear-gradient(135deg, rgb(14 165 233 / 12%) 0%, rgb(2 132 199 / 6%) 100%);
-  --nav-btn-active-border: rgb(14 165 233 / 30%);
-  --nav-btn-active-glow: 0 1px 4px rgb(14 165 233 / 15%);
-  --modal-backdrop-bg: rgb(15 23 42 / 45%);
+  --nav-capsule-bg: rgb(241 245 249 / 80%);
+  --nav-capsule-border: rgb(15 23 42 / 8%);
+  --nav-btn-active-bg: linear-gradient(135deg, rgb(14 165 233 / 16%) 0%, rgb(2 132 199 / 8%) 100%);
+  --nav-btn-active-border: rgb(14 165 233 / 35%);
+  --nav-btn-active-glow: 0 2px 8px rgb(14 165 233 / 20%);
+  --modal-backdrop-bg: rgb(15 23 42 / 40%);
+  --terminal-bg: #0f172a;
+
+  /* Discord Embed Simulation in Light Mode */
+  --discord-bg-outer-glass: rgb(24 28 36 / 75%);
+  --discord-bg-header-glass: rgb(18 22 29 / 85%);
+  --discord-bg-embed-glass: rgb(40 44 54 / 65%);
 
   /* Borders & Dividers */
-  --border-subtle: rgb(0 0 0 / 8%);
-  --border-card: rgb(0 0 0 / 10%);
-  --border-hover: rgb(14 165 233 / 50%);
-  --border-active: rgb(14 165 233 / 75%);
+  --border-subtle: rgb(15 23 42 / 8%);
+  --border-card: rgb(15 23 42 / 10%);
+  --border-hover: rgb(14 165 233 / 60%);
+  --border-active: rgb(2 132 199 / 90%);
 
-  /* Text Colors (WCAG 2.1 AA/AAA Compliant) */
-  --text-primary: #0f172a; /* 17.2:1 contrast ratio against #f8fafc (AAA) */
-  --text-secondary: #334155; /* 8.2:1 contrast ratio against #f8fafc (AAA) */
-  --text-muted: #64748b; /* 4.6:1 contrast ratio against #f8fafc (AA) */
+  /* Top Card Gradient Light Refraction */
+  --gradient-card-top: linear-gradient(90deg, transparent, rgb(14 165 233 / 45%), transparent);
 
-  /* Light Theme Semantic Status Tokens (Accessible on light surfaces) */
-  --status-success: #047857; /* 5.9:1 contrast (AA normal text / AAA large) */
-  --status-warning: #b45309; /* 4.6:1 contrast (AA normal text) */
-  --status-danger: #b91c1c; /* 5.8:1 contrast (AA normal text / AAA large) */
-  --accent-primary: #0369a1; /* 5.8:1 contrast (AA normal text / AAA large) */
+  /* Text Colors (WCAG 2.1 AAA & AA Compliant) */
+  --text-primary: #0f172a; /* 17.2:1 contrast against #f8fafc (AAA) */
+  --text-secondary: #334155; /* 8.2:1 contrast against #f8fafc (AAA) */
+  --text-muted: #64748b; /* 4.6:1 contrast against #f8fafc (AA) */
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgb(0 0 0 / 6%);
-  --shadow-sm: 0 2px 4px rgb(0 0 0 / 8%);
-  --shadow-md: 0 4px 10px rgb(0 0 0 / 10%);
-  --shadow-lg: 0 10px 20px rgb(0 0 0 / 12%);
-  --shadow-xl: 0 16px 36px rgb(0 0 0 / 16%);
-  --shadow-card: 0 8px 24px -4px rgb(0 0 0 / 8%), 0 2px 6px -1px rgb(0 0 0 / 4%);
-  --shadow-card-hover: 0 16px 32px -6px rgb(0 0 0 / 12%), 0 0 15px rgb(14 165 233 / 15%);
+  /* Semantic Status Tokens (Vibrant & Legible on Light Glass) */
+  --status-success: #059669;
+  --status-success-bg: rgb(16 185 129 / 12%);
+  --status-success-border: rgb(16 185 129 / 30%);
+  --status-warning: #d97706;
+  --status-warning-bg: rgb(245 158 11 / 12%);
+  --status-warning-border: rgb(245 158 11 / 30%);
+  --status-danger: #dc2626;
+  --status-danger-bg: rgb(239 68 68 / 12%);
+  --status-danger-border: rgb(239 68 68 / 30%);
+  --status-info: #0284c7;
+  --status-info-bg: rgb(14 165 233 / 12%);
+  --status-info-border: rgb(14 165 233 / 30%);
+  --status-purple: #9333ea;
+  --status-purple-bg: rgb(168 85 247 / 12%);
+  --status-purple-border: rgb(168 85 247 / 30%);
+  --accent-primary: #0284c7;
+
+  /* Brand Platform Tokens in Light Mode */
+  --brand-epic-color: #0f172a;
+  --brand-epic-badge-bg: rgb(15 23 42 / 6%);
+  --brand-epic-badge-border: rgb(15 23 42 / 16%);
+  --brand-epic-border: rgb(15 23 42 / 30%);
+  --brand-epic-glow: 0 0 1rem rgb(15 23 42 / 12%);
+
+  --brand-github-color: #0f172a;
+  --brand-github-badge-bg: rgb(15 23 42 / 6%);
+  --brand-github-badge-border: rgb(15 23 42 / 16%);
+  --brand-github-border: rgb(15 23 42 / 30%);
+  --brand-github-glow: 0 0 1rem rgb(15 23 42 / 12%);
+
+  --brand-kick-color: #16a34a;
+  --brand-kick-badge-bg: rgb(22 163 74 / 10%);
+  --brand-kick-badge-border: rgb(22 163 74 / 25%);
+  --brand-kick-border: rgb(22 163 74 / 45%);
+  --brand-kick-glow: 0 0 1rem rgb(22 163 74 / 20%);
+
+  --brand-youtube-color: #dc2626;
+  --brand-twitch-color: #7c3aed;
+  --brand-steam-color: #0284c7;
+  --brand-gog-color: #9333ea;
+  --brand-tmdb-color: #0284c7;
+  --brand-rss-color: #d97706;
+  --brand-discord-color: #4f46e5;
+
+  /* Multi-Layer Ambient Depth Shadows */
+  --shadow-xs: 0 1px 2px rgb(15 23 42 / 5%);
+  --shadow-sm: 0 2px 4px rgb(15 23 42 / 6%);
+  --shadow-md: 0 4px 12px -2px rgb(15 23 42 / 8%), 0 2px 4px -2px rgb(15 23 42 / 4%);
+  --shadow-lg: 0 12px 24px -4px rgb(15 23 42 / 10%), 0 4px 8px -2px rgb(15 23 42 / 4%);
+  --shadow-xl: 0 20px 36px -6px rgb(15 23 42 / 12%), 0 8px 16px -4px rgb(15 23 42 / 6%);
+  --shadow-card: 0 4px 20px -2px rgb(15 23 42 / 7%), 0 1px 4px rgb(15 23 42 / 4%);
+  --shadow-card-hover:
+    0 14px 32px -4px rgb(14 165 233 / 16%), 0 4px 12px rgb(15 23 42 / 6%),
+    0 0 0 1px rgb(14 165 233 / 35%);
+  --glow-blue-sm: 0 2px 12px rgb(14 165 233 / 25%);
+  --glow-blue-md: 0 4px 24px rgb(14 165 233 / 30%);
+  --glow-cyan-sm: 0 2px 12px rgb(2 132 199 / 25%);
+  --glow-cyan-md: 0 4px 24px rgb(2 132 199 / 30%);
 
   /* Custom Scrollbar */
   --scrollbar-size: 0.375rem;

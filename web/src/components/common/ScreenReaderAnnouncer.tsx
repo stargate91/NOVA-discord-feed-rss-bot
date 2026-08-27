@@ -1,1 +1,2 @@
-export * from './ScreenReaderAnnouncer/index';
+export { AnnouncerProvider } from './ScreenReaderAnnouncer/index';
+export type * from './ScreenReaderAnnouncer/index';

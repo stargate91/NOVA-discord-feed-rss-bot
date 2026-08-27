@@ -8,20 +8,6 @@ export const home = {
   ctaDiscord: 'Add to Discord',
   ctaDashboard: 'Open Dashboard',
 
-  // Brand Chips / Supported Platforms
-  supportedPlatformsTitle: 'Supported Platforms',
-  supportedPlatformsSubtitle:
-    'Connect all your favorite services and automate real-time alerts across your Discord server.',
-  brandYoutube: 'YouTube',
-  brandTwitch: 'Twitch',
-  brandKick: 'Kick',
-  brandEpic: 'Epic Games',
-  brandSteam: 'Steam',
-  brandGog: 'GOG Free',
-  brandTmdb: 'TMDB Movies',
-  brandGithub: 'GitHub Releases',
-  brandRss: 'Custom RSS',
-
   // Live Preview
   previewTitle: 'Interactive Live Preview',
   previewSubtitle:
@@ -127,57 +113,61 @@ export const home = {
   embedRssPublishedValue: '5 mins ago',
 
   // Feature Highlights
-  scaleSpeedTitle: 'Engineered for Scale & Speed',
+  scaleSpeedTitle: 'Everything Your Discord Server Needs',
   scaleSpeedDesc:
-    'Built on a high-concurrency asyncio architecture designed to handle thousands of servers with zero dropped alerts.',
-  featureRealtimeTitle: 'Real-Time Polling',
-  featureRealtimeSubtitle: 'Sub-minute synchronization',
+    'Instant stream alerts, 100% free game drops, and automated creator feeds — fast, beautiful, and completely automatic.',
+  featureRealtimeTitle: 'Instant Live Stream Alerts',
+  featureRealtimeSubtitle: 'Twitch, Kick & YouTube in real-time',
   featureRealtimeDesc:
-    'Dynamic shared caching and parallel scheduling guarantee your community never misses a stream start, game deal, or video upload.',
+    'Get notifications within 1 to 3 seconds whenever your favorite creators go live or drop new videos. Never miss a moment with your community.',
 
-  featureReliabilityTitle: 'Enterprise Reliability',
-  featureReliabilitySubtitle: 'Dead channel protection',
+  featureReliabilityTitle: '100% Free Game Giveaways',
+  featureReliabilitySubtitle: 'Epic Games & Steam deal drops',
   featureReliabilityDesc:
-    'Zero message drop tolerance. If a channel lacks permissions or is deleted, Nova isolates the error without disrupting your entire feed schedule.',
+    'Automatically alert your server whenever limited-time 100% free games drop on Epic Games, Steam, or GOG. Save your members hundreds of dollars.',
 
-  featureLayoutsTitle: 'Fully Customizable Layouts',
-  featureLayoutsSubtitle: 'Tailored to each platform',
+  featureLayoutsTitle: 'Gorgeous Custom Embeds',
+  featureLayoutsSubtitle: 'Interactive cards with role pings',
   featureLayoutsDesc:
-    'Rich custom Discord embeds with high-resolution thumbnails, author avatars, score ratings, and custom ping roles for your members.',
+    'Stunning Discord cards with 4K thumbnails, direct watch/claim buttons, and custom @role pings so only interested members get notified.',
 
-  // Stats & Performance
-  statLatencyTitle: 'Average Delivery Latency',
-  statLatencyValue: '0.84s',
-  statLatencyLabel: 'Real-time WebSockets',
-  statLatencyProgress: '92% sub-second',
-  statPollingTitle: 'API Polling Efficiency',
-  statPollingValue: '99.98%',
-  statPollingLabel: 'Uptime SLA Target',
-  statPollingProgress: '99.98% uptime',
-  statQuotaTitle: 'Quota Utilization',
-  statQuotaValue: 'Optimal',
-  statQuotaLabel: 'Distributed Adaptive Cache',
-  statQuotaProgress: '42% headroom',
+  // Stats & Highlights
+  statLatencyTitle: 'Delivery Speed',
+  statLatencyValue: '1-3s',
+  statLatencyLabel: 'Ultra-fast stream alerts',
+  statLatencyProgress: 'Instant live notifications',
+  statPollingTitle: 'Free Game Drops',
+  statPollingValue: '100% Free',
+  statPollingLabel: 'Epic Games & Steam',
+  statPollingProgress: 'Weekly automatic alerts',
+  statQuotaTitle: 'Reliability',
+  statQuotaValue: '99.9%',
+  statQuotaLabel: 'Always online in the cloud',
+  statQuotaProgress: 'Zero missed alerts or spam',
 
   // FAQ
   faqTitle: 'Frequently Asked Questions',
   faqSubtitle:
-    'Everything you need to know about setting up and operating Nova Feeds in your server.',
-  faq1Question: 'How fast does Nova notify my Discord server when a video or stream goes live?',
+    'Got questions? Here are simple answers for everything you need to know about Nova.',
+  faq1Question: 'Is Nova free to use on my Discord server?',
   faq1Answer:
-    'For Twitch and Kick, Nova leverages persistent low-latency WebSockets delivering Discord alerts within 1 to 3 seconds of a broadcast starting. YouTube and RSS feeds are polled continuously in sub-60 second cycles.',
-  faq2Question: 'What bot permissions does Nova require?',
+    'Yes! You can add Nova to your server and set up live stream alerts, free game trackers, and YouTube notifications completely free. Just invite the bot, choose your channel, and it works right away.',
+  faq2Question: 'How fast do notifications arrive when a stream goes live?',
   faq2Answer:
-    'Nova only requests standard channel permissions: Send Messages, Embed Links, and Attach Files in the destination channels you select. We never ask for Administrator privileges.',
-  faq3Question: 'Can I customize the Discord embed layout and role mentions?',
+    'Super fast! Twitch and Kick live alerts arrive within 1 to 3 seconds of a broadcast starting. YouTube videos and free game drops are checked continuously so your community is always first to know.',
+  faq3Question: 'Can I ping specific roles like @Gamers or @Streamers?',
   faq3Answer:
-    'Yes! Every feed monitor can be configured with custom @role snowflake pings, custom embed colors, banner layouts, thumbnail styles, and localized timestamps.',
-  faq4Question: 'What happens if a destination channel is deleted or permissions are revoked?',
+    'Yes! You can choose custom @role pings for every alert so only members who want the notifications get pinged. No spam, full control.',
+  faq4Question: 'How do the 100% Free Game alerts work?',
   faq4Answer:
-    "Nova includes dead channel isolation. If a Discord channel becomes unavailable, Nova marks the feed as paused and records an audit log without blocking your server's other active monitors.",
+    'Nova automatically checks Epic Games, Steam, and GOG for limited-time 100% off giveaways. As soon as a free game drops, Nova posts an alert with a direct claim link so your members never miss out.',
+  faq5Question: 'Does Nova require Administrator permissions?',
+  faq5Answer:
+    'No, never! Nova only requests basic permissions to send messages and embed links in the specific channels you choose. Your server stays completely safe.',
 
-  // CTA Superpower
-  ctaSuperpowerTitle: 'Ready to superpower your Discord server?',
+  // CTA Banner
+  ctaSuperpowerTitle: 'Ready to level up your Discord server?',
   ctaSuperpowerDesc:
-    'Add Nova Feeds today and keep your community engaged with sub-second live notifications.',
+    'Add Nova in seconds and never miss a live stream, video, or free game giveaway again.',
+  ctaCommunity: 'Join Support Server',
 } as const;

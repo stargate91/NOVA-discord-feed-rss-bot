@@ -7,14 +7,13 @@ import { DropdownSearch } from './DropdownSearch';
 import { DropdownItem } from './DropdownItem';
 import { DropdownHeader, DropdownDivider, DropdownEmpty } from './DropdownSubcomponents';
 
-export * from './types';
-export * from './context';
-export * from './DropdownRoot';
-export * from './DropdownTrigger';
-export * from './DropdownMenu';
-export * from './DropdownSearch';
-export * from './DropdownItem';
-export * from './DropdownSubcomponents';
+export type * from './types';
+export { DropdownRoot } from './DropdownRoot';
+export { DropdownTrigger } from './DropdownTrigger';
+export { DropdownMenu } from './DropdownMenu';
+export { DropdownSearch } from './DropdownSearch';
+export { DropdownItem } from './DropdownItem';
+export { DropdownHeader, DropdownDivider, DropdownEmpty } from './DropdownSubcomponents';
 
 export interface DropdownCompound extends React.FC<DropdownProps> {
   Trigger: typeof DropdownTrigger;
