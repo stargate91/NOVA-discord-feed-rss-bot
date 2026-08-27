@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import type { GuildTier } from '../../../auth';
-import { hasTierAccess, useAuth } from '../../../auth';
+import type { GuildTier } from '@/auth';
+import { hasTierAccess } from '@/auth';
+import { useGuild } from '@/guild';
 import { UpgradePromoCard } from './UpgradePromoCard';
 
 export interface FeatureGateProps {
@@ -22,7 +23,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
   fallback,
   children,
 }) => {
-  const { guilds } = useAuth();
+  const { guilds } = useGuild();
   const { guildId } = useParams<{ guildId?: string }>();
 
   // Determine effective guild tier
@@ -33,8 +34,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
     if (foundGuild?.tier) {
       resolvedTier = foundGuild.tier;
     } else {
-      // Default to professional tier for demo session
-      resolvedTier = 'professional';
+      resolvedTier = 'free';
     }
   }
 

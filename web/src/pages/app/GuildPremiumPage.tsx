@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Sparkles, Ticket, CheckCircle2, ArrowUpRight } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { useToast } from '../../components/common/Toast';
-import { Card, Button, Input, Badge, Field, Alert, Stack, Inline, Grid, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { useToast } from '@/components/common/Toast';
+import { Card, Button, Input, Badge, Field, Alert, Stack, Inline, Grid, Text } from '@/ui';
 
 export const GuildPremiumPage: React.FC = () => {
   const { guildId = '' } = useParams<{ guildId: string }>();

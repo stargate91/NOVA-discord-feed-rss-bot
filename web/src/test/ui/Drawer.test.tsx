@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Drawer } from '../../ui';
+import { Drawer } from '@/ui';
 
 describe('Drawer Component', () => {
   it('should not render when open is false', () => {

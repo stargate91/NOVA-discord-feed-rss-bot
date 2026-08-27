@@ -8,7 +8,7 @@ import type {
 } from 'react';
 import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { Spinner } from '../Spinner/Spinner';
+import { Spinner } from '@/ui/Spinner/Spinner';
 import styles from './Table.module.css';
 
 export type TableVariant = 'default' | 'striped' | 'bordered' | 'glass';

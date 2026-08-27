@@ -5,7 +5,7 @@ export interface ApiResponse<T> {
   ok: boolean;
 }
 
-export type ResponseValidator<T> = (data: unknown) => data is T | boolean;
+export type ResponseValidator<T> = (data: unknown) => data is T;
 
 export interface RetryOptions {
   maxRetries?: number;
@@ -13,7 +13,7 @@ export interface RetryOptions {
   retryOnStatus?: number[];
 }
 
-export interface RequestOptions extends RetryOptions {
+export interface RequestOptions<T = unknown> extends RetryOptions {
   headers?: Record<string, string>;
   timeout?: number;
   token?: string;
@@ -21,7 +21,7 @@ export interface RequestOptions extends RetryOptions {
   signal?: AbortSignal;
   body?: unknown;
   dedup?: boolean;
-  validate?: (data: unknown) => boolean;
+  validate?: ResponseValidator<T> | ((data: unknown) => boolean);
 }
 
 export class ApiError extends Error {

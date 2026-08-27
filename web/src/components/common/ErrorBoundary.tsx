@@ -1,9 +1,10 @@
 import type { ContextType, ErrorInfo, ReactNode } from 'react';
 import { Component } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { errorReporter } from '../../services/errorReporter';
-import { I18nContext } from '../../i18n/context';
-import { Button } from '../../ui';
+import { errorReporter } from '@/services/errorReporter';
+import { I18nContext } from '@/i18n/context';
+import { queryCache } from '@/api';
+import { Button } from '@/ui';
 import styles from './ErrorBoundary.module.css';
 
 interface ErrorBoundaryProps {
@@ -12,6 +13,7 @@ interface ErrorBoundaryProps {
   name?: string;
   isGlobal?: boolean;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  onReset?: () => void;
 }
 
 interface ErrorBoundaryState {
@@ -50,6 +52,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   private handleReset = (): void => {
+    // Clear the query cache so remounted components execute clean re-fetches
+    queryCache.clear();
+
+    if (this.props.onReset) {
+      this.props.onReset();
+    }
+
     this.setState({ hasError: false, error: null });
   };
 

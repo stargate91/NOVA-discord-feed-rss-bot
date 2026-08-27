@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 
 describe('useOnlineStatus Hook', () => {
   it('should initialize with current navigator.onLine value', () => {

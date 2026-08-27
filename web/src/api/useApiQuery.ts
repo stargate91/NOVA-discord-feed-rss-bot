@@ -18,10 +18,13 @@ export interface UseApiQueryResult<T> {
   isValidating: boolean;
   refetch: () => Promise<void>;
   mutate: (newData: T | ((prev: T | null) => T), shouldRevalidate?: boolean) => void;
+  abort: () => void;
 }
 
+export type QueryFunction<T> = (signal: AbortSignal) => Promise<T>;
+
 export const useApiQuery = <T>(
-  queryFn: () => Promise<T>,
+  queryFn: QueryFunction<T>,
   deps: readonly unknown[] = [],
   options: UseApiQueryOptions = {}
 ): UseApiQueryResult<T> => {
@@ -44,6 +47,7 @@ export const useApiQuery = <T>(
 
   const lastFetchTime = useRef<number>(0);
   const isMounted = useRef<boolean>(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const dataRef = useRef<T | null>(data);
   dataRef.current = data;
 
@@ -60,6 +64,13 @@ export const useApiQuery = <T>(
     });
   }, [key]);
 
+  const abort = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+  }, []);
+
   const execute = useCallback(
     async (isManualRefetch: boolean = false) => {
       if (!enabled) return;
@@ -70,6 +81,13 @@ export const useApiQuery = <T>(
         return;
       }
       lastFetchTime.current = now;
+
+      // Abort any ongoing in-flight request before launching new execution
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       // Check current fresh value using dataRef and cache rather than stale closure
       const currentVal = dataRef.current;
@@ -82,27 +100,30 @@ export const useApiQuery = <T>(
       setError(null);
 
       try {
-        const result = await queryFnRef.current();
-        if (isMounted.current) {
+        const result = await queryFnRef.current(controller.signal);
+        if (isMounted.current && !controller.signal.aborted) {
           setData(result);
           if (key) {
             queryCache.set(key, result, ttlMs);
           }
         }
       } catch (err: unknown) {
-        if (isMounted.current) {
-          const apiError =
-            err instanceof ApiError
-              ? err
-              : new ApiError(
-                  err instanceof Error ? err.message : 'Unknown query execution error',
-                  0,
-                  err
-                );
-          setError(apiError);
+        // If aborted by user or unmount, suppress error state update
+        if (controller.signal.aborted || !isMounted.current) {
+          return;
         }
+
+        const apiError =
+          err instanceof ApiError
+            ? err
+            : new ApiError(
+                err instanceof Error ? err.message : 'Unknown query execution error',
+                0,
+                err
+              );
+        setError(apiError);
       } finally {
-        if (isMounted.current) {
+        if (isMounted.current && !controller.signal.aborted) {
           setIsLoading(false);
           setIsValidating(false);
         }
@@ -124,6 +145,11 @@ export const useApiQuery = <T>(
 
     return () => {
       isMounted.current = false;
+      // Abort in-flight network request on unmount to eliminate memory leaks
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
     };
   }, [execute, key, revalidateOnMount, enabled]);
 
@@ -171,5 +197,6 @@ export const useApiQuery = <T>(
     isValidating,
     refetch: () => execute(true),
     mutate,
+    abort,
   };
 };

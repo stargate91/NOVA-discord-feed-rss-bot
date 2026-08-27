@@ -66,7 +66,7 @@ export interface UpdateMonitorPayload {
 export type SubscriptionTier = 0 | 1 | 2 | 3; // 0: Free, 1: Plus, 2: Ultimate, 3: Master
 
 export interface GuildSummary {
-  guild_id: number;
+  guild_id: string;
   name: string;
   icon?: string | null;
   tier: SubscriptionTier;
@@ -75,7 +75,7 @@ export interface GuildSummary {
   refresh_interval: number;
   language: string;
   is_owner?: boolean;
-  permissions?: number;
+  permissions?: string | number;
 }
 
 export interface GuildSettings {
@@ -166,13 +166,20 @@ export interface AuditLogEntry {
 
 export function isHealthStatus(data: unknown): data is HealthStatus {
   if (typeof data !== 'object' || data === null) return false;
-  return 'status' in data && typeof (data as HealthStatus).status === 'string';
+  const h = data as Partial<HealthStatus>;
+  return typeof h.status === 'string';
 }
 
 export function isGuildSummary(data: unknown): data is GuildSummary {
   if (typeof data !== 'object' || data === null) return false;
   const g = data as Partial<GuildSummary>;
-  return typeof g.guild_id === 'number' && typeof g.name === 'string' && typeof g.tier === 'number';
+  return (
+    typeof g.guild_id === 'string' &&
+    typeof g.name === 'string' &&
+    typeof g.tier === 'number' &&
+    typeof g.active_monitors === 'number' &&
+    typeof g.max_monitors === 'number'
+  );
 }
 
 export function isFeedMonitor(data: unknown): data is FeedMonitor {
@@ -183,7 +190,10 @@ export function isFeedMonitor(data: unknown): data is FeedMonitor {
     typeof m.guild_id === 'string' &&
     typeof m.platform === 'string' &&
     typeof m.target_id === 'string' &&
-    typeof m.destination_channel_id === 'string'
+    typeof m.destination_channel_id === 'string' &&
+    typeof m.status === 'string' &&
+    typeof m.created_at === 'string' &&
+    typeof m.updated_at === 'string'
   );
 }
 
@@ -191,6 +201,10 @@ export function isSystemTelemetry(data: unknown): data is SystemTelemetry {
   if (typeof data !== 'object' || data === null) return false;
   const s = data as Partial<SystemTelemetry>;
   return (
-    typeof s.status === 'string' && typeof s.version === 'string' && typeof s.mode === 'string'
+    typeof s.status === 'string' &&
+    typeof s.version === 'string' &&
+    typeof s.mode === 'string' &&
+    typeof s.database === 'string' &&
+    typeof s.queue_backend === 'string'
   );
 }

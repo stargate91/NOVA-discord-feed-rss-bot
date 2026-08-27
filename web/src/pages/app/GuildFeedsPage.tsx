@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Rss, Hash, AtSign, Zap, Trash2 } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { useToast } from '../../components/common/Toast';
-import { useConfirm } from '../../components/common/Modal';
+import { useTranslation } from '@/i18n';
+import { useToast } from '@/components/common/Toast';
+import { useConfirm } from '@/components/common/ConfirmDialog';
 import {
   Card,
   Button,
@@ -16,7 +16,7 @@ import {
   Inline,
   Grid,
   Text,
-} from '../../ui';
+} from '@/ui';
 
 const PLATFORMS = [
   { id: 'youtube', icon: '/images/brands/youtube.png', labelKey: 'guild.feedPlatformYoutube' },

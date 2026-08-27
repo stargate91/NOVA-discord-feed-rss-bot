@@ -11,6 +11,7 @@ export const dev = {
   fastApiActive: 'FastAPI Active',
   connectedServer: 'Connected to FastAPI Microservice Server (:8080) • Shards: Healthy',
   logoutBtn: 'Logout',
+  uiCatalogBtn: 'UI Component Catalog',
   systemControlsTitle: 'System Controls',
   systemControlsSubtitle: 'Trigger immediate monitor cache reloads from the database.',
   forceSyncBtn: 'Force Monitor Sync',

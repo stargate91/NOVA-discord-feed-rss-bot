@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { WifiOff, Wifi } from 'lucide-react';
-import { useOnlineStatus } from '../../../hooks';
-import { useTranslation } from '../../../i18n';
+import { useOnlineStatus } from '@/hooks';
+import { useTranslation } from '@/i18n';
 import styles from './OfflineBanner.module.css';
 
 export const OfflineBanner: React.FC = () => {

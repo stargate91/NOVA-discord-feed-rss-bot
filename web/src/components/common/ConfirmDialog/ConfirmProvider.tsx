@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import type { ConfirmOptions, ModalContextValue } from './types';
-import { ModalContext } from './context';
+import React, { useState, useCallback, useMemo } from 'react';
+import type { ConfirmOptions, ConfirmContextValue } from './types';
+import { ConfirmContext } from './context';
 import { ConfirmDialog } from './ConfirmDialog';
 
-interface ModalProviderProps {
+interface ConfirmProviderProps {
   children: ReactNode;
 }
 
-export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
+export const ConfirmProvider: React.FC<ConfirmProviderProps> = ({ children }) => {
   const [modalContent, setModalContent] = useState<ReactNode | null>(null);
   const [confirmState, setConfirmState] = useState<{
     options: ConfirmOptions;
@@ -33,29 +33,6 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     });
   }, []);
 
-  // Handle ESC key press and scroll locking
-  useEffect(() => {
-    const isAnyModalOpen = modalContent !== null || confirmState !== null;
-
-    if (isAnyModalOpen) {
-      document.body.style.overflow = 'hidden';
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          closeModal();
-        }
-      };
-
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        document.body.style.overflow = '';
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    }
-
-    document.body.style.overflow = '';
-  }, [modalContent, confirmState, closeModal]);
-
   const handleConfirmResolve = (value: boolean) => {
     if (confirmState) {
       confirmState.resolve(value);
@@ -63,7 +40,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     }
   };
 
-  const value: ModalContextValue = useMemo(
+  const value: ConfirmContextValue = useMemo(
     () => ({
       openModal,
       closeModal,
@@ -73,7 +50,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   );
 
   return (
-    <ModalContext.Provider value={value}>
+    <ConfirmContext.Provider value={value}>
       {children}
       {modalContent}
       {confirmState && (
@@ -83,6 +60,9 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
           onCancel={() => handleConfirmResolve(false)}
         />
       )}
-    </ModalContext.Provider>
+    </ConfirmContext.Provider>
   );
 };
+
+// Backwards compatibility alias
+export const ModalProvider = ConfirmProvider;

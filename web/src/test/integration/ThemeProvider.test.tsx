@@ -2,8 +2,8 @@ import React from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider, useTheme, ThemeToggle } from '../../theme';
-import { I18nProvider } from '../../i18n';
+import { ThemeProvider, useTheme, ThemeToggle } from '@/theme';
+import { I18nProvider } from '@/i18n';
 
 const ThemeConsumer: React.FC = () => {
   const { resolvedTheme } = useTheme();

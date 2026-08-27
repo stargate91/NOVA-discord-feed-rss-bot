@@ -1,19 +1,28 @@
 import type { ReactNode } from 'react';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import type { DiscordUser, UserGuild, AuthContextValue } from './types';
+import type { DiscordUser, AuthContextValue } from './types';
 import { AuthContext, AUTH_TOKEN_KEY, ADMIN_SECRET_KEY } from './context';
+import { buildDiscordOAuthUrl } from './oauth';
+import { queryCache } from '@/api/queryCache';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+const DEFAULT_DEMO_USER: DiscordUser = {
+  id: '123456789012345678',
+  username: 'NovaAdmin',
+  discriminator: '0001',
+  avatar: '/images/logo.webp',
+  global_name: 'Nova Admin User',
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<DiscordUser | null>(null);
-  const [guilds, setGuilds] = useState<UserGuild[]>([]);
   const [adminSecret, setAdminSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Initialize session from storage / backend verification
+  // Initialize session from storage
   useEffect(() => {
     const initializeAuth = () => {
       try {
@@ -24,32 +33,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
         if (savedToken) {
-          // Default authenticated session
-          setUser({
-            id: '123456789012345678',
-            username: 'NovaAdmin',
-            discriminator: '0001',
-            avatar: '/images/logo.webp',
-            global_name: 'Nova Admin User',
-          });
-          setGuilds([
-            {
-              id: '123456789012345678',
-              name: 'Stargate Gaming Lounge',
-              icon: null,
-              owner: true,
-              permissions: '8',
-              hasManagePermission: true,
-            },
-            {
-              id: '987654321098765432',
-              name: 'Creator Hub VIP',
-              icon: null,
-              owner: true,
-              permissions: '8',
-              hasManagePermission: true,
-            },
-          ]);
+          // Initialize session with saved user profile or demo user
+          setUser(DEFAULT_DEMO_USER);
         }
       } catch {
         // Ignore localStorage read errors
@@ -61,44 +46,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const loginWithDiscord = useCallback(() => {
-    // Save mock token or trigger Discord OAuth2 flow
+  const mockLogin = useCallback(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(AUTH_TOKEN_KEY, 'demo_session_token_2026');
-      setUser({
-        id: '123456789012345678',
-        username: 'NovaAdmin',
-        discriminator: '0001',
-        avatar: '/images/logo.webp',
-        global_name: 'Nova Admin User',
-      });
-      setGuilds([
-        {
-          id: '123456789012345678',
-          name: 'Stargate Gaming Lounge',
-          icon: null,
-          owner: true,
-          permissions: '8',
-          hasManagePermission: true,
-        },
-        {
-          id: '987654321098765432',
-          name: 'Creator Hub VIP',
-          icon: null,
-          owner: true,
-          permissions: '8',
-          hasManagePermission: true,
-        },
-      ]);
+      setUser(DEFAULT_DEMO_USER);
     }
   }, []);
+
+  const loginWithDiscord = useCallback(
+    (redirectUri?: string) => {
+      if (typeof window === 'undefined') return;
+
+      // If mock auth is active or local preview, establish session
+      const isMock = import.meta.env.VITE_MOCK_AUTH === 'true' || window.location.hostname === 'localhost';
+      if (isMock) {
+        mockLogin();
+        return;
+      }
+
+      // Production OAuth2 redirect flow
+      const authUrl = buildDiscordOAuthUrl(redirectUri);
+      window.location.href = authUrl;
+    },
+    [mockLogin]
+  );
 
   const logout = useCallback(() => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(AUTH_TOKEN_KEY);
     }
     setUser(null);
-    setGuilds([]);
+    queryCache.clear();
   }, []);
 
   const setAdminSecretKey = useCallback((secret: string) => {
@@ -115,40 +93,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAdminSecret(null);
   }, []);
 
-  const checkGuildPermission = useCallback(
-    (guildId: string): boolean => {
-      if (!guildId) return false;
-      // Allow any guild if user has manage permission in list or in dev session
-      const found = guilds.find((g) => g.id === guildId);
-      if (found) return found.hasManagePermission;
-      return true; // Gracefully permit configured servers
-    },
-    [guilds]
-  );
-
   const value: AuthContextValue = useMemo(
     () => ({
       isAuthenticated: Boolean(user),
       isLoading,
       user,
-      guilds,
       adminSecret,
       loginWithDiscord,
+      mockLogin,
       logout,
       setAdminSecretKey,
       clearAdminSecretKey,
-      checkGuildPermission,
     }),
     [
       user,
       isLoading,
-      guilds,
       adminSecret,
       loginWithDiscord,
+      mockLogin,
       logout,
       setAdminSecretKey,
       clearAdminSecretKey,
-      checkGuildPermission,
     ]
   );
 

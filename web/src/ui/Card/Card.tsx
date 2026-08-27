@@ -1,6 +1,6 @@
 import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import React from 'react';
-import { Spinner } from '../Spinner/Spinner';
+import { Spinner } from '@/ui/Spinner/Spinner';
 import styles from './Card.module.css';
 
 export type CardGlow = 'none' | 'blue' | 'purple' | 'green' | 'danger';

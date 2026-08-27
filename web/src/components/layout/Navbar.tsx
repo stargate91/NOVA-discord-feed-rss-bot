@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useParams } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import type { HealthStatus } from '../../types';
-import { useTranslation } from '../../i18n';
-import { ThemeToggle } from '../../theme';
-import { Badge, Button, Drawer, Stack } from '../../ui';
+import type { HealthStatus } from '@/types';
+import { useTranslation } from '@/i18n';
+import { ThemeToggle } from '@/theme';
+import { Badge, Button, Drawer, Stack } from '@/ui';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {

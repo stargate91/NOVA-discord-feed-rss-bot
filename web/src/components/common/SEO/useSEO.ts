@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { APP_BASE_URL, DEFAULT_OG_IMAGE } from '../../../constants';
-import { SUPPORTED_LOCALES } from '../../../i18n/context';
+import { APP_BASE_URL, DEFAULT_OG_IMAGE } from '@/constants';
+import { SUPPORTED_LOCALES } from '@/i18n/context';
 
 export interface SEOProps {
   title: string;

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/prerender.js",
+    "analyze": "cross-env ANALYZE=true vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -45,6 +46,7 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.20.0",
     "eslint-plugin-i18next": "^6.1.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -56,6 +58,7 @@
     "jsdom": "^30.0.1",
     "lint-staged": "^17.4.1",
     "prettier": "^3.9.6",
+    "rollup-plugin-visualizer": "^7.1.1",
     "stylelint": "^16.14.1",
     "stylelint-config-standard": "^36.0.1",
     "typescript": "^5.5.3",

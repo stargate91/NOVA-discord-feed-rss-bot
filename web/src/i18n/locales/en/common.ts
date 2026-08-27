@@ -70,4 +70,10 @@ export const common = {
   themeToggle: 'Switch Theme',
   themeDark: 'Dark Mode',
   themeLight: 'Light Mode',
+
+  // Auth Callback
+  authCallbackTitle: 'Authenticating...',
+  authCallbackVerifying: 'Securely verifying your Discord session...',
+  authCallbackFailed: 'Authentication Failed',
+  authCallbackReturnHome: 'Return Home',
 } as const;

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CircuitBreaker } from '../../api/circuitBreaker';
+import { CircuitBreaker } from '@/api/circuitBreaker';
 
 describe('CircuitBreaker Class', () => {
   let cb: CircuitBreaker;

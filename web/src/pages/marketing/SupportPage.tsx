@@ -1,10 +1,10 @@
 import React from 'react';
 import { HelpCircle, MessageSquare } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { DISCORD_SUPPORT_SERVER_URL } from '../../constants';
-import { openExternalUrl } from '../../utils';
-import { Card, Button, Badge, Accordion, Container, Stack, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { DISCORD_SUPPORT_SERVER_URL } from '@/constants';
+import { openExternalUrl } from '@/utils';
+import { Card, Button, Badge, Accordion, Container, Stack, Text } from '@/ui';
 
 export const SupportPage: React.FC = () => {
   const { t } = useTranslation();

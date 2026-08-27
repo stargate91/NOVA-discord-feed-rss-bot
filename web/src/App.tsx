@@ -1,69 +1,75 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './styles/global.css';
+import '@/styles/global.css';
 
-import type { HealthStatus } from './types';
-import { isHealthStatus } from './types';
-import { apiClient } from './api';
-import { errorReporter } from './services/errorReporter';
-import { ThemeProvider } from './theme';
-import { I18nProvider } from './i18n';
-import { ToastProvider } from './components/common/Toast';
-import { ModalProvider } from './components/common/Modal';
-import { OfflineBanner } from './components/common/OfflineBanner';
-import { PageLoader } from './components/common/PageLoader';
-import { LocaleRouteWrapper } from './components/common/LocaleRouteWrapper';
-import { AuthProvider, ProtectedRoute } from './auth';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { PublicLayout, DashboardLayout } from './components/layout';
+import type { HealthStatus } from '@/types';
+import { apiClient } from '@/api';
+import { ThemeProvider } from '@/theme';
+import { I18nProvider } from '@/i18n';
+import { ToastProvider } from '@/components/common/Toast';
+import { ConfirmProvider } from '@/components/common/ConfirmDialog';
+import { OfflineBanner } from '@/components/common/OfflineBanner';
+import { PageLoader } from '@/components/common/PageLoader';
+import { LocaleRouteWrapper } from '@/components/common/LocaleRouteWrapper';
+import { AuthProvider, ProtectedRoute } from '@/auth';
+import { GuildProvider } from '@/guild';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { PublicLayout, DashboardLayout } from '@/components/layout';
+import { lazyWithRetry } from '@/utils/lazyWithRetry';
 
-// Lazy-loaded Marketing Pages (Code Splitting)
-const HomePage = lazy(() =>
-  import('./pages/marketing/HomePage').then((m) => ({ default: m.HomePage }))
+// Lazy-loaded Marketing Pages (Code Splitting with auto-retry)
+const HomePage = lazyWithRetry(() =>
+  import('@/pages/marketing/HomePage').then((m) => ({ default: m.HomePage }))
 );
-const PremiumPage = lazy(() =>
-  import('./pages/marketing/PremiumPage').then((m) => ({ default: m.PremiumPage }))
+const PremiumPage = lazyWithRetry(() =>
+  import('@/pages/marketing/PremiumPage').then((m) => ({ default: m.PremiumPage }))
 );
-const DocsPage = lazy(() =>
-  import('./pages/marketing/DocsPage').then((m) => ({ default: m.DocsPage }))
+const DocsPage = lazyWithRetry(() =>
+  import('@/pages/marketing/DocsPage').then((m) => ({ default: m.DocsPage }))
 );
-const SupportPage = lazy(() =>
-  import('./pages/marketing/SupportPage').then((m) => ({ default: m.SupportPage }))
+const SupportPage = lazyWithRetry(() =>
+  import('@/pages/marketing/SupportPage').then((m) => ({ default: m.SupportPage }))
 );
-const ChangelogPage = lazy(() =>
-  import('./pages/marketing/ChangelogPage').then((m) => ({ default: m.ChangelogPage }))
+const ChangelogPage = lazyWithRetry(() =>
+  import('@/pages/marketing/ChangelogPage').then((m) => ({ default: m.ChangelogPage }))
 );
-const TermsPage = lazy(() =>
-  import('./pages/marketing/TermsPage').then((m) => ({ default: m.TermsPage }))
+const TermsPage = lazyWithRetry(() =>
+  import('@/pages/marketing/TermsPage').then((m) => ({ default: m.TermsPage }))
 );
-const PrivacyPage = lazy(() =>
-  import('./pages/marketing/PrivacyPage').then((m) => ({ default: m.PrivacyPage }))
+const PrivacyPage = lazyWithRetry(() =>
+  import('@/pages/marketing/PrivacyPage').then((m) => ({ default: m.PrivacyPage }))
 );
-const NotFoundPage = lazy(() =>
-  import('./pages/marketing/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
+const NotFoundPage = lazyWithRetry(() =>
+  import('@/pages/marketing/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
 
-// Lazy-loaded App & Dev Pages
-const ServerPickerPage = lazy(() =>
-  import('./pages/app/ServerPickerPage').then((m) => ({ default: m.ServerPickerPage }))
+// Lazy-loaded App & Dev Pages (Code Splitting with auto-retry)
+const ServerPickerPage = lazyWithRetry(() =>
+  import('@/pages/app/ServerPickerPage').then((m) => ({ default: m.ServerPickerPage }))
 );
-const GuildOverviewPage = lazy(() =>
-  import('./pages/app/GuildOverviewPage').then((m) => ({ default: m.GuildOverviewPage }))
+const GuildOverviewPage = lazyWithRetry(() =>
+  import('@/pages/app/GuildOverviewPage').then((m) => ({ default: m.GuildOverviewPage }))
 );
-const GuildFeedsPage = lazy(() =>
-  import('./pages/app/GuildFeedsPage').then((m) => ({ default: m.GuildFeedsPage }))
+const GuildFeedsPage = lazyWithRetry(() =>
+  import('@/pages/app/GuildFeedsPage').then((m) => ({ default: m.GuildFeedsPage }))
 );
-const GuildAnalyticsPage = lazy(() =>
-  import('./pages/app/GuildAnalyticsPage').then((m) => ({ default: m.GuildAnalyticsPage }))
+const GuildAnalyticsPage = lazyWithRetry(() =>
+  import('@/pages/app/GuildAnalyticsPage').then((m) => ({ default: m.GuildAnalyticsPage }))
 );
-const GuildPremiumPage = lazy(() =>
-  import('./pages/app/GuildPremiumPage').then((m) => ({ default: m.GuildPremiumPage }))
+const GuildPremiumPage = lazyWithRetry(() =>
+  import('@/pages/app/GuildPremiumPage').then((m) => ({ default: m.GuildPremiumPage }))
 );
-const GuildSettingsPage = lazy(() =>
-  import('./pages/app/GuildSettingsPage').then((m) => ({ default: m.GuildSettingsPage }))
+const GuildSettingsPage = lazyWithRetry(() =>
+  import('@/pages/app/GuildSettingsPage').then((m) => ({ default: m.GuildSettingsPage }))
 );
-const DeveloperPage = lazy(() =>
-  import('./pages/DeveloperPage').then((m) => ({ default: m.DeveloperPage }))
+const DeveloperPage = lazyWithRetry(() =>
+  import('@/pages/DeveloperPage').then((m) => ({ default: m.DeveloperPage }))
+);
+const AuthCallbackPage = lazyWithRetry(() =>
+  import('@/pages/auth/AuthCallbackPage').then((m) => ({ default: m.AuthCallbackPage }))
+);
+const UiCatalogPage = lazyWithRetry(() =>
+  import('@/pages/dev/UiCatalogPage').then((m) => ({ default: m.UiCatalogPage }))
 );
 
 export const App: React.FC = () => {
@@ -71,114 +77,131 @@ export const App: React.FC = () => {
   const [loadingHealth, setLoadingHealth] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchHealth();
-  }, []);
+    let isMounted = true;
+    const fetchHealth = async () => {
+      try {
+        const data = await apiClient.get<HealthStatus>('/health', {
+          timeout: 4000,
+          dedup: true,
+        });
+        if (isMounted) {
+          setHealth(data);
+          setLoadingHealth(false);
+        }
+      } catch {
+        if (isMounted) {
+          setHealth({ status: 'degraded', version: '1.0.0' });
+          setLoadingHealth(false);
+        }
+      }
+    };
 
-  const fetchHealth = async () => {
-    setLoadingHealth(true);
-    try {
-      const data = await apiClient.get<HealthStatus>('/health', {
-        maxRetries: 1,
-        retryDelayMs: 500,
-        validate: isHealthStatus,
-      });
-      setHealth(data);
-    } catch (err: unknown) {
-      errorReporter.captureMessage(
-        `Backend health probe failed: ${err instanceof Error ? err.message : 'Server offline'}`,
-        'warning',
-        { endpoint: '/health' }
-      );
-      setHealth({ status: 'offline' });
-    } finally {
-      setLoadingHealth(false);
-    }
-  };
+    fetchHealth();
+    const interval = setInterval(fetchHealth, 60000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <ErrorBoundary isGlobal name="Nova Platform">
       <ThemeProvider>
         <I18nProvider>
           <ToastProvider>
-            <ModalProvider>
+            <ConfirmProvider>
               <OfflineBanner />
               <AuthProvider>
-                <BrowserRouter>
-                  <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                      {/* 1. Public Marketing Routes with optional /:lang prefix */}
-                      <Route
-                        element={<PublicLayout health={health} loadingHealth={loadingHealth} />}
-                      >
-                        {/* Root default routes */}
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/premium" element={<PremiumPage />} />
-                        <Route path="/docs" element={<DocsPage />} />
-                        <Route path="/support" element={<SupportPage />} />
-                        <Route path="/changelog" element={<ChangelogPage />} />
-                        <Route path="/terms" element={<TermsPage />} />
-                        <Route path="/privacy" element={<PrivacyPage />} />
+                <GuildProvider>
+                  <BrowserRouter>
+                    <Suspense fallback={<PageLoader />}>
+                      <Routes>
+                        {/* 1. Public Marketing Routes with optional /:lang prefix */}
+                        <Route
+                          element={<PublicLayout health={health} loadingHealth={loadingHealth} />}
+                        >
+                          {/* Root default routes */}
+                          <Route path="/" element={<HomePage />} />
+                          <Route path="/premium" element={<PremiumPage />} />
+                          <Route path="/docs" element={<DocsPage />} />
+                          <Route path="/support" element={<SupportPage />} />
+                          <Route path="/changelog" element={<ChangelogPage />} />
+                          <Route path="/terms" element={<TermsPage />} />
+                          <Route path="/privacy" element={<PrivacyPage />} />
 
-                        {/* Validated multi-language routes */}
-                        <Route path="/:lang" element={<LocaleRouteWrapper />}>
-                          <Route index element={<HomePage />} />
-                          <Route path="premium" element={<PremiumPage />} />
-                          <Route path="docs" element={<DocsPage />} />
-                          <Route path="support" element={<SupportPage />} />
-                          <Route path="changelog" element={<ChangelogPage />} />
-                          <Route path="terms" element={<TermsPage />} />
-                          <Route path="privacy" element={<PrivacyPage />} />
+                          {/* Validated multi-language routes */}
+                          <Route path="/:lang" element={<LocaleRouteWrapper />}>
+                            <Route index element={<HomePage />} />
+                            <Route path="premium" element={<PremiumPage />} />
+                            <Route path="docs" element={<DocsPage />} />
+                            <Route path="support" element={<SupportPage />} />
+                            <Route path="changelog" element={<ChangelogPage />} />
+                            <Route path="terms" element={<TermsPage />} />
+                            <Route path="privacy" element={<PrivacyPage />} />
+                          </Route>
+
+                          {/* Developer Management Portal (Protected by Auth) & UI Catalog */}
+                          <Route
+                            path="/dev"
+                            element={
+                              <ProtectedRoute requireAuth fallbackRedirect="/servers">
+                                <DeveloperPage />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route path="/dev/ui" element={<UiCatalogPage />} />
+                          <Route path="/components" element={<UiCatalogPage />} />
+
+                          {/* OAuth2 Callback Handler */}
+                          <Route path="/auth/callback" element={<AuthCallbackPage />} />
+
+                          {/* Server Selection Entry Point (Protected) */}
+                          <Route
+                            path="/servers"
+                            element={
+                              <ProtectedRoute requireAuth fallbackRedirect="/">
+                                <ServerPickerPage />
+                              </ProtectedRoute>
+                            }
+                          />
                         </Route>
 
-                        {/* Developer Management Portal */}
-                        <Route path="/dev" element={<DeveloperPage />} />
-
-                        {/* Server Selection Entry Point (Protected) */}
+                        {/* 2. Bot / Guild Dashboard Protected Routes */}
                         <Route
-                          path="/servers"
                           element={
-                            <ProtectedRoute requireAuth fallbackRedirect="/">
-                              <ServerPickerPage />
-                            </ProtectedRoute>
-                          }
-                        />
-                      </Route>
-
-                      {/* 2. Bot / Guild Dashboard Protected Routes */}
-                      <Route
-                        element={
-                          <ProtectedRoute
-                            requireAuth
-                            requireGuildManage
-                            fallbackRedirect="/servers"
-                          />
-                        }
-                      >
-                        <Route
-                          path="/dashboard/:guildId"
-                          element={
-                            <DashboardLayout health={health} loadingHealth={loadingHealth} />
+                            <ProtectedRoute
+                              requireAuth
+                              requireGuildManage
+                              fallbackRedirect="/servers"
+                            />
                           }
                         >
-                          <Route index element={<GuildOverviewPage />} />
-                          <Route path="feeds" element={<GuildFeedsPage />} />
-                          <Route path="analytics" element={<GuildAnalyticsPage />} />
-                          <Route path="premium" element={<GuildPremiumPage />} />
-                          <Route path="settings" element={<GuildSettingsPage />} />
+                          <Route
+                            path="/dashboard/:guildId"
+                            element={
+                              <DashboardLayout health={health} loadingHealth={loadingHealth} />
+                            }
+                          >
+                            <Route index element={<GuildOverviewPage />} />
+                            <Route path="feeds" element={<GuildFeedsPage />} />
+                            <Route path="analytics" element={<GuildAnalyticsPage />} />
+                            <Route path="premium" element={<GuildPremiumPage />} />
+                            <Route path="settings" element={<GuildSettingsPage />} />
+                          </Route>
                         </Route>
-                      </Route>
 
-                      {/* 3. 404 Not Found Page */}
-                      <Route
-                        element={<PublicLayout health={health} loadingHealth={loadingHealth} />}
-                      >
-                        <Route path="*" element={<NotFoundPage />} />
-                      </Route>
-                    </Routes>
-                  </Suspense>
-                </BrowserRouter>
+                        {/* 3. 404 Not Found Page */}
+                        <Route
+                          element={<PublicLayout health={health} loadingHealth={loadingHealth} />}
+                        >
+                          <Route path="*" element={<NotFoundPage />} />
+                        </Route>
+                      </Routes>
+                    </Suspense>
+                  </BrowserRouter>
+                </GuildProvider>
               </AuthProvider>
-            </ModalProvider>
+            </ConfirmProvider>
           </ToastProvider>
         </I18nProvider>
       </ThemeProvider>

@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 import { Loader2 } from 'lucide-react';
 import styles from './Spinner.module.css';
 
@@ -18,7 +18,7 @@ export interface SpinnerProps extends HTMLAttributes<HTMLDivElement> {
   id?: string;
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({
+const SpinnerComponent: React.FC<SpinnerProps> = ({
   size = 'md',
   variant = 'primary',
   label,
@@ -58,24 +58,32 @@ export const Spinner: React.FC<SpinnerProps> = ({
 
   const posClass = labelPosition === 'bottom' ? styles.posBottom : styles.posRight;
 
-  const classes = [
-    styles.container,
-    sizeClass,
-    variantClass,
-    posClass,
-    centered ? styles.centered : '',
-    overlay ? styles.overlay : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  return (
-    <div id={id} role="status" aria-live="polite" className={classes} {...rest}>
-      <span className={styles.icon}>
-        <Loader2 size={iconPixelSize} />
-      </span>
+  const content = (
+    <div
+      id={id}
+      role="status"
+      aria-live="polite"
+      className={`${styles.container} ${posClass} ${className}`}
+      {...rest}
+    >
+      <Loader2
+        size={iconPixelSize}
+        className={`${styles.spinner} ${variantClass} ${sizeClass}`}
+        aria-hidden="true"
+      />
       {label && <span className={styles.label}>{label}</span>}
     </div>
   );
+
+  if (overlay) {
+    return <div className={styles.overlay}>{content}</div>;
+  }
+
+  if (centered) {
+    return <div className={styles.centeredWrapper}>{content}</div>;
+  }
+
+  return content;
 };
+
+export const Spinner = memo(SpinnerComponent);

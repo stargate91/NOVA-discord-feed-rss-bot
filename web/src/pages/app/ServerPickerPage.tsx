@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Settings, UserPlus } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { DISCORD_BOT_INVITE_URL } from '../../constants';
-import { openExternalUrl } from '../../utils';
-import { Button, Badge, Card, Avatar, CardSkeleton, Grid, Stack, Inline, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { DISCORD_BOT_INVITE_URL } from '@/constants';
+import { openExternalUrl } from '@/utils';
+import { Button, Badge, Card, Avatar, CardSkeleton, Grid, Stack, Inline, Text } from '@/ui';
 
 interface ServerItem {
   id: string;

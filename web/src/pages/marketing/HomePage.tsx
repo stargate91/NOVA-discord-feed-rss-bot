@@ -15,10 +15,10 @@ import {
   Cpu,
   Plus,
 } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { DISCORD_BOT_INVITE_URL } from '../../constants';
-import { openExternalUrl } from '../../utils';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { DISCORD_BOT_INVITE_URL } from '@/constants';
+import { openExternalUrl } from '@/utils';
 import {
   Badge,
   Button,
@@ -33,7 +33,7 @@ import {
   Grid,
   Text,
   Container,
-} from '../../ui';
+} from '@/ui';
 
 type PreviewPlatform = 'youtube' | 'twitch' | 'steam' | 'github';
 

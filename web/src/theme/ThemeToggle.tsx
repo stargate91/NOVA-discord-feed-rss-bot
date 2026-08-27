@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
-import { useTranslation } from '../i18n/useTranslation';
+import { useTranslation } from '@/i18n';
 import { useTheme } from './useTheme';
 import styles from './ThemeToggle.module.css';
 

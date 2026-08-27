@@ -1,10 +1,10 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Menu } from 'lucide-react';
-import type { HealthStatus } from '../../types';
-import { useTranslation } from '../../i18n';
-import { ThemeToggle } from '../../theme';
-import { Badge, Container, Inline, Text } from '../../ui';
+import type { HealthStatus } from '@/types';
+import { useTranslation } from '@/i18n';
+import { ThemeToggle } from '@/theme';
+import { Badge, Container, Inline, Text } from '@/ui';
 import styles from './DashboardHeader.module.css';
 
 interface DashboardHeaderProps {

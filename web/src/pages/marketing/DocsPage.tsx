@@ -1,8 +1,8 @@
 import React from 'react';
 import { BookOpen, ShieldCheck, Rss, Terminal as TerminalIcon } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { Badge, Card, Tabs, Chip, Table, Container, Stack, Inline, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { Badge, Card, Tabs, Chip, Table, Container, Stack, Inline, Text } from '@/ui';
 
 export const DocsPage: React.FC = () => {
   const { t } = useTranslation();

@@ -19,6 +19,18 @@ export type SupportedLocale =
   | 'cs'
   | 'sv';
 
+export type Namespace =
+  | 'common'
+  | 'home'
+  | 'premium'
+  | 'docs'
+  | 'support'
+  | 'changelog'
+  | 'legal'
+  | 'servers'
+  | 'guild'
+  | 'dev';
+
 export interface LocaleInfo {
   code: SupportedLocale;
   name: string;
@@ -32,4 +44,5 @@ export interface I18nContextValue {
   setLocale: (locale: SupportedLocale) => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   supportedLocales: readonly LocaleInfo[];
+  isLoadingLocale?: boolean;
 }

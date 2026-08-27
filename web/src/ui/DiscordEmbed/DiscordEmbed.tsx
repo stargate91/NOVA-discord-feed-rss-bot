@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import styles from './DiscordEmbed.module.css';
 
 export interface DiscordEmbedField {
@@ -41,7 +41,7 @@ export interface DiscordEmbedProps extends HTMLAttributes<HTMLDivElement> {
   id?: string;
 }
 
-export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
+const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
   channelName = 'feed-alerts',
   botName = 'Nova',
   avatarUrl = '/images/logo.webp',
@@ -83,7 +83,15 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
       </div>
 
       <div className={styles.body}>
-        <img src={avatarUrl} alt={botName} className={styles.avatar} />
+        <img
+          src={avatarUrl}
+          alt={botName}
+          className={styles.avatar}
+          loading="lazy"
+          decoding="async"
+          width="40"
+          height="40"
+        />
 
         <div className={styles.content}>
           <div className={styles.author}>
@@ -107,6 +115,10 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
                         src={author.icon_url}
                         alt={author.name}
                         className={styles.embedAuthorIcon}
+                        loading="lazy"
+                        decoding="async"
+                        width="24"
+                        height="24"
                       />
                     )}
                     <span>{author.name}</span>
@@ -121,7 +133,13 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
               </div>
 
               {thumbnail && (
-                <img src={thumbnail} alt="Embed thumbnail" className={styles.thumbnail} />
+                <img
+                  src={thumbnail}
+                  alt="Embed thumbnail"
+                  className={styles.thumbnail}
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
             </div>
 
@@ -139,7 +157,15 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
               </div>
             )}
 
-            {image && <img src={image} alt="Embed banner" className={styles.image} />}
+            {image && (
+              <img
+                src={image}
+                alt="Embed banner"
+                className={styles.image}
+                loading="lazy"
+                decoding="async"
+              />
+            )}
 
             {children}
 
@@ -150,6 +176,10 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
                     src={footerContent.icon_url}
                     alt="Footer icon"
                     className={styles.footerIcon}
+                    loading="lazy"
+                    decoding="async"
+                    width="20"
+                    height="20"
                   />
                 )}
                 <span>
@@ -166,3 +196,5 @@ export const DiscordEmbed: React.FC<DiscordEmbedProps> = ({
     </div>
   );
 };
+
+export const DiscordEmbed = memo(DiscordEmbedComponent);

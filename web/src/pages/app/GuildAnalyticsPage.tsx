@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Activity, ShieldCheck, Zap, Download } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { FeatureGate } from '../../components/common/FeatureGate';
+import { useTranslation } from '@/i18n';
+import { FeatureGate } from '@/components/common/FeatureGate';
 import {
   Card,
   Badge,
@@ -13,7 +13,7 @@ import {
   Inline,
   Grid,
   Text,
-} from '../../ui';
+} from '@/ui';
 
 const TIME_RANGE_OPTIONS = [
   { value: '24h', labelKey: 'guild.analytics24h' },

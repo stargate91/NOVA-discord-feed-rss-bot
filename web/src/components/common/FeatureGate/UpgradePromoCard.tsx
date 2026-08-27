@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Sparkles, ArrowRight } from 'lucide-react';
-import type { GuildTier } from '../../../auth';
-import { TIER_LABELS } from '../../../auth';
-import { useTranslation } from '../../../i18n';
-import { Badge, Button } from '../../../ui';
+import type { GuildTier } from '@/auth';
+import { TIER_LABELS } from '@/auth';
+import { useTranslation } from '@/i18n';
+import { Badge, Button } from '@/ui';
 import styles from './FeatureGate.module.css';
 
 interface UpgradePromoCardProps {

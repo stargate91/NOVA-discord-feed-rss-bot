@@ -1,5 +1,5 @@
 export * from './types';
 export * from './context';
 export * from './ConfirmDialog';
-export * from './ModalProvider';
-export * from './useModal';
+export * from './ConfirmProvider';
+export * from './useConfirm';

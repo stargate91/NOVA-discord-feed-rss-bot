@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 import styles from './Badge.module.css';
 
 export type BadgePlacement = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'inline';
@@ -31,7 +31,7 @@ export interface BadgeProps {
   id?: string;
 }
 
-export const Badge: React.FC<BadgeProps> = ({
+const BadgeComponent: React.FC<BadgeProps> = ({
   variant = 'neutral',
   styleVariant = 'subtle',
   placement = 'inline',
@@ -95,3 +95,5 @@ export const Badge: React.FC<BadgeProps> = ({
     </span>
   );
 };
+
+export const Badge = memo(BadgeComponent);

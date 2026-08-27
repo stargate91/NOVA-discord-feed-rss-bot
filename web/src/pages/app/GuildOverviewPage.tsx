@@ -9,8 +9,8 @@ import {
   Sliders,
   ArrowUpRight,
 } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { Card, Button, Badge, ProgressBar, Chip, Stack, Inline, Grid, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { Card, Button, Badge, ProgressBar, Chip, Stack, Inline, Grid, Text } from '@/ui';
 
 const OVERVIEW_PLATFORMS = [
   {

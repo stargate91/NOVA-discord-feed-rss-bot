@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ElementType, ReactNode } from 'react';
+import type { ElementType, ReactNode, ComponentPropsWithoutRef, ComponentPropsWithRef } from 'react';
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import styles from './Button.module.css';
@@ -20,8 +20,7 @@ export type ButtonVariant =
 
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
-export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'size'> {
-  as?: ElementType;
+export interface ButtonBaseProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   fullWidth?: boolean;
@@ -33,29 +32,42 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   rightIcon?: ReactNode;
   iconOnly?: boolean;
   children?: ReactNode;
-  href?: string;
-  to?: string;
-  target?: string;
-  rel?: string;
+  className?: string;
+  disabled?: boolean;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  as: Component = 'button',
-  variant = 'secondary',
-  size = 'md',
-  fullWidth = false,
-  loading = false,
-  loadingText,
-  icon,
-  iconPosition = 'left',
-  leftIcon,
-  rightIcon,
-  iconOnly = false,
-  children,
-  className = '',
-  disabled,
-  ...rest
-}) => {
+export type ButtonProps<C extends ElementType = 'button'> = {
+  as?: C;
+} & ButtonBaseProps &
+  Omit<ComponentPropsWithoutRef<C>, keyof ButtonBaseProps | 'as' | 'size'>;
+
+export type PolymorphicButton = <C extends ElementType = 'button'>(
+  props: ButtonProps<C> & { ref?: ComponentPropsWithRef<C>['ref'] }
+) => React.ReactElement | null;
+
+const ButtonRender = <C extends ElementType = 'button'>(
+  props: ButtonProps<C>,
+  ref?: ComponentPropsWithRef<C>['ref']
+): React.ReactElement | null => {
+  const {
+    as,
+    variant = 'secondary',
+    size = 'md',
+    fullWidth = false,
+    loading = false,
+    loadingText,
+    icon,
+    iconPosition = 'left',
+    leftIcon,
+    rightIcon,
+    iconOnly = false,
+    children,
+    className = '',
+    disabled,
+    ...rest
+  } = props;
+
+  const Component = as || 'button';
   const isDisabled = disabled || loading;
 
   const variantClassMap: Record<ButtonVariant, string> = {
@@ -93,39 +105,49 @@ export const Button: React.FC<ButtonProps> = ({
 
   const isNativeButton = Component === 'button';
 
-  return (
-    <Component
-      className={classes}
-      disabled={isNativeButton ? isDisabled : undefined}
-      aria-disabled={!isNativeButton && isDisabled ? true : undefined}
-      aria-busy={loading ? 'true' : undefined}
-      {...(isNativeButton ? { type: rest.type || 'button' } : {})}
-      {...rest}
-    >
-      {loading && iconOnly ? (
-        <span className={styles.spinner}>
-          <Loader2 size={spinnerSize} />
-        </span>
-      ) : (
-        <>
-          {loading && !iconOnly && (
-            <span className={styles.spinner}>
-              <Loader2 size={spinnerSize} />
-            </span>
-          )}
-          {!loading && effectiveLeftIcon && (
-            <span className={styles.icon}>{effectiveLeftIcon}</span>
-          )}
-          {loading && loadingText ? (
-            <span>{loadingText}</span>
-          ) : (
-            children && <span>{children}</span>
-          )}
-          {!loading && effectiveRightIcon && (
-            <span className={styles.icon}>{effectiveRightIcon}</span>
-          )}
-        </>
-      )}
-    </Component>
+  const elementProps: Record<string, unknown> = {
+    ref,
+    className: classes,
+    disabled: isNativeButton ? isDisabled : undefined,
+    'aria-disabled': !isNativeButton && isDisabled ? true : undefined,
+    'aria-busy': loading ? 'true' : undefined,
+    ...rest,
+  };
+
+  if (isNativeButton && !elementProps.type) {
+    elementProps.type = 'button';
+  }
+
+  return React.createElement(
+    Component,
+    elementProps,
+    loading && iconOnly ? (
+      <span className={styles.spinner}>
+        <Loader2 size={spinnerSize} />
+      </span>
+    ) : (
+      <>
+        {loading && !iconOnly && (
+          <span className={styles.spinner}>
+            <Loader2 size={spinnerSize} />
+          </span>
+        )}
+        {!loading && effectiveLeftIcon && (
+          <span className={styles.icon}>{effectiveLeftIcon}</span>
+        )}
+        {loading && loadingText ? (
+          <span>{loadingText}</span>
+        ) : (
+          children && <span>{children}</span>
+        )}
+        {!loading && effectiveRightIcon && (
+          <span className={styles.icon}>{effectiveRightIcon}</span>
+        )}
+      </>
+    )
   );
 };
+
+export const Button = React.forwardRef(
+  ButtonRender as unknown as React.ForwardRefRenderFunction<unknown, ButtonBaseProps>
+) as unknown as PolymorphicButton;

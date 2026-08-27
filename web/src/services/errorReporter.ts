@@ -22,15 +22,15 @@ export interface ErrorReportPayload {
   user?: UserContext | null;
   timestamp: number;
   url: string;
+  userAgent?: string;
 }
 
 export interface ErrorReporterAdapter {
   sendReport(payload: ErrorReportPayload): void | Promise<void>;
 }
 
-class ConsoleReporterAdapter implements ErrorReporterAdapter {
+export class ConsoleReporterAdapter implements ErrorReporterAdapter {
   public sendReport(payload: ErrorReportPayload): void {
-    // Only log in non-test browser console or when explicitly enabled
     if (typeof window !== 'undefined') {
       const errorDetails =
         payload.error instanceof Error
@@ -49,8 +49,154 @@ class ConsoleReporterAdapter implements ErrorReporterAdapter {
   }
 }
 
+export interface HttpReporterConfig {
+  endpoint: string;
+  apiKey?: string;
+  headers?: Record<string, string>;
+}
+
+/**
+ * Production HTTP ingest telemetry adapter (supports custom backend / Datadog / Grafana Faro).
+ */
+export class HttpWebhookReporterAdapter implements ErrorReporterAdapter {
+  private config: HttpReporterConfig;
+
+  public constructor(config: HttpReporterConfig) {
+    this.config = config;
+  }
+
+  public async sendReport(payload: ErrorReportPayload): Promise<void> {
+    if (typeof window === 'undefined') return;
+
+    const body = JSON.stringify({
+      error:
+        payload.error instanceof Error
+          ? {
+              name: payload.error.name,
+              message: payload.error.message,
+              stack: payload.error.stack,
+            }
+          : { message: String(payload.error) },
+      severity: payload.severity,
+      context: payload.context,
+      breadcrumbs: payload.breadcrumbs,
+      user: payload.user,
+      timestamp: payload.timestamp,
+      url: payload.url,
+      userAgent: navigator.userAgent,
+    });
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...this.config.headers,
+    };
+
+    if (this.config.apiKey) {
+      headers['Authorization'] = `Bearer ${this.config.apiKey}`;
+    }
+
+    try {
+      // Use Beacon API for graceful delivery if available and payload is small
+      if (
+        navigator.sendBeacon &&
+        body.length < 64000 &&
+        !this.config.apiKey &&
+        !this.config.headers
+      ) {
+        const blob = new Blob([body], { type: 'application/json' });
+        navigator.sendBeacon(this.config.endpoint, blob);
+        return;
+      }
+
+      await fetch(this.config.endpoint, {
+        method: 'POST',
+        headers,
+        body,
+        keepalive: true,
+      });
+    } catch {
+      // Fail silently to prevent cascading failures
+    }
+  }
+}
+
+/**
+ * Production Sentry-compatible webhook/DSN adapter.
+ */
+export class SentryReporterAdapter implements ErrorReporterAdapter {
+  private dsn: string;
+
+  public constructor(dsn: string) {
+    this.dsn = dsn;
+  }
+
+  public async sendReport(payload: ErrorReportPayload): Promise<void> {
+    if (typeof window === 'undefined' || !this.dsn) return;
+
+    try {
+      const errorObj =
+        payload.error instanceof Error
+          ? payload.error
+          : new Error(String(payload.error));
+
+      const sentryPayload = {
+        exception: {
+          values: [
+            {
+              type: errorObj.name,
+              value: errorObj.message,
+              stacktrace: errorObj.stack ? { frames: [{ filename: payload.url }] } : undefined,
+            },
+          ],
+        },
+        level: payload.severity === 'fatal' ? 'fatal' : payload.severity === 'warning' ? 'warning' : 'error',
+        timestamp: payload.timestamp / 1000,
+        user: payload.user ? { id: payload.user.id, username: payload.user.username } : undefined,
+        extra: {
+          ...payload.context,
+          url: payload.url,
+        },
+        breadcrumbs: payload.breadcrumbs.map((b) => ({
+          category: b.category,
+          message: b.message,
+          timestamp: b.timestamp ? b.timestamp / 1000 : Date.now() / 1000,
+        })),
+      };
+
+      const match = this.dsn.match(/^https:\/\/([^@]+)@([^/]+)\/(.+)$/);
+      if (match) {
+        const [, publicKey, host, projectId] = match;
+        const sentryUrl = `https://${host}/api/${projectId}/store/?sentry_version=7&sentry_key=${publicKey}`;
+
+        await fetch(sentryUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sentryPayload),
+          keepalive: true,
+        });
+      }
+    } catch {
+      // Fail silently
+    }
+  }
+}
+
+export const createDefaultReporterAdapter = (): ErrorReporterAdapter => {
+  const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
+  if (sentryDsn) {
+    return new SentryReporterAdapter(sentryDsn);
+  }
+
+  const ingestEndpoint = import.meta.env.VITE_ERROR_REPORTING_ENDPOINT;
+  if (ingestEndpoint) {
+    return new HttpWebhookReporterAdapter({ endpoint: ingestEndpoint });
+  }
+
+  return new ConsoleReporterAdapter();
+};
+
 class ErrorReporter {
-  private adapter: ErrorReporterAdapter = new ConsoleReporterAdapter();
+  private adapter: ErrorReporterAdapter = createDefaultReporterAdapter();
   private breadcrumbs: Breadcrumb[] = [];
   private maxBreadcrumbs: number = 50;
   private user: UserContext | null = null;
@@ -91,6 +237,7 @@ class ErrorReporter {
       user: this.user,
       timestamp: Date.now(),
       url: typeof window !== 'undefined' ? window.location.href : '',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
     };
 
     try {
@@ -113,6 +260,7 @@ class ErrorReporter {
       user: this.user,
       timestamp: Date.now(),
       url: typeof window !== 'undefined' ? window.location.href : '',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
     };
 
     try {

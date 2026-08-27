@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Compass, Home, Server, HelpCircle } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { Button } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { Button } from '@/ui';
 import styles from './NotFoundPage.module.css';
 
 export const NotFoundPage: React.FC = () => {

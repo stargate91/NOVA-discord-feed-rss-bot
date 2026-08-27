@@ -1,5 +1,5 @@
 import type { ReactNode, MouseEvent } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 import { X } from 'lucide-react';
 import styles from './Tag.module.css';
 
@@ -25,7 +25,7 @@ export interface TagProps {
   title?: string;
 }
 
-export const Tag: React.FC<TagProps> = ({
+const TagComponent: React.FC<TagProps> = ({
   children,
   label,
   icon,
@@ -61,15 +61,7 @@ export const Tag: React.FC<TagProps> = ({
       filled: styles.variantFilled,
     }[variant] || styles.variantDefault;
 
-  const colorClass = color
-    ? {
-        blue: styles.colorBlue,
-        green: styles.colorGreen,
-        amber: styles.colorAmber,
-        red: styles.colorRed,
-        purple: styles.colorPurple,
-      }[color] || ''
-    : '';
+  const colorClass = color ? styles[`color${color.charAt(0).toUpperCase() + color.slice(1)}`] : '';
 
   const tagClasses = [
     styles.tag,
@@ -77,8 +69,8 @@ export const Tag: React.FC<TagProps> = ({
     variantClass,
     colorClass,
     selected ? styles.selected : '',
-    isInteractive ? styles.interactive : '',
     disabled ? styles.disabled : '',
+    isInteractive ? styles.interactive : '',
     className,
   ]
     .filter(Boolean)
@@ -96,7 +88,7 @@ export const Tag: React.FC<TagProps> = ({
   const inner = (
     <>
       {icon && <span className={styles.icon}>{icon}</span>}
-      {content && <span>{content}</span>}
+      <span className={styles.label}>{content}</span>
       {handleRemove && (
         <button
           type="button"
@@ -134,3 +126,5 @@ export const Tag: React.FC<TagProps> = ({
     </span>
   );
 };
+
+export const Tag = memo(TagComponent);

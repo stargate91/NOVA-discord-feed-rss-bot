@@ -1,8 +1,8 @@
 import React from 'react';
 import { Scale } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { Card, Badge, Container, Stack, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { Card, Badge, Container, Stack, Text } from '@/ui';
 
 export const TermsPage: React.FC = () => {
   const { t } = useTranslation();

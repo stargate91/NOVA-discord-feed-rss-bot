@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode, MouseEvent } from 'react';
 import React, { createContext, useContext, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
-import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import styles from './Modal.module.css';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';

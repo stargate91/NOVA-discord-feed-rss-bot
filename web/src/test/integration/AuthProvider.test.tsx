@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthProvider, useAuth } from '../../auth';
+import { AuthProvider, useAuth } from '@/auth';
 
 const AuthConsumer: React.FC = () => {
   const { user, isAuthenticated, loginWithDiscord, logout } = useAuth();
@@ -12,7 +12,7 @@ const AuthConsumer: React.FC = () => {
       <span data-testid="auth-status">
         {isAuthenticated ? `Logged in as ${user?.username}` : 'Logged Out'}
       </span>
-      <button type="button" onClick={loginWithDiscord} data-testid="login-btn">
+      <button type="button" onClick={() => loginWithDiscord()} data-testid="login-btn">
         Login
       </button>
       <button type="button" onClick={logout} data-testid="logout-btn">

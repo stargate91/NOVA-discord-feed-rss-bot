@@ -1,8 +1,8 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import type { HealthStatus } from '../../types';
-import { useTranslation } from '../../i18n';
-import { ErrorBoundary } from '../common/ErrorBoundary';
+import type { HealthStatus } from '@/types';
+import { useTranslation } from '@/i18n';
+import { RouteErrorBoundary } from '@/components/common/RouteErrorBoundary';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import styles from './PublicLayout.module.css';
@@ -22,9 +22,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ health, loadingHealt
       </a>
       <Navbar health={health} loadingHealth={loadingHealth} />
       <main id="main-content" className={styles.body} tabIndex={-1}>
-        <ErrorBoundary name="Marketing Page">
+        <RouteErrorBoundary name="Marketing Page">
           <Outlet />
-        </ErrorBoundary>
+        </RouteErrorBoundary>
       </main>
       <Footer />
     </div>

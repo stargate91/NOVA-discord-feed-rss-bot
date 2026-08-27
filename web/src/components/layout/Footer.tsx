@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useTranslation } from '../../i18n';
-import { DISCORD_SUPPORT_SERVER_URL } from '../../constants';
-import { Container, Grid, Stack, Inline, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { DISCORD_SUPPORT_SERVER_URL } from '@/constants';
+import { Container, Grid, Stack, Inline, Text } from '@/ui';
 import styles from './Footer.module.css';
 
 export const Footer: React.FC = () => {

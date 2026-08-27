@@ -1,5 +1,5 @@
 import type { ReactNode, MouseEvent } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 import { X } from 'lucide-react';
 import styles from './Chip.module.css';
 
@@ -21,7 +21,7 @@ export interface ChipProps {
   title?: string;
 }
 
-export const Chip: React.FC<ChipProps> = ({
+const ChipComponent: React.FC<ChipProps> = ({
   children,
   label,
   name,
@@ -62,22 +62,12 @@ export const Chip: React.FC<ChipProps> = ({
     sizeClass,
     variantClass,
     isSelected ? styles.selected : '',
-    isInteractive ? styles.interactive : '',
     disabled ? styles.disabled : '',
+    isInteractive ? styles.interactive : '',
     className,
   ]
     .filter(Boolean)
     .join(' ');
-
-  const renderIcon = () => {
-    if (!icon) return null;
-
-    if (typeof icon === 'string') {
-      return <img src={icon} alt="" aria-hidden="true" className={styles.icon} />;
-    }
-
-    return <span className={styles.iconWrapper}>{icon}</span>;
-  };
 
   const handleDelete = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -87,6 +77,14 @@ export const Chip: React.FC<ChipProps> = ({
   };
 
   const deleteIconSize = size === 'sm' ? 12 : size === 'lg' ? 16 : 14;
+
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (typeof icon === 'string') {
+      return <img src={icon} alt="" className={styles.icon} loading="lazy" decoding="async" />;
+    }
+    return <span className={styles.icon}>{icon}</span>;
+  };
 
   const innerContent = (
     <>
@@ -129,3 +127,5 @@ export const Chip: React.FC<ChipProps> = ({
     </div>
   );
 };
+
+export const Chip = memo(ChipComponent);

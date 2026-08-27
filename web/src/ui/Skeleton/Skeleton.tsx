@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 import styles from './Skeleton.module.css';
 
 export type SkeletonVariant = 'text' | 'circular' | 'rectangular' | 'rounded';
@@ -23,7 +23,7 @@ export interface SkeletonProps {
   id?: string;
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
+const SkeletonComponent: React.FC<SkeletonProps> = ({
   variant = 'text',
   animation = 'shimmer',
   aspectRatio,
@@ -93,23 +93,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     }
   };
 
-  const getAvatarClass = (s?: SkeletonAvatarSize) => {
-    if (!s) return '';
-    switch (s) {
-      case 'sm':
-        return styles.avatarSm;
-      case 'md':
-        return styles.avatarMd;
-      case 'lg':
-        return styles.avatarLg;
-      default:
-        return '';
-    }
-  };
-
-  const getAspectRatioClass = (ar?: SkeletonAspectRatio) => {
-    if (!ar) return '';
-    switch (ar) {
+  const getAspectRatioClass = (ratio?: SkeletonAspectRatio) => {
+    if (!ratio) return '';
+    switch (ratio) {
       case 'square':
         return styles.aspectSquare;
       case 'video':
@@ -134,6 +120,19 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       case 'text':
       default:
         return styles.text;
+    }
+  };
+
+  const getAvatarClass = (size?: SkeletonAvatarSize) => {
+    if (!size) return '';
+    switch (size) {
+      case 'sm':
+        return styles.avatarSm;
+      case 'lg':
+        return styles.avatarLg;
+      case 'md':
+      default:
+        return styles.avatarMd;
     }
   };
 
@@ -172,3 +171,5 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
   return <span id={id} className={classes} aria-hidden="true" />;
 };
+
+export const Skeleton = memo(SkeletonComponent);

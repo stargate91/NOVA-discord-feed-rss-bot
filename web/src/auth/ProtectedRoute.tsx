@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import React from 'react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 import { useAuth } from './useAuth';
+import { useGuild } from '@/guild';
 import styles from './ProtectedRoute.module.css';
 
 interface ProtectedRouteProps {
@@ -19,7 +20,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireAdminSecret = false,
   fallbackRedirect = '/',
 }) => {
-  const { isLoading, isAuthenticated, adminSecret, checkGuildPermission } = useAuth();
+  const { isLoading, isAuthenticated, adminSecret } = useAuth();
+  const { checkGuildPermission } = useGuild();
   const { guildId } = useParams<{ guildId?: string }>();
 
   if (isLoading) {

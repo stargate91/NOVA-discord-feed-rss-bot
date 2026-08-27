@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Globe, Clock, Hash, Shield, Save } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { useToast } from '../../components/common/Toast';
+import { useTranslation } from '@/i18n';
+import { useToast } from '@/components/common/Toast';
 import {
   Card,
   Button,
@@ -15,7 +15,7 @@ import {
   Grid,
   Text,
   type SelectOption,
-} from '../../ui';
+} from '@/ui';
 
 const LANGUAGE_OPTIONS: SelectOption[] = [
   { value: 'en', label: 'English (US)' },

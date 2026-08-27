@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import styles from './Drawer.module.css';
 
 export type DrawerPosition = 'left' | 'right' | 'top' | 'bottom';

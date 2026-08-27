@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Check, HelpCircle } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { SEO } from '../../components/common/SEO';
-import { Button, Badge, Card, Accordion, Container, Stack, Inline, Grid, Text } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { SEO } from '@/components/common/SEO';
+import { Button, Badge, Card, Accordion, Container, Stack, Inline, Grid, Text } from '@/ui';
 
 export const PremiumPage: React.FC = () => {
   const navigate = useNavigate();

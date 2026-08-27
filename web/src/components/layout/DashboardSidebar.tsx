@@ -10,8 +10,8 @@ import {
   ArrowLeft,
   Server,
 } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import { Button, Select } from '../../ui';
+import { useTranslation } from '@/i18n';
+import { Button, Select } from '@/ui';
 import styles from './DashboardSidebar.module.css';
 
 export interface DashboardSidebarProps {

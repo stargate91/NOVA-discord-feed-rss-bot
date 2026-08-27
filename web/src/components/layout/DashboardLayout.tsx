@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import type { HealthStatus } from '../../types';
-import { useTranslation } from '../../i18n';
-import { ErrorBoundary } from '../common/ErrorBoundary';
-import { Container, Drawer } from '../../ui';
+import type { HealthStatus } from '@/types';
+import { useTranslation } from '@/i18n';
+import { RouteErrorBoundary } from '@/components/common/RouteErrorBoundary';
+import { Container, Drawer } from '@/ui';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardHeader } from './DashboardHeader';
 import styles from './DashboardLayout.module.css';
@@ -47,9 +47,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ health, loadin
         />
         <main id="dashboard-main-content" className={styles.bodyContainer} tabIndex={-1}>
           <Container maxWidth="xl" padding="lg">
-            <ErrorBoundary name="Guild Dashboard">
+            <RouteErrorBoundary name="Guild Dashboard">
               <Outlet />
-            </ErrorBoundary>
+            </RouteErrorBoundary>
           </Container>
         </main>
       </div>

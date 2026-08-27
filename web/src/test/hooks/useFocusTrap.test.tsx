@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 const TestModal: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
   const containerRef = useFocusTrap<HTMLDivElement>(isOpen);

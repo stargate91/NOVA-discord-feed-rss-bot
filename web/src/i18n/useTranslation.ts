@@ -1,11 +1,50 @@
-import { useContext } from 'react';
+import { useContext, useMemo, useCallback } from 'react';
 import { I18nContext } from './context';
-import type { I18nContextValue } from './types';
+import type { SupportedLocale, LocaleInfo, Namespace } from './types';
+import type { TranslationKey } from './locales/en';
 
-export const useTranslation = (): I18nContextValue => {
+export interface UseTranslationResult<N extends Namespace | undefined = undefined> {
+  locale: SupportedLocale;
+  setLocale: (locale: SupportedLocale) => void;
+  supportedLocales: readonly LocaleInfo[];
+  isLoadingLocale?: boolean;
+  t: (
+    key: N extends undefined ? TranslationKey : string,
+    params?: Record<string, string | number>
+  ) => string;
+}
+
+export const useTranslation = <N extends Namespace | undefined = undefined>(
+  namespace?: N
+): UseTranslationResult<N> => {
   const context = useContext(I18nContext);
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
-  return context;
+
+  const { t: baseT, locale, setLocale, supportedLocales, isLoadingLocale } = context;
+
+  const t = useCallback(
+    (
+      key: N extends undefined ? TranslationKey : string,
+      params?: Record<string, string | number>
+    ): string => {
+      const fullKey = namespace
+        ? (`${namespace}.${key}` as TranslationKey)
+        : (key as TranslationKey);
+      return baseT(fullKey, params);
+    },
+    [baseT, namespace]
+  );
+
+  return useMemo(
+    () => ({
+      locale,
+      setLocale,
+      supportedLocales,
+      isLoadingLocale,
+      t,
+    }),
+    [locale, setLocale, supportedLocales, isLoadingLocale, t]
+  );
 };

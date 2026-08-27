@@ -1,5 +1,5 @@
-import { AUTH_TOKEN_KEY, ADMIN_SECRET_KEY } from '../auth/context';
-import { errorReporter } from '../services/errorReporter';
+import { AUTH_TOKEN_KEY, ADMIN_SECRET_KEY } from '@/auth/context';
+import { errorReporter } from '@/services/errorReporter';
 import { apiCircuitBreaker } from './circuitBreaker';
 import type { RequestOptions, ErrorHandlerCallback } from './types';
 import { ApiError } from './types';
@@ -38,14 +38,61 @@ const combineSignals = (signals: (AbortSignal | undefined)[]): AbortSignal => {
 
 const DEFAULT_RETRYABLE_STATUSES = [408, 429, 500, 502, 503, 504];
 
-class ApiClient {
+/**
+ * Reads a cookie value by name.
+ */
+const getCookie = (name: string): string | null => {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+  return match ? decodeURIComponent(match[3]) : null;
+};
+
+export type TokenRefreshHandler = () => Promise<string | null>;
+
+export class ApiClient {
   private baseUrl: string;
   private defaultTimeout: number = 10000;
   private errorListeners: Set<ErrorHandlerCallback> = new Set();
   private inFlightRequests: Map<string, Promise<unknown>> = new Map();
 
+  // In-memory security credentials (isolated from arbitrary localStorage access)
+  private authToken: string | null = null;
+  private adminSecret: string | null = null;
+  private csrfToken: string | null = null;
+
+  // Token refresh concurrency management
+  private tokenRefreshHandler: TokenRefreshHandler | null = null;
+  private isRefreshingToken: boolean = false;
+  private refreshSubscribers: ((token: string | null) => void)[] = [];
+
   public constructor(baseUrl: string = '') {
     this.baseUrl = baseUrl;
+  }
+
+  public setAuthToken(token: string | null): void {
+    this.authToken = token;
+  }
+
+  public getAuthToken(): string | null {
+    return this.authToken;
+  }
+
+  public setAdminSecret(secret: string | null): void {
+    this.adminSecret = secret;
+  }
+
+  public setCsrfToken(csrfToken: string | null): void {
+    this.csrfToken = csrfToken;
+  }
+
+  public setTokenRefreshHandler(handler: TokenRefreshHandler | null): void {
+    this.tokenRefreshHandler = handler;
+  }
+
+  public clearSession(): void {
+    this.authToken = null;
+    this.adminSecret = null;
+    this.csrfToken = null;
   }
 
   public onError(listener: ErrorHandlerCallback): () => void {
@@ -71,22 +118,35 @@ class ApiClient {
     });
   }
 
-  private getAuthHeaders(): Record<string, string> {
+  private getAuthHeaders(method: string): Record<string, string> {
     const headers: Record<string, string> = {};
 
-    if (typeof window !== 'undefined') {
-      try {
-        const token = localStorage.getItem(AUTH_TOKEN_KEY);
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
+    // 1. Authorization Header (Bearer token)
+    const effectiveToken =
+      this.authToken ||
+      (typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null);
 
-        const adminSecret = localStorage.getItem(ADMIN_SECRET_KEY);
-        if (adminSecret) {
-          headers['X-Webhook-Secret'] = adminSecret;
-        }
-      } catch {
-        // Ignore localStorage errors
+    if (effectiveToken) {
+      headers['Authorization'] = `Bearer ${effectiveToken}`;
+    }
+
+    // 2. Admin Webhook Secret Header (supports sessionStorage / in-memory override)
+    const effectiveSecret =
+      this.adminSecret ||
+      (typeof window !== 'undefined'
+        ? sessionStorage.getItem(ADMIN_SECRET_KEY) || localStorage.getItem(ADMIN_SECRET_KEY)
+        : null);
+
+    if (effectiveSecret) {
+      headers['X-Webhook-Secret'] = effectiveSecret;
+    }
+
+    // 3. CSRF Protection Header for mutating HTTP methods
+    const mutatingMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
+    if (mutatingMethods.includes(method.toUpperCase())) {
+      const csrf = this.csrfToken || getCookie('nova_csrf') || getCookie('csrftoken');
+      if (csrf) {
+        headers['X-CSRF-Token'] = csrf;
       }
     }
 
@@ -97,10 +157,36 @@ class ApiClient {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private async handleTokenRefresh(): Promise<string | null> {
+    if (!this.tokenRefreshHandler) return null;
+
+    if (this.isRefreshingToken) {
+      return new Promise<string | null>((resolve) => {
+        this.refreshSubscribers.push(resolve);
+      });
+    }
+
+    this.isRefreshingToken = true;
+
+    try {
+      const newToken = await this.tokenRefreshHandler();
+      this.authToken = newToken;
+      this.refreshSubscribers.forEach((callback) => callback(newToken));
+      this.refreshSubscribers = [];
+      return newToken;
+    } catch {
+      this.refreshSubscribers.forEach((callback) => callback(null));
+      this.refreshSubscribers = [];
+      return null;
+    } finally {
+      this.isRefreshingToken = false;
+    }
+  }
+
   public async request<T>(
     endpoint: string,
     method: string,
-    options: RequestOptions = {}
+    options: RequestOptions<T> = {}
   ): Promise<T> {
     const {
       headers = {},
@@ -112,6 +198,8 @@ class ApiClient {
       retryDelayMs = 500,
       retryOnStatus = DEFAULT_RETRYABLE_STATUSES,
       validate,
+      token: overrideToken,
+      adminSecret: overrideAdminSecret,
     } = options;
 
     const url = `${this.baseUrl}${endpoint}`;
@@ -136,15 +224,24 @@ class ApiClient {
 
     const executeRequest = async (): Promise<T> => {
       let attempt = 0;
+      let hasRefreshedAuth = false;
 
       while (attempt <= maxRetries) {
         const timeoutController = new AbortController();
         const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
         const mergedSignal = combineSignals([customSignal, timeoutController.signal]);
 
+        const authHeaders = this.getAuthHeaders(method);
+        if (overrideToken) {
+          authHeaders['Authorization'] = `Bearer ${overrideToken}`;
+        }
+        if (overrideAdminSecret) {
+          authHeaders['X-Webhook-Secret'] = overrideAdminSecret;
+        }
+
         const finalHeaders: Record<string, string> = {
           Accept: 'application/json',
-          ...this.getAuthHeaders(),
+          ...authHeaders,
           ...headers,
         };
 
@@ -163,6 +260,15 @@ class ApiClient {
           });
 
           clearTimeout(timeoutId);
+
+          // Handle 401 Unauthorized with token refresh if configured
+          if (response.status === 401 && !hasRefreshedAuth && this.tokenRefreshHandler) {
+            hasRefreshedAuth = true;
+            const refreshedToken = await this.handleTokenRefresh();
+            if (refreshedToken) {
+              continue; // Retry with refreshed token
+            }
+          }
 
           // Parse JSON if available
           let responseData: unknown = null;
@@ -270,23 +376,23 @@ class ApiClient {
     return requestPromise;
   }
 
-  public async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
+  public async get<T>(endpoint: string, options?: RequestOptions<T>): Promise<T> {
     return this.request<T>(endpoint, 'GET', options);
   }
 
-  public async post<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {
+  public async post<T>(endpoint: string, body?: unknown, options?: RequestOptions<T>): Promise<T> {
     return this.request<T>(endpoint, 'POST', { ...options, body });
   }
 
-  public async put<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {
+  public async put<T>(endpoint: string, body?: unknown, options?: RequestOptions<T>): Promise<T> {
     return this.request<T>(endpoint, 'PUT', { ...options, body });
   }
 
-  public async patch<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {
+  public async patch<T>(endpoint: string, body?: unknown, options?: RequestOptions<T>): Promise<T> {
     return this.request<T>(endpoint, 'PATCH', { ...options, body });
   }
 
-  public async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
+  public async delete<T>(endpoint: string, options?: RequestOptions<T>): Promise<T> {
     return this.request<T>(endpoint, 'DELETE', options);
   }
 }

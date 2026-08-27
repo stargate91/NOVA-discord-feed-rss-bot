@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { RefreshCw, ExternalLink, LogOut, Key } from 'lucide-react';
-import { apiClient } from '../api';
-import { errorReporter } from '../services/errorReporter';
-import { useAuth } from '../auth';
-import { useTranslation } from '../i18n';
-import { useToast } from '../components/common/Toast';
-import { SEO } from '../components/common/SEO';
+import { Link } from 'react-router-dom';
+import { RefreshCw, ExternalLink, LogOut, Key, Layers } from 'lucide-react';
+import { apiClient } from '@/api';
+import { errorReporter } from '@/services/errorReporter';
+import { useAuth } from '@/auth';
+import { useTranslation } from '@/i18n';
+import { useToast } from '@/components/common/Toast';
+import { SEO } from '@/components/common/SEO';
 import {
   Button,
   Card,
@@ -20,7 +21,7 @@ import {
   Inline,
   Grid,
   Text,
-} from '../ui';
+} from '@/ui';
 
 interface AdminLogsResponse {
   logs?: string[];
@@ -153,9 +154,14 @@ export const DeveloperPage: React.FC = () => {
               </Text>
             </Stack>
 
-            <Button variant="secondary" size="sm" onClick={handleLogout}>
-              <LogOut size={14} /> {t('dev.logoutBtn')}
-            </Button>
+            <Inline gap="sm">
+              <Button as={Link} to="/dev/ui" variant="outline" size="sm">
+                <Layers size={14} /> {t('dev.uiCatalogBtn')}
+              </Button>
+              <Button variant="secondary" size="sm" onClick={handleLogout}>
+                <LogOut size={14} /> {t('dev.logoutBtn')}
+              </Button>
+            </Inline>
           </Inline>
 
           <Grid minItemWidth="lg" gap="2xl">
