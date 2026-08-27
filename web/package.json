@@ -20,7 +20,7 @@
     "lint:style:fix": "stylelint \"src/**/*.css\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
-    "prepare": "husky"
+    "prepare": "node -e \"try { if (!process.env.CI) { const h = require('husky'); (typeof h === 'function' ? h : h.default || (() => {}))(); } } catch (e) {}\""
   },
   "lint-staged": {
     "*.{ts,tsx}": [
