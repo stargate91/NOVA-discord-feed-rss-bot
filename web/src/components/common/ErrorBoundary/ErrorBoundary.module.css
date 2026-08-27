@@ -1,0 +1,101 @@
+.errorWrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: var(--bg-primary);
+}
+
+.inlineErrorWrapper {
+  padding: var(--space-3xl) var(--space-lg);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.errorCard {
+  max-width: 34rem;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--status-danger-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3xl);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.errorCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.125rem;
+  background: linear-gradient(90deg, var(--status-danger), var(--blue-500));
+}
+
+.iconCircle {
+  width: var(--space-5xl);
+  height: var(--space-5xl);
+  border-radius: var(--radius-full);
+  background: var(--status-danger-bg);
+  border: 1px solid var(--status-danger-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  margin: 0 auto var(--space-xl);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-2xl);
+}
+
+.errorDetails {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-2xl);
+  text-align: left;
+}
+
+.errorSummary {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  font-weight: var(--font-weight-semibold);
+}
+
+.errorMessage {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  color: var(--status-danger);
+  margin-top: var(--space-sm);
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}

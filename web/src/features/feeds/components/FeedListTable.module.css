@@ -1,0 +1,13 @@
+.searchWrapper {
+  min-width: 12.5rem;
+}
+
+.emptyState {
+  padding: 2rem 0;
+}
+
+.brandIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: var(--radius-2xs);
+}

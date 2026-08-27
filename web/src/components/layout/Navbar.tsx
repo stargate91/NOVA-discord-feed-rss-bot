@@ -4,7 +4,9 @@ import { Menu, X } from 'lucide-react';
 import type { HealthStatus } from '@/types';
 import { useTranslation } from '@/i18n';
 import { ThemeToggle } from '@/theme';
-import { Badge, Button, Drawer, Stack } from '@/ui';
+import { Badge, Button } from '@/ui';
+import { NAV_ITEMS, getLocalizedPath } from './navConfig';
+import { MobileNavDrawer } from './MobileNavDrawer';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
@@ -18,63 +20,28 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const isOnline = health?.status === 'ok' || health?.status === 'healthy';
 
-  // Helper to build language-prefixed marketing routes
-  const getLangPath = (path: string) => {
-    if (!lang || lang === 'en') {
-      return path;
-    }
-    return `/${lang}${path === '/' ? '' : path}`;
-  };
-
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <header className={styles.navbar}>
       <div className={styles.inner}>
-        <Link to={getLangPath('/')} className={styles.brand} onClick={closeMobileMenu}>
+        <Link to={getLocalizedPath('/', lang)} className={styles.brand} onClick={closeMobileMenu}>
           <img src="/images/logo.webp" alt="Nova Logo" className={styles.brandAvatar} />
           <span className={styles.brandText}>{t('common.brandName')}</span>
         </Link>
 
         {/* Desktop Nav Links */}
         <nav className={styles.navLinks}>
-          <NavLink
-            to={getLangPath('/')}
-            end
-            className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
-          >
-            {t('common.navOverview')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/premium')}
-            className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
-          >
-            {t('common.navPremium')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/docs')}
-            className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
-          >
-            {t('common.navDocs')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/support')}
-            className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
-          >
-            {t('common.navSupport')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/changelog')}
-            className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
-          >
-            {t('common.navChangelog')}
-          </NavLink>
-          <NavLink
-            to="/dev"
-            className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
-          >
-            {t('common.navDev')}
-          </NavLink>
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.path}
+              to={getLocalizedPath(item.path, lang)}
+              end={item.end}
+              className={({ isActive }) => `${styles.navBtn} ${isActive ? styles.active : ''}`}
+            >
+              {t(item.labelKey)}
+            </NavLink>
+          ))}
         </nav>
 
         {/* Actions */}
@@ -112,75 +79,8 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
         </div>
       </div>
 
-      {/* Mobile Drawer via UI Drawer primitive */}
-      <Drawer
-        open={isMobileMenuOpen}
-        onClose={closeMobileMenu}
-        position="right"
-        size="sm"
-        title={
-          <Link to={getLangPath('/')} className={styles.brand} onClick={closeMobileMenu}>
-            <img src="/images/logo.webp" alt="Nova Logo" className={styles.brandAvatar} />
-            <span className={styles.brandText}>{t('common.brandName')}</span>
-          </Link>
-        }
-        footer={
-          <div className={styles.drawerFooter}>
-            <ThemeToggle />
-            <Link to="/servers" onClick={closeMobileMenu} className={styles.drawerDashboardLink}>
-              <Button variant="primary" size="lg" fullWidth>
-                {t('common.dashboard')}
-              </Button>
-            </Link>
-          </div>
-        }
-      >
-        <Stack gap="xs">
-          <NavLink
-            to={getLangPath('/')}
-            end
-            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
-            onClick={closeMobileMenu}
-          >
-            {t('common.navOverview')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/premium')}
-            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
-            onClick={closeMobileMenu}
-          >
-            {t('common.navPremium')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/docs')}
-            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
-            onClick={closeMobileMenu}
-          >
-            {t('common.navDocs')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/support')}
-            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
-            onClick={closeMobileMenu}
-          >
-            {t('common.navSupport')}
-          </NavLink>
-          <NavLink
-            to={getLangPath('/changelog')}
-            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
-            onClick={closeMobileMenu}
-          >
-            {t('common.navChangelog')}
-          </NavLink>
-          <NavLink
-            to="/dev"
-            className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
-            onClick={closeMobileMenu}
-          >
-            {t('common.navDev')}
-          </NavLink>
-        </Stack>
-      </Drawer>
+      {/* Mobile Drawer */}
+      <MobileNavDrawer isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
     </header>
   );
 };

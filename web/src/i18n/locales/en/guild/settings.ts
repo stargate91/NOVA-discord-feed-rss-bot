@@ -1,0 +1,25 @@
+export const guildSettings = {
+  settingsTitle: 'Guild Settings',
+  settingsSubtitle:
+    'Configure bot language, timezone, audit logging, and global notification parameters for Guild {guildId}',
+  saveChangesBtn: 'Save Changes',
+  localizationTitle: 'Localization & Regional',
+  localizationSubtitle: 'Bot language and timestamp display',
+  botLanguageLabel: 'Bot Language / Locale',
+  botLanguageHint: 'Language for bot commands, embed footers and status alerts',
+  searchLanguagePlaceholder: 'Search language...',
+  timezoneLabel: 'Timezone for Embed Timestamps',
+  timezoneHint: 'Timestamp normalization for feed notifications',
+  searchTimezonePlaceholder: 'Search timezone...',
+  autoIsolateLabel: 'Automatic Dead Channel Isolation',
+  autoIsolateDesc: 'Pause faulty monitors without blocking other server feeds',
+  auditLoggingTitle: 'Audit & Operational Logging',
+  auditLoggingSubtitle: 'Where Nova posts internal diagnostic logs',
+  errorChannelLabel: 'Diagnostic / Error Log Channel ID',
+  errorChannelHint:
+    'Nova will notify this channel if a feed destination is deleted or permissions are missing',
+  errorChannelPlaceholder: 'e.g. 112233445566778899',
+  debugLogsLabel: 'Verbose Shard Diagnostic Logs',
+  debugLogsDesc: 'Include sub-second WebSocket handshake traces in audit channel',
+  updateLogChannelBtn: 'Update Log Channel',
+} as const;

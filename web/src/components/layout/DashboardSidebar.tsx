@@ -1,41 +1,15 @@
 import React from 'react';
 import { NavLink, Link, useParams, useNavigate } from 'react-router-dom';
-import {
-  Activity,
-  Radio,
-  BarChart3,
-  Sparkles,
-  SlidersHorizontal,
-  ArrowLeftRight,
-  ArrowLeft,
-  Server,
-} from 'lucide-react';
+import { ArrowLeftRight, ArrowLeft, Server } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { Button, Select } from '@/ui';
+import { DASHBOARD_NAV_ITEMS, SIDEBAR_SERVERS } from './sidebarConfig';
 import styles from './DashboardSidebar.module.css';
 
 export interface DashboardSidebarProps {
   onNavClick?: () => void;
   className?: string;
 }
-
-const SIDEBAR_SERVERS = [
-  {
-    value: '123456789012345678',
-    labelKey: 'guild.sidebarServer1Label',
-    descKey: 'guild.sidebarServer1Desc',
-  },
-  {
-    value: '987654321098765432',
-    labelKey: 'guild.sidebarServer2Label',
-    descKey: 'guild.sidebarServer2Desc',
-  },
-  {
-    value: '555666777888999000',
-    labelKey: 'guild.sidebarServer3Label',
-    descKey: 'guild.sidebarServer3Desc',
-  },
-] as const;
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   onNavClick,
@@ -74,61 +48,23 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
       {/* Navigation Links */}
       <nav className={styles.nav}>
-        <NavLink
-          to={`/dashboard/${guildId}`}
-          end
-          className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
-          onClick={onNavClick}
-        >
-          <span className={styles.navIcon}>
-            <Activity size={16} />
-          </span>
-          <span>{t('guild.overviewTitle')}</span>
-        </NavLink>
-
-        <NavLink
-          to={`/dashboard/${guildId}/feeds`}
-          className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
-          onClick={onNavClick}
-        >
-          <span className={styles.navIcon}>
-            <Radio size={16} />
-          </span>
-          <span>{t('common.navFeeds')}</span>
-        </NavLink>
-
-        <NavLink
-          to={`/dashboard/${guildId}/analytics`}
-          className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
-          onClick={onNavClick}
-        >
-          <span className={styles.navIcon}>
-            <BarChart3 size={16} />
-          </span>
-          <span>{t('common.navAnalytics')}</span>
-        </NavLink>
-
-        <NavLink
-          to={`/dashboard/${guildId}/premium`}
-          className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
-          onClick={onNavClick}
-        >
-          <span className={styles.navIcon}>
-            <Sparkles size={16} />
-          </span>
-          <span>{t('common.navPremium')}</span>
-        </NavLink>
-
-        <NavLink
-          to={`/dashboard/${guildId}/settings`}
-          className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
-          onClick={onNavClick}
-        >
-          <span className={styles.navIcon}>
-            <SlidersHorizontal size={16} />
-          </span>
-          <span>{t('common.navGuildSettings')}</span>
-        </NavLink>
+        {DASHBOARD_NAV_ITEMS.map((item) => {
+          const IconComponent = item.icon;
+          return (
+            <NavLink
+              key={item.pathSuffix}
+              to={`/dashboard/${guildId}${item.pathSuffix}`}
+              end={item.end}
+              className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
+              onClick={onNavClick}
+            >
+              <span className={styles.navIcon}>
+                <IconComponent size={16} />
+              </span>
+              <span>{t(item.labelKey)}</span>
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* Bottom Action */}

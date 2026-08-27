@@ -1,0 +1,60 @@
+:root {
+  /* Z-Index Layering Scale */
+  --z-underlay: -1;
+  --z-base: 1;
+  --z-header: 40;
+  --z-sidebar: 50;
+  --z-sticky: 100;
+  --z-popover: 150;
+  --z-dropdown: 200;
+  --z-backdrop: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* Responsive Container & Breakpoint Scales */
+  --container-mobile: 100%;
+  --container-sm: 40rem; /* ~640px  - Small tablets / phablets */
+  --container-md: 48rem; /* ~768px  - Tablets / Mobile breakpoint */
+  --container-lg: 64rem; /* ~1024px - Small laptops / Landscape tablets */
+  --container-xl: 80rem; /* ~1280px - Standard desktop */
+  --container-2xl: 95rem; /* ~1520px - Ultrawide dashboard */
+
+  /* Glassmorphism & Blur Scale */
+  --blur-none: 0;
+  --blur-sm: 0.25rem; /* 4px  - Subtle chips & badges */
+  --blur-md: 0.75rem; /* 12px - Navbar & floating header */
+  --blur-lg: 1.25rem; /* 20px - Glassmorphism cards & modals */
+  --blur-xl: 2rem; /* 32px - Heavy overlays & backdrop sheets */
+
+  /* Accessibility & Focus Ring Tokens (Signature Nova Glow Ring) */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--blue-400);
+  --focus-ring:
+    0 0 0 2px var(--bg-surface), 0 0 0 4px var(--blue-500), 0 0 14px rgb(14 165 233 / 35%);
+  --focus-ring-input: 0 0 0 2px var(--blue-500), 0 0 12px rgb(14 165 233 / 30%);
+  --focus-ring-danger:
+    0 0 0 2px var(--bg-surface), 0 0 0 4px var(--status-danger), 0 0 12px var(--status-danger-bg);
+
+  /* Component Dimension & Target Tokens (WCAG 2.2 AAA Target Sizing) */
+  --header-height: 4.25rem; /* 68px - Fixed global navbar height */
+  --sidebar-width: 15rem; /* 240px - Compact desktop sidebar */
+  --control-height-sm: 2rem; /* 32px - Small inputs / compact buttons */
+  --control-height-md: 2.5rem; /* 40px - Standard inputs / buttons */
+  --control-height-lg: 3rem; /* 48px - Large CTA buttons */
+  --target-min-size: 2.75rem; /* 44px - WCAG minimum mobile tap target */
+
+  /* Media & Aspect Ratio Tokens */
+  --aspect-square: 1 / 1; /* Avatars, icons, chips */
+  --aspect-video: 16 / 9; /* YouTube / Twitch live stream frames */
+  --aspect-poster: 2 / 3; /* TMDB movie releases */
+  --aspect-banner: 21 / 9; /* Discord server & media banners */
+
+  /* Opacity Scales */
+  --opacity-subtle: 0.08;
+  --opacity-muted: 0.35;
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.85;
+  --opacity-solid: 1;
+}

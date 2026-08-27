@@ -8,6 +8,7 @@ import {
   FeedPlatformSelector,
   FeedCreateCard,
   FeedEmbedPreview,
+  FeedListTable,
   useFeedForm,
   useGuildFeeds,
 } from '@/features/feeds';
@@ -16,7 +17,7 @@ export const GuildFeedsPage: React.FC = () => {
   const { guildId = '' } = useParams<{ guildId: string }>();
   const { t } = useTranslation();
   const toast = useToast();
-  const { createFeed, isCreating } = useGuildFeeds(guildId);
+  const { feeds, isLoading, createFeed, isCreating } = useGuildFeeds(guildId);
   const feedForm = useFeedForm();
 
   const handleTestFeed = () => {
@@ -52,6 +53,8 @@ export const GuildFeedsPage: React.FC = () => {
 
         <FeedEmbedPreview guildId={guildId} formState={feedForm.formState} />
       </Grid>
+
+      <FeedListTable feeds={feeds} isLoading={isLoading} />
     </Stack>
   );
 };

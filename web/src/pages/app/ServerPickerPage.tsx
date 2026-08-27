@@ -1,52 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Settings, UserPlus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { SEO } from '@/components/common/SEO';
 import { DISCORD_BOT_INVITE_URL } from '@/constants';
 import { openExternalUrl } from '@/utils';
-import { Button, Badge, Card, Avatar, CardSkeleton, Grid, Stack, Inline, Text } from '@/ui';
+import { Button, CardSkeleton, Grid, Stack, Inline, Text } from '@/ui';
+import type { ServerItem } from './components';
+import { ServerPickerCard } from './components';
 
-interface ServerItem {
-  id: string;
-  name: string;
-  avatar: string;
-  tier: string;
-  isBotInServer: boolean;
-  monitors: number;
-}
+const MOCK_SERVERS: ServerItem[] = [
+  {
+    id: '123456789012345678',
+    name: 'Stargate Gaming Lounge',
+    avatar: '/images/logo.webp',
+    tier: 'Plus Tier',
+    isBotInServer: true,
+    monitors: 8,
+  },
+  {
+    id: '987654321098765432',
+    name: 'Creator Hub VIP',
+    avatar: '/images/logo.webp',
+    tier: 'Master Tier',
+    isBotInServer: true,
+    monitors: 24,
+  },
+  {
+    id: '555666777888999000',
+    name: 'Community Anime & Hangout',
+    avatar: '/images/logo.webp',
+    tier: 'Free',
+    isBotInServer: false,
+    monitors: 0,
+  },
+];
 
 export const ServerPickerPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const mockServers: ServerItem[] = [
-    {
-      id: '123456789012345678',
-      name: 'Stargate Gaming Lounge',
-      avatar: '/images/logo.webp',
-      tier: 'Plus Tier',
-      isBotInServer: true,
-      monitors: 8,
-    },
-    {
-      id: '987654321098765432',
-      name: 'Creator Hub VIP',
-      avatar: '/images/logo.webp',
-      tier: 'Master Tier',
-      isBotInServer: true,
-      monitors: 24,
-    },
-    {
-      id: '555666777888999000',
-      name: 'Community Anime & Hangout',
-      avatar: '/images/logo.webp',
-      tier: 'Free',
-      isBotInServer: false,
-      monitors: 0,
-    },
-  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -77,77 +70,13 @@ export const ServerPickerPage: React.FC = () => {
       <Grid minItemWidth="sm" gap="lg">
         {isLoading
           ? [1, 2, 3].map((key) => <CardSkeleton key={`skeleton-server-${key}`} lines={3} />)
-          : mockServers.map((server) => (
-              <Card
+          : MOCK_SERVERS.map((server) => (
+              <ServerPickerCard
                 key={server.id}
-                glow={server.isBotInServer ? 'blue' : 'none'}
-                interactive
-                padding="lg"
-              >
-                <Stack gap="lg">
-                  <Inline align="center" gap="md">
-                    <Avatar
-                      src={server.avatar}
-                      name={server.name}
-                      size="md"
-                      status={server.isBotInServer ? 'online' : 'offline'}
-                    />
-                    <Stack gap="none">
-                      <Text weight="bold">{server.name}</Text>
-                      <Text size="2xs" color="muted" mono>
-                        {server.id}
-                      </Text>
-                    </Stack>
-                  </Inline>
-
-                  <Stack gap="xs">
-                    <Inline justify="between" align="center">
-                      <Text size="xs" color="secondary">
-                        {t('servers.statusLabel')}
-                      </Text>
-                      <Badge variant={server.isBotInServer ? 'online' : 'neutral'} dot>
-                        {server.isBotInServer
-                          ? t('servers.statusActive')
-                          : t('servers.statusNotInvited')}
-                      </Badge>
-                    </Inline>
-
-                    <Inline justify="between" align="center">
-                      <Text size="xs" color="secondary">
-                        {t('servers.planLabel')}
-                      </Text>
-                      <Badge variant="tier">{server.tier}</Badge>
-                    </Inline>
-
-                    <Inline justify="between" align="center">
-                      <Text size="xs" color="secondary">
-                        {t('servers.activeFeedsLabel')}
-                      </Text>
-                      <Text size="xs" weight="semibold">
-                        {t('servers.monitorsCount', { count: server.monitors })}
-                      </Text>
-                    </Inline>
-                  </Stack>
-
-                  {server.isBotInServer ? (
-                    <Button
-                      variant="primary"
-                      fullWidth
-                      onClick={() => navigate(`/dashboard/${server.id}`)}
-                    >
-                      <Settings size={14} /> {t('servers.manageBtn')}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      fullWidth
-                      onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
-                    >
-                      <UserPlus size={14} /> {t('servers.inviteBtn')}
-                    </Button>
-                  )}
-                </Stack>
-              </Card>
+                server={server}
+                onManage={(serverId) => navigate(`/dashboard/${serverId}`)}
+                onInvite={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
+              />
             ))}
       </Grid>
     </Stack>

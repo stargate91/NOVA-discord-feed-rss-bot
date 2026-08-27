@@ -1,51 +1,10 @@
-import { AUTH_TOKEN_KEY, ADMIN_SECRET_KEY } from '@/auth/context';
 import { errorReporter } from '@/services/errorReporter';
 import { apiCircuitBreaker } from './circuitBreaker';
 import type { RequestOptions, ErrorHandlerCallback, ApiInterceptor, RequestContext } from './types';
 import { ApiError } from './types';
-
-/**
- * Combines multiple AbortSignals so that any single abort triggers cancellation.
- */
-const combineSignals = (signals: (AbortSignal | undefined)[]): AbortSignal => {
-  const activeSignals = signals.filter((s): s is AbortSignal => Boolean(s));
-  if (activeSignals.length === 0) {
-    return new AbortController().signal;
-  }
-  if (activeSignals.length === 1) {
-    return activeSignals[0];
-  }
-
-  // Modern browser AbortSignal.any support
-  if (
-    typeof AbortSignal !== 'undefined' &&
-    'any' in AbortSignal &&
-    typeof AbortSignal.any === 'function'
-  ) {
-    return AbortSignal.any(activeSignals);
-  }
-
-  const controller = new AbortController();
-  for (const signal of activeSignals) {
-    if (signal.aborted) {
-      controller.abort(signal.reason);
-      return controller.signal;
-    }
-    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
-  }
-  return controller.signal;
-};
+import { combineSignals, buildAuthHeaders, MutationQueueManager } from './core';
 
 const DEFAULT_RETRYABLE_STATUSES = [408, 429, 500, 502, 503, 504];
-
-/**
- * Reads a cookie value by name.
- */
-const getCookie = (name: string): string | null => {
-  if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-  return match ? decodeURIComponent(match[3]) : null;
-};
 
 export type TokenRefreshHandler = () => Promise<string | null>;
 
@@ -73,9 +32,7 @@ export class ApiClient {
   private refreshSubscribers: ((token: string | null) => void)[] = [];
 
   // Client-side concurrency control & burst rate limiting for mutating requests
-  private activeMutations: number = 0;
-  private maxConcurrentMutations: number = 6;
-  private mutationQueue: (() => void)[] = [];
+  private mutationQueue: MutationQueueManager;
 
   public constructor(baseUrlOrOptions: string | ApiClientOptions = '') {
     const options: ApiClientOptions =
@@ -91,7 +48,7 @@ export class ApiClient {
     const rawUrl = options.baseUrl !== undefined ? options.baseUrl : envBaseUrl;
     this.baseUrl = rawUrl ? rawUrl.replace(/\/+$/, '') : '';
     this.defaultTimeout = options.defaultTimeout ?? 10000;
-    this.maxConcurrentMutations = options.maxConcurrentMutations ?? 6;
+    this.mutationQueue = new MutationQueueManager(options.maxConcurrentMutations ?? 6);
   }
 
   public getBaseUrl(): string {
@@ -166,38 +123,12 @@ export class ApiClient {
   }
 
   private getAuthHeaders(method: string): Record<string, string> {
-    const headers: Record<string, string> = {};
-
-    // 1. Authorization Header (Bearer token)
-    const effectiveToken =
-      this.authToken ||
-      (typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null);
-
-    if (effectiveToken) {
-      headers['Authorization'] = `Bearer ${effectiveToken}`;
-    }
-
-    // 2. Admin Webhook Secret Header (supports sessionStorage / in-memory override)
-    const effectiveSecret =
-      this.adminSecret ||
-      (typeof window !== 'undefined'
-        ? sessionStorage.getItem(ADMIN_SECRET_KEY) || localStorage.getItem(ADMIN_SECRET_KEY)
-        : null);
-
-    if (effectiveSecret) {
-      headers['X-Webhook-Secret'] = effectiveSecret;
-    }
-
-    // 3. CSRF Protection Header for mutating HTTP methods
-    const mutatingMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
-    if (mutatingMethods.includes(method.toUpperCase())) {
-      const csrf = this.csrfToken || getCookie('nova_csrf') || getCookie('csrftoken');
-      if (csrf) {
-        headers['X-CSRF-Token'] = csrf;
-      }
-    }
-
-    return headers;
+    return buildAuthHeaders({
+      authToken: this.authToken,
+      adminSecret: this.adminSecret,
+      csrfToken: this.csrfToken,
+      method,
+    });
   }
 
   private async sleep(ms: number): Promise<void> {
@@ -231,25 +162,11 @@ export class ApiClient {
   }
 
   private async acquireMutationSlot(): Promise<void> {
-    if (this.activeMutations < this.maxConcurrentMutations) {
-      this.activeMutations += 1;
-      return;
-    }
-
-    return new Promise<void>((resolve) => {
-      this.mutationQueue.push(() => {
-        this.activeMutations += 1;
-        resolve();
-      });
-    });
+    return this.mutationQueue.acquireSlot();
   }
 
   private releaseMutationSlot(): void {
-    this.activeMutations = Math.max(0, this.activeMutations - 1);
-    const next = this.mutationQueue.shift();
-    if (next) {
-      next();
-    }
+    this.mutationQueue.releaseSlot();
   }
 
   public async request<T>(

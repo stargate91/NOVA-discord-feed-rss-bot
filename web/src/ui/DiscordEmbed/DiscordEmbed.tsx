@@ -1,45 +1,14 @@
-import type { HTMLAttributes, ReactNode } from 'react';
 import React, { useRef, useEffect, memo } from 'react';
+import type { DiscordEmbedProps } from './types';
+import { EmbedAuthor } from './DiscordEmbedAuthor';
+import { DiscordEmbedFields } from './DiscordEmbedFields';
+import { EmbedFooter } from './DiscordEmbedFooter';
 import styles from './DiscordEmbed.module.css';
 
-export interface DiscordEmbedField {
-  name: string;
-  value: string;
-  inline?: boolean;
-}
-
-export interface DiscordEmbedAuthor {
-  name: string;
-  icon_url?: string;
-  url?: string;
-}
-
-export interface DiscordEmbedFooter {
-  text: string;
-  icon_url?: string;
-  timestamp?: string;
-}
-
-export interface DiscordEmbedProps extends HTMLAttributes<HTMLDivElement> {
-  channelName?: string;
-  botName?: string;
-  avatarUrl?: string;
-  timestamp?: string;
-  author?: DiscordEmbedAuthor;
-  title: string;
-  titleUrl?: string;
-  description: string;
-  fields?: DiscordEmbedField[];
-  thumbnail?: string;
-  image?: string;
-  footer?: DiscordEmbedFooter;
-  footerText?: string;
-  accentColor?: string;
-  components?: ReactNode;
-  children?: ReactNode;
-  className?: string;
-  id?: string;
-}
+export * from './types';
+export * from './DiscordEmbedAuthor';
+export * from './DiscordEmbedFields';
+export * from './DiscordEmbedFooter';
 
 const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
   channelName = 'feed-alerts',
@@ -62,7 +31,6 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
   id,
   ...rest
 }) => {
-  const footerContent = footer ?? { text: footerText };
   const embedBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -103,27 +71,7 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
           <div ref={embedBoxRef} className={styles.embedBox}>
             <div className={styles.embedHeaderLayout}>
               <div className={styles.embedMain}>
-                {author && (
-                  <a
-                    href={author.url || '#'}
-                    className={styles.embedAuthor}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {author.icon_url && (
-                      <img
-                        src={author.icon_url}
-                        alt={author.name}
-                        className={styles.embedAuthorIcon}
-                        loading="lazy"
-                        decoding="async"
-                        width="24"
-                        height="24"
-                      />
-                    )}
-                    <span>{author.name}</span>
-                  </a>
-                )}
+                <EmbedAuthor author={author} />
 
                 <a href={titleUrl} className={styles.title} target="_blank" rel="noreferrer">
                   {title}
@@ -143,19 +91,7 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
               )}
             </div>
 
-            {fields && fields.length > 0 && (
-              <div className={styles.fieldsGrid}>
-                {fields.map((field) => (
-                  <div
-                    key={`${field.name}-${field.value}`}
-                    className={`${styles.field} ${field.inline ? '' : styles.fieldFull}`}
-                  >
-                    <div className={styles.fieldName}>{field.name}</div>
-                    <div className={styles.fieldValue}>{field.value}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <DiscordEmbedFields fields={fields} />
 
             {image && (
               <img
@@ -169,25 +105,7 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
 
             {children}
 
-            {footerContent.text && (
-              <div className={styles.footer}>
-                {footerContent.icon_url && (
-                  <img
-                    src={footerContent.icon_url}
-                    alt="Footer icon"
-                    className={styles.footerIcon}
-                    loading="lazy"
-                    decoding="async"
-                    width="20"
-                    height="20"
-                  />
-                )}
-                <span>
-                  {footerContent.text}
-                  {footerContent.timestamp ? ` • ${footerContent.timestamp}` : ''}
-                </span>
-              </div>
-            )}
+            <EmbedFooter footer={footer} footerText={footerText} />
           </div>
 
           {components && <div className={styles.componentsContainer}>{components}</div>}

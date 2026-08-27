@@ -1,20 +1,14 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from '@/i18n';
-import { DISCORD_SUPPORT_SERVER_URL } from '@/constants';
 import { Container, Grid, Stack, Inline, Text } from '@/ui';
+import { getLocalizedPath } from './navConfig';
+import { FOOTER_RESOURCES_LINKS, FOOTER_LEGAL_LINKS } from './footerConfig';
 import styles from './Footer.module.css';
 
 export const Footer: React.FC = () => {
   const { lang } = useParams<{ lang?: string }>();
   const { t } = useTranslation();
-
-  const getLangPath = (path: string) => {
-    if (!lang || lang === 'en') {
-      return path;
-    }
-    return `/${lang}${path === '/' ? '' : path}`;
-  };
 
   return (
     <footer className={styles.footer}>
@@ -40,31 +34,13 @@ export const Footer: React.FC = () => {
                 {t('common.footerResources')}
               </Text>
               <Stack as="ul" gap="xs" className={styles.linkList}>
-                <li>
-                  <Link to={getLangPath('/docs')} className={styles.linkBtn}>
-                    {t('common.navDocs')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to={getLangPath('/premium')} className={styles.linkBtn}>
-                    {t('common.navPremium')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to={getLangPath('/changelog')} className={styles.linkBtn}>
-                    {t('common.navChangelog')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to={getLangPath('/support')} className={styles.linkBtn}>
-                    {t('common.navSupport')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/dev" className={styles.linkBtn}>
-                    {t('common.navDev')}
-                  </Link>
-                </li>
+                {FOOTER_RESOURCES_LINKS.map((link) => (
+                  <li key={link.path}>
+                    <Link to={getLocalizedPath(link.path || '', lang)} className={styles.linkBtn}>
+                      {t(link.labelKey)}
+                    </Link>
+                  </li>
+                ))}
               </Stack>
             </Stack>
 
@@ -74,26 +50,24 @@ export const Footer: React.FC = () => {
                 {t('common.footerLegalSupport')}
               </Text>
               <Stack as="ul" gap="xs" className={styles.linkList}>
-                <li>
-                  <Link to={getLangPath('/terms')} className={styles.linkBtn}>
-                    {t('legal.termsTitleHighlight')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to={getLangPath('/privacy')} className={styles.linkBtn}>
-                    {t('legal.privacyTitleHighlight')}
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href={DISCORD_SUPPORT_SERVER_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.linkBtn}
-                  >
-                    {t('support.discordCta')}
-                  </a>
-                </li>
+                {FOOTER_LEGAL_LINKS.map((link) => (
+                  <li key={link.path || link.externalUrl}>
+                    {link.externalUrl ? (
+                      <a
+                        href={link.externalUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={styles.linkBtn}
+                      >
+                        {t(link.labelKey)}
+                      </a>
+                    ) : (
+                      <Link to={getLocalizedPath(link.path || '', lang)} className={styles.linkBtn}>
+                        {t(link.labelKey)}
+                      </Link>
+                    )}
+                  </li>
+                ))}
               </Stack>
             </Stack>
           </Grid>

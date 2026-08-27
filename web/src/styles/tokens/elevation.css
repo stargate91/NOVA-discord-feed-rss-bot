@@ -1,0 +1,14 @@
+:root {
+  /* Elevation & Shadow Scales */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 20%);
+  --shadow-sm: 0 2px 6px rgb(0 0 0 / 30%);
+  --shadow-md: 0 4px 14px rgb(0 0 0 / 40%);
+  --shadow-lg: 0 10px 25px rgb(0 0 0 / 50%);
+  --shadow-xl: 0 20px 50px rgb(0 0 0 / 70%);
+  --shadow-card: 0 12px 30px -10px rgb(0 0 0 / 60%);
+  --shadow-card-hover: 0 16px 40px -10px rgb(0 0 0 / 75%), 0 0 15px rgb(14 165 233 / 15%);
+  --glow-blue-sm: 0 0 12px rgb(14 165 233 / 20%);
+  --glow-blue-md: 0 0 24px rgb(14 165 233 / 30%);
+  --glow-cyan-sm: 0 0 12px rgb(0 240 255 / 25%);
+  --glow-cyan-md: 0 0 24px rgb(0 240 255 / 35%);
+}

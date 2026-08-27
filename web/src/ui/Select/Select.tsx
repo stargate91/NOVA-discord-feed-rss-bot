@@ -1,50 +1,12 @@
-import type { ReactNode, MouseEvent, KeyboardEvent } from 'react';
+import type { MouseEvent, KeyboardEvent } from 'react';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { ChevronDown, Check, Search, X } from 'lucide-react';
+import type { SelectOption, SelectProps, SelectStatus } from './types';
+import { SelectTrigger } from './SelectTrigger';
+import { SelectSearch } from './SelectSearch';
+import { SelectListbox } from './SelectListbox';
 import styles from './Select.module.css';
 
-export interface SelectOption {
-  value: string;
-  label: string;
-  icon?: ReactNode;
-  description?: string;
-  disabled?: boolean;
-}
-
-export type SelectSize = 'sm' | 'md' | 'lg';
-export type SelectVariant = 'default' | 'filled' | 'glass';
-export type SelectStatus = 'default' | 'error' | 'warning' | 'success';
-
-export interface SelectChangeEvent {
-  target: {
-    value: string;
-    name?: string;
-  };
-}
-
-export interface SelectProps {
-  name?: string;
-  value?: string;
-  defaultValue?: string;
-  options?: SelectOption[];
-  onChange?: (e: SelectChangeEvent) => void;
-  onValueChange?: (value: string) => void;
-  placeholder?: string;
-  label?: ReactNode;
-  error?: ReactNode;
-  status?: SelectStatus;
-  leftIcon?: ReactNode;
-  size?: SelectSize;
-  variant?: SelectVariant;
-  disabled?: boolean;
-  clearable?: boolean;
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  emptyMessage?: string;
-  children?: ReactNode;
-  className?: string;
-  id?: string;
-}
+export * from './types';
 
 export const Select: React.FC<SelectProps> = ({
   name,
@@ -88,9 +50,13 @@ export const Select: React.FC<SelectProps> = ({
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child) && child.props) {
         opts.push({
-          value: String(child.props.value ?? ''),
-          label: String(child.props.children ?? child.props.value ?? ''),
-          disabled: Boolean(child.props.disabled),
+          value: String((child.props as { value?: unknown }).value ?? ''),
+          label: String(
+            (child.props as { children?: unknown; value?: unknown }).children ??
+              (child.props as { value?: unknown }).value ??
+              ''
+          ),
+          disabled: Boolean((child.props as { disabled?: boolean }).disabled),
         });
       }
     });
@@ -279,126 +245,42 @@ export const Select: React.FC<SelectProps> = ({
       )}
 
       <div className={wrapperClasses}>
-        <button
-          type="button"
-          id={selectId ? `${selectId}-trigger` : undefined}
-          role="combobox"
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-controls={listboxId}
-          aria-disabled={disabled ? true : undefined}
+        <SelectTrigger
+          selectId={selectId}
+          listboxId={listboxId}
+          isOpen={isOpen}
           disabled={disabled}
-          className={styles.trigger}
+          clearable={clearable}
+          currentValue={currentValue}
+          selectedOption={selectedOption}
+          placeholder={placeholder}
+          leftIcon={leftIcon}
+          chevronSize={chevronSize}
           onClick={handleTriggerClick}
           onKeyDown={handleKeyDown}
-        >
-          <div className={styles.triggerContent}>
-            {leftIcon && <span className={styles.icon}>{leftIcon}</span>}
-            {!leftIcon && selectedOption?.icon && (
-              <span className={styles.icon}>{selectedOption.icon}</span>
-            )}
-
-            {selectedOption ? (
-              <span className={styles.valueText}>{selectedOption.label}</span>
-            ) : (
-              <span className={styles.placeholderText}>{placeholder}</span>
-            )}
-          </div>
-
-          <div className={styles.actionsArea}>
-            {clearable && Boolean(currentValue) && !disabled && (
-              <button
-                type="button"
-                aria-label="Clear selection"
-                className={styles.clearBtn}
-                onClick={handleClear}
-              >
-                <X size={chevronSize - 2} />
-              </button>
-            )}
-
-            <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
-              <ChevronDown size={chevronSize} />
-            </span>
-          </div>
-        </button>
+          onClear={handleClear}
+        />
 
         {isOpen && (
-          <div id={listboxId} className={styles.menu} role="listbox">
+          <SelectListbox
+            listRef={listRef}
+            listboxId={listboxId}
+            filteredOptions={filteredOptions}
+            currentValue={currentValue}
+            highlightedIndex={highlightedIndex}
+            emptyMessage={emptyMessage}
+            onSelect={handleSelect}
+          >
             {searchable && (
-              <div className={styles.searchWrapper}>
-                <Search size={14} className={styles.searchIcon} />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={searchQuery}
-                  placeholder={searchPlaceholder}
-                  className={styles.searchInput}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => e.stopPropagation()}
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    aria-label="Clear search"
-                    className={styles.clearBtn}
-                    onClick={() => setSearchQuery('')}
-                  >
-                    <X size={12} />
-                  </button>
-                )}
-              </div>
+              <SelectSearch
+                searchInputRef={searchInputRef}
+                searchQuery={searchQuery}
+                searchPlaceholder={searchPlaceholder}
+                onSearchChange={setSearchQuery}
+                onClearSearch={() => setSearchQuery('')}
+              />
             )}
-
-            <ul ref={listRef} className={styles.optionsList}>
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((opt, index) => {
-                  const isSelected = opt.value === currentValue;
-                  const isHighlighted = index === highlightedIndex;
-
-                  const optionClasses = [
-                    styles.option,
-                    isSelected ? styles.optionSelected : '',
-                    isHighlighted ? styles.optionHighlighted : '',
-                    opt.disabled ? styles.optionDisabled : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ');
-
-                  return (
-                    <li key={opt.value}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={isSelected}
-                        disabled={opt.disabled}
-                        className={optionClasses}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelect(opt.value);
-                        }}
-                      >
-                        <div className={styles.optionContent}>
-                          {opt.icon && <span className={styles.optionIcon}>{opt.icon}</span>}
-                          <div className={styles.optionDetails}>
-                            <span className={styles.optionLabel}>{opt.label}</span>
-                            {opt.description && (
-                              <span className={styles.optionDescription}>{opt.description}</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {isSelected && <Check size={14} className={styles.checkIcon} />}
-                      </button>
-                    </li>
-                  );
-                })
-              ) : (
-                <li className={styles.empty}>{emptyMessage}</li>
-              )}
-            </ul>
-          </div>
+          </SelectListbox>
         )}
       </div>
 

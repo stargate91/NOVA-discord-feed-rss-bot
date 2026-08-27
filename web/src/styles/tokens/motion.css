@@ -1,0 +1,16 @@
+:root {
+  /* Motion & Transition Scales */
+  --motion-duration-fast: 150ms;
+  --motion-duration-base: 250ms;
+  --motion-duration-slow: 350ms;
+  --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-ease-expressive: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: var(--motion-duration-fast) var(--motion-ease-standard);
+  --transition-smooth: var(--motion-duration-base) var(--motion-ease-standard);
+  --transition-normal: var(--motion-duration-base) var(--motion-ease-standard);
+  --transition-spring: var(--motion-duration-slow) var(--motion-ease-expressive);
+  --animation-spin: spin 0.8s linear infinite;
+  --animation-shimmer: shimmer 1.6s linear infinite;
+  --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

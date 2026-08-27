@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 import { useAuth } from './useAuth';
 import { useGuild } from '@/guild';
+import { featureFlags } from '@/constants';
 import styles from './ProtectedRoute.module.css';
 
 interface ProtectedRouteProps {
@@ -20,9 +21,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireAdminSecret = false,
   fallbackRedirect = '/',
 }) => {
-  const { isLoading, isAuthenticated, adminSecret } = useAuth();
+  const { isLoading, isAuthenticated, adminSecret, mockLogin } = useAuth();
   const { checkGuildPermission } = useGuild();
   const { guildId } = useParams<{ guildId?: string }>();
+
+  // In development / mock mode, automatically sign in with demo credentials when accessing protected routes
+  useEffect(() => {
+    if (requireAuth && !isAuthenticated && !isLoading) {
+      if (featureFlags.mockAuth || featureFlags.useMockData) {
+        mockLogin();
+      }
+    }
+  }, [requireAuth, isAuthenticated, isLoading, mockLogin]);
 
   if (isLoading) {
     return (
@@ -35,6 +45,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Authentication check
   if (requireAuth && !isAuthenticated) {
+    if (featureFlags.mockAuth || featureFlags.useMockData) {
+      return children ? <>{children}</> : <Outlet />;
+    }
     return <Navigate to={fallbackRedirect} replace />;
   }
 
@@ -46,10 +59,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Guild permission check
   if (requireGuildManage && guildId) {
     const hasAccess = checkGuildPermission(guildId);
-    if (!hasAccess) {
+    if (!hasAccess && !(featureFlags.mockAuth || featureFlags.useMockData)) {
       return <Navigate to="/servers" replace />;
     }
   }
 
   return children ? <>{children}</> : <Outlet />;
 };
+
