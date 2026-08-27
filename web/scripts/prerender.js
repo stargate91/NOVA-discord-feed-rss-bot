@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distDir = path.resolve(__dirname, '../dist');
+const publicDir = path.resolve(__dirname, '../public');
 
 const BASE_URL = 'https://novafeeds.xyz';
 
@@ -16,6 +17,8 @@ const publicMarketingRoutes = [
       'Lightning-fast social notifications, media drops, release alerts, and live stream updates for your Discord community. Powered by resilient asyncio worker architecture.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '1.0',
+    changefreq: 'daily',
   },
   {
     path: '/premium',
@@ -24,6 +27,8 @@ const publicMarketingRoutes = [
       'Unlock sub-second polling, unlimited feed monitors, custom branding, and priority queue delivery for your Discord servers.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '0.9',
+    changefreq: 'weekly',
   },
   {
     path: '/docs',
@@ -32,6 +37,8 @@ const publicMarketingRoutes = [
       'Explore developer guides, feed configuration tutorials, webhook integration, and architectural documentation for Nova.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '0.8',
+    changefreq: 'weekly',
   },
   {
     path: '/support',
@@ -40,6 +47,8 @@ const publicMarketingRoutes = [
       'Get live assistance, report bugs, join our Discord community, and find answers to common setup questions.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '0.7',
+    changefreq: 'monthly',
   },
   {
     path: '/changelog',
@@ -48,6 +57,8 @@ const publicMarketingRoutes = [
       'See recent feature drops, architectural speed improvements, platform additions, and security enhancements.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '0.7',
+    changefreq: 'weekly',
   },
   {
     path: '/privacy',
@@ -56,6 +67,8 @@ const publicMarketingRoutes = [
       'Learn how Nova protects your Discord server data, encryption standards, and privacy commitments.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '0.5',
+    changefreq: 'monthly',
   },
   {
     path: '/terms',
@@ -64,15 +77,17 @@ const publicMarketingRoutes = [
       'Read the terms of service governing usage of the Nova notification platform and bot services.',
     ogImage: `${BASE_URL}/images/logo.webp`,
     isLocalized: true,
+    priority: '0.5',
+    changefreq: 'monthly',
   },
-  {
-    path: '/servers',
-    title: 'Select Server — Nova Feeds Dashboard',
-    description:
-      'Manage notification feeds, live streams, and automated delivery schedules for your Discord servers.',
-    ogImage: `${BASE_URL}/images/logo.webp`,
-    isLocalized: false,
-  },
+];
+
+const privateNoindexRoutes = [
+  { path: '/servers', title: 'Select Server — Nova Feeds' },
+  { path: '/auth/callback', title: 'Authenticating — Nova Feeds' },
+  { path: '/dev', title: 'Developer Portal — Nova Feeds' },
+  { path: '/dev/ui', title: 'UI Component Catalog — Nova Feeds' },
+  { path: '/components', title: 'UI Components — Nova Feeds' },
 ];
 
 const LOCALES = [
@@ -93,6 +108,8 @@ const LOCALES = [
   'tr',
   'cs',
   'sv',
+  'ar',
+  'he',
 ];
 
 function generateAlternateHreflangTags(routePath) {
@@ -100,7 +117,9 @@ function generateAlternateHreflangTags(routePath) {
   const tags = LOCALES.map(
     (loc) => `    <link rel="alternate" hreflang="${loc}" href="${BASE_URL}/${loc}${cleanPath}" />`
   );
-  tags.push(`    <link rel="alternate" hreflang="x-default" href="${BASE_URL}${cleanPath || '/'}" />`);
+  tags.push(
+    `    <link rel="alternate" hreflang="x-default" href="${BASE_URL}${cleanPath || '/'}" />`
+  );
   return tags.join('\n');
 }
 
@@ -116,36 +135,71 @@ function renderHtmlForRoute(template, route, currentLocale = 'en', targetUrlPath
 
   // Replace Title
   html = html.replace(/<title>.*?<\/title>/gi, `<title>${route.title}</title>`);
-  html = html.replace(/<meta name="title" content=".*?" \/>/gi, `<meta name="title" content="${route.title}" />`);
+  html = html.replace(
+    /<meta name="title" content=".*?" \/>/gi,
+    `<meta name="title" content="${route.title}" />`
+  );
 
   // Replace Description
-  html = html.replace(
-    /<meta name="description" content=".*?" \/>/gi,
-    `<meta name="description" content="${route.description}" />`
-  );
+  if (route.description) {
+    html = html.replace(
+      /<meta name="description" content=".*?" \/>/gi,
+      `<meta name="description" content="${route.description}" />`
+    );
+  }
 
   // Replace Open Graph Meta
-  html = html.replace(/<meta property="og:title" content=".*?" \/>/gi, `<meta property="og:title" content="${route.title}" />`);
   html = html.replace(
-    /<meta property="og:description" content=".*?" \/>/gi,
-    `<meta property="og:description" content="${route.description}" />`
+    /<meta property="og:title" content=".*?" \/>/gi,
+    `<meta property="og:title" content="${route.title}" />`
   );
-  html = html.replace(/<meta property="og:url" content=".*?" \/>/gi, `<meta property="og:url" content="${canonicalUrl}" />`);
-  html = html.replace(/<meta property="og:image" content=".*?" \/>/gi, `<meta property="og:image" content="${ogImg}" />`);
+  if (route.description) {
+    html = html.replace(
+      /<meta property="og:description" content=".*?" \/>/gi,
+      `<meta property="og:description" content="${route.description}" />`
+    );
+  }
+  html = html.replace(
+    /<meta property="og:url" content=".*?" \/>/gi,
+    `<meta property="og:url" content="${canonicalUrl}" />`
+  );
+  html = html.replace(
+    /<meta property="og:image" content=".*?" \/>/gi,
+    `<meta property="og:image" content="${ogImg}" />`
+  );
 
   // Replace Twitter Meta
-  html = html.replace(/<meta property="twitter:title" content=".*?" \/>/gi, `<meta property="twitter:title" content="${route.title}" />`);
   html = html.replace(
-    /<meta property="twitter:description" content=".*?" \/>/gi,
-    `<meta property="twitter:description" content="${route.description}" />`
+    /<meta property="twitter:title" content=".*?" \/>/gi,
+    `<meta property="twitter:title" content="${route.title}" />`
   );
-  html = html.replace(/<meta property="twitter:url" content=".*?" \/>/gi, `<meta property="twitter:url" content="${canonicalUrl}" />`);
-  html = html.replace(/<meta property="twitter:image" content=".*?" \/>/gi, `<meta property="twitter:image" content="${ogImg}" />`);
+  if (route.description) {
+    html = html.replace(
+      /<meta property="twitter:description" content=".*?" \/>/gi,
+      `<meta property="twitter:description" content="${route.description}" />`
+    );
+  }
+  html = html.replace(
+    /<meta property="twitter:url" content=".*?" \/>/gi,
+    `<meta property="twitter:url" content="${canonicalUrl}" />`
+  );
+  html = html.replace(
+    /<meta property="twitter:image" content=".*?" \/>/gi,
+    `<meta property="twitter:image" content="${ogImg}" />`
+  );
 
   // Inject Canonical & Hreflang Tags before </head>
   const injection = `    <link rel="canonical" href="${canonicalUrl}" />\n${hreflangTags}\n  </head>`;
   html = html.replace(/<\/head>/i, injection);
 
+  return html;
+}
+
+function renderNoindexShell(template, route) {
+  let html = template;
+  html = html.replace(/<title>.*?<\/title>/gi, `<title>${route.title}</title>`);
+  const metaInjection = `    <meta name="robots" content="noindex, nofollow" />\n  </head>`;
+  html = html.replace(/<\/head>/i, metaInjection);
   return html;
 }
 
@@ -162,6 +216,57 @@ function writeHtmlToDisk(relativeRoutePath, htmlContent) {
   fs.writeFileSync(path.join(targetDir, 'index.html'), htmlContent, 'utf-8');
 }
 
+function generateSitemapXml() {
+  const lastmod = new Date().toISOString().split('T')[0];
+  const urls = [];
+
+  publicMarketingRoutes.forEach((route) => {
+    const cleanPath = route.path === '/' ? '' : route.path;
+    const loc = `${BASE_URL}${route.path}`;
+
+    const xhtmlLinks = LOCALES.map(
+      (lang) =>
+        `    <xhtml:link rel="alternate" hreflang="${lang}" href="${BASE_URL}/${lang}${cleanPath}" />`
+    ).join('\n');
+
+    urls.push(`  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${route.changefreq || 'weekly'}</changefreq>
+    <priority>${route.priority || '0.8'}</priority>
+${xhtmlLinks}
+  </url>`);
+
+    if (route.isLocalized) {
+      LOCALES.forEach((lang) => {
+        const localizedLoc = `${BASE_URL}/${lang}${cleanPath}`;
+        urls.push(`  <url>
+    <loc>${localizedLoc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${route.changefreq || 'weekly'}</changefreq>
+    <priority>${(Number(route.priority || 0.8) * 0.9).toFixed(1)}</priority>
+${xhtmlLinks}
+  </url>`);
+      });
+    }
+  });
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.join('\n')}
+</urlset>`;
+
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml, 'utf-8');
+  }
+  if (fs.existsSync(publicDir)) {
+    fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml, 'utf-8');
+  }
+
+  console.log(`  ✓ Generated sitemap.xml with ${urls.length} indexable URLs & hreflang annotations`);
+}
+
 function runPrerender() {
   const templatePath = path.join(distDir, 'index.html');
   if (!fs.existsSync(templatePath)) {
@@ -170,11 +275,11 @@ function runPrerender() {
   }
 
   const template = fs.readFileSync(templatePath, 'utf-8');
-  console.log('⚡ Generating Static Pre-rendered HTML Shells (Root + All 17 Language Routes)...');
+  console.log('⚡ Generating Static Pre-rendered HTML Shells (Root + All 19 Language Routes)...');
 
   let generatedCount = 0;
 
-  // 1. Generate Root Routes
+  // 1. Generate Root Marketing Routes
   publicMarketingRoutes.forEach((route) => {
     const html = renderHtmlForRoute(template, route, 'en', route.path);
     writeHtmlToDisk(route.path, html);
@@ -198,8 +303,19 @@ function runPrerender() {
     });
   });
 
+  // 3. Generate Noindex SPA Entry Shells for Private App Routes
+  privateNoindexRoutes.forEach((route) => {
+    const html = renderNoindexShell(template, route);
+    writeHtmlToDisk(route.path, html);
+    generatedCount += 1;
+  });
+  console.log(`  ✓ Pre-rendered ${privateNoindexRoutes.length} private app shells with noindex`);
+
+  // 4. Generate XML Sitemap
+  generateSitemapXml();
+
   console.log(`  ✓ Pre-rendered ${localizedCount} localized routes (${LOCALES.length} languages × ${localizableRoutes.length} pages)`);
-  console.log(`✨ Total: ${generatedCount} static pre-rendered HTML shells generated with full SEO, Open Graph & Hreflang alternate metadata!`);
+  console.log(`✨ Total: ${generatedCount} static HTML shells + sitemap.xml generated with full SEO, Open Graph & Hreflang alternate metadata!`);
 }
 
 runPrerender();

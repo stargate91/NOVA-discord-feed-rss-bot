@@ -3,13 +3,16 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { DiscordUser, AuthContextValue } from './types';
 import { AuthContext, AUTH_TOKEN_KEY, ADMIN_SECRET_KEY } from './context';
 import { buildDiscordOAuthUrl } from './oauth';
+import { getStoredUser, saveStoredUser, clearStoredSession, saveAuthSession } from './session';
 import { queryCache } from '@/api/queryCache';
+import { apiClient } from '@/api/client';
+import { featureFlags } from '@/constants';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-const DEFAULT_DEMO_USER: DiscordUser = {
+export const DEFAULT_DEMO_USER: DiscordUser = {
   id: '123456789012345678',
   username: 'NovaAdmin',
   discriminator: '0001',
@@ -21,35 +24,84 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<DiscordUser | null>(null);
   const [adminSecret, setAdminSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Initialize session from storage
-  useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const savedSecret = localStorage.getItem(ADMIN_SECRET_KEY);
-        if (savedSecret) {
-          setAdminSecret(savedSecret);
-        }
+  const rehydrateSession = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
 
-        const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
-        if (savedToken) {
-          // Initialize session with saved user profile or demo user
-          setUser(DEFAULT_DEMO_USER);
-        }
-      } catch {
-        // Ignore localStorage read errors
-      } finally {
-        setIsLoading(false);
+    try {
+      if (typeof window === 'undefined') return;
+
+      const savedSecret = localStorage.getItem(ADMIN_SECRET_KEY);
+      if (savedSecret) {
+        setAdminSecret(savedSecret);
+        apiClient.setAdminSecret(savedSecret);
       }
-    };
 
-    initializeAuth();
+      const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
+      if (!savedToken) {
+        setUser(null);
+        apiClient.setAuthToken(null);
+        return;
+      }
+
+      apiClient.setAuthToken(savedToken);
+
+      // 1. If mock mode is explicitly configured, use mock user profile
+      if (featureFlags.useMockData) {
+        setUser(DEFAULT_DEMO_USER);
+        saveStoredUser(DEFAULT_DEMO_USER);
+        return;
+      }
+
+      // 2. Try loading cached user profile from localStorage first for instant UI rehydration
+      const cachedUser = getStoredUser();
+      if (cachedUser) {
+        setUser(cachedUser);
+      }
+
+      // 3. Revalidate session profile against real backend
+      try {
+        const liveUser = await apiClient.get<DiscordUser>('/api/v1/users/@me', {
+          timeout: 5000,
+          dedup: true,
+        });
+        setUser(liveUser);
+        saveStoredUser(liveUser);
+      } catch (err: unknown) {
+        // If 401 or token expired, invalidate stored session
+        if (typeof err === 'object' && err !== null && 'status' in err && (err as { status: number }).status === 401) {
+          clearStoredSession();
+          apiClient.clearSession();
+          setUser(null);
+        } else if (!cachedUser) {
+          // If offline/network error and no cached user, fallback to demo if permitted
+          if (featureFlags.mockAuth) {
+            setUser(DEFAULT_DEMO_USER);
+          } else {
+            setError('Failed to revalidate authentication session');
+          }
+        }
+      }
+    } catch {
+      setError('Unexpected error during session rehydration');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  // Initialize session on mount
+  useEffect(() => {
+    rehydrateSession();
+  }, [rehydrateSession]);
 
   const mockLogin = useCallback(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(AUTH_TOKEN_KEY, 'demo_session_token_2026');
+      saveAuthSession('demo_session_token_2026', 86400, undefined, DEFAULT_DEMO_USER);
+      apiClient.setAuthToken('demo_session_token_2026');
       setUser(DEFAULT_DEMO_USER);
+      setError(null);
     }
   }, []);
 
@@ -57,9 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     (redirectUri?: string) => {
       if (typeof window === 'undefined') return;
 
-      // If mock auth is active or local preview, establish session
-      const isMock = import.meta.env.VITE_MOCK_AUTH === 'true' || window.location.hostname === 'localhost';
-      if (isMock) {
+      if (featureFlags.useMockData || featureFlags.mockAuth) {
         mockLogin();
         return;
       }
@@ -72,10 +122,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 
   const logout = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
-    }
+    clearStoredSession();
+    apiClient.clearSession();
     setUser(null);
+    setError(null);
     queryCache.clear();
   }, []);
 
@@ -83,6 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(ADMIN_SECRET_KEY, secret);
     }
+    apiClient.setAdminSecret(secret);
     setAdminSecret(secret);
   }, []);
 
@@ -90,6 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(ADMIN_SECRET_KEY);
     }
+    apiClient.setAdminSecret(null);
     setAdminSecret(null);
   }, []);
 
@@ -99,21 +151,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isLoading,
       user,
       adminSecret,
+      error,
       loginWithDiscord,
       mockLogin,
       logout,
       setAdminSecretKey,
       clearAdminSecretKey,
+      rehydrateSession,
     }),
     [
       user,
       isLoading,
       adminSecret,
+      error,
       loginWithDiscord,
       mockLogin,
       logout,
       setAdminSecretKey,
       clearAdminSecretKey,
+      rehydrateSession,
     ]
   );
 

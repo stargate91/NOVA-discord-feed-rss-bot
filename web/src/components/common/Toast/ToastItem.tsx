@@ -48,7 +48,11 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
   };
 
   return (
-    <div className={`${styles.toast} ${getTypeClass()}`}>
+    <div
+      className={`${styles.toast} ${getTypeClass()}`}
+      role={type === 'error' ? 'alert' : 'status'}
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+    >
       <div className={styles.iconWrapper}>{getIcon()}</div>
 
       <div className={styles.content}>

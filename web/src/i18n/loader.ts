@@ -1,9 +1,10 @@
 import type { SupportedLocale } from './types';
 import { en } from './locales/en';
+import { flattenDictionary } from './utils';
 
 // In-memory cache for loaded locale dictionaries
 const loadedLocalesCache: Partial<Record<SupportedLocale, Record<string, string>>> = {
-  en,
+  en: flattenDictionary(en),
 };
 
 /**
@@ -23,7 +24,7 @@ export const loadLocaleDictionary = async (
       // Dynamic import for non-English locales
       const module = await import(`./locales/${locale}/index.ts`);
       if (module && module[locale]) {
-        dict = module[locale];
+        dict = flattenDictionary(module[locale]);
       }
     } catch {
       // If locale file does not exist yet, fallback to en

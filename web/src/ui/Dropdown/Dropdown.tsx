@@ -9,7 +9,7 @@ import React, { createContext, useContext, useState, useRef, useEffect, useCallb
 import { Search, X } from 'lucide-react';
 import styles from './Dropdown.module.css';
 
-interface DropdownContextValue {
+export interface DropdownContextValue {
   isOpen: boolean;
   align: 'start' | 'end';
   placement: 'bottom' | 'top';
@@ -345,7 +345,7 @@ export const DropdownEmpty: React.FC<DropdownEmptyProps> = ({
 /* --------------------------------------------------------------------------
    Compound Export
    -------------------------------------------------------------------------- */
-interface DropdownCompound extends React.FC<DropdownProps> {
+export interface DropdownCompound extends React.FC<DropdownProps> {
   Trigger: typeof DropdownTrigger;
   Menu: typeof DropdownMenu;
   Search: typeof DropdownSearch;

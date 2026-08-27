@@ -40,4 +40,17 @@ describe('Auth Session Storage & Expiry Tests', () => {
     expect(session.refreshToken).toBeNull();
     expect(session.expiresAt).toBeNull();
   });
+
+  it('should persist and retrieve user profile alongside session', () => {
+    const mockUser = {
+      id: '12345',
+      username: 'TestUser',
+      discriminator: '0001',
+      avatar: '/avatar.webp',
+    };
+
+    saveAuthSession('token_abc', 3600, undefined, mockUser);
+    const session = getStoredSession();
+    expect(session.user).toEqual(mockUser);
+  });
 });

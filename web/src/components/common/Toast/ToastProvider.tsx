@@ -70,7 +70,13 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     <ToastContext.Provider value={value}>
       {children}
       {toasts.length > 0 && (
-        <div className={styles.container}>
+        <div
+          className={styles.container}
+          role="region"
+          aria-label="Notifications"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {toasts.map((toast) => (
             <ToastItem key={toast.id} toast={toast} onDismiss={dismiss} />
           ))}

@@ -151,4 +151,56 @@ describe('ApiClient Unit Tests', () => {
 
     unsubscribe();
   });
+
+  it('should cleanly normalize baseUrl and avoid double slashes', async () => {
+    const customClient = new ApiClient('http://localhost:8080///');
+    expect(customClient.getBaseUrl()).toBe('http://localhost:8080');
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: () => Promise.resolve('{}'),
+      json: () => Promise.resolve({}),
+    });
+
+    await customClient.get('api/data');
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/data',
+      expect.anything()
+    );
+  });
+
+  it('should throttle and queue concurrent mutations when exceeding concurrency limit', async () => {
+    const queueClient = new ApiClient({ baseUrl: 'http://localhost:8080', maxConcurrentMutations: 2 });
+    let activeInFlight = 0;
+    let maxObservedInFlight = 0;
+
+    globalThis.fetch = vi.fn().mockImplementation(() => {
+      activeInFlight += 1;
+      maxObservedInFlight = Math.max(maxObservedInFlight, activeInFlight);
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          activeInFlight -= 1;
+          resolve({
+            ok: true,
+            status: 200,
+            headers: new Headers({ 'content-type': 'application/json' }),
+            text: () => Promise.resolve('{"ok":true}'),
+            json: () => Promise.resolve({ ok: true }),
+          });
+        }, 20);
+      });
+    });
+
+    await Promise.all([
+      queueClient.post('/api/item1', {}),
+      queueClient.post('/api/item2', {}),
+      queueClient.post('/api/item3', {}),
+      queueClient.post('/api/item4', {}),
+    ]);
+
+    expect(maxObservedInFlight).toBe(2);
+  });
 });

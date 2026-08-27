@@ -2,7 +2,7 @@ import React from 'react';
 import { Skeleton } from './Skeleton';
 import styles from './Skeleton.module.css';
 
-interface CardSkeletonProps {
+export interface CardSkeletonProps {
   hasAvatar?: boolean;
   lines?: number;
   className?: string;

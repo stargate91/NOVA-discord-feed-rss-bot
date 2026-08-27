@@ -14,7 +14,7 @@ import { GuildFeedsPage } from '@/pages/app/GuildFeedsPage';
 import { GuildAnalyticsPage } from '@/pages/app/GuildAnalyticsPage';
 import { GuildSettingsPage } from '@/pages/app/GuildSettingsPage';
 import { GuildPremiumPage } from '@/pages/app/GuildPremiumPage';
-import { DeveloperPage } from '@/pages/DeveloperPage';
+import { DeveloperPage } from '@/pages/dev/DeveloperPage';
 import { UiCatalogPage } from '@/pages/dev/UiCatalogPage';
 
 const renderWithAllProviders = (

@@ -15,6 +15,7 @@ export interface GuildState {
   guilds: UserGuild[];
   activeGuildId: string | null;
   isLoadingGuilds: boolean;
+  error: string | null;
 }
 
 export interface GuildContextValue extends GuildState {
@@ -23,4 +24,5 @@ export interface GuildContextValue extends GuildState {
   selectGuild: (guildId: string | null) => void;
   checkGuildPermission: (guildId: string) => boolean;
   getGuildById: (guildId: string) => UserGuild | undefined;
+  refetchGuilds: () => Promise<void>;
 }

@@ -21,7 +21,7 @@ export interface RequestOptions<T = unknown> extends RetryOptions {
   signal?: AbortSignal;
   body?: unknown;
   dedup?: boolean;
-  validate?: ResponseValidator<T> | ((data: unknown) => boolean);
+  validate?: ResponseValidator<T>;
 }
 
 export class ApiError extends Error {

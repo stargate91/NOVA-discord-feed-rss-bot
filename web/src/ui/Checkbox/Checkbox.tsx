@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { Check, Minus } from 'lucide-react';
 import styles from './Checkbox.module.css';
 
-interface CheckboxGroupContextValue {
+export interface CheckboxGroupContextValue {
   value?: string[];
   onChange?: (val: string, checked: boolean) => void;
   disabled?: boolean;

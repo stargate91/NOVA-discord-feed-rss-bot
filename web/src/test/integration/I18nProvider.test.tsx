@@ -65,4 +65,31 @@ describe('I18nProvider Integration', () => {
     expect(screen.getByTestId('missing')).toHaveTextContent('nonExistentKey');
     warnSpy.mockRestore();
   });
+
+  it('should update document direction to rtl when switching to an RTL language like Arabic', async () => {
+    const RTLConsumer: React.FC = () => {
+      const { setLocale, direction } = useTranslation();
+      return (
+        <div>
+          <span data-testid="dir-val">{direction}</span>
+          <button type="button" onClick={() => setLocale('ar')} data-testid="switch-ar">
+            Arabic
+          </button>
+        </div>
+      );
+    };
+
+    const user = userEvent.setup();
+    render(
+      <I18nProvider>
+        <RTLConsumer />
+      </I18nProvider>
+    );
+
+    expect(screen.getByTestId('dir-val')).toHaveTextContent('ltr');
+
+    await user.click(screen.getByTestId('switch-ar'));
+    expect(screen.getByTestId('dir-val')).toHaveTextContent('rtl');
+    expect(document.documentElement.getAttribute('dir')).toBe('rtl');
+  });
 });

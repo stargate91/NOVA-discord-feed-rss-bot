@@ -1,12 +1,13 @@
 import type { HTMLAttributes, ReactNode, MouseEvent } from 'react';
 import React, { createContext, useContext, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import styles from './Modal.module.css';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
-interface ModalContextValue {
+export interface ModalContextValue {
   onClose?: () => void;
 }
 
@@ -26,6 +27,7 @@ export interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   closeOnOverlayClick?: boolean;
   closeOnEsc?: boolean;
   showCloseButton?: boolean;
+  portalTarget?: HTMLElement | null;
   children: ReactNode;
   className?: string;
   id?: string;
@@ -40,6 +42,7 @@ export const ModalRoot: React.FC<ModalProps> = ({
   closeOnOverlayClick = true,
   closeOnEsc = true,
   showCloseButton = true,
+  portalTarget,
   children,
   className = '',
   id,
@@ -89,7 +92,7 @@ export const ModalRoot: React.FC<ModalProps> = ({
 
   const hasMonolithicHeader = Boolean(title);
 
-  return (
+  const modalNode = (
     <ModalContext.Provider value={{ onClose }}>
       <div className={styles.overlay} onClick={handleOverlayClick} role="presentation">
         <div
@@ -121,6 +124,19 @@ export const ModalRoot: React.FC<ModalProps> = ({
       </div>
     </ModalContext.Provider>
   );
+
+  const target =
+    portalTarget !== undefined
+      ? portalTarget
+      : typeof document !== 'undefined'
+        ? document.body
+        : null;
+
+  if (!target) {
+    return modalNode;
+  }
+
+  return createPortal(modalNode, target);
 };
 
 /* --------------------------------------------------------------------------
@@ -190,7 +206,7 @@ export const ModalFooter: React.FC<HTMLAttributes<HTMLDivElement>> = ({
 /* --------------------------------------------------------------------------
    Compound Export
    -------------------------------------------------------------------------- */
-interface ModalCompound extends React.FC<ModalProps> {
+export interface ModalCompound extends React.FC<ModalProps> {
   Header: typeof ModalHeader;
   Title: typeof ModalTitle;
   Body: typeof ModalBody;

@@ -58,6 +58,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     root.setAttribute('data-theme', resolvedTheme);
     root.style.colorScheme = resolvedTheme;
 
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#070a12' : '#f8fafc');
+    }
+
     try {
       localStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch {

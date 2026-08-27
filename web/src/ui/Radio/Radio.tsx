@@ -2,7 +2,7 @@ import type { InputHTMLAttributes, ReactNode } from 'react';
 import React, { createContext, useContext, useState } from 'react';
 import styles from './Radio.module.css';
 
-interface RadioGroupContextValue {
+export interface RadioGroupContextValue {
   name?: string;
   value?: string;
   onChange?: (val: string) => void;
@@ -82,7 +82,7 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   id?: string;
 }
 
-export const Radio: React.FC<RadioProps> = ({
+const RadioBase: React.FC<RadioProps> = ({
   value,
   label,
   description,
@@ -150,3 +150,10 @@ export const Radio: React.FC<RadioProps> = ({
     </label>
   );
 };
+
+export interface RadioCompound extends React.FC<RadioProps> {
+  Group: typeof RadioGroup;
+}
+
+export const Radio = RadioBase as RadioCompound;
+Radio.Group = RadioGroup;

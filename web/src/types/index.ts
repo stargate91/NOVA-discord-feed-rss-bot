@@ -59,11 +59,14 @@ export interface UpdateMonitorPayload {
   status?: FeedMonitorStatus;
 }
 
+import type { GuildTier, SubscriptionTierNumber } from '@/auth/entitlements';
+export type { GuildTier, SubscriptionTierNumber } from '@/auth/entitlements';
+
 // ------------------------------------------------------------------------------
 // Guild & Subscription Entities
 // ------------------------------------------------------------------------------
 
-export type SubscriptionTier = 0 | 1 | 2 | 3; // 0: Free, 1: Plus, 2: Ultimate, 3: Master
+export type SubscriptionTier = GuildTier | SubscriptionTierNumber;
 
 export interface GuildSummary {
   guild_id: string;
@@ -176,7 +179,7 @@ export function isGuildSummary(data: unknown): data is GuildSummary {
   return (
     typeof g.guild_id === 'string' &&
     typeof g.name === 'string' &&
-    typeof g.tier === 'number' &&
+    (typeof g.tier === 'number' || typeof g.tier === 'string') &&
     typeof g.active_monitors === 'number' &&
     typeof g.max_monitors === 'number'
   );

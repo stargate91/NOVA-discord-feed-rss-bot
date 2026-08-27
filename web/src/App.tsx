@@ -10,6 +10,7 @@ import { ToastProvider } from '@/components/common/Toast';
 import { ConfirmProvider } from '@/components/common/ConfirmDialog';
 import { OfflineBanner } from '@/components/common/OfflineBanner';
 import { PageLoader } from '@/components/common/PageLoader';
+import { ScrollToTop } from '@/components/common/ScrollToTop';
 import { LocaleRouteWrapper } from '@/components/common/LocaleRouteWrapper';
 import { AuthProvider, ProtectedRoute } from '@/auth';
 import { GuildProvider } from '@/guild';
@@ -63,7 +64,7 @@ const GuildSettingsPage = lazyWithRetry(() =>
   import('@/pages/app/GuildSettingsPage').then((m) => ({ default: m.GuildSettingsPage }))
 );
 const DeveloperPage = lazyWithRetry(() =>
-  import('@/pages/DeveloperPage').then((m) => ({ default: m.DeveloperPage }))
+  import('@/pages/dev/DeveloperPage').then((m) => ({ default: m.DeveloperPage }))
 );
 const AuthCallbackPage = lazyWithRetry(() =>
   import('@/pages/auth/AuthCallbackPage').then((m) => ({ default: m.AuthCallbackPage }))
@@ -71,6 +72,22 @@ const AuthCallbackPage = lazyWithRetry(() =>
 const UiCatalogPage = lazyWithRetry(() =>
   import('@/pages/dev/UiCatalogPage').then((m) => ({ default: m.UiCatalogPage }))
 );
+
+interface MarketingRouteDef {
+  path: string;
+  component: React.ComponentType;
+  isIndex?: boolean;
+}
+
+const MARKETING_ROUTES: MarketingRouteDef[] = [
+  { path: '', component: HomePage, isIndex: true },
+  { path: 'premium', component: PremiumPage },
+  { path: 'docs', component: DocsPage },
+  { path: 'support', component: SupportPage },
+  { path: 'changelog', component: ChangelogPage },
+  { path: 'terms', component: TermsPage },
+  { path: 'privacy', component: PrivacyPage },
+];
 
 export const App: React.FC = () => {
   const [health, setHealth] = useState<HealthStatus | null>(null);
@@ -114,6 +131,7 @@ export const App: React.FC = () => {
               <AuthProvider>
                 <GuildProvider>
                   <BrowserRouter>
+                    <ScrollToTop />
                     <Suspense fallback={<PageLoader />}>
                       <Routes>
                         {/* 1. Public Marketing Routes with optional /:lang prefix */}
@@ -121,23 +139,24 @@ export const App: React.FC = () => {
                           element={<PublicLayout health={health} loadingHealth={loadingHealth} />}
                         >
                           {/* Root default routes */}
-                          <Route path="/" element={<HomePage />} />
-                          <Route path="/premium" element={<PremiumPage />} />
-                          <Route path="/docs" element={<DocsPage />} />
-                          <Route path="/support" element={<SupportPage />} />
-                          <Route path="/changelog" element={<ChangelogPage />} />
-                          <Route path="/terms" element={<TermsPage />} />
-                          <Route path="/privacy" element={<PrivacyPage />} />
+                          {MARKETING_ROUTES.map(({ path, component: Component, isIndex }) =>
+                            isIndex ? (
+                              <Route key="root-index" path="/" element={<Component />} />
+                            ) : (
+                              <Route key={`root-${path}`} path={`/${path}`} element={<Component />} />
+                            )
+                          )}
 
                           {/* Validated multi-language routes */}
                           <Route path="/:lang" element={<LocaleRouteWrapper />}>
-                            <Route index element={<HomePage />} />
-                            <Route path="premium" element={<PremiumPage />} />
-                            <Route path="docs" element={<DocsPage />} />
-                            <Route path="support" element={<SupportPage />} />
-                            <Route path="changelog" element={<ChangelogPage />} />
-                            <Route path="terms" element={<TermsPage />} />
-                            <Route path="privacy" element={<PrivacyPage />} />
+                            {MARKETING_ROUTES.map(({ path, component: Component, isIndex }) =>
+                              isIndex ? (
+                                <Route key="lang-index" index element={<Component />} />
+                              ) : (
+                                <Route key={`lang-${path}`} path={path} element={<Component />} />
+                              )
+                            )}
+                            <Route path="*" element={<NotFoundPage />} />
                           </Route>
 
                           {/* Developer Management Portal (Protected by Auth) & UI Catalog */}

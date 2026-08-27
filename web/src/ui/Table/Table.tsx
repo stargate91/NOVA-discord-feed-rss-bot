@@ -171,7 +171,7 @@ export const TableCell: React.FC<TableCellProps> = ({
   );
 };
 
-interface TableCompound extends React.FC<TableProps> {
+export interface TableCompound extends React.FC<TableProps> {
   Header: typeof TableHeader;
   Body: typeof TableBody;
   Row: typeof TableRow;

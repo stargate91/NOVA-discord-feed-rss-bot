@@ -6,7 +6,7 @@ import styles from './Accordion.module.css';
 export type AccordionType = 'single' | 'multiple';
 export type AccordionVariant = 'default' | 'card' | 'glass' | 'bordered';
 
-interface AccordionContextValue {
+export interface AccordionContextValue {
   type: AccordionType;
   openValues: string[];
   toggleValue: (val: string) => void;
@@ -23,7 +23,7 @@ const useAccordion = () => {
   return context;
 };
 
-interface AccordionItemContextValue {
+export interface AccordionItemContextValue {
   value: string;
   isOpen: boolean;
   disabled: boolean;
@@ -222,7 +222,7 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({
 /* --------------------------------------------------------------------------
    Compound Export
    -------------------------------------------------------------------------- */
-interface AccordionCompound extends React.FC<AccordionProps> {
+export interface AccordionCompound extends React.FC<AccordionProps> {
   Item: typeof AccordionItem;
   Trigger: typeof AccordionTrigger;
   Content: typeof AccordionContent;

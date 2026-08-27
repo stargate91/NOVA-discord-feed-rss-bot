@@ -49,6 +49,12 @@ const getCookie = (name: string): string | null => {
 
 export type TokenRefreshHandler = () => Promise<string | null>;
 
+export interface ApiClientOptions {
+  baseUrl?: string;
+  defaultTimeout?: number;
+  maxConcurrentMutations?: number;
+}
+
 export class ApiClient {
   private baseUrl: string;
   private defaultTimeout: number = 10000;
@@ -65,8 +71,34 @@ export class ApiClient {
   private isRefreshingToken: boolean = false;
   private refreshSubscribers: ((token: string | null) => void)[] = [];
 
-  public constructor(baseUrl: string = '') {
-    this.baseUrl = baseUrl;
+  // Client-side concurrency control & burst rate limiting for mutating requests
+  private activeMutations: number = 0;
+  private maxConcurrentMutations: number = 6;
+  private mutationQueue: (() => void)[] = [];
+
+  public constructor(baseUrlOrOptions: string | ApiClientOptions = '') {
+    const options: ApiClientOptions =
+      typeof baseUrlOrOptions === 'string'
+        ? { baseUrl: baseUrlOrOptions }
+        : baseUrlOrOptions ?? {};
+
+    const envBaseUrl =
+      typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
+        ? String(import.meta.env.VITE_API_URL)
+        : '';
+
+    const rawUrl = options.baseUrl !== undefined ? options.baseUrl : envBaseUrl;
+    this.baseUrl = rawUrl ? rawUrl.replace(/\/+$/, '') : '';
+    this.defaultTimeout = options.defaultTimeout ?? 10000;
+    this.maxConcurrentMutations = options.maxConcurrentMutations ?? 6;
+  }
+
+  public getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
+  public setBaseUrl(url: string): void {
+    this.baseUrl = url ? url.replace(/\/+$/, '') : '';
   }
 
   public setAuthToken(token: string | null): void {
@@ -183,6 +215,28 @@ export class ApiClient {
     }
   }
 
+  private async acquireMutationSlot(): Promise<void> {
+    if (this.activeMutations < this.maxConcurrentMutations) {
+      this.activeMutations += 1;
+      return;
+    }
+
+    return new Promise<void>((resolve) => {
+      this.mutationQueue.push(() => {
+        this.activeMutations += 1;
+        resolve();
+      });
+    });
+  }
+
+  private releaseMutationSlot(): void {
+    this.activeMutations = Math.max(0, this.activeMutations - 1);
+    const next = this.mutationQueue.shift();
+    if (next) {
+      next();
+    }
+  }
+
   public async request<T>(
     endpoint: string,
     method: string,
@@ -202,7 +256,8 @@ export class ApiClient {
       adminSecret: overrideAdminSecret,
     } = options;
 
-    const url = `${this.baseUrl}${endpoint}`;
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = this.baseUrl ? `${this.baseUrl}${cleanEndpoint}` : cleanEndpoint;
 
     // Circuit Breaker check: fail-fast if backend is repeatedly failing
     if (!apiCircuitBreaker.isAvailable()) {
@@ -222,145 +277,157 @@ export class ApiClient {
       return this.inFlightRequests.get(dedupKey) as Promise<T>;
     }
 
+    const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase());
+
     const executeRequest = async (): Promise<T> => {
+      if (isMutation) {
+        await this.acquireMutationSlot();
+      }
+
       let attempt = 0;
       let hasRefreshedAuth = false;
 
-      while (attempt <= maxRetries) {
-        const timeoutController = new AbortController();
-        const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
-        const mergedSignal = combineSignals([customSignal, timeoutController.signal]);
+      try {
+        while (attempt <= maxRetries) {
+          const timeoutController = new AbortController();
+          const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
+          const mergedSignal = combineSignals([customSignal, timeoutController.signal]);
 
-        const authHeaders = this.getAuthHeaders(method);
-        if (overrideToken) {
-          authHeaders['Authorization'] = `Bearer ${overrideToken}`;
-        }
-        if (overrideAdminSecret) {
-          authHeaders['X-Webhook-Secret'] = overrideAdminSecret;
-        }
+          const authHeaders = this.getAuthHeaders(method);
+          if (overrideToken) {
+            authHeaders['Authorization'] = `Bearer ${overrideToken}`;
+          }
+          if (overrideAdminSecret) {
+            authHeaders['X-Webhook-Secret'] = overrideAdminSecret;
+          }
 
-        const finalHeaders: Record<string, string> = {
-          Accept: 'application/json',
-          ...authHeaders,
-          ...headers,
-        };
+          const finalHeaders: Record<string, string> = {
+            Accept: 'application/json',
+            ...authHeaders,
+            ...headers,
+          };
 
-        let serializedBody: string | undefined;
-        if (body !== undefined) {
-          finalHeaders['Content-Type'] = 'application/json';
-          serializedBody = JSON.stringify(body);
-        }
+          let serializedBody: string | undefined;
+          if (body !== undefined) {
+            finalHeaders['Content-Type'] = 'application/json';
+            serializedBody = JSON.stringify(body);
+          }
 
-        try {
-          const response = await fetch(url, {
-            method,
-            headers: finalHeaders,
-            body: serializedBody,
-            signal: mergedSignal,
-          });
+          try {
+            const response = await fetch(url, {
+              method,
+              headers: finalHeaders,
+              body: serializedBody,
+              signal: mergedSignal,
+            });
 
-          clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
 
-          // Handle 401 Unauthorized with token refresh if configured
-          if (response.status === 401 && !hasRefreshedAuth && this.tokenRefreshHandler) {
-            hasRefreshedAuth = true;
-            const refreshedToken = await this.handleTokenRefresh();
-            if (refreshedToken) {
-              continue; // Retry with refreshed token
+            // Handle 401 Unauthorized with token refresh if configured
+            if (response.status === 401 && !hasRefreshedAuth && this.tokenRefreshHandler) {
+              hasRefreshedAuth = true;
+              const refreshedToken = await this.handleTokenRefresh();
+              if (refreshedToken) {
+                continue; // Retry with refreshed token
+              }
             }
-          }
 
-          // Parse JSON if available
-          let responseData: unknown = null;
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            responseData = await response.json();
-          } else {
-            const text = await response.text();
-            responseData = text ? { message: text } : null;
-          }
+            // Parse JSON if available
+            let responseData: unknown = null;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              responseData = await response.json();
+            } else {
+              const text = await response.text();
+              responseData = text ? { message: text } : null;
+            }
 
-          if (!response.ok) {
-            const errorMessage =
-              typeof responseData === 'object' && responseData && 'message' in responseData
-                ? String((responseData as { message: unknown }).message)
-                : `HTTP Error ${response.status}: ${response.statusText}`;
+            if (!response.ok) {
+              const errorMessage =
+                typeof responseData === 'object' && responseData && 'message' in responseData
+                  ? String((responseData as { message: unknown }).message)
+                  : `HTTP Error ${response.status}: ${response.statusText}`;
 
-            const apiError = new ApiError(errorMessage, response.status, responseData, url);
+              const apiError = new ApiError(errorMessage, response.status, responseData, url);
 
-            // Record server failure on circuit breaker for 5xx
-            if (response.status >= 500) {
+              // Record server failure on circuit breaker for 5xx
+              if (response.status >= 500) {
+                apiCircuitBreaker.recordFailure();
+              }
+
+              // Retry on designated status codes
+              if (
+                attempt < maxRetries &&
+                retryOnStatus.includes(response.status) &&
+                !customSignal?.aborted
+              ) {
+                attempt += 1;
+                const backoff = retryDelayMs * 2 ** (attempt - 1) + Math.random() * 100;
+                await this.sleep(backoff);
+                continue;
+              }
+
+              this.notifyError(apiError);
+              throw apiError;
+            }
+
+            // Response validation if provided
+            if (validate && !validate(responseData)) {
+              const validationError = new ApiError(
+                'Response schema validation failed',
+                response.status,
+                responseData,
+                url
+              );
+              this.notifyError(validationError);
+              throw validationError;
+            }
+
+            // Record success on circuit breaker
+            apiCircuitBreaker.recordSuccess();
+
+            return responseData as T;
+          } catch (err: unknown) {
+            clearTimeout(timeoutId);
+
+            if (err instanceof ApiError) {
+              throw err;
+            }
+
+            const isAbort = err instanceof DOMException && err.name === 'AbortError';
+            const isUserAbort = customSignal?.aborted;
+            const fallbackMessage = isAbort
+              ? isUserAbort
+                ? 'Request was cancelled'
+                : `Request timeout after ${timeout}ms`
+              : (err as Error).message || 'Network communication failure';
+
+            const networkError = new ApiError(fallbackMessage, isAbort ? 408 : 0, null, url);
+
+            // Record failure on circuit breaker for network failures
+            if (!isUserAbort) {
               apiCircuitBreaker.recordFailure();
             }
 
-            // Retry on designated status codes
-            if (
-              attempt < maxRetries &&
-              retryOnStatus.includes(response.status) &&
-              !customSignal?.aborted
-            ) {
+            // Retry on network errors or timeouts (unless explicitly aborted by caller)
+            if (attempt < maxRetries && !isUserAbort) {
               attempt += 1;
               const backoff = retryDelayMs * 2 ** (attempt - 1) + Math.random() * 100;
               await this.sleep(backoff);
               continue;
             }
 
-            this.notifyError(apiError);
-            throw apiError;
+            this.notifyError(networkError);
+            throw networkError;
           }
+        }
 
-          // Response validation if provided
-          if (validate && !validate(responseData)) {
-            const validationError = new ApiError(
-              'Response schema validation failed',
-              response.status,
-              responseData,
-              url
-            );
-            this.notifyError(validationError);
-            throw validationError;
-          }
-
-          // Record success on circuit breaker
-          apiCircuitBreaker.recordSuccess();
-
-          return responseData as T;
-        } catch (err: unknown) {
-          clearTimeout(timeoutId);
-
-          if (err instanceof ApiError) {
-            throw err;
-          }
-
-          const isAbort = err instanceof DOMException && err.name === 'AbortError';
-          const isUserAbort = customSignal?.aborted;
-          const fallbackMessage = isAbort
-            ? isUserAbort
-              ? 'Request was cancelled'
-              : `Request timeout after ${timeout}ms`
-            : (err as Error).message || 'Network communication failure';
-
-          const networkError = new ApiError(fallbackMessage, isAbort ? 408 : 0, null, url);
-
-          // Record failure on circuit breaker for network failures
-          if (!isUserAbort) {
-            apiCircuitBreaker.recordFailure();
-          }
-
-          // Retry on network errors or timeouts (unless explicitly aborted by caller)
-          if (attempt < maxRetries && !isUserAbort) {
-            attempt += 1;
-            const backoff = retryDelayMs * 2 ** (attempt - 1) + Math.random() * 100;
-            await this.sleep(backoff);
-            continue;
-          }
-
-          this.notifyError(networkError);
-          throw networkError;
+        throw new ApiError('Request failed after max retries', 0, null, url);
+      } finally {
+        if (isMutation) {
+          this.releaseMutationSlot();
         }
       }
-
-      throw new ApiError('Request failed after max retries', 0, null, url);
     };
 
     const requestPromise = executeRequest().finally(() => {

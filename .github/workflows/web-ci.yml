@@ -1,0 +1,62 @@
+name: Web Frontend CI / CD Pipeline
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'web/**'
+      - '.github/workflows/web-ci.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'web/**'
+
+jobs:
+  quality-and-test:
+    name: Code Quality, Tests & Coverage Gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript Typecheck
+        run: npm run typecheck
+
+      - name: ESLint Code Linter
+        run: npm run lint
+
+      - name: Stylelint CSS Linter
+        run: npm run lint:style
+
+      - name: Prettier Format Check
+        run: npm run format:check
+
+      - name: Run Vitest Suite with Coverage Threshold
+        run: npm run test:coverage
+
+      - name: Build Production Bundle & Verify Prerender Static Shells
+        run: npm run build
+        env:
+          VITE_API_URL: 'https://api.novafeeds.xyz'
+          VITE_MOCK_AUTH: 'false'
+          VITE_USE_MOCK_DATA: 'false'
+
+      - name: Verify Sitemap & Robots Output
+        run: |
+          test -f dist/sitemap.xml || exit 1
+          test -f dist/robots.txt || exit 1
+          test -f dist/index.html || exit 1

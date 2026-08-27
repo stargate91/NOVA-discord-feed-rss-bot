@@ -11,6 +11,7 @@ export interface AuthState {
   isLoading: boolean;
   user: DiscordUser | null;
   adminSecret: string | null;
+  error: string | null;
 }
 
 export interface AuthContextValue extends AuthState {
@@ -19,6 +20,7 @@ export interface AuthContextValue extends AuthState {
   logout: () => void;
   setAdminSecretKey: (secret: string) => void;
   clearAdminSecretKey: () => void;
+  rehydrateSession: () => Promise<void>;
 }
 
 // Re-export UserGuild from guild domain for compatibility

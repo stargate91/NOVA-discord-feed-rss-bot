@@ -1,3 +1,4 @@
+import type { DependencyList } from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiError } from './types';
 import { queryCache } from './queryCache';
@@ -23,9 +24,9 @@ export interface UseApiQueryResult<T> {
 
 export type QueryFunction<T> = (signal: AbortSignal) => Promise<T>;
 
-export const useApiQuery = <T>(
+export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
   queryFn: QueryFunction<T>,
-  deps: readonly unknown[] = [],
+  deps: TDeps = [] as unknown as TDeps,
   options: UseApiQueryOptions = {}
 ): UseApiQueryResult<T> => {
   const {

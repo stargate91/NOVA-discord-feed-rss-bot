@@ -21,11 +21,13 @@ export const ConfirmProvider: React.FC<ConfirmProviderProps> = ({ children }) =>
 
   const closeModal = useCallback(() => {
     setModalContent(null);
-    if (confirmState) {
-      confirmState.resolve(false);
-      setConfirmState(null);
-    }
-  }, [confirmState]);
+    setConfirmState((prev) => {
+      if (prev) {
+        prev.resolve(false);
+      }
+      return null;
+    });
+  }, []);
 
   const confirm = useCallback((options: ConfirmOptions): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
@@ -33,12 +35,14 @@ export const ConfirmProvider: React.FC<ConfirmProviderProps> = ({ children }) =>
     });
   }, []);
 
-  const handleConfirmResolve = (value: boolean) => {
-    if (confirmState) {
-      confirmState.resolve(value);
-      setConfirmState(null);
-    }
-  };
+  const handleConfirmResolve = useCallback((value: boolean) => {
+    setConfirmState((prev) => {
+      if (prev) {
+        prev.resolve(value);
+      }
+      return null;
+    });
+  }, []);
 
   const value: ConfirmContextValue = useMemo(
     () => ({

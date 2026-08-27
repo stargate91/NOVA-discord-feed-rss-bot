@@ -4,13 +4,27 @@ export interface CacheEntry<T> {
   ttl: number;
 }
 
-class QueryCache {
+export interface QueryCacheOptions {
+  maxEntries?: number;
+}
+
+export class QueryCache {
   private cache: Map<string, CacheEntry<unknown>> = new Map();
   private subscribers: Map<string, Set<(data: unknown) => void>> = new Map();
+  private maxEntries: number;
+
+  public constructor(options: QueryCacheOptions = {}) {
+    this.maxEntries = options.maxEntries ?? 200;
+  }
 
   public get<T>(key: string): T | undefined {
     const entry = this.cache.get(key);
     if (!entry) return undefined;
+
+    // LRU recency update: re-insert key to maintain true LRU order
+    this.cache.delete(key);
+    this.cache.set(key, entry);
+
     return entry.data as T;
   }
 
@@ -21,6 +35,17 @@ class QueryCache {
   }
 
   public set<T>(key: string, data: T, ttlMs: number = 60000): void {
+    // If key exists, delete it so re-insertion places it at the end (most recent)
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    } else if (this.cache.size >= this.maxEntries) {
+      // LRU Eviction: Remove the oldest entry (first item in Map iterator)
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey);
+      }
+    }
+
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -75,6 +100,26 @@ class QueryCache {
 
   public clear(): void {
     this.cache.clear();
+  }
+
+  public size(): number {
+    return this.cache.size;
+  }
+
+  public getMaxEntries(): number {
+    return this.maxEntries;
+  }
+
+  public setMaxEntries(max: number): void {
+    this.maxEntries = max;
+    while (this.cache.size > this.maxEntries) {
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey);
+      } else {
+        break;
+      }
+    }
   }
 }
 

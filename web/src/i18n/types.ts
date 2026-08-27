@@ -17,7 +17,9 @@ export type SupportedLocale =
   | 'nl'
   | 'tr'
   | 'cs'
-  | 'sv';
+  | 'sv'
+  | 'ar'
+  | 'he';
 
 export type Namespace =
   | 'common'
@@ -35,14 +37,20 @@ export interface LocaleInfo {
   code: SupportedLocale;
   name: string;
   flag: string;
+  dir?: 'ltr' | 'rtl';
 }
 
-export type TranslationDictionary = Record<TranslationKey, string>;
+export type NestedTranslationDictionary = {
+  [key: string]: string | NestedTranslationDictionary;
+};
+
+export type TranslationDictionary = Record<string, string>;
 
 export interface I18nContextValue {
   locale: SupportedLocale;
+  direction: 'ltr' | 'rtl';
   setLocale: (locale: SupportedLocale) => void;
-  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
+  t: (key: TranslationKey | string, params?: Record<string, string | number>) => string;
   supportedLocales: readonly LocaleInfo[];
   isLoadingLocale?: boolean;
 }

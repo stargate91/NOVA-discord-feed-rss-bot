@@ -1,18 +1,10 @@
+# Nova Feeds Production Robots Configuration
 User-agent: *
 Allow: /
-Allow: /premium
-Allow: /docs
-Allow: /support
-Allow: /changelog
-Allow: /terms
-Allow: /privacy
-Allow: /servers
-
-# Disallow private user/guild dashboard sessions, admin portal, and API routes from crawling
 Disallow: /dashboard/
-Disallow: /dev
-Disallow: /api/
-Disallow: /health
+Disallow: /servers
+Disallow: /auth/
+Disallow: /dev/
 
+# XML Sitemap Location
 Sitemap: https://novafeeds.xyz/sitemap.xml
-

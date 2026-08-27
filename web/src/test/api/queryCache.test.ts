@@ -47,4 +47,25 @@ describe('QueryCache Unit Tests', () => {
     queryCache.invalidate('guild_2_feeds');
     expect(queryCache.get('guild_2_feeds')).toBeUndefined();
   });
+
+  it('should enforce maxEntries limit and evict least recently used entries', () => {
+    queryCache.setMaxEntries(3);
+    queryCache.set('key1', 1);
+    queryCache.set('key2', 2);
+    queryCache.set('key3', 3);
+
+    expect(queryCache.size()).toBe(3);
+
+    // Access key1 to make key2 the least recently used
+    queryCache.get('key1');
+
+    // Add key4, which should evict key2
+    queryCache.set('key4', 4);
+
+    expect(queryCache.size()).toBe(3);
+    expect(queryCache.get('key1')).toBe(1);
+    expect(queryCache.get('key2')).toBeUndefined(); // evicted
+    expect(queryCache.get('key3')).toBe(3);
+    expect(queryCache.get('key4')).toBe(4);
+  });
 });

@@ -6,7 +6,7 @@ export type TabsVariant = 'line' | 'pill' | 'card' | 'glass';
 export type TabsSize = 'sm' | 'md' | 'lg';
 export type TabsOrientation = 'horizontal' | 'vertical';
 
-interface TabsContextValue {
+export interface TabsContextValue {
   activeTab: string;
   setActiveTab: (val: string) => void;
   variant: TabsVariant;
@@ -212,7 +212,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({ value, children, className =
 /* --------------------------------------------------------------------------
    Compound Export
    -------------------------------------------------------------------------- */
-interface TabsCompound extends React.FC<TabsProps> {
+export interface TabsCompound extends React.FC<TabsProps> {
   List: typeof TabsList;
   Tab: typeof Tab;
   Trigger: typeof Tab;

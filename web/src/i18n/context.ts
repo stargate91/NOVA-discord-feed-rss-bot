@@ -2,24 +2,32 @@ import { createContext } from 'react';
 import type { I18nContextValue, LocaleInfo, SupportedLocale } from './types';
 
 export const SUPPORTED_LOCALES: readonly LocaleInfo[] = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'hu', name: 'Magyar', flag: '🇭🇺' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
-  { code: 'zh', name: '简体中文', flag: '🇨🇳' },
-  { code: 'zh-tw', name: '繁體中文', flag: '🇹🇼' },
-  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-  { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
-  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+  { code: 'en', name: 'English', flag: '🇺🇸', dir: 'ltr' },
+  { code: 'hu', name: 'Magyar', flag: '🇭🇺', dir: 'ltr' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
+  { code: 'es', name: 'Español', flag: '🇪🇸', dir: 'ltr' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷', dir: 'ltr' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹', dir: 'ltr' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺', dir: 'ltr' },
+  { code: 'ja', name: '日本語', flag: '🇯🇵', dir: 'ltr' },
+  { code: 'ko', name: '한국어', flag: '🇰🇷', dir: 'ltr' },
+  { code: 'zh', name: '简体中文', flag: '🇨🇳', dir: 'ltr' },
+  { code: 'zh-tw', name: '繁體中文', flag: '🇹🇼', dir: 'ltr' },
+  { code: 'pl', name: 'Polski', flag: '🇵🇱', dir: 'ltr' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱', dir: 'ltr' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷', dir: 'ltr' },
+  { code: 'cs', name: 'Čeština', flag: '🇨🇿', dir: 'ltr' },
+  { code: 'sv', name: 'Svenska', flag: '🇸🇪', dir: 'ltr' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦', dir: 'rtl' },
+  { code: 'he', name: 'עברית', flag: '🇮🇱', dir: 'rtl' },
 ] as const;
+
+export const LOCALE_FALLBACK_CHAINS: Partial<Record<SupportedLocale, SupportedLocale[]>> = {
+  'zh-tw': ['zh', 'en'],
+  'ar': ['en'],
+  'he': ['en'],
+};
 
 export const STORAGE_KEY = 'nova_locale';
 

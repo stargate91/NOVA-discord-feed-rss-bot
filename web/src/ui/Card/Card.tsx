@@ -198,7 +198,7 @@ export const CardActions: React.FC<HTMLAttributes<HTMLDivElement>> = ({
 /* --------------------------------------------------------------------------
    Compound Export
    -------------------------------------------------------------------------- */
-interface CardCompound extends React.FC<CardProps> {
+export interface CardCompound extends React.FC<CardProps> {
   Header: typeof CardHeader;
   Title: typeof CardTitle;
   Description: typeof CardDescription;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Skeleton } from './Skeleton';
 import styles from './Skeleton.module.css';
 
-interface TableSkeletonProps {
+export interface TableSkeletonProps {
   rows?: number;
   className?: string;
 }

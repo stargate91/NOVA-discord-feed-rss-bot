@@ -96,7 +96,6 @@ export class HttpWebhookReporterAdapter implements ErrorReporterAdapter {
     }
 
     try {
-      // Use Beacon API for graceful delivery if available and payload is small
       if (
         navigator.sendBeacon &&
         body.length < 64000 &&
@@ -121,7 +120,31 @@ export class HttpWebhookReporterAdapter implements ErrorReporterAdapter {
 }
 
 /**
- * Production Sentry-compatible webhook/DSN adapter.
+ * Parses raw error stack strings into structured Sentry-compatible stack frames.
+ */
+function parseStackTrace(stack?: string) {
+  if (!stack) return undefined;
+  const lines = stack.split('\n').slice(1);
+  const frames = lines
+    .map((line) => {
+      const match = line.match(/^\s*at\s+(?:(.+?)\s+\()?(?:(.+?):(\d+):(\d+)|([^)]+))\)?/);
+      if (!match) return null;
+      return {
+        function: match[1] || '<anonymous>',
+        filename: match[2] || match[5] || 'unknown',
+        lineno: match[3] ? parseInt(match[3], 10) : undefined,
+        colno: match[4] ? parseInt(match[4], 10) : undefined,
+        in_app: !(match[2] || '').includes('node_modules'),
+      };
+    })
+    .filter(Boolean)
+    .reverse();
+
+  return frames.length > 0 ? { frames } : undefined;
+}
+
+/**
+ * Enhanced Production Sentry SDK Adapter with full stack trace framing & envelope payload.
  */
 export class SentryReporterAdapter implements ErrorReporterAdapter {
   private dsn: string;
@@ -139,18 +162,30 @@ export class SentryReporterAdapter implements ErrorReporterAdapter {
           ? payload.error
           : new Error(String(payload.error));
 
+      const frames = parseStackTrace(errorObj.stack);
+
       const sentryPayload = {
         exception: {
           values: [
             {
-              type: errorObj.name,
+              type: errorObj.name || 'Error',
               value: errorObj.message,
-              stacktrace: errorObj.stack ? { frames: [{ filename: payload.url }] } : undefined,
+              stacktrace: frames || { frames: [{ filename: payload.url, in_app: true }] },
             },
           ],
         },
-        level: payload.severity === 'fatal' ? 'fatal' : payload.severity === 'warning' ? 'warning' : 'error',
+        level:
+          payload.severity === 'fatal'
+            ? 'fatal'
+            : payload.severity === 'warning'
+              ? 'warning'
+              : 'error',
         timestamp: payload.timestamp / 1000,
+        platform: 'javascript',
+        sdk: {
+          name: 'nova.web.sentry',
+          version: '1.0.0',
+        },
         user: payload.user ? { id: payload.user.id, username: payload.user.username } : undefined,
         extra: {
           ...payload.context,
@@ -159,6 +194,8 @@ export class SentryReporterAdapter implements ErrorReporterAdapter {
         breadcrumbs: payload.breadcrumbs.map((b) => ({
           category: b.category,
           message: b.message,
+          level: b.level || 'info',
+          data: b.data,
           timestamp: b.timestamp ? b.timestamp / 1000 : Date.now() / 1000,
         })),
       };
@@ -200,6 +237,40 @@ class ErrorReporter {
   private breadcrumbs: Breadcrumb[] = [];
   private maxBreadcrumbs: number = 50;
   private user: UserContext | null = null;
+  private isInitialized: boolean = false;
+
+  public constructor() {
+    this.initGlobalListeners();
+  }
+
+  /**
+   * Automatically attaches global unhandled promise rejection and window error listeners.
+   */
+  public initGlobalListeners(): void {
+    if (typeof window === 'undefined' || this.isInitialized) return;
+    this.isInitialized = true;
+
+    window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+      this.captureException(
+        event.reason || 'Unhandled Promise Rejection',
+        { type: 'unhandledrejection' },
+        'error'
+      );
+    });
+
+    window.addEventListener('error', (event: ErrorEvent) => {
+      this.captureException(
+        event.error || event.message,
+        {
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          type: 'window.onerror',
+        },
+        'error'
+      );
+    });
+  }
 
   public setAdapter(adapter: ErrorReporterAdapter): void {
     this.adapter = adapter;

@@ -183,10 +183,15 @@
   --text-muted: #64748b;
 
   /* Custom Cross-Browser Scrollbar Tokens */
+  --scrollbar-size: 0.375rem;
   --scrollbar-width: 0.375rem;
+  --scrollbar-radius: var(--radius-full);
+  --scrollbar-border: transparent;
   --scrollbar-track: #070a12;
+  --scrollbar-track-hover: #0c101d;
   --scrollbar-thumb: #1e293b;
   --scrollbar-thumb-hover: #38bdf8;
+  --scrollbar-thumb-active: #0ea5e9;
 
   /* --------------------------------------------------------------------------
      5. ELEVATION & SHADOW SCALES
@@ -344,7 +349,39 @@
   --shadow-card-hover: 0 16px 32px -6px rgb(0 0 0 / 12%), 0 0 15px rgb(14 165 233 / 15%);
 
   /* Custom Scrollbar */
+  --scrollbar-size: 0.375rem;
+  --scrollbar-width: 0.375rem;
+  --scrollbar-radius: var(--radius-full);
+  --scrollbar-border: transparent;
   --scrollbar-track: #f1f5f9;
+  --scrollbar-track-hover: #e2e8f0;
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #0284c7;
+  --scrollbar-thumb-active: #0369a1;
 }
+
+/* --------------------------------------------------------------------------
+   HIGH CONTRAST THEME OVERRIDES (prefers-contrast: high / data-contrast="high")
+   -------------------------------------------------------------------------- */
+@media (prefers-contrast: high) {
+  :root {
+    --border-subtle: rgb(255 255 255 / 30%);
+    --border-card: rgb(255 255 255 / 40%);
+    --border-hover: #38bdf8;
+    --border-active: #00f0ff;
+    --text-secondary: #e2e8f0;
+    --text-muted: #cbd5e1;
+    --focus-ring-glow: 0 0 0 3px #00f0ff;
+  }
+
+  [data-theme='light'] {
+    --border-subtle: rgb(0 0 0 / 35%);
+    --border-card: rgb(0 0 0 / 45%);
+    --border-hover: #0284c7;
+    --border-active: #0369a1;
+    --text-secondary: #0f172a;
+    --text-muted: #1e293b;
+    --focus-ring-glow: 0 0 0 3px #0284c7;
+  }
+}
+

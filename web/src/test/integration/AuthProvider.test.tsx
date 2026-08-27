@@ -46,4 +46,25 @@ describe('AuthProvider Integration', () => {
     await user.click(screen.getByTestId('logout-btn'));
     expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged Out');
   });
+
+  it('should rehydrate stored user session from localStorage on initialization', () => {
+    localStorage.setItem('nova_discord_token', 'persisted_jwt_token');
+    localStorage.setItem(
+      'nova_auth_user',
+      JSON.stringify({
+        id: '999999999999999999',
+        username: 'PersistentUser',
+        discriminator: '1337',
+        avatar: '/images/user.webp',
+      })
+    );
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+      </AuthProvider>
+    );
+
+    expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged in as PersistentUser');
+  });
 });

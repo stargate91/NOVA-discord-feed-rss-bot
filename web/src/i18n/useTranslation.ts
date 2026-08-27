@@ -5,6 +5,7 @@ import type { TranslationKey } from './locales/en';
 
 export interface UseTranslationResult<N extends Namespace | undefined = undefined> {
   locale: SupportedLocale;
+  direction: 'ltr' | 'rtl';
   setLocale: (locale: SupportedLocale) => void;
   supportedLocales: readonly LocaleInfo[];
   isLoadingLocale?: boolean;
@@ -22,7 +23,7 @@ export const useTranslation = <N extends Namespace | undefined = undefined>(
     throw new Error('useTranslation must be used within an I18nProvider');
   }
 
-  const { t: baseT, locale, setLocale, supportedLocales, isLoadingLocale } = context;
+  const { t: baseT, locale, direction, setLocale, supportedLocales, isLoadingLocale } = context;
 
   const t = useCallback(
     (
@@ -40,11 +41,12 @@ export const useTranslation = <N extends Namespace | undefined = undefined>(
   return useMemo(
     () => ({
       locale,
+      direction,
       setLocale,
       supportedLocales,
       isLoadingLocale,
       t,
     }),
-    [locale, setLocale, supportedLocales, isLoadingLocale, t]
+    [locale, direction, setLocale, supportedLocales, isLoadingLocale, t]
   );
 };
