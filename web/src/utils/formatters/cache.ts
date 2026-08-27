@@ -3,7 +3,10 @@ const numberFormatCache = new Map<string, Intl.NumberFormat>();
 const dateTimeFormatCache = new Map<string, Intl.DateTimeFormat>();
 const relativeTimeFormatCache = new Map<string, Intl.RelativeTimeFormat>();
 
-export function getNumberFormatter(locale: string, options?: Intl.NumberFormatOptions): Intl.NumberFormat {
+export function getNumberFormatter(
+  locale: string,
+  options?: Intl.NumberFormatOptions
+): Intl.NumberFormat {
   const key = `${locale}:${JSON.stringify(options || {})}`;
   let formatter = numberFormatCache.get(key);
   if (!formatter) {

@@ -1,6 +1,5 @@
 import json
 from datetime import datetime, timezone
-from typing import Any
 from fastapi import APIRouter, HTTPException, Depends, Path, Query, status
 from pydantic import BaseModel, Field
 from db.connection import _fetch, _fetchrow, _execute
@@ -204,7 +203,7 @@ async def delete_guild_feed(
     bot = Depends(get_bot),
     _rate_limited: bool = Depends(rate_limit),
 ):
-    res = await _execute("DELETE FROM monitors WHERE id = $1 AND guild_id = $2", feed_id, guild_id)
+    await _execute("DELETE FROM monitors WHERE id = $1 AND guild_id = $2", feed_id, guild_id)
     if bot.monitor_manager:
         await bot.monitor_manager.sync_with_db()
     return {"status": "success", "message": f"Monitor {feed_id} deleted"}

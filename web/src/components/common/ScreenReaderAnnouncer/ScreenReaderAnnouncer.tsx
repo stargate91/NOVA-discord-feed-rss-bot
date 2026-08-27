@@ -30,20 +30,10 @@ export const AnnouncerProvider: React.FC<AnnouncerProviderProps> = ({ children }
     <AnnouncerContext.Provider value={value}>
       {children}
       {/* Invisible screen reader live regions */}
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className={styles.srOnly}
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" className={styles.srOnly}>
         {politeMessage}
       </div>
-      <div
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        className={styles.srOnly}
-      >
+      <div role="alert" aria-live="assertive" aria-atomic="true" className={styles.srOnly}>
         {assertiveMessage}
       </div>
     </AnnouncerContext.Provider>

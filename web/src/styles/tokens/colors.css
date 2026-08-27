@@ -94,6 +94,67 @@
   --discord-btn-hover: #6d6f78;
   --discord-btn-text: #fff;
 
+  /* Supported Platform Brand Colors & Glows */
+  --brand-youtube-color: #f87171;
+  --brand-youtube-badge-bg: rgb(239 68 68 / 12%);
+  --brand-youtube-badge-border: rgb(239 68 68 / 25%);
+  --brand-youtube-border: rgb(239 68 68 / 50%);
+  --brand-youtube-glow: 0 0 1rem rgb(239 68 68 / 25%);
+
+  --brand-twitch-color: #c084fc;
+  --brand-twitch-badge-bg: rgb(145 70 255 / 12%);
+  --brand-twitch-badge-border: rgb(145 70 255 / 25%);
+  --brand-twitch-border: rgb(145 70 255 / 50%);
+  --brand-twitch-glow: 0 0 1rem rgb(145 70 255 / 25%);
+
+  --brand-kick-color: #53fc18;
+  --brand-kick-badge-bg: rgb(83 252 24 / 12%);
+  --brand-kick-badge-border: rgb(83 252 24 / 25%);
+  --brand-kick-border: rgb(83 252 24 / 50%);
+  --brand-kick-glow: 0 0 1rem rgb(83 252 24 / 25%);
+
+  --brand-epic-color: #f1f5f9;
+  --brand-epic-badge-bg: rgb(255 255 255 / 10%);
+  --brand-epic-badge-border: rgb(255 255 255 / 20%);
+  --brand-epic-border: rgb(255 255 255 / 40%);
+  --brand-epic-glow: 0 0 1rem rgb(255 255 255 / 20%);
+
+  --brand-steam-color: #66c0f4;
+  --brand-steam-badge-bg: rgb(102 192 244 / 12%);
+  --brand-steam-badge-border: rgb(102 192 244 / 25%);
+  --brand-steam-border: rgb(102 192 244 / 50%);
+  --brand-steam-glow: 0 0 1rem rgb(102 192 244 / 25%);
+
+  --brand-gog-color: #d8b4fe;
+  --brand-gog-badge-bg: rgb(156 84 214 / 12%);
+  --brand-gog-badge-border: rgb(156 84 214 / 25%);
+  --brand-gog-border: rgb(156 84 214 / 50%);
+  --brand-gog-glow: 0 0 1rem rgb(156 84 214 / 25%);
+
+  --brand-tmdb-color: #38bdf8;
+  --brand-tmdb-badge-bg: rgb(1 180 228 / 12%);
+  --brand-tmdb-badge-border: rgb(1 180 228 / 25%);
+  --brand-tmdb-border: rgb(1 180 228 / 50%);
+  --brand-tmdb-glow: 0 0 1rem rgb(1 180 228 / 25%);
+
+  --brand-github-color: #f1f5f9;
+  --brand-github-badge-bg: rgb(240 246 252 / 10%);
+  --brand-github-badge-border: rgb(240 246 252 / 20%);
+  --brand-github-border: rgb(240 246 252 / 40%);
+  --brand-github-glow: 0 0 1rem rgb(240 246 252 / 20%);
+
+  --brand-rss-color: #fbbf24;
+  --brand-rss-badge-bg: rgb(245 176 0 / 12%);
+  --brand-rss-badge-border: rgb(245 176 0 / 25%);
+  --brand-rss-border: rgb(245 176 0 / 50%);
+  --brand-rss-glow: 0 0 1rem rgb(245 176 0 / 25%);
+
+  --brand-discord-color: #38bdf8;
+  --brand-discord-badge-bg: rgb(56 189 248 / 12%);
+  --brand-discord-badge-border: rgb(56 189 248 / 25%);
+  --brand-discord-border: rgb(56 189 248 / 50%);
+  --brand-discord-glow: 0 0 1rem rgb(56 189 248 / 25%);
+
   /* Dark Theme Surfaces */
   --bg-primary: #070a12;
   --bg-secondary: #0c101d;

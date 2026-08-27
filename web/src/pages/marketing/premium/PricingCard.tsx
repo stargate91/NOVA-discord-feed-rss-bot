@@ -5,6 +5,7 @@ import type { TranslationKey } from '@/i18n';
 import { useTranslation } from '@/i18n';
 import type { CardGlow, BadgeProps, ButtonProps } from '@/ui';
 import { Card, Stack, Inline, Text, Badge, Button } from '@/ui';
+import styles from './PricingCard.module.css';
 
 export interface PricingPlanConfig {
   id: string;
@@ -37,16 +38,12 @@ export const PricingCard: React.FC<PricingCardProps> = ({ plan, billingInterval 
     plan.id === 'master'
       ? t('premium.masterPricePeriod')
       : billingInterval === 'year'
-      ? t('premium.perYear')
-      : t('premium.perMonth');
+        ? t('premium.perYear')
+        : t('premium.perMonth');
 
   return (
-    <Card
-      glow={plan.glow || 'none'}
-      interactive={plan.interactive}
-      padding="xl"
-    >
-      <Stack gap="lg" justify="between" style={{ height: '100%' }}>
+    <Card glow={plan.glow || 'none'} interactive={plan.interactive} padding="xl">
+      <Stack gap="lg" justify="between" className={styles.cardContent}>
         <Stack gap="sm">
           <Inline justify="between" align="center">
             <Badge variant={plan.badgeVariant}>{t(plan.titleKey)}</Badge>
@@ -78,20 +75,11 @@ export const PricingCard: React.FC<PricingCardProps> = ({ plan, billingInterval 
 
         <Stack gap="2xs">
           {plan.isBuyable !== false ? (
-            <Button
-              variant={plan.ctaVariant}
-              fullWidth
-              onClick={() => navigate('/servers')}
-            >
+            <Button variant={plan.ctaVariant} fullWidth onClick={() => navigate('/servers')}>
               {t(plan.ctaKey)}
             </Button>
           ) : (
-            <Button
-              variant="secondary"
-              fullWidth
-              disabled
-              style={{ opacity: 0.85, cursor: 'default' }}
-            >
+            <Button variant="secondary" fullWidth disabled className={styles.disabledCtaBtn}>
               {t(plan.ctaKey)}
             </Button>
           )}

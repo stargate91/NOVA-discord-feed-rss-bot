@@ -82,7 +82,8 @@ export const toGuildTier = (
     const lower = tier.trim().toLowerCase();
     if (lower === 'master' || lower === 'nova master') return 'master';
     if (lower === 'ultimate' || lower === 'nova ultimate') return 'ultimate';
-    if (lower === 'professional' || lower === 'nova professional' || lower === 'pro') return 'professional';
+    if (lower === 'professional' || lower === 'nova professional' || lower === 'pro')
+      return 'professional';
     if (lower === 'starter' || lower === 'nova starter') return 'starter';
     if (lower === 'free' || lower === 'nova free') return 'free';
     return (lower in TIER_RANKS ? lower : 'free') as GuildTier;

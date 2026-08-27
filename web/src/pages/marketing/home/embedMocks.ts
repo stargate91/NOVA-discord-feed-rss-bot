@@ -2,14 +2,7 @@ import { Video, Radio, Tv, Gift, Gamepad2, Film, GitBranch, Rss } from 'lucide-r
 import type { TranslationKey } from '@/i18n';
 
 export type PreviewPlatform =
-  | 'youtube'
-  | 'twitch'
-  | 'kick'
-  | 'epic'
-  | 'steam'
-  | 'tmdb'
-  | 'github'
-  | 'rss';
+  'youtube' | 'twitch' | 'kick' | 'epic' | 'steam' | 'tmdb' | 'github' | 'rss';
 
 export const PREVIEW_PLATFORMS = [
   { value: 'youtube', labelKey: 'home.platformYoutube' as TranslationKey, icon: Video },
@@ -206,7 +199,10 @@ export const getEmbedMocks = (t: TranslateFn): Record<PreviewPlatform, EmbedMock
       name: 'tiangolo',
     },
     metaLines: [`**${t('home.embedFieldPublishedAt')}:**\n${t('home.embedGithubPublishedValue')}`],
-    accessoryButton: { label: t('home.embedBtnViewGithub'), url: 'https://github.com/tiangolo/fastapi' },
+    accessoryButton: {
+      label: t('home.embedBtnViewGithub'),
+      url: 'https://github.com/tiangolo/fastapi',
+    },
     footer: {
       text: t('home.embedDeliveredBy'),
       timestamp: 'Today at 12:45',

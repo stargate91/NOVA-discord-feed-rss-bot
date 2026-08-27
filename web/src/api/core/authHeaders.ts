@@ -29,8 +29,7 @@ export const buildAuthHeaders = ({
 
   // 1. Authorization Header (Bearer token)
   const effectiveToken =
-    authToken ||
-    (typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null);
+    authToken || (typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null);
 
   if (effectiveToken) {
     headers['Authorization'] = `Bearer ${effectiveToken}`;

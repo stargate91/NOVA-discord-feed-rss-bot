@@ -144,15 +144,7 @@ export const SupportedPlatformsSection: React.FC = () => {
             <div
               key={`${item.id}-r1-${index}`}
               className={styles.platformCard}
-              style={
-                {
-                  '--brand-color': item.brandColor,
-                  '--brand-badge-bg': item.brandBadgeBg,
-                  '--brand-badge-border': item.brandBadgeBorder,
-                  '--brand-border': item.brandBorder,
-                  '--brand-glow': item.brandGlow,
-                } as React.CSSProperties
-              }
+              data-platform={item.id}
             >
               <img src={item.icon} alt={t(item.nameKey)} className={styles.platformIcon} />
               <span className={styles.platformName}>{t(item.nameKey)}</span>
@@ -167,15 +159,7 @@ export const SupportedPlatformsSection: React.FC = () => {
             <div
               key={`${item.id}-r2-${index}`}
               className={styles.platformCard}
-              style={
-                {
-                  '--brand-color': item.brandColor,
-                  '--brand-badge-bg': item.brandBadgeBg,
-                  '--brand-badge-border': item.brandBadgeBorder,
-                  '--brand-border': item.brandBorder,
-                  '--brand-glow': item.brandGlow,
-                } as React.CSSProperties
-              }
+              data-platform={item.id}
             >
               <img src={item.icon} alt={t(item.nameKey)} className={styles.platformIcon} />
               <span className={styles.platformName}>{t(item.nameKey)}</span>

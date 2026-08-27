@@ -38,11 +38,7 @@ export const HeroSection: React.FC = () => {
             >
               <Plus size={18} /> {t('home.ctaDiscord')}
             </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => navigate('/servers')}
-            >
+            <Button variant="secondary" size="lg" onClick={() => navigate('/servers')}>
               <LayoutDashboard size={18} /> {t('home.ctaDashboard')}
             </Button>
           </div>
@@ -51,11 +47,7 @@ export const HeroSection: React.FC = () => {
         {/* Right Column: Prominent Bot Logo Card */}
         <div className={styles.logoCol}>
           <div className={styles.logoCard}>
-            <img
-              src="/images/logo.webp"
-              alt="Nova Feeds Logo"
-              className={styles.logoImage}
-            />
+            <img src="/images/logo.webp" alt="Nova Feeds Logo" className={styles.logoImage} />
           </div>
         </div>
       </div>

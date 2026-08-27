@@ -3,17 +3,7 @@ import { Settings2, Trash2, Search, Radio, Hash } from 'lucide-react';
 import type { FeedMonitor, UpdateMonitorPayload } from '@/types';
 import { useTranslation } from '@/i18n';
 import { formatRelativeTime } from '@/utils';
-import {
-  Card,
-  Table,
-  Button,
-  Input,
-  Inline,
-  Stack,
-  Text,
-  Badge,
-  Skeleton,
-} from '@/ui';
+import { Card, Table, Button, Input, Inline, Stack, Text, Badge, Skeleton } from '@/ui';
 import { FeedStatusBadge } from './FeedStatusBadge';
 import { FeedEditModal } from './FeedEditModal';
 import styles from './FeedListTable.module.css';

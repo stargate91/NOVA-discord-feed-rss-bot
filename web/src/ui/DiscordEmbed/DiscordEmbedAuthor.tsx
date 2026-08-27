@@ -10,12 +10,7 @@ export const EmbedAuthor: React.FC<EmbedAuthorProps> = ({ author }) => {
   if (!author) return null;
 
   return (
-    <a
-      href={author.url || '#'}
-      className={styles.embedAuthor}
-      target="_blank"
-      rel="noreferrer"
-    >
+    <a href={author.url || '#'} className={styles.embedAuthor} target="_blank" rel="noreferrer">
       {author.icon_url && (
         <img
           src={author.icon_url}

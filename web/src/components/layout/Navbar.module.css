@@ -73,7 +73,9 @@
   box-shadow: var(--shadow-xs);
   height: 2.375rem;
   box-sizing: border-box;
-  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  transition:
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
 .navLinks:hover {
@@ -90,7 +92,11 @@
   letter-spacing: -0.01em;
   color: var(--text-secondary);
   border-radius: var(--radius-full);
-  transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -278,6 +284,12 @@
   background: var(--nav-btn-active-bg);
   border-color: var(--nav-btn-active-border);
   box-shadow: var(--nav-btn-active-glow);
+}
+
+.mobileNavLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 .drawerFooter {

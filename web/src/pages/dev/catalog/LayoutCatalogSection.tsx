@@ -22,18 +22,14 @@ export const LayoutCatalogSection: React.FC = () => {
             ]}
           />
 
-          <Pagination
-            page={currentPage}
-            totalPages={10}
-            onPageChange={(p) => setCurrentPage(p)}
-          />
+          <Pagination page={currentPage} totalPages={10} onPageChange={(p) => setCurrentPage(p)} />
 
           <Accordion type="single">
             <Accordion.Item value="acc1">
               <Accordion.Trigger>How does Nova handle multi-region failover?</Accordion.Trigger>
               <Accordion.Content>
-                Nova continuously monitors bot latency across 4 continents and automatically
-                routes traffic through healthy nodes.
+                Nova continuously monitors bot latency across 4 continents and automatically routes
+                traffic through healthy nodes.
               </Accordion.Content>
             </Accordion.Item>
             <Accordion.Item value="acc2">

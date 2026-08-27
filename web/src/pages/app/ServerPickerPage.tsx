@@ -11,6 +11,7 @@ import { useGuild } from '@/guild';
 import { Button, CardSkeleton, Grid, Stack, Inline, Text, EmptyState, Alert } from '@/ui';
 import type { ServerItem } from './components';
 import { ServerPickerCard } from './components';
+import styles from './ServerPickerPage.module.css';
 
 interface ApiGuildItem {
   id?: string;
@@ -102,8 +103,8 @@ export const ServerPickerPage: React.FC = () => {
           };
         })
       : isMockActive
-      ? MOCK_SERVERS
-      : [];
+        ? MOCK_SERVERS
+        : [];
 
   return (
     <Stack gap="lg">
@@ -138,7 +139,7 @@ export const ServerPickerPage: React.FC = () => {
           title={t('common.authRequiredTitle')}
           description={t('common.authRequiredDesc')}
           action={
-            <Inline gap="sm" align="center" style={{ marginTop: '8px' }}>
+            <Inline gap="sm" align="center" className={styles.alertActionRow}>
               <Button variant="discord" size="sm" onClick={() => loginWithDiscord()}>
                 <LogIn size={14} /> {t('common.loginWithDiscord')}
               </Button>
@@ -163,14 +164,16 @@ export const ServerPickerPage: React.FC = () => {
       {error && !isMockActive && (
         <Alert
           variant={error.status === 401 ? 'warning' : 'danger'}
-          title={error.status === 401 ? t('common.sessionExpired') : t('servers.errorLoadingServers')}
+          title={
+            error.status === 401 ? t('common.sessionExpired') : t('servers.errorLoadingServers')
+          }
           description={
             error.status === 401
               ? t('common.authRequiredDesc')
               : `${t('common.backendOfflineDesc')} (${error.message || 'Connection refused'})`
           }
           action={
-            <Inline gap="sm" align="center" wrap style={{ marginTop: '8px' }}>
+            <Inline gap="sm" align="center" wrap className={styles.alertActionRow}>
               {error.status === 401 ? (
                 <Button variant="discord" size="sm" onClick={() => loginWithDiscord()}>
                   <LogIn size={14} /> {t('common.loginWithDiscord')}

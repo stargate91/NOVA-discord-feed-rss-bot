@@ -7,17 +7,9 @@ export const MetricsTelemetryCard: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Card
-      glow="purple"
-      title={t('dev.prometheusTitle')}
-      subtitle={t('dev.prometheusSubtitle')}
-    >
+    <Card glow="purple" title={t('dev.prometheusTitle')} subtitle={t('dev.prometheusSubtitle')}>
       <Stack gap="md">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => window.open('/metrics', '_blank')}
-        >
+        <Button variant="secondary" size="sm" onClick={() => window.open('/metrics', '_blank')}>
           <ExternalLink size={14} /> {t('dev.viewMetricsBtn')}
         </Button>
         <ProgressBar

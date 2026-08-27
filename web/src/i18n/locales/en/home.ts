@@ -68,7 +68,8 @@ export const home = {
   // YouTube Demo Embed
   embedYoutubeRole: '@Hecklefish',
   embedYoutubeAlert: 'The Why Files just uploaded a new video!',
-  embedYoutubeTitle: 'The Basement: Mitch Horowitz | Gandhi, Reagan, and the Occultists History Erased',
+  embedYoutubeTitle:
+    'The Basement: Mitch Horowitz | Gandhi, Reagan, and the Occultists History Erased',
   embedYoutubePublishedValue: 'Today at 18:03 (2 hours ago)',
 
   // Twitch Demo Embed

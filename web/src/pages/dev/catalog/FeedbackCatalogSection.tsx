@@ -1,6 +1,18 @@
 /* eslint-disable i18next/no-literal-string, react/forbid-component-props */
 import React from 'react';
-import { Card, Stack, Inline, Text, Badge, Chip, Tag, ProgressBar, Skeleton, DiscordEmbed, Divider } from '@/ui';
+import {
+  Card,
+  Stack,
+  Inline,
+  Text,
+  Badge,
+  Chip,
+  Tag,
+  ProgressBar,
+  Skeleton,
+  DiscordEmbed,
+  Divider,
+} from '@/ui';
 
 export const FeedbackCatalogSection: React.FC = () => {
   return (

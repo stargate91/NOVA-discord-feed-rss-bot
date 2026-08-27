@@ -114,12 +114,7 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
               {roleMention && <span className={styles.roleMention}>{roleMention}</span>}
               {alertText && <span>{alertText}</span>}
               {alertUrl && (
-                <a
-                  href={alertUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.alertLink}
-                >
+                <a href={alertUrl} target="_blank" rel="noreferrer" className={styles.alertLink}>
                   {alertUrl}
                 </a>
               )}
@@ -130,12 +125,7 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
             {isComponentV2 ? (
               <>
                 {/* 1. Main Title with inline platform icon */}
-                <a
-                  href={titleUrl}
-                  className={styles.v2Title}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={titleUrl} className={styles.v2Title} target="_blank" rel="noreferrer">
                   {platformIcon && (
                     <img
                       src={platformIcon}
@@ -166,9 +156,7 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
                 {(author || metaLines || accessoryButton || (fields && fields.length > 0)) && (
                   <div className={styles.sectionWithAccessory}>
                     <div className={styles.sectionContent}>
-                      {author?.name && (
-                        <div className={styles.sectionAuthor}>{author.name}</div>
-                      )}
+                      {author?.name && <div className={styles.sectionAuthor}>{author.name}</div>}
                       {metaLines?.map((line, idx) => (
                         <div key={idx} className={styles.sectionMeta}>
                           {renderDiscordMarkdown(line)}

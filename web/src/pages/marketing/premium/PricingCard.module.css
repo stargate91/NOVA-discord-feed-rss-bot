@@ -1,0 +1,8 @@
+.cardContent {
+  height: 100%;
+}
+
+.disabledCtaBtn {
+  opacity: 0.85;
+  cursor: default;
+}

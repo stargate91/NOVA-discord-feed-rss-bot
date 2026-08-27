@@ -1,0 +1,41 @@
+.cardWrapper {
+  max-width: 32rem;
+  margin: var(--space-3xl) auto;
+}
+
+.errorText {
+  word-break: break-word;
+}
+
+.debugSection {
+  width: 100%;
+  margin-top: var(--space-3xs);
+}
+
+.debugToggleBtn {
+  justify-content: space-between;
+}
+
+.debugPanel {
+  margin-top: var(--space-xs);
+  padding: var(--space-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: monospace;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  word-break: break-all;
+}
+
+.debugActions {
+  margin-top: var(--space-2xs);
+}
+
+.actionStack {
+  width: 100%;
+  margin-top: var(--space-sm);
+}

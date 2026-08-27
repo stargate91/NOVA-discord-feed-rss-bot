@@ -63,7 +63,10 @@
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(var(--blur-md));
-  transition: transform var(--transition-spring), border-color var(--transition-normal), box-shadow var(--transition-normal);
+  transition:
+    transform var(--transition-spring),
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
 .logoCard:hover {

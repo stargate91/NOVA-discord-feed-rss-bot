@@ -26,11 +26,7 @@ export const ServerPickerCard: React.FC<ServerPickerCardProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Card
-      glow={server.isBotInServer ? 'blue' : 'none'}
-      interactive
-      padding="lg"
-    >
+    <Card glow={server.isBotInServer ? 'blue' : 'none'} interactive padding="lg">
       <Stack gap="lg">
         <Inline align="center" gap="md">
           <Avatar
@@ -53,9 +49,7 @@ export const ServerPickerCard: React.FC<ServerPickerCardProps> = ({
               {t('servers.statusLabel')}
             </Text>
             <Badge variant={server.isBotInServer ? 'online' : 'neutral'} dot>
-              {server.isBotInServer
-                ? t('servers.statusActive')
-                : t('servers.statusNotInvited')}
+              {server.isBotInServer ? t('servers.statusActive') : t('servers.statusNotInvited')}
             </Badge>
           </Inline>
 
@@ -77,19 +71,11 @@ export const ServerPickerCard: React.FC<ServerPickerCardProps> = ({
         </Stack>
 
         {server.isBotInServer ? (
-          <Button
-            variant="primary"
-            fullWidth
-            onClick={() => onManage(server.id)}
-          >
+          <Button variant="primary" fullWidth onClick={() => onManage(server.id)}>
             <Settings size={14} /> {t('servers.manageBtn')}
           </Button>
         ) : (
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={onInvite}
-          >
+          <Button variant="secondary" fullWidth onClick={onInvite}>
             <UserPlus size={14} /> {t('servers.inviteBtn')}
           </Button>
         )}

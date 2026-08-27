@@ -37,7 +37,13 @@
   gap: var(--space-md);
   overflow: hidden;
   padding: var(--space-xs) 0;
-  mask-image: linear-gradient(to right, transparent, var(--text-primary) 10%, var(--text-primary) 90%, transparent);
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--text-primary) 10%,
+    var(--text-primary) 90%,
+    transparent
+  );
 }
 
 .marqueeTrack {
@@ -70,7 +76,11 @@
   border: 1px solid var(--border-subtle);
   backdrop-filter: blur(var(--blur-md));
   box-shadow: var(--shadow-xs);
-  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -105,11 +115,94 @@
   color: var(--text-muted);
   border: 1px solid var(--border-subtle);
   white-space: nowrap;
-  transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .platformCard:hover .platformBadge {
   background: var(--brand-badge-bg, var(--bg-card-hover));
   border-color: var(--brand-badge-border, var(--border-hover));
   color: var(--brand-color, var(--text-primary));
+}
+
+.platformCard[data-platform='youtube'] {
+  --brand-color: var(--brand-youtube-color);
+  --brand-badge-bg: var(--brand-youtube-badge-bg);
+  --brand-badge-border: var(--brand-youtube-badge-border);
+  --brand-border: var(--brand-youtube-border);
+  --brand-glow: var(--brand-youtube-glow);
+}
+
+.platformCard[data-platform='twitch'] {
+  --brand-color: var(--brand-twitch-color);
+  --brand-badge-bg: var(--brand-twitch-badge-bg);
+  --brand-badge-border: var(--brand-twitch-badge-border);
+  --brand-border: var(--brand-twitch-border);
+  --brand-glow: var(--brand-twitch-glow);
+}
+
+.platformCard[data-platform='kick'] {
+  --brand-color: var(--brand-kick-color);
+  --brand-badge-bg: var(--brand-kick-badge-bg);
+  --brand-badge-border: var(--brand-kick-badge-border);
+  --brand-border: var(--brand-kick-border);
+  --brand-glow: var(--brand-kick-glow);
+}
+
+.platformCard[data-platform='epic'] {
+  --brand-color: var(--brand-epic-color);
+  --brand-badge-bg: var(--brand-epic-badge-bg);
+  --brand-badge-border: var(--brand-epic-badge-border);
+  --brand-border: var(--brand-epic-border);
+  --brand-glow: var(--brand-epic-glow);
+}
+
+.platformCard[data-platform='steam'] {
+  --brand-color: var(--brand-steam-color);
+  --brand-badge-bg: var(--brand-steam-badge-bg);
+  --brand-badge-border: var(--brand-steam-badge-border);
+  --brand-border: var(--brand-steam-border);
+  --brand-glow: var(--brand-steam-glow);
+}
+
+.platformCard[data-platform='gog'] {
+  --brand-color: var(--brand-gog-color);
+  --brand-badge-bg: var(--brand-gog-badge-bg);
+  --brand-badge-border: var(--brand-gog-badge-border);
+  --brand-border: var(--brand-gog-border);
+  --brand-glow: var(--brand-gog-glow);
+}
+
+.platformCard[data-platform='tmdb'] {
+  --brand-color: var(--brand-tmdb-color);
+  --brand-badge-bg: var(--brand-tmdb-badge-bg);
+  --brand-badge-border: var(--brand-tmdb-badge-border);
+  --brand-border: var(--brand-tmdb-border);
+  --brand-glow: var(--brand-tmdb-glow);
+}
+
+.platformCard[data-platform='github'] {
+  --brand-color: var(--brand-github-color);
+  --brand-badge-bg: var(--brand-github-badge-bg);
+  --brand-badge-border: var(--brand-github-badge-border);
+  --brand-border: var(--brand-github-border);
+  --brand-glow: var(--brand-github-glow);
+}
+
+.platformCard[data-platform='rss'] {
+  --brand-color: var(--brand-rss-color);
+  --brand-badge-bg: var(--brand-rss-badge-bg);
+  --brand-badge-border: var(--brand-rss-badge-border);
+  --brand-border: var(--brand-rss-border);
+  --brand-glow: var(--brand-rss-glow);
+}
+
+.platformCard[data-platform='discord'] {
+  --brand-color: var(--brand-discord-color);
+  --brand-badge-bg: var(--brand-discord-badge-bg);
+  --brand-badge-border: var(--brand-discord-badge-border);
+  --brand-border: var(--brand-discord-border);
+  --brand-glow: var(--brand-discord-glow);
 }

@@ -1,6 +1,18 @@
 /* eslint-disable i18next/no-literal-string */
 import React, { useState } from 'react';
-import { Card, Stack, Grid, Inline, Text, Alert, Button, Spinner, Modal, Drawer, Divider } from '@/ui';
+import {
+  Card,
+  Stack,
+  Grid,
+  Inline,
+  Text,
+  Alert,
+  Button,
+  Spinner,
+  Modal,
+  Drawer,
+  Divider,
+} from '@/ui';
 
 export const OverlaysCatalogSection: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -53,7 +65,8 @@ export const OverlaysCatalogSection: React.FC = () => {
             </Modal.Header>
             <Modal.Body>
               <Text size="sm">
-                This is an accessible compound Modal primitive using React Portal, focus trap, and escape key listener.
+                This is an accessible compound Modal primitive using React Portal, focus trap, and
+                escape key listener.
               </Text>
             </Modal.Body>
             <Modal.Footer>

@@ -4,6 +4,7 @@ import { useTranslation } from '@/i18n';
 import { SEO } from '@/components/common/SEO';
 import { Badge, Container, Stack, Text, SegmentedControl, Inline } from '@/ui';
 import { PricingCardsGrid, PremiumFaqSection } from './premium';
+import styles from './PremiumPage.module.css';
 
 export const PremiumPage: React.FC = () => {
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ export const PremiumPage: React.FC = () => {
           </Container>
 
           {/* Billing Interval Toggle (Monthly / Yearly) */}
-          <Inline justify="center" align="center" style={{ marginTop: '1rem' }}>
+          <Inline justify="center" align="center" className={styles.intervalToggleRow}>
             <SegmentedControl
               size="md"
               value={billingInterval}

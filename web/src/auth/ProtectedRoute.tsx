@@ -71,23 +71,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               </Text>
             </Stack>
 
-            <Stack gap="sm" style={{ width: '100%' }}>
-              <Button
-                variant="discord"
-                size="lg"
-                fullWidth
-                onClick={() => loginWithDiscord()}
-              >
+            <Stack gap="sm" className={styles.actionStack}>
+              <Button variant="discord" size="lg" fullWidth onClick={() => loginWithDiscord()}>
                 <LogIn size={18} /> {t('common.loginWithDiscord')}
               </Button>
 
               {!import.meta.env.PROD && (
-                <Button
-                  variant="secondary"
-                  size="md"
-                  fullWidth
-                  onClick={() => mockLogin()}
-                >
+                <Button variant="secondary" size="md" fullWidth onClick={() => mockLogin()}>
                   <Sparkles size={16} /> {t('common.demoLogin')}
                 </Button>
               )}

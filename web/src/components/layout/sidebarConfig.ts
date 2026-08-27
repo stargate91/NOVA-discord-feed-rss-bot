@@ -1,10 +1,4 @@
-import {
-  Activity,
-  Radio,
-  BarChart3,
-  Sparkles,
-  SlidersHorizontal,
-} from 'lucide-react';
+import { Activity, Radio, BarChart3, Sparkles, SlidersHorizontal } from 'lucide-react';
 import type { TranslationKey } from '@/i18n';
 
 export interface DashboardNavItem {

@@ -1,6 +1,20 @@
 /* eslint-disable i18next/no-literal-string */
 import React, { useState } from 'react';
-import { Card, Stack, Grid, Inline, Text, Field, Input, Select, Textarea, Switch, Checkbox, Radio, Divider } from '@/ui';
+import {
+  Card,
+  Stack,
+  Grid,
+  Inline,
+  Text,
+  Field,
+  Input,
+  Select,
+  Textarea,
+  Switch,
+  Checkbox,
+  Radio,
+  Divider,
+} from '@/ui';
 
 export const FormControlsCatalogSection: React.FC = () => {
   const [switchChecked, setSwitchChecked] = useState<boolean>(true);

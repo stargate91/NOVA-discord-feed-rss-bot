@@ -21,8 +21,8 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
   const userAvatarSrc = user?.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
     : user
-    ? `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator || 0) % 5}.png`
-    : undefined;
+      ? `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator || 0) % 5}.png`
+      : undefined;
 
   const displayName = user?.global_name || user?.username || 'Discord User';
 
@@ -96,7 +96,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
             className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
             onClick={onClose}
           >
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span className={styles.mobileNavLabel}>
               <Server size={18} /> {t('common.navServers')}
             </span>
           </NavLink>
@@ -108,7 +108,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
             className={({ isActive }) => `${styles.mobileNavBtn} ${isActive ? styles.active : ''}`}
             onClick={onClose}
           >
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span className={styles.mobileNavLabel}>
               <Code size={18} /> {t('common.navDev')}
             </span>
           </NavLink>

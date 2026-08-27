@@ -25,12 +25,7 @@ export const DevAuthGateway: React.FC<DevAuthGatewayProps> = ({
 
   return (
     <Container maxWidth="xs" padding="lg">
-      <Card
-        glow="blue"
-        padding="xl"
-        title={t('dev.authTitle')}
-        subtitle={t('dev.authSubtitle')}
-      >
+      <Card glow="blue" padding="xl" title={t('dev.authTitle')} subtitle={t('dev.authSubtitle')}>
         <form onSubmit={handleSubmit}>
           <Stack gap="lg">
             <Input

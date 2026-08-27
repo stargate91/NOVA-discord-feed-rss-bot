@@ -24,9 +24,11 @@ export const guildFeeds = {
 
   // Feed Monitor Table & Actions
   activeMonitorsTitle: 'Active Feed Monitors',
-  activeMonitorsSubtitle: 'Currently active notification listeners on this Discord server ({count})',
+  activeMonitorsSubtitle:
+    'Currently active notification listeners on this Discord server ({count})',
   emptyMonitorsTitle: 'No Feed Monitors Found',
-  emptyMonitorsDesc: 'Use the form above to add your first YouTube, Twitch, Kick, or Steam monitor.',
+  emptyMonitorsDesc:
+    'Use the form above to add your first YouTube, Twitch, Kick, or Steam monitor.',
   noMatchingMonitors: 'No monitors match your search filter.',
   colPlatform: 'Platform',
   colTarget: 'Target',

@@ -82,7 +82,11 @@ export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
 
       // Deduplication check (only if not manual refetch and query is not in initial loading)
       const now = Date.now();
-      if (!isManualRefetch && now - lastFetchTime.current < dedupingIntervalMs && dataRef.current !== null) {
+      if (
+        !isManualRefetch &&
+        now - lastFetchTime.current < dedupingIntervalMs &&
+        dataRef.current !== null
+      ) {
         setIsLoading(false);
         setIsValidating(false);
         return;

@@ -1,14 +1,6 @@
 import type React from 'react';
 import type { GridProps } from './types';
-import {
-  colMap,
-  minItemMap,
-  gapMap,
-  rowGapMap,
-  colGapMap,
-  alignMap,
-  justifyMap,
-} from './mappings';
+import { colMap, minItemMap, gapMap, rowGapMap, colGapMap, alignMap, justifyMap } from './mappings';
 import { GridItem } from './GridItem';
 import styles from './Grid.module.css';
 

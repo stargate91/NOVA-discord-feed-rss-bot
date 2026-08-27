@@ -1,15 +1,17 @@
 /**
  * Parses raw error stack strings into structured Sentry-compatible stack frames.
  */
-export function parseStackTrace(stack?: string): {
-  frames: {
-    function: string;
-    filename: string;
-    lineno?: number;
-    colno?: number;
-    in_app: boolean;
-  }[];
-} | undefined {
+export function parseStackTrace(stack?: string):
+  | {
+      frames: {
+        function: string;
+        filename: string;
+        lineno?: number;
+        colno?: number;
+        in_app: boolean;
+      }[];
+    }
+  | undefined {
   if (!stack) return undefined;
   const lines = stack.split('\n').slice(1);
   const frames = lines
@@ -25,12 +27,12 @@ export function parseStackTrace(stack?: string): {
       };
     })
     .filter(Boolean) as {
-      function: string;
-      filename: string;
-      lineno?: number;
-      colno?: number;
-      in_app: boolean;
-    }[];
+    function: string;
+    filename: string;
+    lineno?: number;
+    colno?: number;
+    in_app: boolean;
+  }[];
 
   return frames.length > 0 ? { frames } : undefined;
 }

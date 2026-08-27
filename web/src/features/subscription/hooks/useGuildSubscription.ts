@@ -2,7 +2,11 @@ import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/i18n';
 import { useToast } from '@/components/common/Toast';
 import { toGuildTier, isMasterGuild } from '@/auth/entitlements';
-import { VALID_PROMO_CODES, DEFAULT_GUILD_ENTITLEMENTS, MASTER_GUILD_ENTITLEMENTS } from '../constants';
+import {
+  VALID_PROMO_CODES,
+  DEFAULT_GUILD_ENTITLEMENTS,
+  MASTER_GUILD_ENTITLEMENTS,
+} from '../constants';
 import type { GuildEntitlements, UseGuildSubscriptionReturn, GuildTier } from '../types';
 
 export const useGuildSubscription = (

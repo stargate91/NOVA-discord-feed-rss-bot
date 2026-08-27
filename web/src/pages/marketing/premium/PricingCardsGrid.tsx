@@ -13,11 +13,7 @@ export const PricingCardsGrid: React.FC<PricingCardsGridProps> = ({
   return (
     <Grid minItemWidth="sm" gap="xl">
       {PLANS_CONFIG.map((plan) => (
-        <PricingCard
-          key={plan.id}
-          plan={plan}
-          billingInterval={billingInterval}
-        />
+        <PricingCard key={plan.id} plan={plan} billingInterval={billingInterval} />
       ))}
     </Grid>
   );

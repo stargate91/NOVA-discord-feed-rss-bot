@@ -4,6 +4,7 @@ import { useTranslation } from '@/i18n';
 import { useToast } from '@/components/common/Toast';
 import { Card, Button, Badge, Stack, Inline, Text } from '@/ui';
 import type { GuildEntitlements } from '../types';
+import styles from './SubscriptionPlanCard.module.css';
 
 interface SubscriptionPlanCardProps {
   entitlements: GuildEntitlements;
@@ -33,7 +34,8 @@ export const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({ enti
               {t('guild.activeTierLabel')}
             </Text>
             <Badge variant="tier">
-              <Sparkles size={12} /> {entitlements.tier_name || (isMaster ? 'Nova Master' : t('guild.activeTierValue'))}
+              <Sparkles size={12} />{' '}
+              {entitlements.tier_name || (isMaster ? 'Nova Master' : t('guild.activeTierValue'))}
             </Badge>
           </Inline>
           <Inline justify="between" align="center">
@@ -72,7 +74,7 @@ export const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({ enti
         </Stack>
 
         {isMaster ? (
-          <Button variant="glass" size="lg" fullWidth disabled style={{ cursor: 'default', opacity: 0.9 }}>
+          <Button variant="glass" size="lg" fullWidth disabled className={styles.disabledMasterBtn}>
             <Sparkles size={16} /> {t('guild.masterActiveBtn')}
           </Button>
         ) : (

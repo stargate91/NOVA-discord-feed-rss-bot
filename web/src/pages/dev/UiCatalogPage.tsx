@@ -42,7 +42,8 @@ export const UiCatalogPage: React.FC = () => {
               <Badge variant="info">38 Components</Badge>
             </Inline>
             <Text color="secondary" size="sm" className={styles.subtitle}>
-              Interactive showcase and design system reference for all Nova atomic & compound components.
+              Interactive showcase and design system reference for all Nova atomic & compound
+              components.
             </Text>
           </div>
 

@@ -17,7 +17,8 @@ export const ButtonsCatalogSection: React.FC = () => {
                 Button Component (Polymorphic Generic)
               </Text>
               <Text size="xs" color="secondary">
-                Supports 13 visual variants, 4 sizes, loading spinner, icons, and polymorphic generic `as` prop.
+                Supports 13 visual variants, 4 sizes, loading spinner, icons, and polymorphic
+                generic `as` prop.
               </Text>
             </div>
             <Inline gap="xs">
@@ -54,20 +55,10 @@ export const ButtonsCatalogSection: React.FC = () => {
             <Button variant="secondary" size={btnSize} loading={btnLoading}>
               Secondary
             </Button>
-            <Button
-              variant="discord"
-              size={btnSize}
-              loading={btnLoading}
-              icon={<Bot size={16} />}
-            >
+            <Button variant="discord" size={btnSize} loading={btnLoading} icon={<Bot size={16} />}>
               Discord
             </Button>
-            <Button
-              variant="gradient"
-              size={btnSize}
-              loading={btnLoading}
-              icon={<Zap size={16} />}
-            >
+            <Button variant="gradient" size={btnSize} loading={btnLoading} icon={<Zap size={16} />}>
               Gradient
             </Button>
             <Button variant="success" size={btnSize} loading={btnLoading}>

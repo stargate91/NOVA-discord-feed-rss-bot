@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate, useParams } from 'react-router-dom';
-import {
-  Menu,
-  X,
-  LogIn,
-  LogOut,
-  ChevronDown,
-  Server,
-  HelpCircle,
-  Code,
-} from 'lucide-react';
+import { Menu, X, LogIn, LogOut, ChevronDown, Server, HelpCircle, Code } from 'lucide-react';
 import type { HealthStatus } from '@/types';
 import { useTranslation } from '@/i18n';
 import { useAuth, isMasterAdmin } from '@/auth';
@@ -39,8 +30,8 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
   const userAvatarSrc = user?.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
     : user
-    ? `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator || 0) % 5}.png`
-    : undefined;
+      ? `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator || 0) % 5}.png`
+      : undefined;
 
   const displayName = user?.global_name || user?.username || 'Discord User';
 
@@ -87,13 +78,12 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
             {isAuthenticated && user ? (
               <Dropdown align="end">
                 <Dropdown.Trigger>
-                  <button type="button" className={styles.userProfileBtn} aria-label="User Account Menu">
-                    <Avatar
-                      src={userAvatarSrc}
-                      name={displayName}
-                      size="xs"
-                      status="online"
-                    />
+                  <button
+                    type="button"
+                    className={styles.userProfileBtn}
+                    aria-label="User Account Menu"
+                  >
+                    <Avatar src={userAvatarSrc} name={displayName} size="xs" status="online" />
                     <span className={styles.userNameText}>{displayName}</span>
                     <ChevronDown size={14} />
                   </button>
@@ -101,31 +91,19 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
                 <Dropdown.Menu>
                   <Dropdown.Header>
                     <div className={styles.userProfileHeader}>
-                      <Avatar
-                        src={userAvatarSrc}
-                        name={displayName}
-                        size="sm"
-                      />
+                      <Avatar src={userAvatarSrc} name={displayName} size="sm" />
                       <div className={styles.userProfileInfo}>
                         <span className={styles.userProfileName}>{displayName}</span>
-                        <span className={styles.userProfileTag}>
-                          @{user.username}
-                        </span>
+                        <span className={styles.userProfileTag}>@{user.username}</span>
                       </div>
                     </div>
                   </Dropdown.Header>
                   <Dropdown.Divider />
-                  <Dropdown.Item
-                    icon={<Server size={15} />}
-                    onClick={() => navigate('/servers')}
-                  >
+                  <Dropdown.Item icon={<Server size={15} />} onClick={() => navigate('/servers')}>
                     {t('common.navServers')}
                   </Dropdown.Item>
                   {isMasterAdmin(user?.id) && (
-                    <Dropdown.Item
-                      icon={<Code size={15} />}
-                      onClick={() => navigate('/dev')}
-                    >
+                    <Dropdown.Item icon={<Code size={15} />} onClick={() => navigate('/dev')}>
                       {t('common.navDev')}
                     </Dropdown.Item>
                   )}
@@ -149,11 +127,7 @@ export const Navbar: React.FC<NavbarProps> = ({ health, loadingHealth }) => {
                 </Dropdown.Menu>
               </Dropdown>
             ) : (
-              <Button
-                variant="discord"
-                size="sm"
-                onClick={() => loginWithDiscord()}
-              >
+              <Button variant="discord" size="sm" onClick={() => loginWithDiscord()}>
                 <LogIn size={14} /> {t('common.loginWithDiscord')}
               </Button>
             )}

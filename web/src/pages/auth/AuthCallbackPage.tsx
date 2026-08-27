@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AlertCircle, LogIn, Sparkles, Home, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
+import {
+  AlertCircle,
+  LogIn,
+  Sparkles,
+  Home,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Check,
+} from 'lucide-react';
 import { useAuth, validateOAuthState, saveAuthSession } from '@/auth';
 import type { DiscordUser } from '@/auth';
 import { apiClient } from '@/api/client';
@@ -8,6 +17,7 @@ import { useTranslation } from '@/i18n';
 import { SEO } from '@/components/common/SEO';
 import { Container, Card, Button, Stack, Inline, Text, Spinner } from '@/ui';
 import { featureFlags, DISCORD_CLIENT_ID } from '@/constants';
+import styles from './AuthCallbackPage.module.css';
 
 interface AuthResponse {
   access_token: string;
@@ -43,7 +53,9 @@ export const AuthCallbackPage: React.FC = () => {
       const oauthError = searchParams.get('error');
 
       if (oauthError) {
-        setError(searchParams.get('error_description') || `Discord Authorization Error: ${oauthError}`);
+        setError(
+          searchParams.get('error_description') || `Discord Authorization Error: ${oauthError}`
+        );
         setIsProcessing(false);
         return;
       }
@@ -80,7 +92,7 @@ export const AuthCallbackPage: React.FC = () => {
 
         // 3. Deduplicated live OAuth code exchange with FastAPI backend
         const targetRedirectUri = `${window.location.origin}/auth/callback`;
-        
+
         let exchangePromise = inFlightExchanges.get(code);
         if (!exchangePromise) {
           exchangePromise = apiClient.post<AuthResponse>('/api/v1/auth/discord', {
@@ -163,59 +175,57 @@ export const AuthCallbackPage: React.FC = () => {
                 </Text>
               </Inline>
 
-              <Text size="sm" color="secondary" align="center" style={{ wordBreak: 'break-word' }}>
+              <Text size="sm" color="secondary" align="center" className={styles.errorText}>
                 {error}
               </Text>
 
               {/* Collapsible Diagnostic & Debug Information */}
-              <div style={{ width: '100%', marginTop: '4px' }}>
+              <div className={styles.debugSection}>
                 <Button
                   variant="ghost"
                   size="sm"
                   fullWidth
                   onClick={() => setShowDebug(!showDebug)}
-                  style={{ justifyContent: 'space-between' }}
+                  className={styles.debugToggleBtn}
                 >
-                  <Text size="xs" color="secondary">OAuth Diagnostic Details</Text>
+                  <Text size="xs" color="secondary">
+                    OAuth Diagnostic Details
+                  </Text>
                   {showDebug ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </Button>
 
                 {showDebug && (
-                  <div
-                    style={{
-                      marginTop: '8px',
-                      padding: '12px',
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      fontSize: '11px',
-                      fontFamily: 'monospace',
-                      color: 'var(--text-secondary)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
-                      wordBreak: 'break-all',
-                    }}
-                  >
-                    <div><strong>Discord Client ID:</strong> {DISCORD_CLIENT_ID}</div>
-                    <div><strong>Origin:</strong> {originUrl}</div>
-                    <div><strong>Redirect URI:</strong> {redirectUri}</div>
-                    <div><strong>Code Received:</strong> {codeParam ? `${codeParam.substring(0, 10)}... (length ${codeParam.length})` : 'None'}</div>
-                    <div><strong>State Present:</strong> {stateParam ? 'Yes' : 'No'}</div>
-                    <div style={{ marginTop: '6px' }}>
+                  <div className={styles.debugPanel}>
+                    <div>
+                      <strong>Discord Client ID:</strong> {DISCORD_CLIENT_ID}
+                    </div>
+                    <div>
+                      <strong>Origin:</strong> {originUrl}
+                    </div>
+                    <div>
+                      <strong>Redirect URI:</strong> {redirectUri}
+                    </div>
+                    <div>
+                      <strong>Code Received:</strong>{' '}
+                      {codeParam
+                        ? `${codeParam.substring(0, 10)}... (length ${codeParam.length})`
+                        : 'None'}
+                    </div>
+                    <div>
+                      <strong>State Present:</strong> {stateParam ? 'Yes' : 'No'}
+                    </div>
+                    <div className={styles.debugActions}>
                       <Button variant="outline" size="sm" onClick={copyDiagnosticInfo}>
-                        {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? 'Copied!' : 'Copy Diagnostics'}
+                        {copied ? <Check size={12} /> : <Copy size={12} />}{' '}
+                        {copied ? 'Copied!' : 'Copy Diagnostics'}
                       </Button>
                     </div>
                   </div>
                 )}
               </div>
 
-              <Stack gap="sm" style={{ width: '100%', marginTop: '12px' }}>
-                <Button
-                  variant="discord"
-                  fullWidth
-                  onClick={() => loginWithDiscord()}
-                >
+              <Stack gap="sm" className={styles.actionStack}>
+                <Button variant="discord" fullWidth onClick={() => loginWithDiscord()}>
                   <LogIn size={16} /> {t('common.loginWithDiscord')}
                 </Button>
 
@@ -232,11 +242,7 @@ export const AuthCallbackPage: React.FC = () => {
                   </Button>
                 )}
 
-                <Button
-                  variant="ghost"
-                  fullWidth
-                  onClick={() => navigate('/', { replace: true })}
-                >
+                <Button variant="ghost" fullWidth onClick={() => navigate('/', { replace: true })}>
                   <Home size={14} /> {t('common.authCallbackReturnHome')}
                 </Button>
               </Stack>

@@ -44,3 +44,7 @@
   color: var(--blue-400);
   margin-bottom: var(--space-xs);
 }
+
+.actionStack {
+  width: 100%;
+}
