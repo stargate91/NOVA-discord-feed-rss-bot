@@ -1,0 +1,124 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Sizes */
+.sizeSm {
+  padding: var(--space-xl) var(--space-lg);
+  gap: var(--space-sm);
+}
+
+.sizeMd {
+  padding: var(--space-3xl) var(--space-2xl);
+  gap: var(--space-md);
+}
+
+.sizeLg {
+  padding: var(--space-5xl) var(--space-3xl);
+  gap: var(--space-lg);
+}
+
+/* Variants */
+.variantDefault {
+  background: transparent;
+  border: none;
+}
+
+.variantCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.variantGlass {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(var(--blur-lg));
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card), var(--glow-blue-sm);
+}
+
+.variantDashed {
+  background: var(--bg-glass-subtle);
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-xl);
+}
+
+/* Icon Bubble */
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--status-info-bg);
+  color: var(--blue-400);
+  border: 1px solid var(--status-info-border);
+  flex-shrink: 0;
+  box-shadow: var(--glow-blue-sm);
+}
+
+.sizeSm .iconWrapper {
+  width: 3rem;
+  height: 3rem;
+}
+
+.sizeMd .iconWrapper {
+  width: 4rem;
+  height: 4rem;
+}
+
+.sizeLg .iconWrapper {
+  width: 5rem;
+  height: 5rem;
+}
+
+/* Title & Description */
+.title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.sizeSm .title {
+  font-size: var(--font-size-base);
+}
+
+.sizeMd .title {
+  font-size: var(--font-size-xl);
+}
+
+.sizeLg .title {
+  font-size: var(--font-size-2xl);
+}
+
+.description {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  max-width: 32rem;
+}
+
+.sizeSm .description {
+  max-width: 24rem;
+  font-size: var(--font-size-xs);
+}
+
+/* Action Rows */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}

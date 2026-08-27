@@ -1,0 +1,117 @@
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+  width: 100%;
+  position: relative;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+/* Variants */
+.variantInfo {
+  background: var(--status-info-bg);
+  border-color: var(--status-info-border);
+  color: var(--blue-200);
+}
+
+.variantInfo .icon {
+  color: var(--blue-400);
+}
+
+.variantSuccess {
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
+  color: var(--green-200);
+}
+
+.variantSuccess .icon {
+  color: var(--status-success);
+}
+
+.variantWarning {
+  background: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
+  color: var(--amber-200);
+}
+
+.variantWarning .icon {
+  color: var(--status-warning);
+}
+
+.variantDanger {
+  background: var(--status-danger-bg);
+  border-color: var(--status-danger-border);
+  color: var(--red-200);
+}
+
+.variantDanger .icon {
+  color: var(--status-danger);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.description {
+  font-size: var(--font-size-xs);
+  color: currentcolor;
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.action {
+  margin-top: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: currentcolor;
+  opacity: var(--opacity-muted);
+  cursor: pointer;
+  padding: var(--space-3xs);
+  border-radius: var(--radius-xs);
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.closeBtn:focus-visible {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--blue-500);
+  outline: none;
+}
+
+.closeBtn:hover {
+  opacity: 1;
+  background: var(--bg-glass-medium);
+}

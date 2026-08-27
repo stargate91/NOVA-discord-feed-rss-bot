@@ -1,0 +1,160 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+}
+
+.controlWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.controlWrapper:focus-within {
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 2px var(--blue-500), var(--glow-blue-sm);
+}
+
+.hasError {
+  border-color: var(--status-danger);
+}
+
+.hasError:focus-within {
+  border-color: var(--status-danger);
+  box-shadow: 0 0 0 2px var(--status-danger);
+}
+
+.disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  background: var(--bg-card);
+}
+
+/* Variants */
+.variantDefault {
+  background: var(--bg-surface);
+}
+
+.variantFilled {
+  background: var(--bg-card);
+  border-color: transparent;
+}
+
+.variantFilled:focus-within {
+  border-color: var(--blue-500);
+  background: var(--bg-surface);
+}
+
+.variantGlass {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(var(--blur-md));
+}
+
+/* Inner Textarea */
+.control {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  outline: none;
+  box-sizing: border-box;
+  padding: var(--space-md) var(--space-lg);
+  min-height: 5rem;
+}
+
+.control::placeholder {
+  color: var(--text-muted);
+}
+
+.control:disabled {
+  cursor: not-allowed;
+}
+
+/* Resizing */
+.resizeNone {
+  resize: none;
+}
+
+.resizeVertical {
+  resize: vertical;
+}
+
+.resizeHorizontal {
+  resize: horizontal;
+}
+
+.resizeBoth {
+  resize: both;
+}
+
+/* Footer with Count and Actions */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2xs) var(--space-sm);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-2xs);
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-3xs);
+  border-radius: var(--radius-xs);
+  transition: var(--transition-fast);
+}
+
+.actionBtn:focus-visible {
+  color: var(--text-primary);
+  outline: none;
+}
+
+.actionBtn:hover {
+  color: var(--text-primary);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-3xs);
+}
+
+.error {
+  font-size: var(--font-size-xs);
+  color: var(--status-danger);
+  margin-top: var(--space-3xs);
+}

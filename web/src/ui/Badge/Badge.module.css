@@ -1,0 +1,106 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-2xs) var(--space-md);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  user-select: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+/* Sizes */
+.sizeXs {
+  padding: var(--space-3xs) var(--space-xs);
+  font-size: var(--font-size-3xs);
+}
+
+.sizeSm {
+  padding: var(--space-2xs) var(--space-sm);
+  font-size: var(--font-size-2xs);
+}
+
+.sizeMd {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-xs);
+}
+
+.pill {
+  border-radius: var(--radius-full);
+}
+
+.dot {
+  width: var(--space-xs);
+  height: var(--space-xs);
+  border-radius: var(--radius-full);
+  background: currentcolor;
+  box-shadow: 0 0 8px currentcolor;
+  flex-shrink: 0;
+}
+
+.pulse {
+  animation: var(--animation-pulse);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Variants */
+.online,
+.success {
+  background: var(--status-success-bg);
+  color: var(--status-success);
+  border: 1px solid var(--status-success-border);
+}
+
+.offline,
+.danger {
+  background: var(--status-danger-bg);
+  color: var(--status-danger);
+  border: 1px solid var(--status-danger-border);
+}
+
+.warning {
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
+  border: 1px solid var(--status-warning-border);
+}
+
+.info {
+  background: var(--status-info-bg);
+  color: var(--status-info);
+  border: 1px solid var(--status-info-border);
+}
+
+.tier {
+  background: var(--status-info-bg);
+  color: var(--blue-400);
+  border: 1px solid var(--status-info-border);
+}
+
+.purple {
+  background: var(--status-purple-bg);
+  color: var(--status-purple);
+  border: 1px solid var(--status-purple-border);
+}
+
+.neutral {
+  background: var(--bg-glass-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}

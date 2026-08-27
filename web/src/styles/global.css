@@ -1,0 +1,138 @@
+@import url('./variables.css');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  
+  /* W3C Standard Cross-Browser Scrollbar (Firefox, Chrome 121+, Safari 18+, Edge) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: var(--line-height-relaxed);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  
+  /* Calm, elegant dark background with subtle blue depth */
+  background-image:
+    linear-gradient(180deg, rgb(7 10 18 / 88%) 0%, rgb(7 10 18 / 96%) 50%, rgb(7 10 18 / 99%) 100%),
+    radial-gradient(ellipse at 50% 0%, rgb(14 165 233 / 8%) 0%, transparent 60%),
+    url('/images/bg.webp');
+  background-size: cover, auto, cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+/* ==========================================================================
+   NOVA CROSS-BROWSER CUSTOM SCROLLBAR (WebKit / Chromium / Safari / Edge)
+   ========================================================================== */
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: var(--scrollbar-radius);
+}
+
+::-webkit-scrollbar-track:hover,
+*::-webkit-scrollbar-track:hover {
+  background: var(--scrollbar-track-hover);
+}
+
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--scrollbar-radius);
+  border: 1px solid var(--scrollbar-border);
+  transition: background-color var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-thumb:active,
+*::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+}
+
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Global Text Selection */
+::selection {
+  background: rgb(14 165 233 / 25%);
+  color: var(--text-primary);
+}
+
+/* Keyframe Animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0.6;
+  }
+}
+

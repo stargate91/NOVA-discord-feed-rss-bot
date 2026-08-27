@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /premium
+Allow: /docs
+Allow: /support
+Allow: /changelog
+Allow: /terms
+Allow: /privacy
+Allow: /dev
+
+# Disallow private user/guild dashboard sessions and API routes from crawling
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /health
+
+Sitemap: https://novafeeds.xyz/sitemap.xml

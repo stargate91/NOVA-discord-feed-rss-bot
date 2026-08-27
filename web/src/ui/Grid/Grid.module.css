@@ -1,0 +1,323 @@
+.grid {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Columns */
+.cols1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.cols2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cols3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cols4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cols5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.cols6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.cols12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.colsAutoFill {
+  grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+}
+
+.colsAutoFit {
+  grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+}
+
+/* Responsive collapse for small screens */
+@media (width <= 48rem) {
+  .cols2,
+  .cols3,
+  .cols4,
+  .cols5,
+  .cols6 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+/* Gaps */
+.gapNone {
+  gap: 0;
+}
+
+.gap3xs {
+  gap: var(--space-3xs);
+}
+
+.gap2xs {
+  gap: var(--space-2xs);
+}
+
+.gapXs {
+  gap: var(--space-xs);
+}
+
+.gapSm {
+  gap: var(--space-sm);
+}
+
+.gapMd {
+  gap: var(--space-md);
+}
+
+.gapLg {
+  gap: var(--space-lg);
+}
+
+.gapXl {
+  gap: var(--space-xl);
+}
+
+.gap2xl {
+  gap: var(--space-2xl);
+}
+
+.gap3xl {
+  gap: var(--space-3xl);
+}
+
+.gap4xl {
+  gap: var(--space-4xl);
+}
+
+.gap5xl {
+  gap: var(--space-5xl);
+}
+
+/* Row Gaps */
+.rowGapNone {
+  row-gap: 0;
+}
+
+.rowGap3xs {
+  row-gap: var(--space-3xs);
+}
+
+.rowGap2xs {
+  row-gap: var(--space-2xs);
+}
+
+.rowGapXs {
+  row-gap: var(--space-xs);
+}
+
+.rowGapSm {
+  row-gap: var(--space-sm);
+}
+
+.rowGapMd {
+  row-gap: var(--space-md);
+}
+
+.rowGapLg {
+  row-gap: var(--space-lg);
+}
+
+.rowGapXl {
+  row-gap: var(--space-xl);
+}
+
+.rowGap2xl {
+  row-gap: var(--space-2xl);
+}
+
+.rowGap3xl {
+  row-gap: var(--space-3xl);
+}
+
+/* Column Gaps */
+.colGapNone {
+  column-gap: 0;
+}
+
+.colGap3xs {
+  column-gap: var(--space-3xs);
+}
+
+.colGap2xs {
+  column-gap: var(--space-2xs);
+}
+
+.colGapXs {
+  column-gap: var(--space-xs);
+}
+
+.colGapSm {
+  column-gap: var(--space-sm);
+}
+
+.colGapMd {
+  column-gap: var(--space-md);
+}
+
+.colGapLg {
+  column-gap: var(--space-lg);
+}
+
+.colGapXl {
+  column-gap: var(--space-xl);
+}
+
+.colGap2xl {
+  column-gap: var(--space-2xl);
+}
+
+.colGap3xl {
+  column-gap: var(--space-3xl);
+}
+
+/* Alignment */
+.alignStart {
+  align-items: flex-start;
+}
+
+.alignCenter {
+  align-items: center;
+}
+
+.alignEnd {
+  align-items: flex-end;
+}
+
+.alignStretch {
+  align-items: stretch;
+}
+
+/* Justify */
+.justifyStart {
+  justify-content: flex-start;
+}
+
+.justifyCenter {
+  justify-content: center;
+}
+
+.justifyEnd {
+  justify-content: flex-end;
+}
+
+.justifyBetween {
+  justify-content: space-between;
+}
+
+.justifyAround {
+  justify-content: space-around;
+}
+
+.justifyEvenly {
+  justify-content: space-evenly;
+}
+
+/* Grid Item Spans */
+.item {
+  box-sizing: border-box;
+}
+
+.colSpan1 {
+  grid-column: span 1 / span 1;
+}
+
+.colSpan2 {
+  grid-column: span 2 / span 2;
+}
+
+.colSpan3 {
+  grid-column: span 3 / span 3;
+}
+
+.colSpan4 {
+  grid-column: span 4 / span 4;
+}
+
+.colSpan5 {
+  grid-column: span 5 / span 5;
+}
+
+.colSpan6 {
+  grid-column: span 6 / span 6;
+}
+
+.colSpan7 {
+  grid-column: span 7 / span 7;
+}
+
+.colSpan8 {
+  grid-column: span 8 / span 8;
+}
+
+.colSpan9 {
+  grid-column: span 9 / span 9;
+}
+
+.colSpan10 {
+  grid-column: span 10 / span 10;
+}
+
+.colSpan11 {
+  grid-column: span 11 / span 11;
+}
+
+.colSpan12 {
+  grid-column: span 12 / span 12;
+}
+
+.colSpanFull {
+  grid-column: 1 / -1;
+}
+
+.colStart1 {
+  grid-column-start: 1;
+}
+
+.colStart2 {
+  grid-column-start: 2;
+}
+
+.colStart3 {
+  grid-column-start: 3;
+}
+
+.colStart4 {
+  grid-column-start: 4;
+}
+
+.colStart5 {
+  grid-column-start: 5;
+}
+
+.colStart6 {
+  grid-column-start: 6;
+}
+
+.rowSpan1 {
+  grid-row: span 1 / span 1;
+}
+
+.rowSpan2 {
+  grid-row: span 2 / span 2;
+}
+
+.rowSpan3 {
+  grid-row: span 3 / span 3;
+}
+
+.rowSpan4 {
+  grid-row: span 4 / span 4;
+}

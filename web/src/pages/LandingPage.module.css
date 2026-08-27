@@ -1,0 +1,115 @@
+.hero {
+  text-align: center;
+  padding: var(--space-5xl) var(--space-lg) var(--space-5xl);
+  position: relative;
+}
+
+.heroSection {
+  text-align: center;
+  padding: var(--space-4xl) var(--space-lg) var(--space-3xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroTag,
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xs) var(--space-md);
+  background: var(--status-info-bg);
+  border: 1px solid var(--status-info-border);
+  border-radius: var(--radius-sm);
+  color: var(--blue-400);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  margin-bottom: var(--space-xl);
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tighter);
+  margin-bottom: var(--space-xl);
+  color: var(--text-primary);
+}
+
+.heroGradient {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  max-width: 42rem;
+  margin: 0 auto var(--space-3xl);
+  line-height: var(--line-height-relaxed);
+}
+
+.heroActions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4xl);
+}
+
+.brandCarousel {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5xl);
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-xl);
+  margin-bottom: var(--space-5xl);
+}
+
+.cardText {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.ctaBanner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2xl);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(var(--blur-lg));
+}
+
+.ctaTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2xs);
+}
+
+.ctaSubtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@media (width <= 48rem) {
+  .ctaBanner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-xl);
+    padding: var(--space-2xl) var(--space-lg);
+  }
+}

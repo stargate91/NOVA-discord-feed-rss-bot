@@ -1,0 +1,173 @@
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Animations */
+.animShimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-glass-subtle) 0%,
+    var(--bg-glass-medium) 50%,
+    var(--bg-glass-subtle) 100%
+  );
+  background-size: 200% 100%;
+  animation: var(--animation-shimmer);
+}
+
+.animPulse {
+  background: var(--bg-glass-medium);
+  animation: var(--animation-pulse);
+}
+
+.animNone {
+  background: var(--bg-glass-medium);
+}
+
+/* Base Variants */
+.text {
+  height: 0.875rem;
+  border-radius: var(--radius-xs);
+  width: 100%;
+}
+
+.circular {
+  border-radius: var(--radius-full);
+  aspect-ratio: 1 / 1;
+}
+
+.rectangular {
+  border-radius: var(--radius-none);
+}
+
+.rounded {
+  border-radius: var(--radius-lg);
+}
+
+/* Aspect Ratios */
+.aspectSquare {
+  aspect-ratio: var(--aspect-square);
+}
+
+.aspectVideo {
+  aspect-ratio: var(--aspect-video);
+}
+
+.aspectPoster {
+  aspect-ratio: var(--aspect-poster);
+}
+
+.aspectBanner {
+  aspect-ratio: var(--aspect-banner);
+}
+
+/* Width Presets */
+.wQuarter {
+  width: 25%;
+}
+
+.wThird {
+  width: 33.333%;
+}
+
+.wHalf {
+  width: 50%;
+}
+
+.wTwoThirds {
+  width: 66.666%;
+}
+
+.wThreeQuarters {
+  width: 75%;
+}
+
+.wFull {
+  width: 100%;
+}
+
+/* Height Presets */
+.hXs {
+  height: 0.75rem;
+}
+
+.hSm {
+  height: 1rem;
+}
+
+.hMd {
+  height: 1.5rem;
+}
+
+.hLg {
+  height: 2.25rem;
+}
+
+.hXl {
+  height: 3.5rem;
+}
+
+.hCard {
+  height: 8rem;
+}
+
+.hHero {
+  height: 14rem;
+}
+
+/* Avatar Presets */
+.avatarSm {
+  width: var(--space-2xl);
+  height: var(--space-2xl);
+}
+
+.avatarMd {
+  width: var(--space-3xl);
+  height: var(--space-3xl);
+}
+
+.avatarLg {
+  width: var(--space-4xl);
+  height: var(--space-4xl);
+}
+
+/* Compositional Layout Skeletons */
+.textStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  width: 100%;
+}
+
+.cardSkeleton {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.cardHeaderContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.tableRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}

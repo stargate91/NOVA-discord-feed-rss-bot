@@ -1,0 +1,121 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface);
+  padding: var(--space-3xs);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-sizing: border-box;
+  user-select: none;
+  gap: var(--space-3xs);
+  position: relative;
+}
+
+/* Full Width Modifier */
+.fullWidth {
+  width: 100%;
+  display: flex;
+}
+
+/* Sizes */
+.sizeSm {
+  height: var(--control-height-sm);
+  padding: var(--space-3xs);
+}
+
+.sizeMd {
+  height: var(--control-height-md);
+  padding: var(--space-3xs);
+}
+
+.sizeLg {
+  height: var(--control-height-lg);
+  padding: var(--space-2xs);
+}
+
+/* Segment Base Button */
+.segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  outline: none;
+  height: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.fullWidth .segment {
+  flex: 1;
+  justify-content: center;
+}
+
+.sizeSm .segment {
+  padding: 0 var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+.sizeMd .segment {
+  padding: 0 var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.sizeLg .segment {
+  padding: 0 var(--space-lg);
+  font-size: var(--font-size-base);
+}
+
+.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-card);
+  box-shadow: var(--shadow-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.segment:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.segment:focus-visible {
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 2px var(--blue-500);
+}
+
+.segment:hover:not(.active):not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-glass-subtle);
+}
+
+/* Inner elements */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badge {
+  font-size: var(--font-size-3xs);
+  padding: 0 var(--space-3xs);
+  border-radius: var(--radius-full);
+  background: var(--bg-glass-medium);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.active .badge {
+  background: var(--status-info-bg);
+  color: var(--blue-400);
+}

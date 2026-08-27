@@ -1,0 +1,164 @@
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* Variant Containers */
+.variantLine {
+  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-lg);
+}
+
+.variantPill {
+  background: var(--bg-surface);
+  padding: var(--space-3xs);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  gap: var(--space-3xs);
+  display: inline-flex;
+}
+
+.variantCard {
+  gap: var(--space-2xs);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.variantGlass {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(var(--blur-md));
+  padding: var(--space-3xs);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  gap: var(--space-3xs);
+  display: inline-flex;
+}
+
+/* Tab Button Base */
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  outline: none;
+  position: relative;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+/* Variant Tab Items */
+.variantLine .tab {
+  padding: var(--space-sm) 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -0.0625rem;
+}
+
+.variantPill .tab {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.variantCard .tab {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border: 1px solid transparent;
+  margin-bottom: -0.0625rem;
+}
+
+.variantGlass .tab {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+/* Sizes */
+.sizeSm .tab {
+  font-size: var(--font-size-xs);
+}
+
+.sizeMd .tab {
+  font-size: var(--font-size-sm);
+}
+
+.sizeLg .tab {
+  font-size: var(--font-size-base);
+}
+
+/* Active & Disabled Modifiers */
+.variantLine .tab.active {
+  color: var(--blue-400);
+  border-bottom-color: var(--blue-500);
+  font-weight: var(--font-weight-semibold);
+}
+
+.variantPill .tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.variantCard .tab.active {
+  background: var(--bg-card);
+  border-color: var(--border-card) var(--border-card) var(--bg-card);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.variantGlass .tab.active {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--glow-blue-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tab:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.tab:focus-visible {
+  box-shadow: 0 0 0 2px var(--blue-500);
+}
+
+.tab:hover:not(.active):not(:disabled) {
+  color: var(--text-primary);
+}
+
+/* Panel */
+.panel {
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: var(--space-lg);
+}
+
+.badge {
+  font-size: var(--font-size-3xs);
+  padding: 0 var(--space-3xs);
+  border-radius: var(--radius-full);
+  background: var(--bg-glass-medium);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.active .badge {
+  background: var(--status-info-bg);
+  color: var(--blue-400);
+}

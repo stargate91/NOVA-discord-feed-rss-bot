@@ -1,0 +1,118 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  box-sizing: border-box;
+}
+
+.posRight {
+  flex-direction: row;
+}
+
+.posBottom {
+  flex-direction: column;
+}
+
+.centered {
+  display: flex;
+  width: 100%;
+  min-height: 8rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(var(--blur-sm));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animated Spinner Icon */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: var(--animation-spin);
+  flex-shrink: 0;
+}
+
+/* Sizes */
+.sizeXs .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.sizeSm .icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.sizeMd .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.sizeLg .icon {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.sizeXl .icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Variants */
+.variantPrimary .icon {
+  color: var(--blue-400);
+}
+
+.variantSecondary .icon {
+  color: var(--text-muted);
+}
+
+.variantWhite .icon {
+  color: var(--text-primary);
+}
+
+.variantSuccess .icon {
+  color: var(--status-success);
+}
+
+.variantDanger .icon {
+  color: var(--status-danger);
+}
+
+/* Label */
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  user-select: none;
+}
+
+.sizeXs .label {
+  font-size: var(--font-size-2xs);
+}
+
+.sizeSm .label {
+  font-size: var(--font-size-xs);
+}
+
+.sizeLg .label {
+  font-size: var(--font-size-base);
+}
+
+.sizeXl .label {
+  font-size: var(--font-size-lg);
+}

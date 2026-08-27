@@ -1,0 +1,127 @@
+.group {
+  display: flex;
+  box-sizing: border-box;
+}
+
+.dirVertical {
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.dirHorizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+/* Radio Control Label */
+.radioLabel {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.circle {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-hover);
+  background: var(--bg-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+  margin-top: 0.125rem;
+  box-sizing: border-box;
+}
+
+.checked .circle {
+  border-color: var(--blue-500);
+  background: var(--blue-950);
+}
+
+.hiddenInput:focus-visible + .circle {
+  box-shadow: 0 0 0 2px var(--blue-500);
+  border-color: var(--blue-500);
+}
+
+.radioLabel:hover:not(.disabled) .circle {
+  border-color: var(--blue-400);
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--blue-400);
+  transform: scale(0);
+  transition: var(--transition-fast);
+}
+
+.checked .dot {
+  transform: scale(1);
+}
+
+/* Radio Card Variant */
+.card {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  transition: var(--transition-fast);
+  flex: 1;
+  min-width: 12.5rem;
+}
+
+.card:hover:not(.disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-0.0625rem);
+}
+
+.card.checked {
+  border-color: var(--blue-500);
+  background: var(--bg-surface);
+  box-shadow: var(--glow-blue-sm);
+}
+
+/* Inner Text */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.description {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}

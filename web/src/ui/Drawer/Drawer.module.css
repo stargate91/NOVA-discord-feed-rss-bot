@@ -1,0 +1,239 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-backdrop-bg);
+  backdrop-filter: blur(0.5rem);
+  z-index: var(--z-modal);
+  animation: fadeIn var(--transition-fast);
+}
+
+.drawer {
+  position: fixed;
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--blur-xl));
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Positions */
+.posRight {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  animation: slideInRight var(--transition-spring);
+}
+
+.posLeft {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  animation: slideInLeft var(--transition-spring);
+}
+
+.posTop {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  animation: slideInTop var(--transition-spring);
+}
+
+.posBottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  animation: slideInBottom var(--transition-spring);
+}
+
+/* Sizes for Left & Right positions */
+.posRight.sizeSm,
+.posLeft.sizeSm {
+  max-width: 22.5rem;
+}
+
+.posRight.sizeMd,
+.posLeft.sizeMd {
+  max-width: 30rem;
+}
+
+.posRight.sizeLg,
+.posLeft.sizeLg {
+  max-width: 42.5rem;
+}
+
+.posRight.sizeXl,
+.posLeft.sizeXl {
+  max-width: 55rem;
+}
+
+.posRight.sizeFull,
+.posLeft.sizeFull {
+  max-width: 100vw;
+}
+
+/* Sizes for Top & Bottom positions */
+.posTop.sizeSm,
+.posBottom.sizeSm {
+  max-height: 15rem;
+}
+
+.posTop.sizeMd,
+.posBottom.sizeMd {
+  max-height: 25rem;
+}
+
+.posTop.sizeLg,
+.posBottom.sizeLg {
+  max-height: 37.5rem;
+}
+
+.posTop.sizeXl,
+.posBottom.sizeXl {
+  max-height: 50rem;
+}
+
+.posTop.sizeFull,
+.posBottom.sizeFull {
+  max-height: 100vh;
+}
+
+/* Inner Sections */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-xl) var(--space-xl) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-md);
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.closeButton {
+  color: var(--text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xs);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.closeButton:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-medium);
+}
+
+.body {
+  padding: var(--space-xl);
+  overflow-y: auto;
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-xl) var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInBottom {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,123 @@
+.horizontal {
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  box-sizing: border-box;
+}
+
+.vertical {
+  display: inline-block;
+  align-self: stretch;
+  min-height: 1rem;
+  border: none;
+  border-left: 1px solid var(--border-subtle);
+  box-sizing: border-box;
+}
+
+/* Variants */
+.subtle {
+  border-color: var(--border-subtle);
+}
+
+.card {
+  border-color: var(--border-card);
+}
+
+.gradient {
+  border: none;
+  height: 0.0625rem;
+  background: var(--gradient-card-top);
+}
+
+.dashed {
+  border-style: dashed;
+  border-color: var(--border-subtle);
+}
+
+/* Spacings for Horizontal */
+.horizontal.spacingNone {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.horizontal.spacingXs {
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.horizontal.spacingSm {
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.horizontal.spacingMd {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.horizontal.spacingLg {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.horizontal.spacingXl {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+/* Spacings for Vertical */
+.vertical.spacingNone {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.vertical.spacingXs {
+  margin-left: var(--space-xs);
+  margin-right: var(--space-xs);
+}
+
+.vertical.spacingSm {
+  margin-left: var(--space-sm);
+  margin-right: var(--space-sm);
+}
+
+.vertical.spacingMd {
+  margin-left: var(--space-md);
+  margin-right: var(--space-md);
+}
+
+.vertical.spacingLg {
+  margin-left: var(--space-lg);
+  margin-right: var(--space-lg);
+}
+
+.vertical.spacingXl {
+  margin-left: var(--space-xl);
+  margin-right: var(--space-xl);
+}
+
+/* Divider with Label */
+.withLabel {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.withLabel::before,
+.withLabel::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  white-space: nowrap;
+  user-select: none;
+}

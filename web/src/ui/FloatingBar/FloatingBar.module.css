@@ -1,0 +1,114 @@
+.bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-xl);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--blur-lg));
+  box-shadow: var(--shadow-xl);
+  max-width: 90vw;
+  width: max-content;
+  box-sizing: border-box;
+}
+
+/* Positions */
+.posBottom {
+  bottom: var(--space-xl);
+  animation: slideUpBar var(--transition-spring);
+}
+
+.posTop {
+  top: var(--space-xl);
+  animation: slideDownBar var(--transition-spring);
+}
+
+/* Variants */
+.variantDefault {
+  background: var(--bg-card);
+  border-color: var(--border-card);
+}
+
+.variantGlass {
+  background: var(--bg-glass-card);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-xl), var(--glow-blue-sm);
+}
+
+.variantDanger {
+  background: var(--status-danger-bg);
+  border-color: var(--status-danger-border);
+}
+
+.variantInfo {
+  background: var(--status-info-bg);
+  border-color: var(--status-info-border);
+}
+
+/* Inner Sections */
+.content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-3xs);
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+}
+
+.closeButton:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-medium);
+}
+
+/* Keyframes */
+@keyframes slideUpBar {
+  from {
+    transform: translate(-50%, 150%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDownBar {
+  from {
+    transform: translate(-50%, -150%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}

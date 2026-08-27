@@ -1,0 +1,76 @@
+{
+  "rules": {
+    "color-named": "never",
+    "unit-disallowed-list": [
+      ["px"],
+      {
+        "ignoreProperties": {
+          "px": ["border", "border-width", "border-top", "border-right", "border-bottom", "border-left", "box-shadow"]
+        }
+      }
+    ],
+    "function-disallowed-list": ["rgb", "rgba"],
+    "declaration-property-value-disallowed-list": {
+      "/^(?!--).*(?:color|background|border|outline|box-shadow|text-shadow)/": [
+        "/#[0-9a-fA-F]{3,8}/",
+        "/rgba?\\(/"
+      ],
+      "/^(?!--).*(?:padding|margin|gap)/": ["/\\d+px/"],
+      "/^(?!--).*(?:border-radius)/": ["/\\d+px/"],
+      "/^(?!--).*(?:font-size)/": ["/\\d+px/"],
+      "/^(?!--).*(?:font-weight)/": ["/^[0-9]+$/"],
+      "/^(?!--).*(?:z-index)/": ["/^-?[0-9]+$/"],
+      "/^(?!--).*(?:transition|animation)/": [
+        "/\\b\\d+(?:\\.\\d+)?m?s\\b/",
+        "/cubic-bezier/",
+        "/(?<![\\w-])(?:ease|ease-in|ease-out|ease-in-out|linear)(?![\\w-])/"
+      ],
+      "/^(?!--)/": [
+        "inherit",
+        "!important",
+        "/!important/"
+      ]
+    },
+    "declaration-no-important": true,
+    "keyframe-declaration-no-important": true,
+    "max-nesting-depth": 3,
+    "no-duplicate-selectors": true,
+    "value-keyword-case": "lower",
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": ["background-clip", "-webkit-background-clip", "-webkit-text-fill-color"]
+      }
+    ],
+    "value-no-vendor-prefix": true,
+    "color-function-notation": "modern",
+    "selector-class-pattern": "^([a-z][a-zA-Z0-9]*|[a-z0-9]+(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?)$",
+    "declaration-block-no-duplicate-properties": true,
+    "shorthand-property-no-redundant-values": true,
+    "no-descending-specificity": true,
+    "block-no-empty": true,
+    "color-no-invalid-hex": true,
+    "font-family-no-missing-generic-family-keyword": true,
+    "custom-property-pattern": "^([a-z0-9]+-)*[a-z0-9]+$",
+    "no-empty-source": true,
+    "selector-max-id": 0,
+    "selector-max-compound-selectors": 3,
+    "selector-max-universal": 0,
+    "media-feature-range-notation": "context",
+    "font-family-name-quotes": "always-where-recommended",
+    "no-duplicate-at-import-rules": true
+  },
+  "overrides": [
+    {
+      "files": ["src/styles/variables.css", "src/styles/global.css"],
+      "rules": {
+        "color-function-notation": null,
+        "function-disallowed-list": null,
+        "unit-disallowed-list": null,
+        "declaration-property-value-disallowed-list": null,
+        "color-named": null,
+        "selector-max-universal": null
+      }
+    }
+  ]
+}

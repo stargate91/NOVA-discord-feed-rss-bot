@@ -1,0 +1,153 @@
+.container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  box-sizing: border-box;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.thead {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.stickyHeader .thead {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-base);
+  backdrop-filter: blur(var(--blur-md));
+}
+
+.th {
+  padding: var(--space-sm) var(--space-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  white-space: nowrap;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-fast);
+}
+
+.sortable:hover {
+  color: var(--text-primary);
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.sortIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.sortActive {
+  color: var(--blue-400);
+}
+
+.tbody {
+  box-sizing: border-box;
+}
+
+.tr {
+  transition: var(--transition-fast);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.td {
+  padding: var(--space-md) var(--space-md);
+  vertical-align: middle;
+}
+
+/* Alignments */
+.alignLeft {
+  text-align: left;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+/* Densities */
+.compact .th {
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.compact .td {
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.normal .th {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.normal .td {
+  padding: var(--space-md) var(--space-md);
+}
+
+.spacious .th {
+  padding: var(--space-md) var(--space-lg);
+}
+
+.spacious .td {
+  padding: var(--space-lg) var(--space-lg);
+}
+
+/* Variants & Modifiers */
+.hoverable .tbody .tr:hover {
+  background: var(--bg-glass-medium);
+}
+
+.striped .tbody .tr:nth-child(even) {
+  background: var(--bg-glass-subtle);
+}
+
+.bordered .th,
+.bordered .td {
+  border-right: 1px solid var(--border-subtle);
+}
+
+.bordered .th:last-child,
+.bordered .td:last-child {
+  border-right: none;
+}
+
+.glass {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(var(--blur-lg));
+}
+
+.emptyState {
+  padding: var(--space-2xl) var(--space-md);
+  text-align: center;
+  color: var(--text-muted);
+}
