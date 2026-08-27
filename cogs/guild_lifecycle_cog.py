@@ -10,7 +10,6 @@ class GuildLifecycleCog(commands.Cog, name="guild_lifecycle"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
     async def on_ready(self):
         """Sync guilds with database on gateway ready event."""
         log.info("--- FEED BOT ONLINE ---")
@@ -48,7 +47,6 @@ class GuildLifecycleCog(commands.Cog, name="guild_lifecycle"):
 
         log.info("------------------------")
 
-    @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         """Called when the bot joins a new guild."""
         log.info(f"Joined new guild: {guild.name} (ID: {guild.id})")
@@ -68,7 +66,6 @@ class GuildLifecycleCog(commands.Cog, name="guild_lifecycle"):
         except Exception as e:
             log.error(f"Error initializing guild settings for {guild.id}: {e}")
 
-    @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         """Called when the bot is removed from a guild."""
         log.info(f"Left guild: {guild.name} (ID: {guild.id})")

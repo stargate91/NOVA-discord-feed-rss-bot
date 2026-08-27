@@ -1,4 +1,6 @@
-export const DISCORD_CLIENT_ID = '1489908793780338688';
+export const DISCORD_CLIENT_ID =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_DISCORD_CLIENT_ID) ||
+  '1541869073867083947';
 export const DISCORD_BOT_PERMISSIONS = '277025508352';
 export const DISCORD_BOT_SCOPES = 'bot applications.commands';
 

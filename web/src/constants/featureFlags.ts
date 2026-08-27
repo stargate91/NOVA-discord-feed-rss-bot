@@ -5,24 +5,26 @@ export interface FeatureFlags {
 }
 
 export const getFeatureFlags = (): FeatureFlags => {
-  const isLocalhost =
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.hostname === '');
+  const isTest = typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test';
+  if (isTest) {
+    return {
+      useMockData: true,
+      mockAuth: true,
+      enableDebugLogging: false,
+    };
+  }
 
-  const forceMockAuth =
-    typeof import.meta !== 'undefined' && import.meta.env?.VITE_MOCK_AUTH === 'true';
+  const explicitMockAuth =
+    typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MOCK_AUTH : undefined;
+  const explicitMockData =
+    typeof import.meta !== 'undefined' ? import.meta.env?.VITE_USE_MOCK_DATA : undefined;
 
-  const forceMockData =
-    typeof import.meta !== 'undefined' && import.meta.env?.VITE_USE_MOCK_DATA === 'true';
-
-  // Enable mock data when explicitly configured or in local development
-  const useMockData = forceMockData || (forceMockAuth && isLocalhost);
+  const mockAuth = explicitMockAuth !== undefined ? explicitMockAuth === 'true' : false;
+  const useMockData = explicitMockData !== undefined ? explicitMockData === 'true' : false;
 
   return {
     useMockData,
-    mockAuth: forceMockAuth || isLocalhost,
+    mockAuth,
     enableDebugLogging: typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV),
   };
 };

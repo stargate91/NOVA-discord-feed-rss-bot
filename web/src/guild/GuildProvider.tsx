@@ -1,9 +1,9 @@
-import { isUserGuild } from '@/types';
 import type { ReactNode } from 'react';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { UserGuild, GuildContextValue } from './types';
 import { GuildContext } from './context';
 import { useAuth } from '@/auth';
+import { toGuildTier } from '@/auth/entitlements';
 import { apiClient } from '@/api/client';
 import { featureFlags } from '@/constants';
 import { DEFAULT_DEMO_GUILDS, ACTIVE_GUILD_STORAGE_KEY } from './constants';
@@ -51,18 +51,30 @@ export const GuildProvider: React.FC<GuildProviderProps> = ({ children }) => {
       return;
     }
 
-    // 2. Real async API fetch path with runtime schema validation
+    // 2. Real async API fetch path with normalization
     try {
-      const data = await apiClient.get<UserGuild[]>('/api/v1/users/@me/guilds', {
-        timeout: 6000,
+      const data = await apiClient.get<unknown[]>('/api/v1/users/@me/guilds', {
+        timeout: 10000,
         dedup: true,
-        validate: (res) => Array.isArray(res) && res.every(isUserGuild),
       });
 
-      const normalizedGuilds = Array.isArray(data) ? data : DEFAULT_DEMO_GUILDS;
+      const rawList = Array.isArray(data) ? data : [];
+      const normalizedGuilds: UserGuild[] = rawList.map((item: unknown) => {
+        const g = item as Record<string, unknown>;
+        return {
+          id: String(g.id || g.guild_id || ''),
+          name: String(g.name || 'Unnamed Server'),
+          icon: (g.icon as string) || null,
+          owner: Boolean(g.owner ?? g.is_owner),
+          permissions: String(g.permissions ?? '0'),
+          hasManagePermission: Boolean(g.hasManagePermission ?? g.is_owner ?? g.owner ?? true),
+          tier: toGuildTier(g.tier as any),
+          monitorsCount: Number(g.active_monitors ?? g.monitorsCount ?? 0),
+        };
+      });
+
       setGuilds(normalizedGuilds);
     } catch (err: unknown) {
-      // Graceful fallback in development or offline preview
       if (featureFlags.mockAuth) {
         setGuilds(DEFAULT_DEMO_GUILDS);
       } else {

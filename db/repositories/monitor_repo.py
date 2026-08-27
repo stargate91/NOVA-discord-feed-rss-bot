@@ -49,7 +49,7 @@ async def get_monitors_for_guild(guild_id: int) -> list[MonitorConfig]:
 async def update_last_post_at(monitor_id: int):
     """Update the last_post_at timestamp for a monitor."""
     q = "UPDATE monitors SET last_post_at = $1 WHERE id = $2"
-    await _execute(q, datetime.now(timezone.utc), int(monitor_id))
+    await _execute(q, datetime.now(timezone.utc).replace(tzinfo=None), int(monitor_id))
 
 async def update_monitor_name(monitor_id: int, new_name: str):
     """Update a monitor's display name."""
@@ -103,7 +103,9 @@ async def mark_as_published(
 ):
     """Record an item as published in the published_entries_v2 table."""
     if published_at is None:
-        published_at = datetime.now(timezone.utc)
+        published_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    elif isinstance(published_at, datetime) and published_at.tzinfo is not None:
+        published_at = published_at.astimezone(timezone.utc).replace(tzinfo=None)
 
     q = """
         INSERT INTO published_entries_v2 (entry_id, platform, guild_id, feed_url, published_at, title, thumbnail_url, author_name) 
@@ -119,7 +121,7 @@ async def mark_as_published_bulk(entries: list[dict]):
     """Record multiple items as published in bulk using executemany."""
     if not entries:
         return
-    now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     pool = await get_pool()
     q = """
         INSERT INTO published_entries_v2 (entry_id, platform, guild_id, feed_url, published_at, title, thumbnail_url, author_name)
@@ -129,13 +131,20 @@ async def mark_as_published_bulk(entries: list[dict]):
             thumbnail_url = EXCLUDED.thumbnail_url,
             author_name = EXCLUDED.author_name
     """
+    def _normalize_pub_date(dt):
+        if dt is None:
+            return now
+        if isinstance(dt, datetime) and dt.tzinfo is not None:
+            return dt.astimezone(timezone.utc).replace(tzinfo=None)
+        return dt
+
     records = [
         (
             str(e.get("entry_id")),
             e.get("platform"),
             int(e.get("guild_id", 0)),
             e.get("feed_url"),
-            e.get("published_at") or now,
+            _normalize_pub_date(e.get("published_at")),
             e.get("title"),
             e.get("thumbnail_url"),
             e.get("author_name")
@@ -161,7 +170,7 @@ async def reset_all_history():
 
 async def cleanup_old_history(days: int = 60) -> int:
     """Delete published entries older than the retention threshold (default: 60 days)."""
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).replace(tzinfo=None)
     q = "DELETE FROM published_entries_v2 WHERE published_at < $1"
     res = await _execute(q, cutoff)
     try:

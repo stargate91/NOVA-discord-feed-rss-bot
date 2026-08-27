@@ -21,7 +21,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<DiscordUser | null>(null);
+  const [user, setUser] = useState<DiscordUser | null>(() => getStoredUser());
   const [adminSecret, setAdminSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -139,17 +139,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       apiClient.setAuthToken(effectiveToken);
 
-      // 1. If mock mode is explicitly configured, use mock user profile
-      if (featureFlags.useMockData) {
-        setUser(DEFAULT_DEMO_USER);
-        saveStoredUser(DEFAULT_DEMO_USER);
-        return;
-      }
-
-      // 2. Try loading cached user profile from localStorage first for instant UI rehydration
+      // 1. Try loading cached user profile from localStorage first for instant UI rehydration
       const cachedUser = getStoredUser();
       if (cachedUser) {
         setUser(cachedUser);
+        if (featureFlags.useMockData) return;
+      } else if (featureFlags.useMockData) {
+        setUser(DEFAULT_DEMO_USER);
+        saveStoredUser(DEFAULT_DEMO_USER);
+        return;
       }
 
       // 3. Revalidate session profile against real backend with schema validation

@@ -11,7 +11,7 @@ async def add_premium_days(guild_id: int, days: int):
     if not res:
         new_expiry = now + timedelta(days=days)
         await _execute(
-            "INSERT INTO guild_settings (guild_id, premium_until) VALUES ($1, $2)",
+            "INSERT INTO guild_settings (guild_id, language, premium_until) VALUES ($1, 'en', $2)",
             guild_id, new_expiry
         )
     else:

@@ -50,12 +50,13 @@ async def run_monolith():
 
         setup_webhook_bot(bot)
 
-        # Start Webhook Server in background
+        # Start Webhook Server in background with access logging enabled
         web_config = uvicorn.Config(
             app,
             host=os.getenv("WEBHOOK_HOST", "0.0.0.0"),
             port=int(os.getenv("WEBHOOK_PORT", 8080)),
-            log_level="error"
+            log_level="info",
+            access_log=True
         )
         server = uvicorn.Server(web_config)
         asyncio.create_task(server.serve())

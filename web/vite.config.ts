@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiTarget = env.VITE_API_URL || 'http://localhost:8080';
+  const apiTarget = env.VITE_API_URL || 'http://localhost:8088';
   const shouldAnalyze = process.env.ANALYZE === 'true';
 
   return {
@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      host: true,
       port: 3000,
       proxy: {
         '/api': {

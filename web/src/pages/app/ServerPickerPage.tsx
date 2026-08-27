@@ -1,13 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw, LogIn, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { SEO } from '@/components/common/SEO';
-import { DISCORD_BOT_INVITE_URL } from '@/constants';
+import { DISCORD_BOT_INVITE_URL, featureFlags } from '@/constants';
 import { openExternalUrl } from '@/utils';
-import { Button, CardSkeleton, Grid, Stack, Inline, Text } from '@/ui';
+import { useApiQuery, apiClient } from '@/api';
+import { useAuth } from '@/auth';
+import { useGuild } from '@/guild';
+import { Button, CardSkeleton, Grid, Stack, Inline, Text, EmptyState, Alert } from '@/ui';
 import type { ServerItem } from './components';
 import { ServerPickerCard } from './components';
+
+interface ApiGuildItem {
+  id?: string;
+  guild_id?: string;
+  name: string;
+  icon?: string | null;
+  tier: number | string;
+  active_monitors?: number;
+  monitorsCount?: number;
+  max_monitors?: number;
+  bot_in_guild: boolean;
+}
 
 const MOCK_SERVERS: ServerItem[] = [
   {
@@ -39,14 +54,55 @@ const MOCK_SERVERS: ServerItem[] = [
 export const ServerPickerPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isAuthenticated, loginWithDiscord, mockLogin } = useAuth();
+  const { selectGuild } = useGuild();
+  const [showDemoServers, setShowDemoServers] = useState<boolean>(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, []);
+  const {
+    data: rawGuilds,
+    isLoading,
+    error,
+    refetch,
+  } = useApiQuery<ApiGuildItem[]>(
+    async (signal) => {
+      if (featureFlags.useMockData || showDemoServers) {
+        return [];
+      }
+      return apiClient.get<ApiGuildItem[]>('/api/v1/users/@me/guilds', { signal });
+    },
+    [showDemoServers, isAuthenticated],
+    { key: 'user-manageable-guilds', enabled: isAuthenticated && !showDemoServers }
+  );
+
+  const isMockActive = featureFlags.useMockData || showDemoServers;
+
+  const servers: ServerItem[] =
+    rawGuilds && rawGuilds.length > 0
+      ? rawGuilds.map((g) => {
+          const guildId = String(g.id || g.guild_id);
+          return {
+            id: guildId,
+            name: g.name,
+            avatar: g.icon
+              ? `https://cdn.discordapp.com/icons/${guildId}/${g.icon}.png`
+              : '/images/logo.webp',
+            tier:
+              typeof g.tier === 'number'
+                ? g.tier === 3
+                  ? 'Ultimate'
+                  : g.tier === 2
+                  ? 'Professional'
+                  : g.tier === 1
+                  ? 'Starter'
+                  : 'Free'
+                : String(g.tier),
+            isBotInServer: g.bot_in_guild,
+            monitors: g.active_monitors ?? g.monitorsCount ?? 0,
+          };
+        })
+      : isMockActive
+      ? MOCK_SERVERS
+      : [];
 
   return (
     <Stack gap="lg">
@@ -62,23 +118,125 @@ export const ServerPickerPage: React.FC = () => {
           </Text>
         </Stack>
 
-        <Button variant="discord" onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}>
-          <Plus size={14} /> {t('servers.addBot')}
-        </Button>
+        <Inline gap="sm" align="center" wrap>
+          {error && (
+            <Button variant="secondary" size="sm" onClick={() => refetch()}>
+              <RefreshCw size={14} /> {t('servers.retryBtn')}
+            </Button>
+          )}
+          <Button variant="discord" onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}>
+            <Plus size={14} /> {t('servers.addBot')}
+          </Button>
+        </Inline>
       </Inline>
 
-      <Grid minItemWidth="sm" gap="lg">
-        {isLoading
-          ? [1, 2, 3].map((key) => <CardSkeleton key={`skeleton-server-${key}`} lines={3} />)
-          : MOCK_SERVERS.map((server) => (
-              <ServerPickerCard
-                key={server.id}
-                server={server}
-                onManage={(serverId) => navigate(`/dashboard/${serverId}`)}
-                onInvite={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
-              />
-            ))}
-      </Grid>
+      {/* Authentication Prompt */}
+      {!isAuthenticated && (
+        <Alert
+          variant="warning"
+          title={t('common.authRequiredTitle')}
+          description={t('common.authRequiredDesc')}
+          action={
+            <Inline gap="sm" align="center" style={{ marginTop: '8px' }}>
+              <Button variant="discord" size="sm" onClick={() => loginWithDiscord()}>
+                <LogIn size={14} /> {t('common.loginWithDiscord')}
+              </Button>
+              {!import.meta.env.PROD && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    mockLogin();
+                    setShowDemoServers(true);
+                  }}
+                >
+                  <Sparkles size={14} /> {t('common.demoLogin')}
+                </Button>
+              )}
+            </Inline>
+          }
+        />
+      )}
+
+      {/* Backend Offline or Communication Error Alert */}
+      {error && !isMockActive && (
+        <Alert
+          variant={error.status === 401 ? 'warning' : 'danger'}
+          title={error.status === 401 ? t('common.sessionExpired') : t('servers.errorLoadingServers')}
+          description={
+            error.status === 401
+              ? t('common.authRequiredDesc')
+              : `${t('common.backendOfflineDesc')} (${error.message || 'Connection refused'})`
+          }
+          action={
+            <Inline gap="sm" align="center" wrap style={{ marginTop: '8px' }}>
+              {error.status === 401 ? (
+                <Button variant="discord" size="sm" onClick={() => loginWithDiscord()}>
+                  <LogIn size={14} /> {t('common.loginWithDiscord')}
+                </Button>
+              ) : (
+                <>
+                  <Button variant="secondary" size="sm" onClick={() => refetch()}>
+                    <RefreshCw size={14} /> {t('common.retryConnection')}
+                  </Button>
+                  <Button variant="discord" size="sm" onClick={() => loginWithDiscord()}>
+                    <LogIn size={14} /> {t('common.loginWithDiscord')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowDemoServers(true);
+                    }}
+                  >
+                    <Sparkles size={14} /> {t('common.tryDemoMode')}
+                  </Button>
+                </>
+              )}
+            </Inline>
+          }
+        />
+      )}
+
+      {/* Loading Skeleton */}
+      {isLoading ? (
+        <Grid minItemWidth="sm" gap="lg">
+          {[1, 2, 3].map((key) => (
+            <CardSkeleton key={`skeleton-server-${key}`} lines={3} />
+          ))}
+        </Grid>
+      ) : servers.length > 0 ? (
+        <Grid minItemWidth="sm" gap="lg">
+          {servers.map((server) => (
+            <ServerPickerCard
+              key={server.id}
+              server={server}
+              onManage={(serverId) => {
+                selectGuild(serverId);
+                navigate(`/dashboard/${serverId}`);
+              }}
+              onInvite={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
+            />
+          ))}
+        </Grid>
+      ) : (
+        <EmptyState
+          title={t('servers.noServersFound')}
+          description={t('servers.noServersDesc')}
+          action={
+            <Inline gap="sm" align="center">
+              <Button variant="discord" onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}>
+                <Plus size={14} /> {t('servers.addBot')}
+              </Button>
+              {!isAuthenticated && (
+                <Button variant="primary" onClick={() => loginWithDiscord()}>
+                  <LogIn size={14} /> {t('common.loginWithDiscord')}
+                </Button>
+              )}
+            </Inline>
+          }
+        />
+      )}
     </Stack>
   );
 };

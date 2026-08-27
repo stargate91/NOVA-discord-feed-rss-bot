@@ -1,11 +1,21 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routers import stripe_router, monitor_router, guild_router, admin_router
+from starlette.requests import Request
+from starlette.responses import Response
+from api.routers import stripe_router, monitor_router, guild_router, admin_router, auth_router, guild_feeds_router
 from models.api import HealthResponse
 
 # OpenAPI Tags Metadata for documentation
 tags_metadata = [
+    {
+        "name": "Authentication & Users",
+        "description": "Discord OAuth2 authorization code exchange, token refresh, and user server management.",
+    },
+    {
+        "name": "Guild Feeds & Settings",
+        "description": "Feed monitor configuration, server parameters, analytics, and tier entitlements.",
+    },
     {
         "name": "Admin & Telemetry",
         "description": "Dev Panel operations, structured logging queries, and Prometheus metrics telemetry.",
@@ -50,13 +60,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def log_http_requests(request: Request, call_next):
+    method = request.method
+    url_path = request.url.path
+    print(f"\n[HTTP INCOMING] ➔ {method} {url_path}", flush=True)
+    try:
+        response: Response = await call_next(request)
+        print(f"[HTTP RESPONSE] ➔ {method} {url_path} | Status: {response.status_code}", flush=True)
+        return response
+    except Exception as exc:
+        print(f"[HTTP ERROR] ➔ {method} {url_path} | Exception: {exc}", flush=True)
+        raise exc
+
 # 2. Versioned API v1 Routes (/api/v1/...)
+app.include_router(auth_router, prefix="/api/v1")
+app.include_router(guild_feeds_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
 app.include_router(monitor_router, prefix="/api/v1")
 app.include_router(guild_router, prefix="/api/v1")
 app.include_router(stripe_router, prefix="/api/v1")
 
 # 3. Root Level Aliases for Direct Webhooks and Legacy Endpoints
+app.include_router(auth_router)
+app.include_router(guild_feeds_router)
 app.include_router(admin_router)
 app.include_router(monitor_router)
 app.include_router(guild_router)

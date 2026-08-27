@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, AsyncMock, patch
 from monitors.steam_news_monitor import SteamNewsMonitor
 from engine.pipeline import FeedPipeline
@@ -31,6 +32,7 @@ class TestSteamNewsFlowIntegration(unittest.IsolatedAsyncioTestCase):
         monitor.is_first_run = False
         monitor.send_update = AsyncMock()
 
+        now_ts = int(datetime.now(timezone.utc).timestamp())
         raw_news_items = [
             {
                 "gid": "steam_news_001",
@@ -39,7 +41,7 @@ class TestSteamNewsFlowIntegration(unittest.IsolatedAsyncioTestCase):
                 "url": "https://store.steampowered.com/news/app/730/view/001",
                 "author": "Valve",
                 "contents": "[b]Major Changes[/b]\n- Fixed hitbox alignment.\n[img]https://steamcdn.com/banner.jpg[/img]",
-                "date": 1787659200
+                "date": now_ts - 3600
             },
             {
                 "gid": "steam_news_002",
@@ -48,7 +50,7 @@ class TestSteamNewsFlowIntegration(unittest.IsolatedAsyncioTestCase):
                 "url": "https://store.steampowered.com/news/app/730/view/002",
                 "author": "Valve",
                 "contents": "[b]Hotfix[/b]\n- Stability optimizations.",
-                "date": 1787659300
+                "date": now_ts - 60
             }
         ]
 

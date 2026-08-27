@@ -16,3 +16,31 @@
   border-radius: var(--radius-full);
   animation: var(--animation-spin);
 }
+
+.authGateWrapper {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.authGateCard {
+  max-width: 30rem;
+  width: 100%;
+  text-align: center;
+}
+
+.authIconBadge {
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-glass-card);
+  border: 1px solid var(--border-focus);
+  box-shadow: var(--glow-blue-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-400);
+  margin-bottom: var(--space-xs);
+}

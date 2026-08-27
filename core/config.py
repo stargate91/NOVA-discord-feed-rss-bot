@@ -49,6 +49,9 @@ class BotConfig:
     # Secrets & API credentials
     token: str | None = None
     database_url: str | None = None
+    discord_client_id: str | None = None
+    discord_client_secret: str | None = None
+    discord_redirect_uri: str | None = None
     tmdb_api_key: str | None = None
     tmdb_bearer_token: str | None = None
     twitch_client_id: str | None = None
@@ -81,6 +84,9 @@ class BotConfig:
         # Resolve credentials with env fallback priority
         token = os.getenv("BOT_TOKEN") or raw_config.get("token")
         database_url = os.getenv("DATABASE_URL") or raw_config.get("database_url")
+        discord_client_id = os.getenv("DISCORD_CLIENT_ID") or raw_config.get("discord_client_id")
+        discord_client_secret = os.getenv("DISCORD_CLIENT_SECRET") or raw_config.get("discord_client_secret")
+        discord_redirect_uri = os.getenv("DISCORD_REDIRECT_URI", "http://localhost:3000/auth/callback")
         tmdb_api_key = os.getenv("TMDB_API_KEY") or raw_config.get("tmdb_api_key")
         tmdb_bearer_token = os.getenv("TMDB_BEARER_TOKEN") or raw_config.get("tmdb_bearer_token")
         twitch_client_id = os.getenv("TWITCH_CLIENT_ID") or raw_config.get("twitch_client_id")
@@ -104,6 +110,9 @@ class BotConfig:
         raw_config.update({
             "token": token,
             "database_url": database_url,
+            "discord_client_id": discord_client_id,
+            "discord_client_secret": discord_client_secret,
+            "discord_redirect_uri": discord_redirect_uri,
             "tmdb_api_key": tmdb_api_key,
             "tmdb_bearer_token": tmdb_bearer_token,
             "twitch_client_id": twitch_client_id,
@@ -126,6 +135,9 @@ class BotConfig:
             stripe_config=raw_config.get("stripe_config", {}),
             token=token,
             database_url=database_url,
+            discord_client_id=discord_client_id,
+            discord_client_secret=discord_client_secret,
+            discord_redirect_uri=discord_redirect_uri,
             tmdb_api_key=tmdb_api_key,
             tmdb_bearer_token=tmdb_bearer_token,
             twitch_client_id=twitch_client_id,

@@ -105,6 +105,62 @@
   gap: var(--space-md);
 }
 
+.userMenuBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.userMenuBtn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-0.0625rem);
+}
+
+.userNameText {
+  max-width: 6.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userProfileHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.userProfileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.userProfileName {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userProfileTag {
+  font-size: var(--font-size-3xs);
+  color: var(--text-secondary);
+}
+
 /* Mobile Toggle Button - Hidden on desktop */
 .mobileMenuBtn {
   display: none;
@@ -171,6 +227,13 @@
 
 .drawerFooter {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.drawerFooterActions {
+  display: flex;
   align-items: center;
   gap: var(--space-sm);
   width: 100%;
@@ -179,6 +242,22 @@
 .drawerDashboardLink {
   flex: 1 1 auto;
   text-decoration: none;
+}
+
+.mobileUserCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-card);
+}
+
+.mobileUserInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 /* Responsive Media Queries */

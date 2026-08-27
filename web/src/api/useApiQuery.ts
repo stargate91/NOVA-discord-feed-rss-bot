@@ -74,11 +74,17 @@ export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
 
   const execute = useCallback(
     async (isManualRefetch: boolean = false) => {
-      if (!enabled) return;
+      if (!enabled) {
+        setIsLoading(false);
+        setIsValidating(false);
+        return;
+      }
 
-      // Deduplication check
+      // Deduplication check (only if not manual refetch and query is not in initial loading)
       const now = Date.now();
-      if (!isManualRefetch && now - lastFetchTime.current < dedupingIntervalMs) {
+      if (!isManualRefetch && now - lastFetchTime.current < dedupingIntervalMs && dataRef.current !== null) {
+        setIsLoading(false);
+        setIsValidating(false);
         return;
       }
       lastFetchTime.current = now;
@@ -90,7 +96,6 @@ export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      // Check current fresh value using dataRef and cache rather than stale closure
       const currentVal = dataRef.current;
       const currentCache = key ? queryCache.get<T>(key) : undefined;
 
@@ -139,9 +144,10 @@ export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
     isMounted.current = true;
 
     if (enabled && revalidateOnMount) {
-      if (!key || queryCache.isStale(key)) {
-        execute();
-      }
+      execute();
+    } else if (!enabled) {
+      setIsLoading(false);
+      setIsValidating(false);
     }
 
     return () => {
@@ -152,7 +158,7 @@ export const useApiQuery = <T, TDeps extends DependencyList = DependencyList>(
         abortControllerRef.current = null;
       }
     };
-  }, [execute, key, revalidateOnMount, enabled]);
+  }, [execute, revalidateOnMount, enabled]);
 
   // Window Focus Revalidation
   useEffect(() => {

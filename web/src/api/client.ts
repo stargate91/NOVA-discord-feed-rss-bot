@@ -293,10 +293,19 @@ export class ApiClient {
             }
 
             if (!response.ok) {
-              const errorMessage =
-                typeof responseData === 'object' && responseData && 'message' in responseData
-                  ? String((responseData as { message: unknown }).message)
-                  : `HTTP Error ${response.status}: ${response.statusText}`;
+              let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+              if (typeof responseData === 'object' && responseData !== null) {
+                const dataObj = responseData as Record<string, unknown>;
+                if (typeof dataObj.detail === 'string') {
+                  errorMessage = dataObj.detail;
+                } else if (typeof dataObj.message === 'string') {
+                  errorMessage = dataObj.message;
+                } else if (typeof dataObj.error === 'string') {
+                  errorMessage = dataObj.error;
+                } else if (dataObj.detail && typeof dataObj.detail === 'object') {
+                  errorMessage = JSON.stringify(dataObj.detail);
+                }
+              }
 
               const apiError = new ApiError(
                 errorMessage,

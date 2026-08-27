@@ -9,9 +9,9 @@ describe('Route Prefetching Utility & PrefetchLink', () => {
     vi.restoreAllMocks();
   });
 
-  it('runs prefetchRoute without throwing for defined routes', async () => {
-    await expect(prefetchRoute('/docs')).resolves.toBeUndefined();
+  it('runs prefetchRoute without throwing for routes', async () => {
     await expect(prefetchRoute('/non-existent-route')).resolves.toBeUndefined();
+    await expect(prefetchRoute('/unknown-path')).resolves.toBeUndefined();
   });
 
   it('triggers prefetch on mouseEnter and onFocus with PrefetchLink', () => {

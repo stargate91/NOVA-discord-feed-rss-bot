@@ -1,11 +1,13 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/i18n';
 import { useToast } from '@/components/common/Toast';
+import { apiClient } from '@/api';
+import { featureFlags } from '@/constants';
 import { DEFAULT_GUILD_SETTINGS } from '../constants';
 import type { GuildSettings, UseGuildSettingsFormReturn } from '../types';
 
 export const useGuildSettingsForm = (
-  _guildId: string,
+  guildId: string,
   initialSettings?: Partial<GuildSettings>
 ): UseGuildSettingsFormReturn => {
   const { t } = useTranslation();
@@ -33,13 +35,26 @@ export const useGuildSettingsForm = (
       e?.preventDefault();
       setIsSaving(true);
       try {
-        // Mock save delay simulation
+        if (!featureFlags.useMockData) {
+          await apiClient.patch(`/api/v1/guilds/${guildId}/settings`, {
+            language: locale,
+            timezone,
+            log_channel_id: logChannel || null,
+            auto_isolate_dead_channels: autoIsolate,
+            debug_logging_enabled: debugLogs,
+          });
+        }
         toast.success(t('guild.toastSettingsSaved'), t('guild.toastSettingsSavedTitle'));
+      } catch (err: unknown) {
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to save guild settings',
+          t('guild.toastSettingsSavedTitle')
+        );
       } finally {
         setIsSaving(false);
       }
     },
-    [t, toast]
+    [guildId, locale, timezone, logChannel, autoIsolate, debugLogs, t, toast]
   );
 
   const formState = useMemo(

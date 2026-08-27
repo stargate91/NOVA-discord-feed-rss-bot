@@ -113,7 +113,11 @@ async def update_guild_settings(
 
     curr = {}
     if bot and hasattr(bot, "guild_settings_cache"):
-        curr = bot.guild_settings_cache.get(guild_id, {})
+        cached = bot.guild_settings_cache.get(guild_id, {})
+        if isinstance(cached, dict):
+            curr = cached
+        elif hasattr(cached, "__dict__"):
+            curr = cached.__dict__
     else:
         row = await _fetchrow(
             """SELECT language, admin_role_id, alert_templates, premium_until, 
@@ -124,26 +128,32 @@ async def update_guild_settings(
         if row:
             curr = dict(row)
 
-    language = language if language is not None else curr.get("language", "en")
-    admin_role_id = admin_role_id if admin_role_id is not None else curr.get("admin_role_id", 0)
+    resolved_language = language if language is not None else curr.get("language", "en")
+    resolved_admin_role_id = admin_role_id if admin_role_id is not None else curr.get("admin_role_id", 0)
 
     if alert_templates is None:
-        alert_templates = curr.get("alert_templates", {})
+        resolved_alert_templates = curr.get("alert_templates", {})
     elif isinstance(alert_templates, str):
         try:
-            alert_templates = json.loads(alert_templates)
+            resolved_alert_templates = json.loads(alert_templates)
         except Exception:
-            alert_templates = {}
+            resolved_alert_templates = {}
+    else:
+        resolved_alert_templates = alert_templates
 
-    premium_until = premium_until if premium_until is not None else curr.get("premium_until", None)
-    refresh_interval = refresh_interval if refresh_interval is not None else curr.get("refresh_interval", 20)
-    tier = tier if tier is not None else curr.get("tier", 0)
-    stripe_subscription_id = stripe_subscription_id if stripe_subscription_id is not None else curr.get("stripe_subscription_id", None)
-    custom_branding = custom_branding if custom_branding is not None else curr.get("custom_branding", {})
+    resolved_premium_until = premium_until if premium_until is not None else curr.get("premium_until", None)
+    resolved_refresh_interval = refresh_interval if refresh_interval is not None else curr.get("refresh_interval", 20)
+    resolved_tier = tier if tier is not None else curr.get("tier", 0)
+    resolved_stripe_subscription_id = stripe_subscription_id if stripe_subscription_id is not None else curr.get("stripe_subscription_id", None)
+    resolved_custom_branding = custom_branding if custom_branding is not None else curr.get("custom_branding", {})
 
     q = """
-        INSERT INTO guild_settings (guild_id, language, admin_role_id, alert_templates, premium_until, refresh_interval, tier, stripe_subscription_id, custom_branding)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO guild_settings (
+            guild_id, language, admin_role_id, alert_templates, 
+            premium_until, refresh_interval, tier, stripe_subscription_id, 
+            custom_branding, is_active, is_master, is_premium
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true, false, false)
         ON CONFLICT (guild_id) DO UPDATE SET
             language = EXCLUDED.language,
             admin_role_id = EXCLUDED.admin_role_id,
@@ -157,38 +167,38 @@ async def update_guild_settings(
     await _execute(
         q,
         guild_id,
-        lang,
-        a_role,
-        json.dumps(templates) if isinstance(templates, dict) else templates,
-        p_until,
-        r_int,
-        g_tier,
-        sub_id,
-        json.dumps(custom_branding) if isinstance(custom_branding, dict) else custom_branding
+        resolved_language or "en",
+        resolved_admin_role_id or 0,
+        json.dumps(resolved_alert_templates) if isinstance(resolved_alert_templates, dict) else resolved_alert_templates,
+        resolved_premium_until,
+        resolved_refresh_interval or 20,
+        resolved_tier or 0,
+        resolved_stripe_subscription_id,
+        json.dumps(resolved_custom_branding) if isinstance(resolved_custom_branding, dict) else resolved_custom_branding
     )
 
     if bot and hasattr(bot, "guild_settings_cache"):
         bot.guild_settings_cache[guild_id] = GuildSettings(
             guild_id=guild_id,
-            language=lang,
-            admin_role_id=a_role,
-            alert_templates=templates if isinstance(templates, dict) else {},
-            premium_until=p_until,
-            refresh_interval=r_int,
-            tier=g_tier,
-            stripe_subscription_id=sub_id,
-            custom_branding=custom_branding
+            language=resolved_language or "en",
+            admin_role_id=resolved_admin_role_id or 0,
+            alert_templates=resolved_alert_templates if isinstance(resolved_alert_templates, dict) else {},
+            premium_until=resolved_premium_until,
+            refresh_interval=resolved_refresh_interval,
+            tier=resolved_tier or 0,
+            stripe_subscription_id=resolved_stripe_subscription_id,
+            custom_branding=resolved_custom_branding
         )
         log.info(f"Updated guild settings cache for {guild_id}")
 
-async def ensure_guild_active(guild_id: int):
-    """Ensure a guild is marked active in the database."""
+async def ensure_guild_active(guild_id: int, default_lang: str = "en"):
+    """Ensure a guild is marked active in the database with all non-null defaults."""
     q = """
-        INSERT INTO guild_settings (guild_id, is_active)
-        VALUES ($1, true)
+        INSERT INTO guild_settings (guild_id, language, admin_role_id, refresh_interval, tier, is_active, is_master, is_premium)
+        VALUES ($1, $2, 0, 20, 0, true, false, false)
         ON CONFLICT (guild_id) DO UPDATE SET is_active = true
     """
-    return await _execute(q, guild_id)
+    return await _execute(q, guild_id, default_lang or "en")
 
 async def set_guild_inactive(guild_id: int):
     """Mark a guild as inactive in the database."""

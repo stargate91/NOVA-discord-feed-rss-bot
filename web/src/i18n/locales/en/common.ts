@@ -76,6 +76,25 @@ export const common = {
   themeDark: 'Dark Mode',
   themeLight: 'Light Mode',
 
+  // Auth & Session
+  loginWithDiscord: 'Sign In with Discord',
+  login: 'Sign In',
+  logout: 'Log Out',
+  loggingIn: 'Signing In...',
+  loggingOut: 'Logging out...',
+  demoLogin: 'Quick Demo Login',
+  userProfile: 'User Profile',
+  loggedOutSuccess: 'You have been logged out.',
+  authRequiredTitle: 'Authentication Required',
+  authRequiredDesc:
+    'Please sign in with your Discord account to access the Nova Feeds management dashboard, configure feeds, and monitor server statistics.',
+  sessionExpired: 'Your Discord session has expired. Please sign in again.',
+  backendOfflineDesc:
+    'Unable to reach the Nova Feeds backend service. Please verify that the backend is running.',
+  retryConnection: 'Retry Connection',
+  tryDemoMode: 'Try Demo Mode',
+  userTag: 'User ID: {id}',
+
   // Auth Callback
   authCallbackTitle: 'Authenticating...',
   authCallbackVerifying: 'Securely verifying your Discord session...',

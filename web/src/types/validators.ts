@@ -46,14 +46,13 @@ export function isDiscordUser(data: unknown): data is DiscordUser {
  */
 export function isUserGuild(data: unknown): data is UserGuild {
   if (!isObject(data)) return false;
-  return (
-    isString(data.id) &&
-    isString(data.name) &&
-    (data.icon === null || isString(data.icon)) &&
-    isBoolean(data.owner) &&
-    (isString(data.permissions) || isNumber(data.permissions)) &&
-    (data.hasManagePermission === undefined || isBoolean(data.hasManagePermission))
-  );
+  const hasId =
+    (isString(data.id) && data.id.trim().length > 0) ||
+    (isString(data.guild_id) && data.guild_id.trim().length > 0);
+  const hasName = isString(data.name);
+  const hasOwner = isBoolean(data.owner) || isBoolean(data.is_owner);
+  const hasPerms = isString(data.permissions) || isNumber(data.permissions);
+  return Boolean(hasId && hasName && hasOwner && hasPerms);
 }
 
 /**

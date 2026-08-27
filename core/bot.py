@@ -99,6 +99,8 @@ class FeedBot(commands.Bot):
 
     # --- Gateway Lifecycle Event Delegates (Backwards-compatibility) ---
 
+    # --- Gateway Lifecycle Event Delegates (Backwards-compatibility) ---
+
     async def on_ready(self):
         """Gateway ready event delegate."""
         cog = self.get_cog("guild_lifecycle")
