@@ -1,5 +1,4 @@
 export const changelog = {
-  tag: 'Release Notes & Updates',
   title: 'Product',
   titleHighlight: 'Changelog',
   subtitle:

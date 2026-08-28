@@ -71,6 +71,7 @@ export const CardRoot: React.FC<CardProps> = ({
 
   const descText = description ?? subtitle;
   const hasMonolithicHeader = Boolean(title || descText || action);
+  const TitleTag = rest.titleAs || 'h3';
 
   return (
     <Component id={id} className={classes} {...rest}>
@@ -80,7 +81,11 @@ export const CardRoot: React.FC<CardProps> = ({
         <div className={`${styles.header} ${headerDivided ? styles.headerDivided : ''}`}>
           <div className={styles.titleGroup}>
             {title &&
-              (typeof title === 'string' ? <h3 className={styles.title}>{title}</h3> : title)}
+              (typeof title === 'string' ? (
+                <TitleTag className={styles.title}>{title}</TitleTag>
+              ) : (
+                <TitleTag className={styles.title}>{title}</TitleTag>
+              ))}
             {descText &&
               (typeof descText === 'string' ? (
                 <p className={styles.description}>{descText}</p>

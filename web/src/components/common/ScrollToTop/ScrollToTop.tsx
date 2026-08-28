@@ -16,11 +16,21 @@ export const ScrollToTop: React.FC = () => {
       const element = document.getElementById(hash.replace('#', ''));
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
+        element.focus({ preventScroll: true });
         return;
       }
     }
 
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+    // Accessibility: Manage focus on route change for screen readers & keyboard users
+    const mainContent = document.getElementById('main-content') || document.querySelector('h1');
+    if (mainContent instanceof HTMLElement) {
+      if (!mainContent.hasAttribute('tabindex')) {
+        mainContent.setAttribute('tabindex', '-1');
+      }
+      mainContent.focus({ preventScroll: true });
+    }
   }, [pathname, hash]);
 
   return null;

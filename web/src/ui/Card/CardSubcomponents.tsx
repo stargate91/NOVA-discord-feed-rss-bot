@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 import React from 'react';
-import type { CardHeaderProps, CardFooterProps } from './types';
+import type { CardHeaderProps, CardFooterProps, CardTitleProps } from './types';
 import styles from './Card.module.css';
 
 export const CardHeader: React.FC<CardHeaderProps> = ({
@@ -14,14 +14,15 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
   </div>
 );
 
-export const CardTitle: React.FC<HTMLAttributes<HTMLHeadingElement>> = ({
+export const CardTitle: React.FC<CardTitleProps> = ({
+  as: Component = 'h3',
   children,
   className = '',
   ...rest
 }) => (
-  <h3 className={`${styles.title} ${className}`} {...rest}>
+  <Component className={`${styles.title} ${className}`} {...rest}>
     {children}
-  </h3>
+  </Component>
 );
 
 export const CardDescription: React.FC<HTMLAttributes<HTMLParagraphElement>> = ({

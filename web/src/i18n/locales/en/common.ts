@@ -20,11 +20,17 @@ export const common = {
   copyright: '© 2026 NovaFeeds. All rights reserved.',
 
   // Global Navigation
+  navHome: 'Home',
   navOverview: 'Overview',
   navPremium: 'Premium',
   navDocs: 'Docs',
+  navDocsCommands: 'Slash Commands',
+  navDocsFeeds: 'Feed Sources',
+  navDocsSetup: 'Setup Guide',
   navSupport: 'Support & FAQ',
   navChangelog: 'Changelog',
+  navSitemap: 'Sitemap (XML)',
+  exploreMore: 'Explore More Resources',
   navDev: 'Dev',
   navServers: 'Select Server',
   navSwitchServer: 'Switch Server',

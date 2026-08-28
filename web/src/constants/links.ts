@@ -25,4 +25,14 @@ export const DISCORD_BOT_INVITE_URL = buildDiscordBotInviteUrl();
 export const DISCORD_SUPPORT_SERVER_URL = 'https://discord.gg/tjRStPtm9k';
 
 export const APP_BASE_URL = 'https://novafeeds.xyz';
-export const DEFAULT_OG_IMAGE = 'https://novafeeds.xyz/images/logo.webp';
+export const DEFAULT_OG_IMAGE = 'https://novafeeds.xyz/images/og/og-home.webp';
+
+export const OG_IMAGES = {
+  home: 'https://novafeeds.xyz/images/og/og-home.webp',
+  premium: 'https://novafeeds.xyz/images/og/og-premium.webp',
+  docs: 'https://novafeeds.xyz/images/og/og-docs.webp',
+  support: 'https://novafeeds.xyz/images/og/og-support.webp',
+  changelog: 'https://novafeeds.xyz/images/og/og-changelog.webp',
+  legal: 'https://novafeeds.xyz/images/og/og-legal.webp',
+} as const;
+

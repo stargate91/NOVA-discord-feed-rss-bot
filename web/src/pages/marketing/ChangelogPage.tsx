@@ -1,21 +1,44 @@
 import React from 'react';
-import { GitBranch, Sparkles } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { SEO } from '@/components/common/SEO';
-import { Card, Badge, Container, Stack, Text } from '@/ui';
+import { getLocalizedPath } from '@/components/layout/navConfig';
+import { SEO, buildBreadcrumbListSchema } from '@/components/common/SEO';
+import { OG_IMAGES } from '@/constants';
+import { Card, Badge, Container, Stack, Text, Breadcrumbs } from '@/ui';
+import { RelatedLinks } from '@/components/common/RelatedLinks/RelatedLinks';
 
 export const ChangelogPage: React.FC = () => {
+  const { lang } = useParams<{ lang?: string }>();
   const { t } = useTranslation();
+
+  const breadcrumbItems = [
+    { label: t('common.navHome') || 'Home', href: getLocalizedPath('/', lang) },
+    { label: t('common.navChangelog') || 'Changelog' },
+  ];
+
+  const structuredData = [
+    buildBreadcrumbListSchema([
+      { name: 'Home', url: '/' },
+      { name: t('common.navChangelog'), url: '/changelog' },
+    ]),
+  ];
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO title={t('changelog.tag')} description={t('changelog.subtitle')} />
+      <SEO
+        title={`${t('changelog.title')} ${t('changelog.titleHighlight')}`}
+        description={t('changelog.subtitle')}
+        keywords="discord bot changelog, nova updates, release notes, new bot features, version history, bot patch notes"
+        image={OG_IMAGES.changelog}
+        imageAlt="Nova Feeds Feature Drops and Version Changelog"
+        structuredData={structuredData}
+      />
 
       <Stack gap="5xl">
+        <Breadcrumbs items={breadcrumbItems} />
+
         <Stack align="center" gap="md">
-          <Badge variant="outline" size="md" dot pulse>
-            <GitBranch size={14} /> {t('changelog.tag')}
-          </Badge>
           <Text as="h1" size="hero" weight="extrabold" align="center">
             {t('changelog.title')}{' '}
             <Text as="span" color="gradient" size="hero" weight="extrabold">
@@ -82,7 +105,11 @@ export const ChangelogPage: React.FC = () => {
             </Stack>
           </Card>
         </Stack>
+
+        {/* Cross-linking & Related Resources */}
+        <RelatedLinks current="changelog" />
       </Stack>
     </Container>
   );
 };
+

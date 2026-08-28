@@ -97,10 +97,24 @@ export const Avatar: React.FC<AvatarProps> = ({
     }
 
     if (src && !imageError) {
+      const dim =
+        {
+          xs: 20,
+          sm: 28,
+          md: 36,
+          lg: 48,
+          xl: 64,
+          '2xl': 84,
+        }[size] || 36;
+
       return (
         <img
           src={src}
           alt={alt || name || 'Avatar'}
+          width={dim}
+          height={dim}
+          loading="lazy"
+          decoding="async"
           className={styles.image}
           onError={() => setImageError(true)}
         />

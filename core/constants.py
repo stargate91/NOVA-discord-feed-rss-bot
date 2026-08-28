@@ -18,7 +18,7 @@ DEFAULT_DATA_RETENTION_DAYS: int = 60
 # 3. Localization & Internationalization
 DEFAULT_LANGUAGE: str = "en"
 SUPPORTED_LOCALES: tuple[str, ...] = (
-    "cs", "de", "en", "es", "fr", "hu", "it", "ja",
+    "ar", "cs", "de", "en", "es", "fr", "he", "hu", "it", "ja",
     "ko", "nl", "pl", "pt", "ru", "sv", "tr", "zh", "zh-tw"
 )
 

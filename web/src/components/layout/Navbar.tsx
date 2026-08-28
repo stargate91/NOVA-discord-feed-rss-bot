@@ -38,12 +38,27 @@ export const Navbar: React.FC<NavbarProps> = () => {
     <header className={styles.navbar}>
       <div className={styles.inner}>
         <Link to={getLocalizedPath('/', lang)} className={styles.brand} onClick={closeMobileMenu}>
-          <img src="/images/logo.webp" alt="Nova Logo" className={styles.brandAvatar} />
+          <picture>
+            <source type="image/avif" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+            <source type="image/webp" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+            <source type="image/jpeg" srcSet="/images/logo.jpg 1x, /images/logo.jpg 2x" />
+            <img
+              src="/images/logo.webp"
+              srcSet="/images/logo.webp 1x, /images/logo.webp 2x"
+              sizes="32px"
+              alt="Nova Feeds — Next-Generation Discord Notification Bot"
+              width={32}
+              height={32}
+              decoding="async"
+              fetchPriority="high"
+              className={styles.brandAvatar}
+            />
+          </picture>
           <span className={styles.brandText}>{t('common.brandName')}</span>
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className={styles.navLinks}>
+        <nav className={styles.navLinks} aria-label="Main navigation">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.path}

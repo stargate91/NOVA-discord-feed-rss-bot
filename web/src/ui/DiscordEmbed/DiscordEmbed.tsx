@@ -141,6 +141,8 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
                       className={styles.platformIcon}
                       loading="lazy"
                       decoding="async"
+                      width="18"
+                      height="18"
                     />
                   )}
                   <span>{title}</span>
@@ -154,6 +156,8 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
                     className={styles.mediaBanner}
                     loading="lazy"
                     decoding="async"
+                    width="400"
+                    height="225"
                   />
                 )}
 
@@ -236,6 +240,8 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
                       className={styles.thumbnail}
                       loading="lazy"
                       decoding="async"
+                      width="80"
+                      height="80"
                     />
                   )}
                 </div>
@@ -249,6 +255,8 @@ const DiscordEmbedComponent: React.FC<DiscordEmbedProps> = ({
                     className={styles.mediaBanner}
                     loading="lazy"
                     decoding="async"
+                    width="400"
+                    height="225"
                   />
                 )}
 

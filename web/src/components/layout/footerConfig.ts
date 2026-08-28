@@ -18,5 +18,6 @@ export const FOOTER_RESOURCES_LINKS: FooterLinkItem[] = [
 export const FOOTER_LEGAL_LINKS: FooterLinkItem[] = [
   { path: '/terms', labelKey: 'legal.termsTitleHighlight' },
   { path: '/privacy', labelKey: 'legal.privacyTitleHighlight' },
+  { externalUrl: '/sitemap.xml', labelKey: 'common.navSitemap' },
   { externalUrl: DISCORD_SUPPORT_SERVER_URL, labelKey: 'support.discordCta' },
 ];

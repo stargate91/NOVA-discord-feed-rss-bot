@@ -78,6 +78,15 @@
   border-color: var(--border-hover);
 }
 
+/* Heading Wrapper for W3C ARIA & SEO Semantics */
+.headingWrapper {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  width: 100%;
+}
+
 /* Trigger Button */
 .trigger {
   display: flex;

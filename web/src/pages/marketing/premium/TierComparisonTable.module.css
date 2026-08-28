@@ -1,0 +1,136 @@
+.wrapper {
+  width: 100%;
+}
+
+.tableHeaderSection {
+  margin-bottom: var(--space-xl);
+}
+
+.tableCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(var(--blur-md));
+}
+
+.tableResponsiveContainer {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comparisonTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  min-width: 720px;
+}
+
+.thHead {
+  padding: var(--space-lg) var(--space-md);
+  vertical-align: bottom;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+.thFeatureCol {
+  text-align: left;
+  width: 32%;
+  padding-left: var(--space-xl);
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  font-weight: var(--font-weight-semibold);
+}
+
+.thTierCol {
+  width: 17%;
+  padding: var(--space-lg) var(--space-sm);
+}
+
+.highlightCol {
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 1px solid rgba(59, 130, 246, 0.15);
+  border-right: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.tierHeaderBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.categoryRow {
+  background: var(--bg-glass-subtle);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.categoryCell {
+  padding: var(--space-sm) var(--space-xl);
+  text-align: left;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--text-primary);
+}
+
+.tableRow {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--transition-fast);
+}
+
+.tableRow:hover {
+  background: var(--bg-glass-medium);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.featureCell {
+  text-align: left;
+  padding: var(--space-md) var(--space-xl);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.valueCell {
+  padding: var(--space-md) var(--space-sm);
+  vertical-align: middle;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.valueHighlight {
+  font-weight: var(--font-weight-semibold);
+  color: var(--blue-400);
+}
+
+.valueText {
+  font-weight: var(--font-weight-semibold);
+}
+
+.checkIcon {
+  color: var(--status-success);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashIcon {
+  color: var(--text-muted);
+  opacity: 0.4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

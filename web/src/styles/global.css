@@ -26,44 +26,87 @@ body {
   overflow-x: hidden;
   position: relative;
 
-  /* Calm, elegant dark background with subtle blue depth */
+  /* Mobile-first performance: crisp gradient layers with 0KB raster image download overhead */
   background-image:
-    linear-gradient(180deg, rgb(7 10 18 / 88%) 0%, rgb(7 10 18 / 96%) 50%, rgb(7 10 18 / 99%) 100%),
-    radial-gradient(ellipse at 50% 0%, rgb(14 165 233 / 8%) 0%, transparent 60%),
-    url('/images/bg.webp');
-  background-size: cover, auto, cover;
+    linear-gradient(180deg, rgb(7 10 18 / 92%) 0%, rgb(7 10 18 / 97%) 50%, rgb(7 10 18 / 100%) 100%),
+    radial-gradient(ellipse at 50% 0%, rgb(14 165 233 / 12%) 0%, transparent 70%);
+  background-size: cover, auto;
   background-position: center top;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+@media (min-width: 768px) {
+  body {
+    /* Tablet/Desktop: rich raster texture with modern image-set WebP/JPG fallback */
+    background-image:
+      linear-gradient(180deg, rgb(7 10 18 / 88%) 0%, rgb(7 10 18 / 96%) 50%, rgb(7 10 18 / 99%) 100%),
+      radial-gradient(ellipse at 50% 0%, rgb(14 165 233 / 8%) 0%, transparent 60%),
+      image-set(url('/images/bg.webp') type('image/webp'), url('/images/bg.jpg') type('image/jpeg'));
+    background-size: cover, auto, cover;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 html[data-theme='light'] body {
+  /* Mobile-first light mode */
   background-image:
     radial-gradient(ellipse at 50% -5%, rgb(14 165 233 / 16%) 0%, transparent 50%),
     radial-gradient(circle at 85% 15%, rgb(99 102 241 / 10%) 0%, transparent 45%),
-    radial-gradient(circle at 10% 45%, rgb(14 165 233 / 8%) 0%, transparent 45%),
     linear-gradient(
       180deg,
-      rgb(248 250 252 / 84%) 0%,
-      rgb(241 245 249 / 90%) 40%,
-      rgb(241 245 249 / 96%) 100%
-    ),
-    url('/images/bg.webp');
-  background-size: auto, auto, auto, cover, cover;
+      rgb(248 250 252 / 92%) 0%,
+      rgb(241 245 249 / 96%) 40%,
+      rgb(241 245 249 / 100%) 100%
+    );
+  background-size: auto, auto, cover;
   background-position: center top;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+@media (min-width: 768px) {
+  html[data-theme='light'] body {
+    background-image:
+      radial-gradient(ellipse at 50% -5%, rgb(14 165 233 / 16%) 0%, transparent 50%),
+      radial-gradient(circle at 85% 15%, rgb(99 102 241 / 10%) 0%, transparent 45%),
+      radial-gradient(circle at 10% 45%, rgb(14 165 233 / 8%) 0%, transparent 45%),
+      linear-gradient(
+        180deg,
+        rgb(248 250 252 / 84%) 0%,
+        rgb(241 245 249 / 90%) 40%,
+        rgb(241 245 249 / 96%) 100%
+      ),
+      image-set(url('/images/bg.webp') type('image/webp'), url('/images/bg.jpg') type('image/jpeg'));
+    background-size: auto, auto, auto, cover, cover;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[data-theme='light'] body {
+    background-attachment: fixed;
+  }
 }
 
 a {
   color: inherit;
   text-decoration: none;
   transition: var(--transition-fast);
-  outline: none;
 }
 
 a:focus:not(:focus-visible) {
   outline: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent-light, #38bdf8);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs, 4px);
 }
 
 button {
@@ -71,13 +114,29 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+}
+
+button:focus:not(:focus-visible) {
   outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent-light, #38bdf8);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs, 4px);
 }
 
 input,
 select,
 textarea {
   font-family: inherit;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-light, #38bdf8);
+  outline-offset: 2px;
 }
 
 /* ==========================================================================

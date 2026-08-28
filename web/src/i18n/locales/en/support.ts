@@ -1,5 +1,4 @@
 export const support = {
-  tag: 'Support & Help Center',
   title: 'Need Help with',
   titleHighlight: 'Nova?',
   subtitle:

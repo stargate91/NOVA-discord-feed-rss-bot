@@ -1,17 +1,43 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { SEO } from '@/components/common/SEO';
-import { Card, Badge, Container, Stack, Text } from '@/ui';
+import { getLocalizedPath } from '@/components/layout/navConfig';
+import { SEO, buildBreadcrumbListSchema } from '@/components/common/SEO';
+import { OG_IMAGES } from '@/constants';
+import { Card, Badge, Container, Stack, Text, Breadcrumbs } from '@/ui';
+import { RelatedLinks } from '@/components/common/RelatedLinks/RelatedLinks';
 
 export const PrivacyPage: React.FC = () => {
+  const { lang } = useParams<{ lang?: string }>();
   const { t } = useTranslation();
+
+  const breadcrumbItems = [
+    { label: t('common.navHome') || 'Home', href: getLocalizedPath('/', lang) },
+    { label: t('legal.privacyTitle') || 'Privacy Policy' },
+  ];
+
+  const structuredData = [
+    buildBreadcrumbListSchema([
+      { name: 'Home', url: '/' },
+      { name: `${t('legal.privacyTitle')} ${t('legal.privacyTitleHighlight')}`, url: '/privacy' },
+    ]),
+  ];
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO title={t('legal.privacyTitle')} description={t('legal.privacySubtitle')} />
+      <SEO
+        title={t('legal.privacyTitle')}
+        description={t('legal.privacySubtitle')}
+        keywords="discord bot privacy policy, data protection, discord server security, encryption standards, data handling"
+        image={OG_IMAGES.legal}
+        imageAlt="Nova Feeds Privacy Policy and Data Security"
+        structuredData={structuredData}
+      />
 
       <Stack gap="5xl">
+        <Breadcrumbs items={breadcrumbItems} />
+
         <Stack align="center" gap="md">
           <Badge variant="online" size="md" dot pulse>
             <Shield size={14} /> {t('legal.privacyTag')}
@@ -70,7 +96,11 @@ export const PrivacyPage: React.FC = () => {
             </Card.Body>
           </Card>
         </Stack>
+
+        {/* Cross-linking & Related Resources */}
+        <RelatedLinks current="legal" />
       </Stack>
     </Container>
   );
 };
+

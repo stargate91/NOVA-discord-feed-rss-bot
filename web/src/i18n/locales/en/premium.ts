@@ -1,5 +1,4 @@
 export const premium = {
-  tag: 'Nova Premium Plans',
   title: 'Supercharge Your',
   titleHighlight: 'Community Feeds',
   subtitle:
@@ -17,10 +16,10 @@ export const premium = {
   freePriceMonthly: '$0',
   freePriceYearly: '$0',
   freeDesc: 'Essential social alerts for small community servers.',
-  freeFeature1: 'Up to 5 Active Feed Monitors',
+  freeFeature1: '5 Active Feed Monitors',
   freeFeature2: '20-minute Polling Intervals',
-  freeFeature3: 'YouTube, Twitch, & RSS Feeds',
-  freeFeature4: 'Standard Notification Delivery',
+  freeFeature3: '1 Destination Channel & Ping Role',
+  freeFeature4: 'YouTube, Twitch, Kick & RSS Feeds',
   freeCta: 'Get Started Free',
 
   // 2. Nova Starter ($4.99 / $49.00)
@@ -28,11 +27,11 @@ export const premium = {
   starterPriceMonthly: '$4.99',
   starterPriceYearly: '$49.00',
   starterDesc: 'Enhanced speed and capacity for growing communities.',
-  starterFeature1: 'Up to 15 Active Feed Monitors',
-  starterFeature2: '10-minute Polling Intervals',
-  starterFeature3: 'Free Games (Epic, Steam, GOG)',
-  starterFeature4: 'TMDB Movies & Media Drops',
-  starterFeature5: 'Custom Embed Hex Colors',
+  starterFeature1: '15 Active Feed Monitors (3x)',
+  starterFeature2: '10-minute Polling Intervals (2x speed)',
+  starterFeature3: '5 Destination Channels & Mention Roles',
+  starterFeature4: 'Free Games (Steam, Epic, GOG) & TMDB Media',
+  starterFeature5: 'Custom Hex Colors & Remove Branding',
   starterCta: 'Choose Starter',
 
   // 3. Nova Professional ($9.99 / $99.00)
@@ -41,10 +40,10 @@ export const premium = {
   professionalPriceMonthly: '$9.99',
   professionalPriceYearly: '$99.00',
   professionalDesc: 'High-speed delivery and advanced alert formatting.',
-  professionalFeature1: 'Up to 35 Active Feed Monitors',
-  professionalFeature2: '5-minute Rapid Polling',
-  professionalFeature3: 'Custom Role Mention & Pings',
-  professionalFeature4: 'Genre & Language Multi-Filters',
+  professionalFeature1: '35 Active Feed Monitors',
+  professionalFeature2: '5-minute Rapid Polling Speed',
+  professionalFeature3: '10 Destination Channels & Mention Roles',
+  professionalFeature4: 'Custom Alert Templates & Repost Support',
   professionalFeature5: 'High-Priority Delivery Queue',
   professionalCta: 'Choose Professional',
 
@@ -54,14 +53,14 @@ export const premium = {
   ultimatePriceMonthly: '$14.99',
   ultimatePriceYearly: '$199.00',
   ultimateDesc: 'Turbocharged performance for major creator networks.',
-  ultimateFeature1: 'Up to 100 Active Feed Monitors',
-  ultimateFeature2: '1-minute Sub-minute Polling',
-  ultimateFeature3: 'Crypto & Financial Price Alerts',
-  ultimateFeature4: 'CSV Export & Advanced Diagnostics',
-  ultimateFeature5: 'Remove Bot Branding on Embeds',
+  ultimateFeature1: '100 Active Feed Monitors',
+  ultimateFeature2: '1-minute Turbo Polling (Fastest)',
+  ultimateFeature3: '20 Destination Channels & Mention Roles',
+  ultimateFeature4: 'Crypto & Financial Price Alerts',
+  ultimateFeature5: 'Raw CSV Export & Direct Dev Support',
   ultimateCta: 'Choose Ultimate',
 
-  // 5. Nova Master (inf / inf - Owner Designated Only)
+  // Master Tier (Internal / Reference Only)
   masterTitle: 'Nova Master',
   masterBadge: 'Owner Designated',
   masterPriceMonthly: '∞',
@@ -72,9 +71,55 @@ export const premium = {
   masterFeature2: 'Instantaneous Realtime Polling (0s)',
   masterFeature3: 'All Existing & Future Feed Modules',
   masterFeature4: 'Full Custom Embeds & Zero Limits',
-  masterFeature5: 'Dedicated VIP Direct Support',
+  masterFeature5: 'Direct Developer Support',
   masterCta: 'Owner Assigned Only',
   masterNotBuyableNote: 'Non-purchasable tier — designated by bot owner only',
+
+  // Comparison Table
+  tableTitle: 'Compare Plans & Features',
+  tableSubtitle: 'Complete side-by-side breakdown of resource limits, integrations, and customization options.',
+  tableColumnFeature: 'Feature',
+  tableCatQuotas: 'Resource Limits & Capacity',
+  tableCatPlatforms: 'Platform Integrations',
+  tableCatCustomization: 'Styling & Customization',
+  tableCatAdvanced: 'Advanced Controls & Management',
+  tableCatDelivery: 'Speed, Delivery & Support',
+
+  // Comparison Rows
+  rowMaxMonitors: 'Active Feed Monitors',
+  rowRefreshInterval: 'Polling / Update Frequency',
+  rowMaxChannels: 'Destination Channels / Feed',
+  rowMaxPings: 'Role Mention / Ping Slots',
+  rowMaxPurge: 'Message Purge / Bulk Cleanup',
+
+  rowPlatformStandard: 'YouTube, Twitch, Kick & RSS',
+  rowPlatformGames: 'Free Games (Steam, Epic, GOG)',
+  rowPlatformMovies: 'TMDB Movies & TV Series',
+  rowPlatformCrypto: 'Crypto & Financial Alerts',
+  rowPlatformSteamNews: 'Steam News & Patch Notes',
+
+  rowCustomColor: 'Custom Hex Embed Colors',
+  rowAlertTemplate: 'Preset Alert Templates',
+  rowCustomTemplate: 'Dynamic Custom Templates',
+  rowGenreFilter: 'Genre & Language Multi-Filters',
+  rowRemoveBranding: 'Remove Bot Branding Footer',
+
+  rowRepost: 'Repost & Re-broadcast Feeds',
+  rowBulkDelete: 'Bulk Monitor Management',
+  rowCsvExport: 'Raw CSV Data Export & Logs',
+  rowPriorityDelivery: 'Delivery Queue Priority',
+  rowSupport: 'Support Level',
+
+  // Comparison Values
+  val20Min: '20 min',
+  val10Min: '10 min',
+  val5Min: '5 min',
+  val1Min: '1 min',
+  valStandardQueue: 'Standard',
+  valPriorityQueue: 'High Priority',
+  valCommunitySupport: 'Community',
+  valPrioritySupport: 'Priority Discord',
+  valVipSupport: 'Direct Dev Support',
 
   // FAQ
   faqTitle: 'Frequently Asked Questions',

@@ -34,7 +34,22 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
       size="sm"
       title={
         <Link to={getLocalizedPath('/', lang)} className={styles.brand} onClick={onClose}>
-          <img src="/images/logo.webp" alt="Nova Logo" className={styles.brandAvatar} />
+          <picture>
+            <source type="image/avif" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+            <source type="image/webp" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+            <source type="image/jpeg" srcSet="/images/logo.jpg 1x, /images/logo.jpg 2x" />
+            <img
+              src="/images/logo.webp"
+              srcSet="/images/logo.webp 1x, /images/logo.webp 2x"
+              sizes="32px"
+              alt="Nova Feeds — Next-Generation Discord Notification Bot"
+              width={32}
+              height={32}
+              loading="lazy"
+              decoding="async"
+              className={styles.brandAvatar}
+            />
+          </picture>
           <span className={styles.brandText}>{t('common.brandName')}</span>
         </Link>
       }
@@ -77,7 +92,7 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({ isOpen, onClos
         </div>
       }
     >
-      <Stack gap="xs">
+      <Stack as="nav" aria-label="Mobile navigation" gap="xs">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.path}

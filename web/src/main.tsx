@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { errorReporter } from './services/errorReporter';
 import { initWebVitals } from './services/webVitals';
+import { registerServiceWorker } from './serviceWorkerRegistration';
 
 // Initialize performance monitoring
 initWebVitals((metric) => {
@@ -13,6 +14,9 @@ initWebVitals((metric) => {
     data: { name: metric.name, value: metric.value, rating: metric.rating },
   });
 });
+
+// Register Service Worker for offline resilience & cache-first assets
+registerServiceWorker();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

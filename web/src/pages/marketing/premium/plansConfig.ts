@@ -20,7 +20,6 @@ export const PLANS_CONFIG: PricingPlanConfig[] = [
   },
   {
     id: 'starter',
-    glow: 'blue',
     interactive: true,
     badgeVariant: 'neutral',
     titleKey: 'premium.starterTitle',
@@ -61,7 +60,6 @@ export const PLANS_CONFIG: PricingPlanConfig[] = [
   },
   {
     id: 'ultimate',
-    glow: 'purple',
     interactive: true,
     badgeVariant: 'tier',
     titleKey: 'premium.ultimateTitle',
@@ -81,3 +79,4 @@ export const PLANS_CONFIG: PricingPlanConfig[] = [
     isBuyable: true,
   },
 ];
+

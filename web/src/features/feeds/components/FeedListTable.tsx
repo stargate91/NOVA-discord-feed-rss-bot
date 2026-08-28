@@ -100,6 +100,10 @@ export const FeedListTable: React.FC<FeedListTableProps> = ({
                       <img
                         src={`/images/brands/${feed.platform}.png`}
                         alt={feed.platform}
+                        width="16"
+                        height="16"
+                        loading="lazy"
+                        decoding="async"
                         className={styles.brandIcon}
                         onError={(e) => {
                           (e.target as HTMLElement).style.display = 'none';

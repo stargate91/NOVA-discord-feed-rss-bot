@@ -23,7 +23,21 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     <aside className={`${styles.sidebar} ${className}`}>
       {/* Brand Header */}
       <Link to="/" className={styles.brand} onClick={onNavClick}>
-        <img src="/images/logo.webp" alt="Nova Logo" className={styles.brandAvatar} />
+        <picture>
+          <source type="image/avif" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+          <source type="image/webp" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+          <source type="image/jpeg" srcSet="/images/logo.jpg 1x, /images/logo.jpg 2x" />
+          <img
+            src="/images/logo.webp"
+            srcSet="/images/logo.webp 1x, /images/logo.webp 2x"
+            sizes="32px"
+            alt="Nova Feeds — Discord Notification Bot Dashboard"
+            width={32}
+            height={32}
+            decoding="async"
+            className={styles.brandAvatar}
+          />
+        </picture>
         <span className={styles.brandTitle}>{t('common.brandName')}</span>
       </Link>
 
@@ -47,7 +61,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       </div>
 
       {/* Navigation Links */}
-      <nav className={styles.nav}>
+      <nav className={styles.nav} aria-label="Dashboard navigation">
         {DASHBOARD_NAV_ITEMS.map((item) => {
           const IconComponent = item.icon;
           return (

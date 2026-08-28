@@ -95,6 +95,39 @@ export const MARKETING_ROUTES: AppRouteDefinition[] = [
     },
   },
   {
+    id: 'docs-commands',
+    path: 'docs/commands',
+    component: DocsPage,
+    layout: 'public',
+    meta: {
+      title: 'Slash Commands Reference — NovaFeeds Docs',
+      titleKey: 'common.navDocsCommands',
+      isLocalized: true,
+    },
+  },
+  {
+    id: 'docs-feeds',
+    path: 'docs/feeds',
+    component: DocsPage,
+    layout: 'public',
+    meta: {
+      title: 'Supported Feed Platforms & Sources — NovaFeeds Docs',
+      titleKey: 'common.navDocsFeeds',
+      isLocalized: true,
+    },
+  },
+  {
+    id: 'docs-setup',
+    path: 'docs/setup',
+    component: DocsPage,
+    layout: 'public',
+    meta: {
+      title: 'Bot Setup & Permissions Guide — NovaFeeds Docs',
+      titleKey: 'common.navDocsSetup',
+      isLocalized: true,
+    },
+  },
+  {
     id: 'support',
     path: 'support',
     component: SupportPage,

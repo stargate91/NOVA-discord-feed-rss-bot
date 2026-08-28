@@ -18,7 +18,22 @@ export const Footer: React.FC = () => {
             {/* Brand column */}
             <Stack gap="md">
               <Inline align="center" gap="md">
-                <img src="/images/logo.webp" alt="Nova Logo" className={styles.logo} />
+                <picture>
+                  <source type="image/avif" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+                  <source type="image/webp" srcSet="/images/logo.webp 1x, /images/logo.webp 2x" />
+                  <source type="image/jpeg" srcSet="/images/logo.jpg 1x, /images/logo.jpg 2x" />
+                  <img
+                    src="/images/logo.webp"
+                    srcSet="/images/logo.webp 1x, /images/logo.webp 2x"
+                    sizes="36px"
+                    alt="Nova Feeds — Next-Generation Discord Notification Bot"
+                    width={36}
+                    height={36}
+                    loading="lazy"
+                    decoding="async"
+                    className={styles.logo}
+                  />
+                </picture>
                 <Text size="lg" weight="bold">
                   {t('common.brandName')}
                 </Text>
@@ -29,7 +44,7 @@ export const Footer: React.FC = () => {
             </Stack>
 
             {/* Resources column */}
-            <Stack gap="md">
+            <Stack as="nav" aria-label="Footer resources navigation" gap="md">
               <Text as="h4" size="xs" weight="bold" color="brand" className={styles.colHeader}>
                 {t('common.footerResources')}
               </Text>
@@ -45,7 +60,7 @@ export const Footer: React.FC = () => {
             </Stack>
 
             {/* Legal column */}
-            <Stack gap="md">
+            <Stack as="nav" aria-label="Footer legal and support navigation" gap="md">
               <Text as="h4" size="xs" weight="bold" color="brand" className={styles.colHeader}>
                 {t('common.footerLegalSupport')}
               </Text>

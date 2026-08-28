@@ -29,6 +29,32 @@ export const LOCALE_FALLBACK_CHAINS: Partial<Record<SupportedLocale, SupportedLo
   he: ['en'],
 };
 
+/**
+ * Standard OpenGraph locale mapping (language_TERRITORY) for social media crawlers.
+ */
+export const LOCALE_TO_OG_LOCALE: Record<SupportedLocale, string> = {
+  en: 'en_US',
+  hu: 'hu_HU',
+  de: 'de_DE',
+  es: 'es_ES',
+  fr: 'fr_FR',
+  it: 'it_IT',
+  pt: 'pt_BR',
+  ru: 'ru_RU',
+  ja: 'ja_JP',
+  ko: 'ko_KR',
+  zh: 'zh_CN',
+  'zh-tw': 'zh_TW',
+  pl: 'pl_PL',
+  nl: 'nl_NL',
+  tr: 'tr_TR',
+  cs: 'cs_CZ',
+  sv: 'sv_SE',
+  ar: 'ar_SA',
+  he: 'he_IL',
+};
+
+
 export const STORAGE_KEY = 'nova_locale';
 
 export const I18nContext = createContext<I18nContextValue | null>(null);

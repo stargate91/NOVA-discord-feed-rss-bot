@@ -5,6 +5,7 @@ import { useAccordion, useAccordionItem } from './context';
 import styles from './Accordion.module.css';
 
 export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
+  as: HeadingTag = 'h3',
   icon,
   children,
   className = '',
@@ -14,21 +15,23 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
   const { value, isOpen, disabled } = useAccordionItem();
 
   return (
-    <button
-      type="button"
-      aria-expanded={isOpen}
-      disabled={disabled}
-      className={`${styles.trigger} ${className}`}
-      onClick={() => toggleValue(value)}
-      {...rest}
-    >
-      <span className={styles.triggerLeft}>
-        {icon && <span className={styles.triggerIcon}>{icon}</span>}
-        <span>{children}</span>
-      </span>
-      <span className={styles.chevron}>
-        <ChevronDown size={18} />
-      </span>
-    </button>
+    <HeadingTag className={styles.headingWrapper}>
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        disabled={disabled}
+        className={`${styles.trigger} ${className}`}
+        onClick={() => toggleValue(value)}
+        {...rest}
+      >
+        <span className={styles.triggerLeft}>
+          {icon && <span className={styles.triggerIcon}>{icon}</span>}
+          <span>{children}</span>
+        </span>
+        <span className={styles.chevron}>
+          <ChevronDown size={18} />
+        </span>
+      </button>
+    </HeadingTag>
   );
 };

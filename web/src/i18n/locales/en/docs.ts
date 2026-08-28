@@ -1,5 +1,4 @@
 export const docs = {
-  tag: 'Documentation & Reference',
   title: 'Getting Started with',
   titleHighlight: 'NovaFeeds',
   subtitle:

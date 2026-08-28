@@ -6,19 +6,19 @@ class TestLocalizationService(unittest.TestCase):
         self.service = LocalizationService()
         self.service.load_locales(locales_dir="locales")
 
-    def test_load_all_17_locales(self):
-        """Verify that all 17 target language packs are loaded."""
+    def test_load_all_19_locales(self):
+        """Verify that all 19 target language packs are loaded."""
         expected_locales = [
-            "cs", "de", "en", "es", "fr", "hu", "it",
+            "ar", "cs", "de", "en", "es", "fr", "he", "hu", "it",
             "ja", "ko", "nl", "pl", "pt", "ru", "sv", "tr", "zh", "zh-tw"
         ]
         for lang in expected_locales:
             self.assertIn(lang, self.service.locales, f"Locale '{lang}' missing in loaded locales!")
 
-        self.assertEqual(len(self.service.locales), 17)
+        self.assertEqual(len(self.service.locales), 19)
 
     def test_all_locales_have_matching_keys(self):
-        """Verify that all 17 locales have exactly the same key set as English."""
+        """Verify that all 19 locales have exactly the same key set as English."""
         en_keys = set(self.service.locales["en"].keys())
         for lang_code, data in self.service.locales.items():
             lang_keys = set(data.keys())

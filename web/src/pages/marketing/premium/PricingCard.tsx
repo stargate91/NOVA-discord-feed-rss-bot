@@ -75,7 +75,16 @@ export const PricingCard: React.FC<PricingCardProps> = ({ plan, billingInterval 
 
         <Stack gap="2xs">
           {plan.isBuyable !== false ? (
-            <Button variant={plan.ctaVariant} fullWidth onClick={() => navigate('/servers')}>
+            <Button
+              as="a"
+              href="/servers"
+              variant={plan.ctaVariant}
+              fullWidth
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/servers');
+              }}
+            >
               {t(plan.ctaKey)}
             </Button>
           ) : (

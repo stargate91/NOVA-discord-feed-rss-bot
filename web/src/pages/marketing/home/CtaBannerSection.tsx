@@ -2,7 +2,6 @@ import React from 'react';
 import { Plus, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { DISCORD_BOT_INVITE_URL, DISCORD_SUPPORT_SERVER_URL } from '@/constants';
-import { openExternalUrl } from '@/utils';
 import { Card, Inline, Stack, Text, Button } from '@/ui';
 
 export const CtaBannerSection: React.FC = () => {
@@ -22,16 +21,22 @@ export const CtaBannerSection: React.FC = () => {
 
         <Inline gap="md" wrap>
           <Button
+            as="a"
             variant="primary"
             size="lg"
-            onClick={() => openExternalUrl(DISCORD_BOT_INVITE_URL)}
+            href={DISCORD_BOT_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <Plus size={18} /> {t('home.ctaDiscord')}
           </Button>
           <Button
+            as="a"
             variant="secondary"
             size="lg"
-            onClick={() => openExternalUrl(DISCORD_SUPPORT_SERVER_URL)}
+            href={DISCORD_SUPPORT_SERVER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <MessageSquare size={18} /> {t('home.ctaCommunity')}
           </Button>

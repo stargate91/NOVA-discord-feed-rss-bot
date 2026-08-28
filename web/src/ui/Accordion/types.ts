@@ -34,7 +34,10 @@ export interface AccordionItemProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
+export type AccordionHeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div';
+
 export interface AccordionTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  as?: AccordionHeadingLevel;
   icon?: ReactNode;
   children: ReactNode;
   className?: string;

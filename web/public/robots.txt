@@ -5,14 +5,20 @@
 User-agent: *
 Allow: /
 Allow: /images/
-Allow: /assets/
 
-# Disallow private user consoles, dashboards, auth callbacks, and dev catalog
+# Disallow private API endpoints, consoles, dashboards, auth callbacks, and dev catalog
+Disallow: /api/
 Disallow: /auth/
 Disallow: /servers
 Disallow: /dashboard/
 Disallow: /dev/
 Disallow: /components
+
+# Crawl budget optimization for rate-sensitive crawlers (Bing, Yandex, Baidu, DuckDuckBot)
+Crawl-delay: 1
+
+# Host directive for Yandex and compatible search engines
+Host: https://novafeeds.xyz
 
 # Sitemap declaration
 Sitemap: https://novafeeds.xyz/sitemap.xml

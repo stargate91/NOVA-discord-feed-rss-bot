@@ -1,23 +1,51 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { HelpCircle, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { SEO } from '@/components/common/SEO';
-import { DISCORD_SUPPORT_SERVER_URL } from '@/constants';
-import { openExternalUrl } from '@/utils';
-import { Card, Button, Badge, Accordion, Container, Stack, Text } from '@/ui';
+import { getLocalizedPath } from '@/components/layout/navConfig';
+import { SEO, buildFaqPageSchema, buildBreadcrumbListSchema } from '@/components/common/SEO';
+import { DISCORD_SUPPORT_SERVER_URL, OG_IMAGES } from '@/constants';
+import { Card, Button, Accordion, Container, Stack, Text, Breadcrumbs } from '@/ui';
+import { RelatedLinks } from '@/components/common/RelatedLinks/RelatedLinks';
 
 export const SupportPage: React.FC = () => {
+  const { lang } = useParams<{ lang?: string }>();
   const { t } = useTranslation();
+
+  const supportFaqs = [
+    { question: t('support.faqStreamQ'), answer: t('support.faqStreamA') },
+    { question: t('support.faqLanguageQ'), answer: t('support.faqLanguageA') },
+    { question: t('support.faqRoleQ'), answer: t('support.faqRoleA') },
+  ];
+
+  const breadcrumbItems = [
+    { label: t('common.navHome') || 'Home', href: getLocalizedPath('/', lang) },
+    { label: t('common.navSupport') || 'Support' },
+  ];
+
+  const structuredData = [
+    buildFaqPageSchema(supportFaqs),
+    buildBreadcrumbListSchema([
+      { name: 'Home', url: '/' },
+      { name: t('common.navSupport'), url: '/support' },
+    ]),
+  ];
 
   return (
     <Container maxWidth="md" padding="md">
-      <SEO title={t('support.tag')} description={t('support.subtitle')} />
+      <SEO
+        title={`${t('support.title')} ${t('support.titleHighlight')}`}
+        description={t('support.subtitle')}
+        keywords="discord bot support, nova troubleshooting, discord help server, feed setup assistance, bot customer service"
+        image={OG_IMAGES.support}
+        imageAlt="Nova Feeds Support Center and Community Assistance"
+        structuredData={structuredData}
+      />
 
       <Stack gap="5xl">
+        <Breadcrumbs items={breadcrumbItems} />
+
         <Stack align="center" gap="md">
-          <Badge variant="outline" size="md" dot pulse>
-            <HelpCircle size={14} /> {t('support.tag')}
-          </Badge>
           <Text as="h1" size="hero" weight="extrabold" align="center">
             {t('support.title')}{' '}
             <Text as="span" color="gradient" size="hero" weight="extrabold">
@@ -42,9 +70,12 @@ export const SupportPage: React.FC = () => {
               <Text color="secondary">{t('support.discordDesc')}</Text>
               <div>
                 <Button
+                  as="a"
                   variant="discord"
                   size="lg"
-                  onClick={() => openExternalUrl(DISCORD_SUPPORT_SERVER_URL)}
+                  href={DISCORD_SUPPORT_SERVER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <MessageSquare size={18} /> {t('support.discordCta')}
                 </Button>
@@ -81,6 +112,9 @@ export const SupportPage: React.FC = () => {
             </Accordion.Item>
           </Accordion>
         </Stack>
+
+        {/* Cross-linking & Related Resources */}
+        <RelatedLinks current="support" />
       </Stack>
     </Container>
   );
